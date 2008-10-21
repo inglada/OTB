@@ -280,7 +280,15 @@ void
 ImageWidgetBase<TPixel>
 ::draw(void)
 {
-  //otbMsgDebugMacro(<<"Draw");
+
+
+#ifndef MESA
+glDrawBuffer(GL_FRONT_AND_BACK);
+#endif // !MESA
+
+
+//   otbMsgDebugMacro(<<"Draw");
+
  if(this->UpdateOpenGlBufferedRegionRequested())
     {
       UpdateOpenGlBufferedRegion();
@@ -317,17 +325,39 @@ ImageWidgetBase<TPixel>
  glMatrixMode(GL_PROJECTION);
  this->ortho();
  glDisable(GL_BLEND);
- 
- glRasterPos2i(0,this->h());  
- glPixelZoom(m_OpenGlIsotropicZoom ,-m_OpenGlIsotropicZoom);
 
- // display the image
- glDrawPixels(m_BufferedRegion.GetSize()[0],
-	      m_BufferedRegion.GetSize()[1], 
-	      GL_RGBA,
-	      GL_UNSIGNED_BYTE, 
-	      m_OpenGlBuffer);
- glEnd();
+
+ glRasterPos2i(0,this->h());  
+//  glPixelZoom(m_OpenGlIsotropicZoom ,-m_OpenGlIsotropicZoom);
+
+ // // display the image
+ //glDrawPixels(m_BufferedRegion.GetSize()[0],
+// 	      m_BufferedRegion.GetSize()[1], 
+// 	      GL_RGBA,
+// 	      GL_UNSIGNED_BYTE, 
+// 	      m_OpenGlBuffer);
+
+  glEnable(GL_TEXTURE_2D);
+  glColor4f(1.0,1.0,1.0,0.0);
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, m_BufferedRegion.GetSize()[0], m_BufferedRegion.GetSize()[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, m_OpenGlBuffer);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);	// Nearest Filtering
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);	// Nearest Filtering
+//   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	// Linear Filtering
+//   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);	// Linear Filtering
+  
+  glBindTexture (GL_TEXTURE_2D, texture);
+  glBegin (GL_QUADS);
+  int hOffset = this->h() - this->hDisplayed();
+  glTexCoord2f (0.0, 1.0);  glVertex3f (0.0, 0.0+hOffset, 0.0);
+  glTexCoord2f (1.0, 1.0);  glVertex3f (this->wDisplayed(), 0.0+hOffset, 0.0);
+  glTexCoord2f (1.0, 0.0);  glVertex3f (this->wDisplayed(), this->hDisplayed()+hOffset, 0.0);
+  glTexCoord2f (0.0, 0.0);  glVertex3f (0.0, this->hDisplayed()+hOffset, 0.0);
+  glEnd ();
+
+  glDisable(GL_TEXTURE_2D);
 
  // if image overlay is activated, display image overlay
  if(m_ImageOverlayVisible)
@@ -339,7 +369,8 @@ ImageWidgetBase<TPixel>
 		  GL_RGBA,
 		  GL_UNSIGNED_BYTE, 
 		  m_OpenGlImageOverlayBuffer);
-     glEnd();
+     glDisable(GL_BLEND);
+//      glEnd();
    } 
 
  if(m_FormOverlayVisible)
@@ -354,6 +385,11 @@ ImageWidgetBase<TPixel>
 		       this->h(), m_SubSamplingRate);
        }
    }
+#ifndef MESA
+glDrawBuffer(GL_BACK);
+#endif // !MESA
+
+
 }
 
 /** 
@@ -404,8 +440,11 @@ ImageWidgetBase<TPixel>
 	}
 	case COMPLEX_MODULUS:
 	{
-	  unsigned char  modulus = Normalize(static_cast<PixelType>(vcl_sqrt(static_cast<double>(it.Get()[m_RedChannelIndex]*it.Get()[m_RedChannelIndex]
-				       +it.Get()[m_GreenChannelIndex]*it.Get()[m_GreenChannelIndex]))),0);
+    double re = static_cast<double>(it.Get()[m_RedChannelIndex]);
+    double im = static_cast<double>(it.Get()[m_GreenChannelIndex]);
+//     std::cout << " *** " << m_RedChannelIndex << " " << m_GreenChannelIndex << std::endl;
+	  unsigned char  modulus = Normalize(static_cast<PixelType>(vcl_sqrt(static_cast<double>(im*im+re*re))),0);
+//     std::cout << " ** " << im << " " << re << " -> " << static_cast<int>(modulus) << std::endl;
 	  m_OpenGlBuffer[index] =   modulus;
 	  m_OpenGlBuffer[index+1] = modulus;
 	  m_OpenGlBuffer[index+2] = modulus;
@@ -415,7 +454,7 @@ ImageWidgetBase<TPixel>
 	}
 	case COMPLEX_PHASE:
 	  {
-      unsigned char phase =  Normalize(static_cast<PixelType>(vcl_atan2(static_cast<double>(it.Get()[m_GreenChannelIndex])),static_cast<double>(it.Get()[m_RedChannelIndex])),0);
+      unsigned char phase =  Normalize(static_cast<PixelType>(vcl_atan2(static_cast<double>(it.Get()[m_GreenChannelIndex]),static_cast<double>(it.Get()[m_RedChannelIndex]))),0);
 	    m_OpenGlBuffer[index]   = phase;
 	    m_OpenGlBuffer[index+1] = phase;
 	    m_OpenGlBuffer[index+2] = phase;
