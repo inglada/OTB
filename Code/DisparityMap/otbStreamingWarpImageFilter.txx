@@ -32,6 +32,7 @@ StreamingWarpImageFilter<TInputImage,TOutputImage,TDeformationField>
 ::StreamingWarpImageFilter()
 {
   // Fill the default maximum deformation
+  m_MaximumDeformation.SetSize(InputImageType::ImageDimension);
   m_MaximumDeformation.Fill(1);
 }
 

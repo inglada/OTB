@@ -37,7 +37,5 @@ REGISTER_TEST(otbBSplinesInterpolateDeformationFieldGeneratorNew);
 REGISTER_TEST(otbBSplinesInterpolateDeformationFieldGenerator);
 REGISTER_TEST(otbPointSetWithTransformToDeformationFieldGeneratorNew);
 REGISTER_TEST(otbNCCRegistrationFilterNew);
-REGISTER_TEST(otbNCCRegistrationFilter);
-REGISTER_TEST(otbMIRegistrationFilterNew);
-REGISTER_TEST(otbMIRegistrationFilter);
+REGISTER_TEST(otbMIRegistrationFilterNew);  
 }

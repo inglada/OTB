@@ -127,9 +127,6 @@ protected:
   /** Apply update. */
   virtual void ApplyUpdate(TimeStepType dt);
 
-  /** Update the Input requested region. */
-  virtual void GenerateInputRequestedRegion();
-
 private:
   MIRegistrationFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

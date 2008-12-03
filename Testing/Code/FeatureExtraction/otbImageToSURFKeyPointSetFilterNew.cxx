@@ -9,33 +9,33 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
+  Copyright (c) CS Systemes d'information. All rights reserved.
+  See CSCopyright.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even 
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#include "otbImageToSURFKeyPointSetFilter.h"
 #include "otbImage.h"
-#include "otbVectorImage.h"
-#include "otbImageFileReader.h"
-#include "otbStreamingImageFileWriter.h"
-
-#include "otbStreamingWarpImageFilter.h"
+#include "itkPointSet.h"
+#include "itkVariableLengthVector.h"
 
 
-int otbStreamingWarpImageFilterNew(int argc, char* argv[])
+int otbImageToSURFKeyPointSetFilterNew(int argc, char * argv[])
 {
-  // Images definition
-  const unsigned int Dimension=2;
+  const unsigned int Dimension = 2;
   typedef double PixelType;
-  typedef otb::Image<PixelType,Dimension> ImageType;
-  typedef otb::VectorImage<PixelType,Dimension> DeformationFieldType;
   
-  // Warper
-  typedef otb::StreamingWarpImageFilter<ImageType,ImageType,DeformationFieldType> ImageWarperType;
+  typedef otb::Image<PixelType,Dimension> ImageType;
+  typedef itk::VariableLengthVector<PixelType> RealVectorType;
+  typedef itk::PointSet<RealVectorType,Dimension> PointSetType;
+  typedef otb::ImageToSURFKeyPointSetFilter<ImageType,PointSetType> FilterType;
+  
+  // Instantiating object
+  FilterType::Pointer object = FilterType::New();
 
-  // Objects creation
-  ImageWarperType::Pointer warper = ImageWarperType::New();
-   
+  
   return EXIT_SUCCESS;
 }

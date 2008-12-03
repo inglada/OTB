@@ -81,13 +81,6 @@ namespace otb
   ::PrintSelf(std::ostream& os, itk::Indent indent) const
   {
     Superclass::PrintSelf(os, indent);
-    VertexListConstIteratorType it =  this->GetVertexList()->Begin();
-    while(it != this->GetVertexList()->End())
-    {
-      os << it.Value() << " - ";
-      it++;
-    }
-    os << std::endl;
   }
   
 } // end namespace otb

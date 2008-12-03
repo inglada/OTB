@@ -87,9 +87,7 @@ class ProlateFunction
   static const unsigned int m_OriginalProfileSize;
   /** Original prolate profil */
   static const double m_OriginalProfile[721]; 
- protected:
-  ProlateFunction(){ m_Radius = 1; };
-  ~ProlateFunction(){};
+
 }; 
  
 }//namespace Function
