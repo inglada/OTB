@@ -22,25 +22,25 @@
 //  Software Guide : BeginCommandLineArgs
 //    INPUTS: {TO_core_last_zoom.las}
 //    OUTPUTS: {lidar-image-4.hdr}, {lidar-image-4-pretty.png}
-//    1.0 5 4
+//    1.0 3 4
 //  Software Guide : EndCommandLineArgs
 
 //  Software Guide : BeginCommandLineArgs
 //    INPUTS: {TO_core_last_zoom.las}
 //    OUTPUTS: {lidar-image-8.hdr}, {lidar-image-8-pretty.png}
-//    1.0 5 8
+//    1.0 3 8
 //  Software Guide : EndCommandLineArgs
 
 
 // Software Guide : BeginLatex
 //
-// This example describes how to convert a point set obtained from some lidar data
-// to an image file. Lidar produce a point set which is irregular in terms of spatial
+// This example describes how to convert a point set obtained from lidar data
+// to an image file. A lidar produces a point set which is irregular in terms of spatial
 // sampling. To be able to generate an image, an interpolation is required.
 //
 // The interpolation is done using the
 // \doxygen{itk}{BSplineScatteredDataPointSetToImageFilter} which uses BSplines. The
-// method is fully describes in \cite{Tustison2005} and \cite{Lee1997}.
+// method is fully described in \cite{Tustison2005} and \cite{Lee1997}.
 //
 // The first step toward the use of these filters is to include the proper header files.
 //
@@ -78,7 +78,7 @@ int main( int argc, char* argv[] )
     std::cout << argv[0] <<" <input_lidar_filename> <output_image_filename(double)>"
               << " <output_image_filename(unsigned char)>"
 	      << " <output_resolution> <spline_order>"
-              << " <number_of_level>"
+              << " <number_of_levels>"
 	      << std::endl;
     return EXIT_FAILURE;
   }
@@ -87,7 +87,7 @@ int main( int argc, char* argv[] )
   //
   // Then, we declare the type of the data that we are going to use. As
   // lidar decribes the altitude of the point (often to centimeter accuracy),
-  // it is required to use real type to represent it.
+  // it is required to use a real type to represent it.
   //
   // Software Guide : EndLatex
 
@@ -103,7 +103,7 @@ int main( int argc, char* argv[] )
   //
   // Lidar data are read into a point set using the
   // \doxygen{otb}{PointSetFileReader}. Its usage is very similar to
-  // the \doxygen{otb}{ImagePointSetFileReader}:
+  // the \doxygen{otb}{ImageFileReader}:
   //
   // Software Guide : EndLatex
 
@@ -119,7 +119,7 @@ int main( int argc, char* argv[] )
   //
   // We can now prepare the parameters to pass to the interpolation filter:
   // you have to be aware that the origin of the image is on the upper left
-  // corner and thus correspond to the minimun easting but the maximum northing.
+  // corner and thus corresponds to the minimun easting but the maximum northing.
   //
   // Software Guide : EndLatex
 
