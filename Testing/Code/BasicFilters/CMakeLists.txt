@@ -59,11 +59,10 @@ ADD_TEST(bfTvFiltreFrost ${BASICFILTERS_TESTS1}
 	${TEMP}/bfFiltreFrost_poupees_05_05_01.tif
 	05 05 0.1)
 
-# -------            otb::PointSetFilter   ------------------------------
+# -------            otb::PointSetSource   ------------------------------
 
 ADD_TEST(bfTuImageToPointSetFilterTest ${BASICFILTERS_TESTS1}
          otbImageToPointSetFilterTest)
-
 
 # -------            otb::OpeningClosingMorphologicalFilter   ------------------------------
 
@@ -1116,78 +1115,32 @@ ADD_TEST(bfTvExtractROIResample2 ${BASICFILTERS_TESTS11}
 	 ${TEMP}/bfTvExtractROIResample2.tif
 	 1
 )
-# -------    otbPointSetFunction   ----------------------------
-ADD_TEST(bfTuPointSetFunctionNew ${BASICFILTERS_TESTS11}
-	 otbPointSetFunctionNew
+# -------    otbCountImageFunction   ----------------------------
+ADD_TEST(bfTuCountImageFunctionNew ${BASICFILTERS_TESTS11}
+	 otbCountImageFunctionNew
 	 )
 
-
-
-# -------    otbPointSetDensityFunction   ----------------------------
-ADD_TEST(bfTuPointSetDensityFunctionNew ${BASICFILTERS_TESTS11}
-	 otbPointSetDensityFunctionNew
-	 )
-
-
-ADD_TEST(bfTvPointSetDensityFunctionTest ${BASICFILTERS_TESTS11}
+ADD_TEST(bfTvCountImageFunction ${BASICFILTERS_TESTS11}
 --compare-ascii ${TOL}
-	     ${BASELINE_FILES}/bfTvPointSetDensityFunctionOutputAscii.txt
-	    ${TEMP}/bfTvPointSetDensityFunctionOutputAscii.txt
-	 otbPointSetDensityFunctionTest
-	 ${TEMP}/bfTvPointSetDensityFunctionOutputAscii.txt
+	    ${BASELINE_FILES}/bfTvCountImageFunctionOutputAscii.txt
+	    ${TEMP}/bfTvCountImageFunctionOutputAscii.txt
+	otbCountImageFunctionTest
+	 ${INPUTDATA}/QB_Suburb.png
+	 ${TEMP}/bfTvCountImageFunctionOutputAscii.txt
+	 5 2
+)
+# -------    otbCountImageFilter   ----------------------------
+ADD_TEST(bfTuCountImageFilterNew ${BASICFILTERS_TESTS11}
+	 otbCountImageFilterNew
 	 )
 
-#------------ otbPointSetToDensityImageFilter ---------------------
-
-ADD_TEST(bfTuPointSetToDensityImageFilterNew ${BASICFILTERS_TESTS11}
-         otbPointSetToDensityImageFilterNew)
 
 
-
-ADD_TEST(bfTvPointSetToDensityImageFilterTest ${BASICFILTERS_TESTS11}
---compare-image ${TOL}
-	    ${BASELINE_FILES}/bfTvPointSetToDensityImageFilterOutputImage.tif
-	    ${TEMP}/bfTvPointSetToDensityImageFilterOutputImage.tif
-	    otbPointSetToDensityImageFilterTest
-	 ${INPUTDATA}/QB_Suburb.png
-	 ${TEMP}/bfTvPointSetToDensityImageFilterOutputImage.tif
-	 3 5 10
+ADD_TEST(bfTvFunctionWithNeighborhoodToImageFilterNew ${BASICFILTERS_TESTS11}
+        otbFunctionWithNeighborhoodToImageFilterNew
 )
 
-# -------    otbPCAShapeModelEstimatorTest   ----------------------------
-ADD_TEST(bfTvImagePCAShapeModelEstimatorTest ${BASICFILTERS_TESTS11}
-    otbImagePCAShapeModelEstimatorTest
-    ${INPUTDATA}/poupees_sub_c1.png
-    ${INPUTDATA}/poupees_sub_c2.png
-    ${INPUTDATA}/poupees_sub_c3.png
-    ${TEMP}/imagePCAShapeModelEstimatorTest_mean.tif
-    ${TEMP}/imagePCAShapeModelEstimatorTest_eigen_vectors1.tif
-    ${TEMP}/imagePCAShapeModelEstimatorTest_eigen_vectors2.tif
-)
-#
-#ADD_TEST(bfTvCountImageFunction ${BASICFILTERS_TESTS11}
-#--compare-ascii ${TOL}
-#	    ${BASELINE_FILES}/bfTvCountImageFunctionOutputAscii.txt
-#	    ${TEMP}/bfTvCountImageFunctionOutputAscii.txt
-#	otbCountImageFunctionTest
-#	 ${INPUTDATA}/QB_Suburb.png
-#	 ${TEMP}/bfTvCountImageFunctionOutputAscii.txt
-#	 5 2
-#)
-# -------    otbCountImageFilter   ----------------------------
-#ADD_TEST(bfTuCountImageFilterNew ${BASICFILTERS_TESTS11}
-#	 otbCountImageFilterNew
-#	 )
 
-#ADD_TEST(bfTvCountImageFilterOutputImage ${BASICFILTERS_TESTS11}
-#--compare-image ${TOL}
-#	    ${BASELINE_FILES}/bfTvCountImageFilterOutputImage.tif
-#	    ${TEMP}/bfTvCountImageFilterOutputImage.tif
-#	    otbCountImageFilterTest
-#	 ${INPUTDATA}/QB_Suburb.png
-#	 ${TEMP}/bfTvCountImageFilterOutputImage.tif
-#	 5 2 
-#)
 
 # A enrichir
 SET(BasicFilters_SRCS1
@@ -1349,15 +1302,10 @@ ENDIF(USE_FFTWD)
 
 SET(BasicFilters_SRCS11
 otbExtractROIResample.cxx
-otbPointSetFunctionNew.cxx
-otbPointSetDensityFunctionNew.cxx
-otbPointSetDensityFunctionTest.cxx
-otbPointSetToDensityImageFilterNew.cxx
-otbPointSetToDensityImageFilterTest.cxx	
-#otbCountImageFunctionTest.cxx	
-#otbCountImageFilterNew.cxx
-#otbCountImageFilterTest.cxx	
-otbImagePCAShapeModelEstimatorTest.cxx
+otbCountImageFunctionNew.cxx
+otbCountImageFunctionTest.cxx	
+otbCountImageFilterNew.cxx
+otbFunctionWithNeighborhoodToImageFilterNew.cxx
 )
 
 
