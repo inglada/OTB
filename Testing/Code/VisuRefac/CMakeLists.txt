@@ -170,6 +170,11 @@ ${INPUTDATA}/couleurs.tif
 1
 )
 
+ADD_TEST(vrTvImageLayerGeneratorVector ${VISUREFAC_TESTS1}
+otbImageLayerGeneratorVector
+${INPUTDATA}/couleurs.tif
+1
+)
 
 # Testing srcs
 SET(VisuRefac_SRCS1
@@ -192,6 +197,7 @@ otbBlendingImageFilter.cxx
 otbImageViewerModelNew.cxx
 otbImageLayerGeneratorNew.cxx
 otbImageLayerGeneratorScalar.cxx
+otbImageLayerGeneratorVector.cxx
 )
 
 # Building testing executables
