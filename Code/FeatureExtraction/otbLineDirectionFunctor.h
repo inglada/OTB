@@ -126,8 +126,8 @@ public:
 	angle = m_Alpha*static_cast<double>(d);
 
 	// last offset in the diraction respecting spatial threshold
-	off[0] = static_cast<int>(vcl_floor(SpatialThresholdDouble*vcl_cos( angle ) + 0.5));
-	off[1] = static_cast<int>(vcl_floor(SpatialThresholdDouble*vcl_sin( angle ) + 0.5));
+	off[0] = static_cast<unsigned int>(vcl_floor(SpatialThresholdDouble*vcl_cos( angle ) + 0.5));
+	off[1] = static_cast<unsigned int>(vcl_floor(SpatialThresholdDouble*vcl_sin( angle ) + 0.5));
 	// last indices in the diration respecting spectral threshold
 	OffsetType offEnd = this->FindLastOffset( it, off );
 	// computes distance = dist between the 2 segment point. One of them is the center pixel -> (0,0)
