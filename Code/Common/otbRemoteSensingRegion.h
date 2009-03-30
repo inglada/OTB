@@ -23,6 +23,7 @@
 #include "itkContinuousIndex.h"
 #include "itkRegion.h"
 #include "otbImageKeywordlist.h"
+#include "itkImageRegion.h"
 
 namespace otb
 {
@@ -34,7 +35,11 @@ namespace otb
  * piece of an Image. The RemoteSensingRegion is represented with an index and
  * a size in each of the n-dimensions of the image. (The index is the
  * corner of the image, the size is the lengths of the image in each of
- * the topological directions.)
+ * the topological directions. <b>For this class, the notion of index and origin
+ * are the same.</b>)
+ *
+ * As the size and origin can be given in various system coordinates, they contain
+ * double values (through the use of an itk::ContinuousIndex).
  *
  * To be flexible enough, the region also contain information about the projection
  * in which this information is given. It can be a cartographic projection, but also
@@ -49,7 +54,7 @@ template <class TType>
 {
 public:
   /** Standard class typedefs. */
-  typedef otb::RemoteSensingRegion<TType>           Self;
+  typedef otb::RemoteSensingRegion<TType>          Self;
   typedef itk::Region                              Superclass;
   typedef itk::SmartPointer<Self>                  Pointer;
   typedef itk::SmartPointer<const Self>            ConstPointer;
@@ -58,15 +63,17 @@ public:
   itkTypeMacro(RemoteSensingRegion, itk:Region);
 
   /** Typedef Support*/
-  typedef TType                                   Type;
-
+  typedef TType                                Type;
 
   /** Index typedef support. An index is used to access pixel values. */
   typedef itk::ContinuousIndex<Type>           IndexType;
 
   /** Size typedef support. A size is used to define region bounds. */
-  typedef itk::ContinuousIndex<Type>  SizeType;
-  typedef itk::Size<2> StandardSizeType;
+  typedef itk::ContinuousIndex<Type>           SizeType;
+  typedef itk::Size<2>                         StandardSizeType;
+
+  /** ImageRegion typedef needed by the GetImageRegion() method */
+  typedef itk::ImageRegion<2>                  ImageRegionType;
 
   virtual typename Superclass::RegionType GetRegionType() const
   {return Superclass::ITK_STRUCTURED_REGION;}
@@ -89,6 +96,18 @@ public:
       m_Index.Fill(0.);
     }
 
+
+    /** Constructor. RemoteSensingRegion is a lightweight object that is not reference
+      * counted, so the constructor is public.  Default dimension is 2. */
+    RemoteSensingRegion(const itk::ImageRegion<2>& region)
+    {
+      m_InputProjectionRef = "";
+      m_Size[0] = region.GetSize()[0];
+      m_Size[1] = region.GetSize()[1];
+      m_Index[0] = region.GetIndex()[0];
+      m_Index[1] = region.GetIndex()[1];
+    }
+
   /** Destructor. RemoteSensingRegion is a lightweight object that is not reference
    * counted, so the destructor is public. */
   virtual ~RemoteSensingRegion(){};
@@ -104,6 +123,27 @@ public:
     m_KeywordList        = region.m_KeywordList;
     }
 
+  /** This method provides explicit conversion to itk::ImageRegion<2>,
+   * so as to allow to use RemoteSensingRegion to specify requested
+   * region for images or images iterators.
+   */
+  const ImageRegionType GetImageRegion()
+  {
+    ImageRegionType imageRegion;
+    typename ImageRegionType::IndexType irIndex;
+    typename ImageRegionType::SizeType  irSize;
+  
+    irIndex[0]=static_cast<unsigned long>(vcl_floor(m_Index[0]));
+    irIndex[1]=static_cast<unsigned long>(vcl_floor(m_Index[1]));
+    irSize[0] =static_cast<unsigned long>(vcl_ceil(m_Size[0]));
+    irSize[1] =static_cast<unsigned long>(vcl_ceil(m_Size[1]));
+
+    imageRegion.SetIndex(irIndex);
+    imageRegion.SetSize(irSize);
+    
+    return imageRegion;
+  }
+
   /** Set the index defining the corner of the region. */
   void SetOrigin(const IndexType &index)
     {
@@ -115,6 +155,18 @@ public:
     {
     return m_Index;
     }
+
+  /** Set the index defining the corner of the region. */
+  void SetIndex(const IndexType &index)
+  {
+    m_Index = index;
+  }
+
+  /** Get index defining the corner of the region. */
+  const IndexType& GetIndex() const
+  {
+    return m_Index;
+  }
 
   /** Set the size of the region. This plus the index determines the
    * rectangular shape, or extent, of the region. */

@@ -41,6 +41,7 @@ int otbImageLayerRenderingModelSingleLayer( int argc, char * argv[] )
   typedef otb::ImageLayerGenerator<LayerType>        LayerGeneratorType;
   typedef otb::ImageLayerRenderingModel<OutputImageType>     ModelType;
   typedef otb::ImageFileWriter<OutputImageType>      WriterType;
+  typedef LayerGeneratorType::ResampleFilterType     ResampleFilterType;
 
   // Instantiation
   ModelType::Pointer model = ModelType::New();
@@ -48,9 +49,19 @@ int otbImageLayerRenderingModelSingleLayer( int argc, char * argv[] )
   // Reading input image
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(infname);
-  
+
+  // Resampling (generator resampling depends on screen resolution, so
+  // we are generating quicklook outside of the generator)
+  ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+  resampler->SetInput(reader->GetOutput());
+  resampler->SetShrinkFactor(atoi(argv[5]));
+  resampler->Update();
+
   // Generate the layer
   LayerGeneratorType::Pointer generator = LayerGeneratorType::New();
+  generator->GenerateQuicklookOff();
+  generator->SetSubsamplingRate(atoi(argv[5]));
+  generator->SetQuicklook(resampler->GetOutput());
   generator->SetImage(reader->GetOutput());
   generator->GenerateLayer();
 
@@ -62,8 +73,8 @@ int otbImageLayerRenderingModelSingleLayer( int argc, char * argv[] )
   ImageType::RegionType::IndexType index;
   ImageType::RegionType::SizeType  size;
 
-  size[0]=lregion.GetSize()[0]/2;
-  size[1]=lregion.GetSize()[1]/2;
+  size[0]=100;
+  size[1]=100;
 
   index[0] = lregion.GetSize()[0]/4;
   index[1] = lregion.GetSize()[1]/4;
@@ -72,8 +83,8 @@ int otbImageLayerRenderingModelSingleLayer( int argc, char * argv[] )
   extractRegion.SetSize(size);
   extractRegion.SetIndex(index);
   
-  size[0]=lregion.GetSize()[0]/4;
-  size[1]=lregion.GetSize()[1]/4;
+  size[0]=25;
+  size[1]=25;
 
   index[0] = 3 * lregion.GetSize()[0]/8;
   index[1] = 3 * lregion.GetSize()[1]/8;
