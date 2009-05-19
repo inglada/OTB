@@ -14,10 +14,6 @@
 
 #include <Sensor.h>
 
-namespace ossimplugins
-{
-
-
 class SensorParams;
 class PlatformPosition;
 class GeographicEphemeris;
@@ -39,7 +35,7 @@ public:
 	/**
 	 * @brief Destructor
 	 */
-	virtual ~SarSensor();
+	~SarSensor();
 
 	/**
 	 * @brief This function is able to convert image coordinates into geodetic world coordinates using a geometric SAR sensor model
@@ -65,6 +61,5 @@ protected:
 private:
 };
 
-}
 
 #endif

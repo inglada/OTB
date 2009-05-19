@@ -20,10 +20,6 @@
 #include <cstdio>
 #include <ostream>
 
-namespace ossimplugins
-{
-
-
 const double CivilDateTime::JOURCIVIL_LENGTH = 86400.0 ;
 
 CivilDateTime::CivilDateTime():
@@ -469,5 +465,4 @@ std::ostream& CivilDateTime::print(std::ostream& out) const
 std::ostream& operator<<(std::ostream& out, const CivilDateTime& obj)
 {
    return obj.print(out);
-}
 }

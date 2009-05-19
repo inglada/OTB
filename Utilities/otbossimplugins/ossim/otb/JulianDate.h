@@ -12,10 +12,6 @@
 #ifndef JulianData_h
 #define JulianData_h
 
-namespace ossimplugins
-{
-
-
 class CivilDateTime;
 class GMSTDateTime;
 class JSDDateTime;
@@ -94,7 +90,5 @@ protected:
 
 private:
 };
-}
-
 #endif
 

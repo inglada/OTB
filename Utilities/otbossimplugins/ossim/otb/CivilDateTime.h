@@ -15,10 +15,6 @@
 
 #include <iosfwd>
 
-namespace ossimplugins
-{
-
-
 class JulianDate;
 class JSDDateTime;
 class GMSTDateTime;
@@ -181,6 +177,4 @@ protected:
 
 private:
 };
-}
-
 #endif

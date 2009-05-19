@@ -12,10 +12,6 @@
 
 #include <Coordinate.h>
 
-namespace ossimplugins
-{
-
-
 
 Coordinate::Coordinate():
 	_x(0.0),
@@ -57,5 +53,4 @@ void Coordinate::set_coordinates(double x, double y, double z)
 	_y = y;
 	_z = z;
 
-}
 }

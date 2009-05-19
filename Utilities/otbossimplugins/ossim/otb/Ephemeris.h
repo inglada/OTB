@@ -16,10 +16,6 @@
 
 class ossimKeywordlist;
 
-namespace ossimplugins
-{
-
-
 /**
  * @ingroup Ephemeris
  * @brief This class represents an ephemeris
@@ -125,6 +121,5 @@ protected:
    double _vitesse[3];
 private:
 };
-}
 
 #endif

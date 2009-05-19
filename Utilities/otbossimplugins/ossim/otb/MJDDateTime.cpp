@@ -11,10 +11,6 @@
 
 #include <MJDDateTime.h>
 
-namespace ossimplugins
-{
-
-
 MJDDateTime::MJDDateTime():
 	_day(0),
 	_second(0),
@@ -47,5 +43,4 @@ MJDDateTime& MJDDateTime::operator=(const MJDDateTime& rhs)
 	_microsecond = rhs._microsecond;
 
 	return *this;
-}
 }

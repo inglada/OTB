@@ -21,10 +21,6 @@
 #include <GeodesicCoordinate.h>
 #include <complex>
 
-namespace ossimplugins
-{
-
-
 SarSensor::SarSensor(SensorParams* params, PlatformPosition* position) : Sensor(params, position)
 {
 }
@@ -231,5 +227,4 @@ int SarSensor::localisationSAR ( GeographicEphemeris PosVit , double lambda ,
 
 	cart->set_coordinates(coordCart[0], coordCart[1], coordCart[2]);
 	return etat ;
-}
 }

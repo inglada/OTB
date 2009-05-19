@@ -14,10 +14,6 @@
 
 #include <Coordinate.h>
 
-namespace ossimplugins
-{
-
-
 class GeodesicCoordinate;
 /**
  * @ingroup Date
@@ -52,6 +48,5 @@ class GeodesicCoordinate;
  protected:
  private:
  };
-}
 
  #endif

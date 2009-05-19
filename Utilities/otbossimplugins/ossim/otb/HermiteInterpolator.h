@@ -12,10 +12,6 @@
 #ifndef HermiteInterpolator_h
 #define HermiteInterpolator_h
 
-namespace ossimplugins
-{
-
-
 
 /**
  * @brief Abstract interpolator
@@ -69,8 +65,6 @@ protected:
    double* _dy;
 private:
 };
-}
-
 #endif
 
 

@@ -12,10 +12,6 @@
 #ifndef Coordinate_h
 #define Coordinate_h
 
-namespace ossimplugins
-{
-
-
 /**
  * @brief This class represents a coordinate
  */
@@ -67,6 +63,5 @@ protected:
    double _z;
 private:
 };
-}
 
 #endif

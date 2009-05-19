@@ -13,10 +13,6 @@
 #include <ossim/base/ossimKeywordlist.h>
 #include <ossim/base/ossimString.h>
 
-namespace ossimplugins
-{
-
-
 static const char PREFIX[]               = "sensor_params.";
 static const char PRF_KW[]               = "prf";
 static const char SF_KW[]                = "sampling_frequency";
@@ -233,5 +229,4 @@ bool SensorParams::loadState(const ossimKeywordlist& kwl, const char* prefix)
    }
 
    return result;
-}
 }

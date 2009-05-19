@@ -12,10 +12,6 @@
 #ifndef MJDDateTime_h
 #define MJDDateTime_h
 
-namespace ossimplugins
-{
-
-
 class CivilDateTime;
 /**
  * @brief This class represents an MJD date (Modified Julian date)
@@ -84,6 +80,4 @@ protected:
 
 private:
 };
-}
-
 #endif

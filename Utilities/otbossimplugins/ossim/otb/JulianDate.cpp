@@ -20,10 +20,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-namespace ossimplugins
-{
-
-
 JulianDate::JulianDate():
 	_julianDate(0.0)
 {
@@ -142,5 +138,4 @@ JulianDate::operator GMSTDateTime()
 	GMSTDateTime date;
 	AsGMSTDateTime(&date);
 	return date;
-}
 }

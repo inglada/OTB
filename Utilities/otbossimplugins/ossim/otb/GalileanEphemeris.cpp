@@ -16,10 +16,6 @@
 
 #include <cmath>
 
-namespace ossimplugins
-{
-
-
 GalileanEphemeris::GalileanEphemeris()
 {
 
@@ -290,5 +286,4 @@ int GalileanEphemeris::p2nutt(int newcmb, double greenwich, double day,
 
 	return 1;
 
-}
 }

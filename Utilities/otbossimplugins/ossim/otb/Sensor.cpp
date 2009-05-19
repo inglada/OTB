@@ -15,10 +15,6 @@
 
 #include <cstring>
 
-namespace ossimplugins
-{
-
-
 Sensor::Sensor(SensorParams* params, PlatformPosition* position)
 {
 	_params = params->Clone();
@@ -36,5 +32,4 @@ Sensor::~Sensor()
 	{
 		delete _position;
 	}
-}
 }

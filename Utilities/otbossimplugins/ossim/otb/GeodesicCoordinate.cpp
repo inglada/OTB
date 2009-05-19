@@ -11,10 +11,6 @@
 
 #include <GeodesicCoordinate.h>
 
-namespace ossimplugins
-{
-
-
 
 GeodesicCoordinate::GeodesicCoordinate()
 {
@@ -41,4 +37,3 @@ GeodesicCoordinate& GeodesicCoordinate::operator=(const GeodesicCoordinate& rhs)
 	return *this;
 }
 
-}

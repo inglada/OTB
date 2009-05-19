@@ -22,32 +22,26 @@
 #include <ossim/base/ossimNotify.h>
 #include <ossim/base/ossimXmlDocument.h>
 #include <ossim/projection/ossimProjectionFactoryRegistry.h>
-#include <ossim/support_data/ossimGeoTiff.h>
 
 // Keyword constants:
 static const char PRODUCT_XML_FILE_KW[] = "product_xml_filename";
 
-namespace ossimplugins
-{
-RTTI_DEF1(ossimTerraSarTiffReader,
-          "ossimTerraSarTiffReader",
-          ossimTiffTileSource)
-}
+RTTI_DEF1(ossimTerraSarTiffReader, "ossimTerraSarTiffReader", ossimTiffTileSource)
 
 #ifdef OSSIM_ID_ENABLED
    static const char OSSIM_ID[] = "$Id$";
 #endif
-   
-static ossimTrace traceDebug("ossimTerraSarTiffReader:degug");  
 
-ossimplugins::ossimTerraSarTiffReader::ossimTerraSarTiffReader()
+static ossimTrace traceDebug("ossimTerraSarTiffReader:degug");
+
+ossimTerraSarTiffReader::ossimTerraSarTiffReader()
    :
    ossimTiffTileSource()
 {
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
-         << "ossimplugins::ossimTerraSarTiffReader::ossimTerraSarTiffReader entered...\n";
+         << "ossimTerraSarTiffReader::ossimTerraSarTiffReader entered...\n";
 #ifdef OSSIM_ID_ENABLED
       ossimNotify(ossimNotifyLevel_DEBUG)
          << "OSSIM_ID:  " << OSSIM_ID << std::endl;
@@ -55,15 +49,15 @@ ossimplugins::ossimTerraSarTiffReader::ossimTerraSarTiffReader()
    }
 }
 
-ossimplugins::ossimTerraSarTiffReader::~ossimTerraSarTiffReader()
+ossimTerraSarTiffReader::~ossimTerraSarTiffReader()
 {
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::saveState(
-   ossimKeywordlist& kwl, const char* prefix) const
+bool ossimTerraSarTiffReader::saveState(ossimKeywordlist& kwl,
+                                        const char* prefix) const
 {
-   static const char MODULE[] = "ossimplugins::ossimTerraSarTiffReader::saveState";
-   
+   static const char MODULE[] = "ossimTerraSarTiffReader::saveState";
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
@@ -77,11 +71,11 @@ bool ossimplugins::ossimTerraSarTiffReader::saveState(
    return ossimTiffTileSource::saveState(kwl, prefix);
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::loadState(
-   const ossimKeywordlist& kwl, const char* prefix)
+bool ossimTerraSarTiffReader::loadState(const ossimKeywordlist& kwl,
+                                        const char* prefix)
 {
-   static const char MODULE[] = "ossimplugins::ossimTerraSarTiffReader::loadState";
-   
+   static const char MODULE[] = "ossimTerraSarTiffReader::loadState";
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
@@ -120,25 +114,25 @@ bool ossimplugins::ossimTerraSarTiffReader::loadState(
    return result;
 }
 
-ossimString ossimplugins::ossimTerraSarTiffReader::getShortName()const
+ossimString ossimTerraSarTiffReader::getShortName()const
 {
    return ossimString("ossim_terrasar_tiff_reader");
 }
-   
-ossimString ossimplugins::ossimTerraSarTiffReader::getLongName()const
+
+ossimString ossimTerraSarTiffReader::getLongName()const
 {
    return ossimString("ossim TerraSAR-X tiff reader");
 }
 
-ossimString  ossimplugins::ossimTerraSarTiffReader::getClassName()const
+ossimString  ossimTerraSarTiffReader::getClassName()const
 {
    return ossimString("ossimTerraSarTiffReader");
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::open(const ossimFilename& file)
+bool ossimTerraSarTiffReader::open(const ossimFilename& file)
 {
-   static const char MODULE[] = "ossimplugins::ossimTerraSarTiffReader::open";
-   
+   static const char MODULE[] = "ossimTerraSarTiffReader::open";
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
@@ -147,7 +141,7 @@ bool ossimplugins::ossimTerraSarTiffReader::open(const ossimFilename& file)
    }
 
    bool result = false;
-   
+
    if ( isOpen() )
    {
       close();
@@ -164,13 +158,13 @@ bool ossimplugins::ossimTerraSarTiffReader::open(const ossimFilename& file)
          {
             ossimString s;
             ossimTerraSarProductDoc helper;
-            
+
             if ( helper.getImageFile(xdoc, s) )
             {
                ossimFilename imageFile = file.expand().path();
                imageFile = imageFile.dirCat(s);
                setFilename(imageFile);
-               
+
                result = ossimTiffTileSource::open();
 
                if (result)
@@ -182,7 +176,7 @@ bool ossimplugins::ossimTerraSarTiffReader::open(const ossimFilename& file)
       }
       delete xdoc;
       xdoc = 0;
-      
+
    } // matches: if ( file.ext().downcase() == "xml" )
 
    if (traceDebug())
@@ -195,30 +189,30 @@ bool ossimplugins::ossimTerraSarTiffReader::open(const ossimFilename& file)
    return result;
 }
 
-void ossimplugins::ossimTerraSarTiffReader::close()
+void ossimTerraSarTiffReader::close()
 {
    theProductXmlFile.clear();
    ossimTiffTileSource::close();
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::getImageGeometry(
-   ossimKeywordlist& kwl, const char* prefix)
+bool ossimTerraSarTiffReader::getImageGeometry(ossimKeywordlist& kwl,
+                                               const char* prefix)
 {
-   static const char MODULE[] = "ossimplugins::ossimTerraSarTiffReader::getImageGeometry";
-   
+   static const char MODULE[] = "ossimTerraSarTiffReader::getImageGeometry";
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
          << MODULE << " entered...\n";
    }
-   
+
    if (theGeometryKwl.getSize())
    {
       kwl.add(prefix, theGeometryKwl);
       //kwl = theGeometryKwl;
       return true;
    }
-   
+
    bool result = false;
    ossimRefPtr<ossimProjection> proj = 0;
    ossimFilename filename = getFilenameWithThisExtension(ossimString(".geom"));
@@ -234,11 +228,11 @@ bool ossimplugins::ossimTerraSarTiffReader::getImageGeometry(
          ossimString tempPrefix =
             "image"+ossimString::toString(getCurrentEntry())+".";
          kwl.stripPrefixFromAll(tempPrefix);
-         
+
          if(kwl.find(ossimKeywordNames::TYPE_KW))
          {
             ossimKeywordlist kwlTemp(kwl);
-            
+
             kwlTemp.add(ossimKeywordNames::GEOM_FILE_KW,
                         filename.c_str(),
                         true);
@@ -253,53 +247,19 @@ bool ossimplugins::ossimTerraSarTiffReader::getImageGeometry(
          }
       }
    }
-   
+
    if(!result)
    {
-      ossimXmlDocument* xdoc = new ossimXmlDocument();
-      if ( xdoc->openFile(theProductXmlFile) )
+      ossimTerraSarModel* model = new ossimTerraSarModel();
+      if ( model->open(theProductXmlFile) )
       {
-         ossimTerraSarProductDoc helper;
-         ossimString s;
-         if ( helper.getProjection(xdoc, s) )
-         {
-            s.upcase();
-            if ( s == "GROUNDRANGE" )
-            {
-               ossimTerraSarModel* model = new ossimTerraSarModel();
-               if ( model->open(theProductXmlFile) )
-               {
-                  result = model->saveState(kwl, prefix);
-               }
-               delete model;
-               model = 0;
-            }
-            else if (s == "MAP")
-            {
-               ossimGeoTiff* gtiff = new ossimGeoTiff( getFilename() );
-               if (gtiff->getErrorStatus() == ossimErrorCodes::OSSIM_OK)
-               {
-                  result = gtiff->addImageGeometry(kwl, prefix);
-               }
-               delete gtiff;
-               gtiff = 0;
-            }
-            else
-            {
-               if (traceDebug())
-               {
-                  ossimNotify(ossimNotifyLevel_DEBUG)
-                     << "WARNING: Unhandled projection: " << s << std::endl;
-                  
-               }
-            }
-         }
+         result = model->saveState(kwl, prefix);
       }
 
-      delete xdoc;
-      xdoc = 0;
+      delete model;
+      model = 0;
    }
-   
+
    if (result == true)
    {
       // Capture the geometry for next time.
@@ -313,15 +273,15 @@ bool ossimplugins::ossimTerraSarTiffReader::getImageGeometry(
          << MODULE << " exit status = " << (result?"true":"false\n")
          << std::endl;
    }
-   
+
    return result;
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::isTerraSarProductFile(
+bool ossimTerraSarTiffReader::isTerraSarProductFile(
    const ossimFilename& file) const
 {
    bool result = false;
-   
+
    // Check extension to see if it's xml.
    if ( file.ext().downcase() == "xml" )
    {
@@ -335,22 +295,21 @@ bool ossimplugins::ossimTerraSarTiffReader::isTerraSarProductFile(
       delete xdoc;
       xdoc = 0;
    }
-   
+
    return result;
 }
 
-bool ossimplugins::ossimTerraSarTiffReader::isTerraSarProductFile(
-   const ossimXmlDocument* xdoc) const
+bool ossimTerraSarTiffReader::isTerraSarProductFile(const ossimXmlDocument* xdoc) const
 {
    bool result = false;
 
    if (xdoc)
    {
       ossimTerraSarProductDoc helper;
-      
+
       // See if it's a TerraSAR-X product xml file.
       result = helper.isTerraSarX(xdoc);
    }
-   
+
    return result;
 }

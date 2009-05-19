@@ -13,10 +13,6 @@
 
 #include <string>
 
-namespace ossimplugins
-{
-
-
 HermiteInterpolator::HermiteInterpolator():
 	_nbrPoints(0),
 	_x(NULL),
@@ -263,5 +259,4 @@ void HermiteInterpolator::Clear()
 	}
 
 	_nbrPoints = 0;
-}
 }

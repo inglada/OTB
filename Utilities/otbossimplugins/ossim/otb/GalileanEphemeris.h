@@ -14,10 +14,6 @@
 
 #include <Ephemeris.h>
 
-namespace ossimplugins
-{
-
-
 class GeographicEphemeris;
 /**
  * @ingroup Ephemeris
@@ -71,6 +67,4 @@ protected:
 	int p2nutt(int newcmb, double greenwich, double day, double p[], double pd[] );
 private:
 };
-}
-
 #endif

@@ -14,10 +14,6 @@
 
 #include <Ephemeris.h>
 
-namespace ossimplugins
-{
-
-
 class GalileanEphemeris;
 /**
  * @ingroup Ephemeris
@@ -68,6 +64,4 @@ protected:
 private:
 
 };
-}
-
 #endif

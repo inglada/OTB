@@ -1,14 +1,14 @@
 //----------------------------------------------------------------------------
 //
 // License:  LGPL
-// 
+//
 // See LICENSE.txt file in the top level directory for more details.
 //
 // Author:  David Burken
 //
 // Description: Utility class to encapsulate parsing TerraSAR-X product.xml
 // file.
-// 
+//
 //----------------------------------------------------------------------------
 // $Id$
 
@@ -37,16 +37,15 @@
 static ossimTrace traceDebug("ossimTerraSarProductDoc:debug");
 
 
-ossimplugins::ossimTerraSarProductDoc::ossimTerraSarProductDoc()
+ossimTerraSarProductDoc::ossimTerraSarProductDoc()
 {
 }
 
-ossimplugins::ossimTerraSarProductDoc::~ossimTerraSarProductDoc()
+ossimTerraSarProductDoc::~ossimTerraSarProductDoc()
 {
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::isTerraSarX(
-   const ossimXmlDocument* xdoc) const
+bool ossimTerraSarProductDoc::isTerraSarX(const ossimXmlDocument* xdoc) const
 {
    bool result = false;
    if (xdoc)
@@ -61,18 +60,18 @@ bool ossimplugins::ossimTerraSarProductDoc::isTerraSarX(
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
-   const ossimXmlDocument* xdoc, ossimplugins::PlatformPosition* pos) const
+bool ossimTerraSarProductDoc::initPlatformPosition(
+   const ossimXmlDocument* xdoc, PlatformPosition* pos) const
 {
    static const char MODULE[] =
-      "ossimplugins::ossimTerraSarProductDoc::initPlatformPosition";
+      "ossimTerraSarProductDoc::initPlatformPosition";
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)<< MODULE << " entered...\n";
-   }  
+   }
 
    bool result = true;
-   
+
    if ( xdoc && pos )
    {
       // Get all the stateVector nodes.
@@ -84,9 +83,9 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
       {
          const std::vector<ossimRefPtr<ossimXmlNode> >::size_type COUNT =
             xnodes.size();
-         
+
          std::vector<Ephemeris*> ev;
-         
+
          int nbrData = 0; // to keep track of good stateVector count.
 
          ossimRefPtr<ossimXmlNode> svNode = 0; // stateVector node
@@ -110,7 +109,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
                double pos[3];
                double vit[3];
                CivilDateTime eph_civil_date;
-               
+
                path = "timeUTC";
                result = ossim::findFirstNode(path, svNode, s);
                if (result)
@@ -170,7 +169,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
                      << std::endl;
                   break;
                }
-               
+
                path = "velX";
                result = ossim::findFirstNode(path, svNode, s);
                if (result)
@@ -185,7 +184,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
                      << std::endl;
                   break;
                }
-               
+
                path = "velY";
                result = ossim::findFirstNode(path, svNode, s);
                if (result)
@@ -200,7 +199,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
                      << std::endl;
                   break;
                }
-               
+
                path = "velZ";
                result = ossim::findFirstNode(path, svNode, s);
                if (result)
@@ -215,14 +214,14 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
                      << std::endl;
                   break;
                }
-               
+
                JSDDateTime eph_jsd_date(eph_civil_date);
                GeographicEphemeris* eph =
                   new GeographicEphemeris(eph_jsd_date, pos, vit);
                ev.push_back(eph);
                ++nbrData;
             }  // matches: if (s == "1")
-               
+
 	 } // matches: for (ossim_uint32 i = 0 ; i < COUNT; ++i)
 
          if (result && ev.size())
@@ -238,7 +237,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
             {
                ossimNotify(ossimNotifyLevel_DEBUG)
                   << " DEBUG\nnbrData:  " << nbrData << "\n";
-            } 
+            }
             pos->setData(ephemeris, nbrData);
          }
          else
@@ -251,7 +250,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
             }
             ev.clear();
          }
-         
+
       } // matches: if ( xnodes.size() )
       else
       {
@@ -259,7 +258,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
          ossimNotify(ossimNotifyLevel_WARN)
             << MODULE << " ERROR:\nNodes not found: " << path << std::endl;
       }
-      
+
    } // matches: if (xdoc && pos)
    else
    {
@@ -270,13 +269,13 @@ bool ossimplugins::ossimTerraSarProductDoc::initPlatformPosition(
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
          << MODULE << " exit status = " << (result?"true\n":"false\n");
-   } 
+   }
 
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::initSensorParams(
-   const ossimXmlDocument* xdoc, SensorParams* sp) const
+bool ossimTerraSarProductDoc::initSensorParams(const ossimXmlDocument* xdoc,
+                                                SensorParams* sp) const
 {
    bool result = true;
 
@@ -357,7 +356,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initSensorParams(
       const double SEMI_MINOR = 6356752.3142;
       sp->set_semiMajorAxis(SEMI_MAJOR);
       sp->set_semiMinorAxis(SEMI_MINOR);
-      
+
       if ( isProductGeoreferenced(xdoc) )
       {
          if ( getOrbitDirection(xdoc, s) )
@@ -376,7 +375,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initSensorParams(
             {
                if (s=="EARLYAZNEARRG")
                {
-                  sp->set_col_direction(orbitDirectionSign); 
+                  sp->set_col_direction(orbitDirectionSign);
                   sp->set_lin_direction(orbitDirectionSign);
                }
                else if (s=="EARLYAZFARRG")
@@ -412,25 +411,25 @@ bool ossimplugins::ossimTerraSarProductDoc::initSensorParams(
          {
             result = false;
          }
-         
+
       } // matches: if ( isProductGeoreferenced(xdoc) )
       else
       {
          sp->set_col_direction(1);
          sp->set_lin_direction(1);
       }
-      
+
    } // matches: if (xdoc && sp)
    else
    {
       result = false;
    }
-   
-   return result;  
+
+   return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::initImageSize(
-   const ossimXmlDocument* xdoc, ossimIpt& imageSize) const
+bool ossimTerraSarProductDoc::initImageSize(const ossimXmlDocument* xdoc,
+                                             ossimIpt& imageSize) const
 {
    bool result = true;
 
@@ -439,7 +438,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initImageSize(
       ossimString s;
       if ( getNumberOfColumns(xdoc, s) )
       {
-         imageSize.x = static_cast<ossim_int32>(s.toFloat64());
+         imageSize.x = s.toFloat64();
       }
       else
       {
@@ -447,7 +446,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initImageSize(
       }
       if ( getNumberOfRows(xdoc, s) )
       {
-         imageSize.y = static_cast<ossim_int32>(s.toFloat64());
+         imageSize.y = s.toFloat64();
       }
       else
       {
@@ -458,21 +457,21 @@ bool ossimplugins::ossimTerraSarProductDoc::initImageSize(
    {
       result = false;
    }
-      
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
-         << "ossimplugins::ossimTerraSarProductDoc::initImageSize DEBUG:\nimage size: "
+         << "ossimTerraSarProductDoc::initImageSize DEBUG:\nimage size: "
          << imageSize
          << "\nexit status = " << (result?"true":"false")
          << std::endl;
    }
-   
+
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::initGsd(
-   const ossimXmlDocument* xdoc, ossimDpt& gsd) const
+bool ossimTerraSarProductDoc::initGsd(const ossimXmlDocument* xdoc,
+                                       ossimDpt& gsd) const
 {
    bool result = true;
 
@@ -500,33 +499,31 @@ bool ossimplugins::ossimTerraSarProductDoc::initGsd(
    {
       result = false;
    }
-      
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
-         << "ossimplugins::ossimTerraSarProductDoc::initGsd DEBUG:\ngsd: "
-         << gsd
+         << "ossimTerraSarProductDoc::initGsd DEBUG:\ngsd: " << gsd
          << "\nexit status = " << (result?"true":"false")
          << std::endl;
    }
-   
+
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::initTiePoints(
-   const ossimXmlDocument* xdoc,
-   std::list<ossimGpt>& gcp,
-   std::list<ossimDpt>& icp) const
+bool ossimTerraSarProductDoc::initTiePoints(const ossimXmlDocument* xdoc,
+                                             std::list<ossimGpt>& gcp,
+                                             std::list<ossimDpt>& icp) const
 {
-   static const char MODULE[] = "ossimplugins::ossimTerraSarProductDoc::initTiePoints";
-   
+   static const char MODULE[] = "ossimTerraSarProductDoc::initTiePoints";
+
    bool result = true;
 
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG) << MODULE << " DEBUG:\n";
    }
-         
+
    if (xdoc)
    {
       ossimString s;
@@ -539,7 +536,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initTiePoints(
       {
          gpt.hgt = s.toFloat64();
       }
-      
+
       // Get the scene center.
       result = getSceneCenterRefColumn(xdoc, s);
       if (result)
@@ -564,7 +561,7 @@ bool ossimplugins::ossimTerraSarProductDoc::initTiePoints(
          gpt.lon = s.toFloat64();
       }
       gcp.push_back(gpt);
-      
+
       ossimString path =
          "/level1Product/productInfo/sceneInfo/sceneCornerCoord";
       std::vector<ossimRefPtr<ossimXmlNode> > xnodes;
@@ -609,22 +606,22 @@ bool ossimplugins::ossimTerraSarProductDoc::initTiePoints(
                   gpt.lon = s.toDouble();
                }
                gcp.push_back(gpt);
-               
+
                if (traceDebug())
                {
                   ossimNotify(ossimNotifyLevel_DEBUG)
                      << "gpt" << i << ": " << gpt
                      << "\n";
                }
-               
+
             } // matches: if (xnodes[i].valid())
             else
             {
                result = false;
             }
-            
+
          } // mathches: for (ossim_uint32 i = 0; i < xnodes.size(); ++i)
-         
+
       } // matches: if ( xnodes.size() )
       else
       {
@@ -635,22 +632,22 @@ bool ossimplugins::ossimTerraSarProductDoc::initTiePoints(
    {
       result = false; // Null pointer passed in.
    }
-   
+
    if (traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG)
          << MODULE << " DEBUG: exit status = " << (result?"true":"false")
          << std::endl;
    }
-   
+
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::isProductGeoreferenced(
+bool ossimTerraSarProductDoc::isProductGeoreferenced(
    const ossimXmlDocument* xdoc) const
 {
    bool result = false;
-   
+
    ossimString s;
    if ( getProjection(xdoc, s) )
    {
@@ -660,20 +657,20 @@ bool ossimplugins::ossimTerraSarProductDoc::isProductGeoreferenced(
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getMission(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getMission(const ossimXmlDocument* xdoc,
+                                         ossimString& s) const
 {
    ossimString path = "/level1Product/generalHeader/mission";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getImageFile(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getImageFile(const ossimXmlDocument* xdoc,
+                                           ossimString& s) const
 {
    bool result = false;
    ossimString subDir;
    ossimString fileName;
-   
+
    ossimString path = "/level1Product/productComponents/imageData/file/location/path";
 
    if ( ossim::getPath(path, xdoc, subDir) )
@@ -690,28 +687,28 @@ bool ossimplugins::ossimTerraSarProductDoc::getImageFile(
    return result;
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneId(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getSceneId(const ossimXmlDocument* xdoc,
+                                         ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneID";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getProjection(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getProjection(const ossimXmlDocument* xdoc,
+                                            ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/productVariantInfo/projection";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getReferencePoint(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getReferencePoint(const ossimXmlDocument* xdoc,
+                                                ossimString& s) const
 {
    ossimString path = "/level1Product/productSpecific/projectedImageInfo/slantToGroundRangeProjection/referencePoint";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getImageDataStrartWith(
+bool ossimTerraSarProductDoc::getImageDataStrartWith(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -719,78 +716,80 @@ bool ossimplugins::ossimTerraSarProductDoc::getImageDataStrartWith(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getOrbitDirection(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getOrbitDirection(const ossimXmlDocument* xdoc,
+                                                ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/missionInfo/orbitDirection";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getLookDirection(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getLookDirection(const ossimXmlDocument* xdoc,
+                                               ossimString& s) const
 {
    ossimString path =
       "/level1Product/productInfo/acquisitionInfo/lookDirection";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getRangeGateFirstPixel(
+
+
+bool ossimTerraSarProductDoc::getRangeGateFirstPixel(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/rangeTime/firstPixel";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getRangeGateLastPixel(
+bool ossimTerraSarProductDoc::getRangeGateLastPixel(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/rangeTime/lastPixel";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterAzimuthTime(
+bool ossimTerraSarProductDoc::getSceneCenterAzimuthTime(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/azimuthTimeUTC";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterRangeTime(
+bool ossimTerraSarProductDoc::getSceneCenterRangeTime(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/rangeTime";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterRefColumn(
+bool ossimTerraSarProductDoc::getSceneCenterRefColumn(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/refColumn";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterRefRow(
+bool ossimTerraSarProductDoc::getSceneCenterRefRow(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/refRow";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterLat(
+bool ossimTerraSarProductDoc::getSceneCenterLat(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/lat";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneCenterLon(
+bool ossimTerraSarProductDoc::getSceneCenterLon(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path = "/level1Product/productInfo/sceneInfo/sceneCenterCoord/lon";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getSceneAverageHeight(
+bool ossimTerraSarProductDoc::getSceneAverageHeight(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -798,7 +797,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getSceneAverageHeight(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getRadarCenterFrequency(
+bool ossimTerraSarProductDoc::getRadarCenterFrequency(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -806,23 +805,23 @@ bool ossimplugins::ossimTerraSarProductDoc::getRadarCenterFrequency(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getAzimuthStartTime(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getAzimuthStartTime(const ossimXmlDocument* xdoc,
+                                                  ossimString& s) const
 {
    ossimString path =
       "/level1Product/productInfo/sceneInfo/start/timeUTC";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getAzimuthStopTime(
-   const ossimXmlDocument* xdoc, ossimString& s) const
+bool ossimTerraSarProductDoc::getAzimuthStopTime(const ossimXmlDocument* xdoc,
+                                                 ossimString& s) const
 {
    ossimString path =
       "/level1Product/productInfo/sceneInfo/stop/timeUTC";
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getCommonPrf(
+bool ossimTerraSarProductDoc::getCommonPrf(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -830,7 +829,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getCommonPrf(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getCommonRsf(
+bool ossimTerraSarProductDoc::getCommonRsf(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path
@@ -838,7 +837,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getCommonRsf(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getNumberOfRangeLooks(
+bool ossimTerraSarProductDoc::getNumberOfRangeLooks(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -846,7 +845,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getNumberOfRangeLooks(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getNumberOfAzimuthLooks(
+bool ossimTerraSarProductDoc::getNumberOfAzimuthLooks(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -854,7 +853,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getNumberOfAzimuthLooks(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getNumberOfColumns(
+bool ossimTerraSarProductDoc::getNumberOfColumns(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -862,7 +861,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getNumberOfColumns(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getNumberOfRows(
+bool ossimTerraSarProductDoc::getNumberOfRows(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -870,7 +869,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getNumberOfRows(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getColumnSpacing(
+bool ossimTerraSarProductDoc::getColumnSpacing(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =
@@ -878,7 +877,7 @@ bool ossimplugins::ossimTerraSarProductDoc::getColumnSpacing(
    return ossim::getPath(path, xdoc, s);
 }
 
-bool ossimplugins::ossimTerraSarProductDoc::getRowSpacing(
+bool ossimTerraSarProductDoc::getRowSpacing(
    const ossimXmlDocument* xdoc, ossimString& s) const
 {
    ossimString path =

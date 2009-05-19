@@ -25,10 +25,6 @@
 #include <cmath>
 #include <string>
 
-namespace ossimplugins
-{
-
-
 static const char PRODUCT_GEOREFERENCED_FLAG_KW[] =
    "product_georeferenced_flag";
 static const char OPTIMIZATION_FACTOR_X_KW[] = "optimization_factor_x";
@@ -570,5 +566,4 @@ std::ostream& ossimGeometricSarSensorModel::print(std::ostream& out) const
    out << kwl;
 
    return ossimSensorModel::print(out);
-}
 }

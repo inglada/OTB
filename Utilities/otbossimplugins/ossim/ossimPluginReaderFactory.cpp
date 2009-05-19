@@ -19,10 +19,6 @@
 #include <ossim/base/ossimTrace.h>
 #include <ossim/base/ossimKeywordNames.h>
 
-namespace ossimplugins
-{
-
-
 static const ossimTrace traceDebug("ossimPluginReaderFactory:debug");
 
 RTTI_DEF1(ossimPluginReaderFactory,
@@ -133,4 +129,3 @@ ossimPluginReaderFactory::ossimPluginReaderFactory(){}
 ossimPluginReaderFactory::ossimPluginReaderFactory(const ossimPluginReaderFactory&){}
 
 void ossimPluginReaderFactory::operator=(const ossimPluginReaderFactory&){}
-}

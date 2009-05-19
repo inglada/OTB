@@ -14,10 +14,6 @@
 
 #include <cmath>
 
-namespace ossimplugins
-{
-
-
 RectangularCoordinate::RectangularCoordinate()
 {
 }
@@ -103,5 +99,4 @@ void RectangularCoordinate::AsGeodesicCoordinates(double demiGdAxe, double demiP
 		geod->set_coordinates(coordGeod[0],coordGeod[1], coordGeod[2]);
 	}
 	//return 0 ;
-}
 }

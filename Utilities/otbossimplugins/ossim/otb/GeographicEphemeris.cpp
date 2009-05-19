@@ -16,10 +16,6 @@
 
 #include <cmath>
 
-namespace ossimplugins
-{
-
-
 GeographicEphemeris::GeographicEphemeris() : Ephemeris()
 {
 }
@@ -81,5 +77,4 @@ GeographicEphemeris::operator GalileanEphemeris()
 GeographicEphemeris::GeographicEphemeris(GalileanEphemeris& rhs)
 {
 	rhs.ToGeographic(this);
-}
 }

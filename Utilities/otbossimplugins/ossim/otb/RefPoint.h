@@ -12,14 +12,8 @@
 #ifndef RefPoint_h
 #define RefPoint_h
 
-class ossimKeywordlist;
-
-namespace ossimplugins
-{
-
-
 class Ephemeris;
-
+class ossimKeywordlist;
 
 /**
  * @brief This class handles the referential point
@@ -81,6 +75,4 @@ protected:
    double _pix_col;
 private:
 };
-}
-
 #endif

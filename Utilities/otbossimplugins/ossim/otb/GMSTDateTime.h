@@ -13,10 +13,6 @@
 #define GMSTDateTime_h
 #include <JulianDate.h>
 
-namespace ossimplugins
-{
-
-
 class CivilDateTime;
 class JulianDate;
 
@@ -84,6 +80,4 @@ protected:
 
 private:
 };
-}
-
 #endif

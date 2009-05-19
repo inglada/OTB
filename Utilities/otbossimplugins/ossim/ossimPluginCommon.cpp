@@ -21,10 +21,6 @@
 #include <ossim/base/ossimXmlNode.h>
 #include <otb/CivilDateTime.h>
 
-namespace ossimplugins
-{
-
-
 bool ossim::iso8601TimeStringToCivilDate(const std::string& dateString,
                                          CivilDateTime& outputDate)
 {
@@ -164,5 +160,4 @@ bool ossim::findFirstNode(const ossimString& path,
       }
    }
    return result;
-}
 }

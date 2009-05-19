@@ -13,11 +13,6 @@
 #define Equation_h
 
 #include <complex>
-
-namespace ossimplugins
-{
-
-
 /**
  * @brief This class manages and solves an equation of the fourth degree
  */
@@ -137,6 +132,5 @@ private:
    int TestDegreeSimpleSimpleDouble( std::complex<double> *a , double epsilon );
    ;
 };
-}
 
 #endif

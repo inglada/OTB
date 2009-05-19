@@ -14,11 +14,6 @@
 
 class ossimKeywordlist;
 
-namespace ossimplugins
-{
-
-
-
 /**
  * @ingroup SARModel
  * @brief This class handles the sensor parameters
@@ -41,7 +36,7 @@ public:
    /**
     * @brief Destructor
     */
-   virtual ~SensorParams();
+   ~SensorParams();
 
    /**
     *@brief Copy constructor
@@ -228,5 +223,5 @@ protected:
 
 private:
 };
-}
+
 #endif

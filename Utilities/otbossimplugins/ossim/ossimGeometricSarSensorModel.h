@@ -28,9 +28,6 @@
 
 #include <otb/CivilDateTime.h>
 
-namespace ossimplugins
-{
-
 class PlatformPosition;
 class SensorParams;
 class RefPoint;
@@ -207,6 +204,5 @@ private:
 TYPE_DATA
 
 };
-}
 
 #endif

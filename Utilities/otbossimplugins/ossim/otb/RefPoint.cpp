@@ -14,10 +14,6 @@
 #include <cstring>
 #include <ossim/base/ossimKeywordlist.h>
 
-namespace ossimplugins
-{
-
-
 static const char PREFIX[]      = "ref_point.";
 static const char DISTANCE_KW[] = "distance";
 static const char LINE_KW[]     = "line";
@@ -194,5 +190,4 @@ bool RefPoint::loadState(const ossimKeywordlist& kwl, const char* prefix)
    }
 
    return result;
-}
 }

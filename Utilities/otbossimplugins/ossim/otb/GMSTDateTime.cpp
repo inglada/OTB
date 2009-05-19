@@ -12,10 +12,6 @@
 #include <GMSTDateTime.h>
 #include <CivilDateTime.h>
 
-namespace ossimplugins
-{
-
-
 GMSTDateTime::GMSTDateTime():
 	_tms(0)
 {
@@ -47,5 +43,4 @@ GMSTDateTime& GMSTDateTime::operator=(const GMSTDateTime& rhs)
 	_tms = rhs._tms;
 	_origine = rhs._origine;
 	return *this;
-}
 }

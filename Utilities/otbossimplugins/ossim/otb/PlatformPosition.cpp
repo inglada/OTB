@@ -19,10 +19,6 @@
 #include <string>
 #include <cmath>
 
-namespace ossimplugins
-{
-
-
 static const char NUMBER_PLATFORM_POSITIONS_KW[] = "platform_positions_count";
 
 PlatformPosition::PlatformPosition():
@@ -247,5 +243,4 @@ bool PlatformPosition::loadState(const ossimKeywordlist& kwl,
    }
 
    return result;
-}
 }

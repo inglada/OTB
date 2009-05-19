@@ -14,10 +14,6 @@
 #include <JulianDate.h>
 #include <MJDDateTime.h>
 
-namespace ossimplugins
-{
-
-
 class CivilDateTime;
 class GMSTDateTime;
 class JulianDate;
@@ -127,6 +123,4 @@ protected:
 
 private:
 };
-}
-
 #endif

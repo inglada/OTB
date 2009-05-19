@@ -11,10 +11,6 @@
 
 #include <Equation.h>
 
-namespace ossimplugins
-{
-
-
 const double Equation::Epsilon = 1.e-12;
 
 Equation::Equation():
@@ -949,5 +945,4 @@ int Equation::TestDegreeSimpleSimpleDouble( std::complex<double> *a , double eps
 		r[0] = abs (((u- v)+ w)/ std::complex<double>(r[1], 0.0)) ;
 
 	return (r[0] < (2.0 * epsilon))  ?  1  :  0 ;
-}
 }

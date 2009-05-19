@@ -18,10 +18,6 @@ class ossimString;
 class ossimFilename;
 class ossimKeywordlist;
 
-namespace ossimplugins
-{
-
-
 /** @brief Image handler factory for ossim plugins plugin. */
 class ossimPluginReaderFactory : public ossimImageHandlerFactoryBase
 {
@@ -97,6 +93,5 @@ protected:
 
 TYPE_DATA
 };
-}
 
 #endif /* end of #ifndef ossimPluginReaderFactory_HEADER */

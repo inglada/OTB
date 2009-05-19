@@ -14,14 +14,8 @@
 
 #include <JSDDateTime.h>
 
-class ossimKeywordlist;
-
-namespace ossimplugins
-{
-
-
 class Ephemeris;
-
+class ossimKeywordlist;
 
 /**
  * @ingroup SARModel
@@ -107,6 +101,5 @@ protected:
    void Clear();
 private:
 };
-}
 
 #endif

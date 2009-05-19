@@ -15,10 +15,6 @@
 #include <ossim/base/ossimNotify.h>
 #include <ossim/base/ossimString.h>
 
-namespace ossimplugins
-{
-
-
 static const char PREFIX[]          = "ephemeris.";
 static const char DATE_JULIAN_KW[]  = "date.julian";
 static const char DATE_SECOND_KW[]  = "date.second";
@@ -197,5 +193,4 @@ bool Ephemeris::loadState(const ossimKeywordlist& kwl, const char* prefix)
    }
 
    return result;
-}
 }

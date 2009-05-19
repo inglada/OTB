@@ -21,10 +21,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-namespace ossimplugins
-{
-
-
 JSDDateTime::JSDDateTime():
 	_day0hTU(0),
 	_second(0.0),
@@ -232,5 +228,4 @@ JSDDateTime::operator GMSTDateTime()
 	GMSTDateTime date;
 	this->AsGMSTDateTime(&date);
 	return date;
-}
 }
