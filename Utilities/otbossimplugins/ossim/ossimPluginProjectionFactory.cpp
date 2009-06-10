@@ -3,9 +3,9 @@
 // "Copyright Centre National d'Etudes Spatiales"
 //
 // License:  LGPL
-//
+// 
 // See LICENSE.txt file in the top level directory for more details.
-//
+// 
 //----------------------------------------------------------------------------
 // $Id$
 
@@ -20,14 +20,10 @@
 #include "ossimRadarSat2Model.h"
 #include "ossimErsSarModel.h"
 
-namespace ossimplugins
-{
-
-
 ossimPluginProjectionFactory* ossimPluginProjectionFactory::instance()
 {
    static ossimPluginProjectionFactory* factoryInstance = new ossimPluginProjectionFactory();
-
+   
    return factoryInstance;
 }
 
@@ -63,7 +59,7 @@ ossimProjection* ossimPluginProjectionFactory::createProjection(const ossimFilen
          model = 0;
       }
    }
-
+   
    return result;
 }
 
@@ -130,7 +126,7 @@ ossimProjection* ossimPluginProjectionFactory::createProjection(
          }
       }
    }
-
+   
    return result;
 }
 
@@ -155,5 +151,4 @@ void ossimPluginProjectionFactory::getTypeNameList(std::vector<ossimString>& typ
    //   result.push_back(STATIC_TYPE_NAME(ossimCosmoSkymedModel));
    typeList.push_back(STATIC_TYPE_NAME(ossimEnvisatAsarModel));
    typeList.push_back(STATIC_TYPE_NAME(ossimErsSarModel));
-}
 }
