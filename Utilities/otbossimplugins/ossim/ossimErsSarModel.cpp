@@ -1,36 +1,28 @@
-//----------------------------------------------------------------------------
-//
-// "Copyright Centre National d'Etudes Spatiales"
-//
-// License:  LGPL
-//
-// See LICENSE.txt file in the top level directory for more details.
-//
-//----------------------------------------------------------------------------
-// $Id$
+#include "ossimErsSarModel.h"
+#include <ossim/projection/otb/GalileanEphemeris.h>
+#include <ossim/projection/otb/GeographicEphemeris.h>
 
-#include <ossimErsSarModel.h>
-#include <otb/GalileanEphemeris.h>
-#include <otb/GeographicEphemeris.h>
+#include <ossim/projection/otb/JSDDateTime.h>
+#include <ossim/projection/otb/GMSTDateTime.h>
+#include <ossim/projection/otb/CivilDateTime.h>
 
-#include <otb/JSDDateTime.h>
-#include <otb/GMSTDateTime.h>
-#include <otb/CivilDateTime.h>
-
-#include <otb/PlatformPosition.h>
-#include <otb/SensorParams.h>
-#include <otb/RefPoint.h>
-#include <otb/SarSensor.h>
+#include <ossim/projection/otb/PlatformPosition.h>
+#include <ossim/projection/otb/SensorParams.h>
+#include <ossim/projection/otb/RefPoint.h>
+#include <ossim/projection/otb/SarSensor.h>
 #include <ossim/base/ossimString.h>
 
-#include <cmath>
+#include <math.h>
 #include <cctype> // for toupper
 #include <string>
 #include <algorithm>
 
-namespace ossimplugins
-{
+#include <ossim/base/ossimTrace.h>
+#include <ossim/imaging/ErsSar/ErsSarLeader/ErsSarLeader.h>
 
+
+// Static trace for debugging
+static ossimTrace traceDebug("ossimErsSarModel:debug");
 
 RTTI_DEF1(ossimErsSarModel, "ossimErsSarModel", ossimGeometricSarSensorModel);
 
@@ -42,6 +34,11 @@ ossimErsSarModel::ossimErsSarModel():
 
 ossimErsSarModel::~ossimErsSarModel()
 {
+}
+
+ossimObject* ossimErsSarModel::dup() const
+{
+   return new ossimErsSarModel(*this);   
 }
 
 double ossimErsSarModel::getSlantRangeFromGeoreferenced(double col) const
@@ -115,9 +112,139 @@ bool ossimErsSarModel::InitSensorParams(const ossimKeywordlist &kwl, const char 
 	return true;
 }
 
+bool ossimErsSarModel::open(const ossimFilename& file)
+{
+  static const char MODULE[] = "ossimErsSarModel::open";
+
+  if (traceDebug())
+  {
+    ossimNotify(ossimNotifyLevel_DEBUG)
+         << MODULE << " entered...\n"
+         << "file: " << file << "\n";
+  }
+   
+  bool result = false;
+  
+ /*
+  * Creation of the class allowing to store Leader file metadata
+  */
+	if(_ErsSarleader != NULL)
+	{
+		delete _ErsSarleader;
+		_ErsSarleader = NULL;
+	}
+
+	_ErsSarleader = new ErsSarLeader();
+
+  if ( file.exists() )
+  {
+    result = isErsLeader(file);
+     
+    if (result == true)
+    {
+      if (traceDebug())
+      {
+        ossimNotify(ossimNotifyLevel_DEBUG) << "is ERS leader file..."
+                            << "Begin reading Leader file" << std::endl;
+      }
+      /*
+       * Leader file data reading
+       */
+      std::ifstream leaderFile(file, ios::in|ios::binary);
+      leaderFile>>*_ErsSarleader;
+      leaderFile.close();
+
+      if(traceDebug())
+      {
+        ossimNotify(ossimNotifyLevel_DEBUG)
+        << "End reading Leader file" << std::endl;
+      }      
+    } // matches: if ( result=isErsLeader(file) == True )
+    
+  } // matches: if ( file.exists() )
+
+  if (traceDebug())
+  {
+    this->print(ossimNotify(ossimNotifyLevel_DEBUG));
+          
+    ossimNotify(ossimNotifyLevel_DEBUG)
+       << MODULE << " exit status = " << (result?"true":"false\n")
+       << std::endl;
+  }
+  
+  return result;
+  
+}
+
+bool ossimErsSarModel::saveState(ossimKeywordlist& kwl,
+                                   const char* prefix) const
+{
+   static const char MODULE[] = "ossimErsSarModel::saveState";
+
+   if (traceDebug())
+   {
+      ossimNotify(ossimNotifyLevel_DEBUG)<< MODULE << " entered...\n";
+   }
+
+   bool result = false;
+/*
+   if ( (_alt_srgr_coefset.size() == 3) &&
+        ( _SrToGr_exponent.size() == _SrToGr_coeffs.size()) )
+   {
+      // Save our state:
+      kwl.add(prefix, SR_GR_R0_KW, _SrToGr_R0);
+      
+      ossimString kw1 = "sr_gr_exponent_";
+      ossimString kw2 = "sr_gr_coeffs_";
+
+      const ossim_uint32 COUNT = _SrToGr_exponent.size();
+
+      kwl.add(prefix, NUMBER_SRGR_COEFFICIENTS_KW, COUNT);
+      
+      for(ossim_uint32 i = 0; i < COUNT; ++i)
+      {
+         ossimString iStr = ossimString::toString(i);
+         ossimString kw = kw1;
+         kw += iStr;
+         kwl.add(prefix, kw, _SrToGr_exponent[i]);
+         kw = kw2;
+         kw += iStr;
+         kwl.add(prefix, kw, _SrToGr_coeffs[i]);
+      }
+      kwl.add(prefix, SC_RT_KW, _sceneCenterRangeTime);
+      kwl.add(prefix, SR_GR_SF_KW, _SrToGr_scaling_factor);
+      kwl.add(prefix, ALT_SR_GR_COEFFICIENT0_KW,  _alt_srgr_coefset[0]);
+      kwl.add(prefix, ALT_SR_GR_COEFFICIENT1_KW,  _alt_srgr_coefset[1]);
+      kwl.add(prefix, ALT_SR_GR_COEFFICIENT2_KW,  _alt_srgr_coefset[2]);
+      kwl.add(prefix, PRODUCT_XML_FILE_KW, theProductXmlFile.c_str());   
+*/
+      // Call base save state:
+      result = ossimGeometricSarSensorModel::saveState(kwl, prefix);
+//   }
+
+/*
+   //---
+   // Uncomment to force load from product file instead of loadState.
+   //---
+   if (result)
+   {
+      // kwl.add(prefix, LOAD_FROM_PRODUCT_FILE_KW, "true");
+   }
+*/   
+   if (traceDebug())
+   {
+      ossimNotify(ossimNotifyLevel_DEBUG)
+         << MODULE << " exit status = " << (result?"true":"false\n")
+         << std::endl;
+   }
+   
+   return result;
+}
+
+
 bool ossimErsSarModel::InitPlatformPosition(const ossimKeywordlist &kwl, const char *prefix)
 {
-   // const double PI          = 3.14159265358979323846 ;
+	const double PI          = 3.14159265358979323846 ;
 	CivilDateTime ref_civil_date;
 	/*
 	 * Ephemerisis reference date retrieval
@@ -400,7 +527,7 @@ bool ossimErsSarModel::InitSRGR(const ossimKeywordlist &kwl, const char *prefix)
 
 	// Range pixels numbers corresponding
 	// Todo : check if it works with "DECREASING LINE TIME"
-	// double x1 = 0.0;
+	double x1 = 0.0;
 	double x2 = atof(kwl.find("sc_pix")) - 1.0;
 	double x3 = 2.0*(x2+1.0) -1.0 ;
 
@@ -410,4 +537,35 @@ bool ossimErsSarModel::InitSRGR(const ossimKeywordlist &kwl, const char *prefix)
 
 	return true;
 }
+
+bool ossimErsSarModel::isErsLeader(const ossimFilename& file)
+{
+   std::ifstream candidate(file, ios::in | ios::binary);
+   char ersFileName[16];
+   
+   candidate.seekg(48);
+   if ( candidate.bad() or candidate.eof() )
+   {
+     return false;
+   }
+   candidate.read(ersFileName, 16);
+   if ( candidate.bad() or candidate.eof() )
+   {
+     return false;
+   }
+   candidate.close();
+   
+   ossimString ersString(ersFileName);
+
+   if ( ( ersString.find("ERS") == 0 )   &&
+        ( ersString.find(".SAR.") == 4 ) &&
+        ( ersString.find("LEAD") == 12 )    )
+   {
+     return true;
+   }
+   else
+   {
+     return false;
+   }
+   
 }
