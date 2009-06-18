@@ -44,28 +44,28 @@ namespace Functor
  * \sa RenderingFunction
  *  \ingroup Visualization
  */
-template <class TPixelPrecision, class TRGBPixel>
+template <class TPixel, class TRGBPixel>
 class RenderingFunctor
 {
 public:
   /** Rendering function typedef */
-  typedef otb::Function::RenderingFunction<TPixelPrecision,TRGBPixel>          RenderingFunctionType;
+  typedef otb::Function::RenderingFunction<TPixel,TRGBPixel>          RenderingFunctionType;
   /** Rendering function pointer typedef */
   typedef typename RenderingFunctionType::Pointer                              RenderingFunctionPointerType;
   /** Default rendering function typedef */
-  typedef otb::Function::StandardRenderingFunction<TPixelPrecision,TRGBPixel> DefaultRenderingFunctionType;
+  typedef otb::Function::StandardRenderingFunction<TPixel,TRGBPixel> DefaultRenderingFunctionType;
   /** Scalar pixel typedef */
-  typedef TPixelPrecision                                                      ScalarPixelType;
+// //   typedef TPixel                                                      ScalarPixelType;
   /** Vector pixel typedef */
-  typedef itk::VariableLengthVector<TPixelPrecision>                           VectorPixelType;
+// //   typedef itk::VariableLengthVector<TPixel>                           VectorPixelType;
+  typedef TPixel                            PixelType;
+  typedef typename itk::NumericTraits<PixelType>::ValueType ScalarPixelType;
+  typedef itk::VariableLengthVector<ScalarPixelType>       VectorPixelType;
+  typedef itk::RGBPixel<ScalarPixelType> RGBPixelType;
+  typedef itk::RGBAPixel<ScalarPixelType> RGBAPixelType;
 
-  /** Scalar pixel operator */
-  inline TRGBPixel operator()(const ScalarPixelType & pixel) const
-  {
-    return m_Function->Evaluate(pixel);
-  }
-  /** Vector pixel operator */
-  inline TRGBPixel operator()(const VectorPixelType & pixel) const
+  /** Pixel operator */
+  inline TRGBPixel operator()(const PixelType & pixel) const
   {
     return m_Function->Evaluate(pixel);
   }
@@ -123,7 +123,7 @@ template <class TInputImage,class TOutputImage = Image<itk::RGBAPixel<unsigned c
 class RenderingImageFilter
   : public itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                                         Functor::RenderingFunctor
-                                        < typename TInputImage ::InternalPixelType,
+                                        < typename TInputImage ::PixelType,
                                           typename TOutputImage::PixelType > >
 {
 public:
@@ -131,7 +131,7 @@ public:
   typedef RenderingImageFilter                                   Self;
   typedef itk::UnaryFunctorImageFilter
   <TInputImage,TOutputImage, Functor::RenderingFunctor
-                 < typename TInputImage ::InternalPixelType,
+                 < typename TInputImage ::PixelType,
                    typename TOutputImage::PixelType > >          Superclass;
   typedef itk::SmartPointer<Self>                                Pointer;
   typedef itk::SmartPointer<const Self>                          ConstPointer;
@@ -144,7 +144,7 @@ public:
 
   /** Rendering function typedef */
   typedef Functor::RenderingFunctor
-  < typename TInputImage ::InternalPixelType,
+  < typename TInputImage ::PixelType,
     typename TOutputImage::PixelType >                         RenderingFunctorType;
   typedef typename RenderingFunctorType::RenderingFunctionType RenderingFunctionType;
 
