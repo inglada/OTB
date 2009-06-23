@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientRecursiveGaussianImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2008-02-04 12:34:11 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2008-11-10 16:55:01 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -33,7 +33,11 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 ::GradientRecursiveGaussianImageFilter()
 {
   m_NormalizeAcrossScale = false;
-  m_UseImageDirection = false;
+#if defined(ITK_IMAGE_BEHAVES_AS_ORIENTED_IMAGE)
+  this->m_UseImageDirection = true;
+#else
+  this->m_UseImageDirection = false;
+#endif
 
   int imageDimensionMinus1 = static_cast<int>(ImageDimension)-1;
   if( ImageDimension > 1)

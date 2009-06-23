@@ -29,6 +29,8 @@ SET(ITKCommon_SRCS
   itkLoggerOutput.cxx
   itkMaximumDecisionRule.cxx
   itkMaximumRatioDecisionRule.cxx
+  itkMemoryProbe.cxx
+  itkMemoryUsageObserver.cxx
   itkMersenneTwisterRandomVariateGenerator.cxx
   itkMeshRegion.cxx
   itkMinimumDecisionRule.cxx
@@ -59,11 +61,14 @@ SET(ITKCommon_SRCS
   itkSimpleFastMutexLock.cxx
   itkSimpleFilterWatcher.cxx
   itkSimplexMeshGeometry.cxx
+  itkSmapsFileParser.cxx
   itkSpatialOrientationAdapter.cxx
   itkStdStreamLogOutput.cxx
   itkTextOutput.cxx
   itkTetrahedronCellTopology.cxx
   itkThreadLogger.cxx
+  itkTimeProbe.cxx
+  itkTimeProbesCollectorBase.cxx
   itkTimeStamp.cxx
   itkTransformFactoryBase.cxx
   itkTriangleCellTopology.cxx
@@ -82,21 +87,6 @@ IF(NOT ITK_EXPLICIT_INSTANTIATION)
      )
 ENDIF(NOT ITK_EXPLICIT_INSTANTIATION)
 
-IF(ITK_USE_REVIEW)
-  SET(ITKCommon_SRCS
-      ${ITKCommon_SRCS}
-      ../Review/itkMemoryProbe.cxx
-      ../Review/itkMemoryUsageObserver.cxx
-      ../Review/itkSmapsFileParser.cxx
-      ../Review/itkTimeProbe.cxx
-     )
-ELSE(ITK_USE_REVIEW)
-  SET(ITKCommon_SRCS
-      ${ITKCommon_SRCS}
-      itkTimeProbe.cxx
-      itkTimeProbesCollectorBase.cxx
-     )
-ENDIF(ITK_USE_REVIEW)
 
 IF (WIN32)
    SET(ITKCommon_SRCS ${ITKCommon_SRCS};itkWin32OutputWindow.cxx;itkSmartPointerForwardReferenceProcessObject.cxx)
@@ -142,17 +132,19 @@ IF(UNIX)
   TARGET_LINK_LIBRARIES(ITKCommon ${CMAKE_THREAD_LIBS} ${CMAKE_DL_LIBS} -lm)
 ENDIF(UNIX)
 
-IF(ITK_USE_REVIEW)
-  IF(WIN32)
-    IF(0)
-    TARGET_LINK_LIBRARIES(ITKCommon Psapi.lib)
-    ENDIF(0)
-  ENDIF(WIN32)
-ENDIF(ITK_USE_REVIEW)
+INCLUDE(CheckLibraryExists)
 
-IF(ITK_USE_REVIEW AND NOT WIN32 AND NOT CMAKE_SYSTEM MATCHES "Linux.*" AND NOT APPLE AND NOT CMAKE_SYSTEM MATCHES "SunOS.*")
+IF(WIN32)
+  CHECK_LIBRARY_EXISTS(Psapi EnumProcesses "" HAVE_PSAPI)
+  IF(HAVE_PSAPI)
+    TARGET_LINK_LIBRARIES(ITKCommon Psapi)
+  ENDIF(HAVE_PSAPI)
+ENDIF(WIN32)
+
+CHECK_LIBRARY_EXISTS(malloc mallinfo "" HAVE_LIBMALLOC)
+IF(HAVE_LIBMALLOC)
   TARGET_LINK_LIBRARIES(ITKCommon malloc)
-ENDIF(ITK_USE_REVIEW AND NOT WIN32 AND NOT CMAKE_SYSTEM MATCHES "Linux.*" AND NOT APPLE AND NOT CMAKE_SYSTEM MATCHES "SunOS.*")
+ENDIF(HAVE_LIBMALLOC)
 
 IF(ITK_LIBRARY_PROPERTIES)
   SET_TARGET_PROPERTIES(ITKCommon PROPERTIES ${ITK_LIBRARY_PROPERTIES})

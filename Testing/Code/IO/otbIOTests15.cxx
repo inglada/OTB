@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,21 +22,24 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 
 void RegisterTests()
 {
-REGISTER_TEST(otbVectorDataSourceNew);
-REGISTER_TEST(otbVectorDataFileReaderNew);
-REGISTER_TEST(otbVectorDataFileReader);
-REGISTER_TEST(otbVectorDataFileWriterNew);
-REGISTER_TEST(otbVectorDataFileWriter);
-REGISTER_TEST(otbVectorDataFileReaderWriter);
-REGISTER_TEST(otbSHPVectorDataIONew);
-REGISTER_TEST(otbKMLVectorDataIONew);
-REGISTER_TEST(otbKMLVectorDataIOTestCanRead);
-REGISTER_TEST(otbKMLVectorDataIOTestCanWrite);
-REGISTER_TEST(otbKMLVectorDataIOTestFileReader);
+  REGISTER_TEST(otbVectorDataSourceNew);
+  REGISTER_TEST(otbVectorDataFileReaderNew);
+  REGISTER_TEST(otbVectorDataFileReader);
+  REGISTER_TEST(otbVectorDataFileWriterNew);
+  REGISTER_TEST(otbVectorDataFileWriter);
+  REGISTER_TEST(otbVectorDataFileWriterPolygons);
+  REGISTER_TEST(otbVectorDataFileReaderWriter);
+  REGISTER_TEST(otbVectorDataFileGeoReaderWriter);
+  REGISTER_TEST(otbSHPVectorDataIONew);
+  REGISTER_TEST(otbKMLVectorDataIONew);
+  REGISTER_TEST(otbKMLVectorDataIOTestCanRead);
+  REGISTER_TEST(otbKMLVectorDataIOTestCanWrite);
+  REGISTER_TEST(otbKMLVectorDataIOTestFileReader);
+  REGISTER_TEST(otbVectorDataKeywordlist);
 }

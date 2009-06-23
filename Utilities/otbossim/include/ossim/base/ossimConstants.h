@@ -7,7 +7,7 @@
  * Description: Common file for global constants.
  *
  **************************************************************************
- * $Id$
+ * $Id: ossimConstants.h 13590 2008-09-24 12:35:43Z gpotts $
  */
 #ifndef ossimConstants_HEADER
 #define ossimConstants_HEADER

@@ -1,19 +1,18 @@
 //*******************************************************************
-// Copyright (C) 2000 ImageLinks Inc. 
 //
-// License:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 // 
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfFileHeader.cpp 10173 2007-01-03 18:21:26Z gpotts $
+// $Id: ossimNitfFileHeader.cpp 14241 2009-04-07 19:59:23Z dburken $
 #include <ossim/support_data/ossimNitfFileHeader.h>
 #include <ossim/base/ossimContainerProperty.h>
-#ifndef NULL
-#include <stddef.h>
-#endif
+#include <iostream>
 
 static const char* TAGS_KW = "tags";
 
@@ -83,6 +82,24 @@ bool ossimNitfFileHeader::hasDataExtSegments()const
    return (getNumberOfDataExtSegments() > 0);
 }
 
+void ossimNitfFileHeader::removeTag(const ossimString& tagName)
+{
+   ossim_uint32 idx = 0;
+   for(idx = 0; idx < theTagList.size(); ++idx)
+   {
+      if(theTagList[idx].getTagName() == tagName)
+      {
+         theTagList.erase(theTagList.begin() + idx);
+         return;
+      }
+   }
+}
+void ossimNitfFileHeader::addTag(const ossimNitfTagInformation& tag)
+{
+   removeTag(tag.getTagName());
+   theTagList.push_back(tag);
+}
+
 bool ossimNitfFileHeader::getTagInformation(ossimNitfTagInformation& tag,
                                             int idx) const
 {
@@ -121,7 +138,7 @@ void ossimNitfFileHeader::setProperty(ossimRefPtr<ossimProperty> property)
 
 ossimRefPtr<ossimProperty> ossimNitfFileHeader::getProperty(const ossimString& name)const
 {
-   ossimProperty* result = 0;
+   ossimRefPtr<ossimProperty> result = 0;
 
    if(name == TAGS_KW)
    {
@@ -165,3 +182,23 @@ void ossimNitfFileHeader::getPropertyNames(std::vector<ossimString>& propertyNam
    propertyNames.push_back(TAGS_KW);
 }
 
+std::ostream& ossimNitfFileHeader::print(std::ostream& out,
+                                         const std::string& /* prefix */) const
+{
+   return out;
+}
+
+std::ostream& ossimNitfFileHeader::printTags(std::ostream& out,
+                                             const std::string& prefix) const
+{
+   for(ossim_uint32 i = 0; i < theTagList.size(); ++i)
+   {
+      ossimRefPtr<ossimNitfRegisteredTag> tag = theTagList[i].getTagData();
+      if (tag.valid())
+      {
+         tag->print(out, prefix);
+      }
+   }
+
+   return out;
+}

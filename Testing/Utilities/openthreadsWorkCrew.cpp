@@ -44,7 +44,7 @@
 #include <OpenThreads/Condition>
 #include <OpenThreads/Barrier>
 
-extern int errno;
+//extern int errno;
 
 #ifdef DEBUG
 # define DPRINTF(arg) printf arg
@@ -243,8 +243,8 @@ private:
 	for(i=0; i<_work->datapts.size();++i) {
 	    for(total=0, j=0; j<10000000; ++j) {
 #if defined(WIN32) && !defined(__CYGWIN__)
-		total += double(rand()) / double(RAND_MAX);
-		total -= double(rand()) / double(RAND_MAX);
+		total += (float)( double(rand()) / double(RAND_MAX) );
+		total -= (float)( double(rand()) / double(RAND_MAX) );
 #else
 		total += drand48();
 		total -= drand48();
@@ -313,7 +313,8 @@ int crew_start(Crew *crew) {
     //
     status = crew->mutex.lock();
     if(status != 0) {
-	DPRINTF(("Lock Error: %s\n", strerror(errno)));
+// OTB Modif	DPRINTF(("Lock Error: %s\n", strerror(errno)));
+	DPRINTF(("Lock Error !\n"));
     }
     assert(status == 0); 
 

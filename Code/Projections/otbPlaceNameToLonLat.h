@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -49,21 +49,24 @@ public:
 
   itkGetMacro( Lon, double );
   itkGetMacro( Lat, double );
-  itkGetMacro( PlaceName, string );
+  itkGetMacro( PlaceName, std::string );
 
   itkSetMacro( Lon, double );
   itkSetMacro( Lat, double );
-  itkSetMacro( PlaceName, string );
+  itkSetMacro( PlaceName, std::string );
+
+  typedef enum {ALL, GEONAMES, GOOGLE, YAHOO} SearchMethodEnum;//Not implemented yet TODO
 
   virtual bool Evaluate();
 
 protected:
   PlaceNameToLonLat();
-  ~PlaceNameToLonLat(){};
+  ~PlaceNameToLonLat() {};
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
   void RetrieveXML(std::ostringstream& urlStream);
   void ParseXMLYahoo();
   void ParseXMLGoogle();
+  void ParseXMLGeonames();//Not implemented yet TODO
 
 private:
   PlaceNameToLonLat( const Self& ); //purposely not implemented
@@ -71,8 +74,8 @@ private:
 
   double m_Lon;
   double m_Lat;
-  string m_PlaceName;
-
+  std::string m_PlaceName;
+  SearchMethodEnum m_SearchMethod;//Not implemented yet TODO
 };
 
 } // namespace otb

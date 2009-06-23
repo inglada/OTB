@@ -7,7 +7,7 @@
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfImageHeaderV2_1.cpp 13101 2008-07-01 18:44:31Z dburken $
+// $Id: ossimNitfImageHeaderV2_1.cpp 14247 2009-04-08 17:51:25Z dburken $
 #include <sstream>
 #include <iomanip>
 #include <cstring> // for memset
@@ -250,6 +250,7 @@ void ossimNitfImageHeaderV2_1::parseStream(std::istream &in)
             }
             theBlockMaskRecords[idx] = blockRead[idx];
          }
+         delete [] blockRead;
       }
       if((thePadPixelMaskRecordLength > 0)||
          (( (getCompressionCode().upcase() == "M3"))&&
@@ -345,8 +346,7 @@ void ossimNitfImageHeaderV2_1::writeStream(std::ostream &out)
       out.write(theGeographicLocation, 60);
    }
    // for now force the number of comments to be 0
-//   out.write(theNumberOfComments, 1);
-   out.write("0", 1);
+   out.write(theNumberOfComments, 1);
    
    out.write(theCompression, 2);
    ossimString compressionTest = theCompression;
@@ -429,82 +429,144 @@ void ossimNitfImageHeaderV2_1::writeStream(std::ostream &out)
    }
 }
 
-std::ostream& ossimNitfImageHeaderV2_1::print(std::ostream& out)const
+std::ostream& ossimNitfImageHeaderV2_1::print(std::ostream& out,
+                                              const std::string& prefix) const
 {
-   out << setiosflags(ios::left) << "ossimNitfImageHeaderV2_1::print"
-       << setw(24) << "\nIM:"     << theType
-       << setw(24) << "\nIID1:"   << theImageId
-       << setw(24) << "\nIDATIM:" << theDateTime
-       << setw(24) << "\nTGTID:"  << theTargetId
-       << setw(24) << "\nIID2:"   << theTitle
-       << setw(24) << "\nISCLAS:" << theSecurityClassification
-       << setw(24) << "\nISCLSY:" << theSecurityClassificationSys
-       << setw(24) << "\nISCODE:" << theCodewords
-       << setw(24) << "\nISCTLH:" << theControlAndHandling
-       << setw(24) << "\nISREL:"  << theReleasingInstructions
-       << setw(24) << "\nISDCTP:" << theDeclassificationType
-       << setw(24) << "\nISDCDT:" << theDeclassificationDate
-       << setw(24) << "\nISDCXM:" << theDeclassificationExempt
-       << setw(24) << "\nISDG:"   << theDowngrade
-       << setw(24) << "\nISDGDT:" << theDowngradeDate
-       << setw(24) << "\nISCLTX:" << theClassificationText
-       << setw(24) << "\nISCATP:" << theClassificationAuthType
-       << setw(24) << "\nISCAUT:" << theClassificationAuthority
-       << setw(24) << "\nISCRSN:" << theClassificationReason
-       << setw(24) << "\nISSRDT:" << theSecuritySourceDate
-       << setw(24) << "\nISCTLN:" << theSecurityControlNumber
-       << setw(24) << "\nENCRYP:" << theEncryption
-       << setw(24) << "\nISORCE:" << theImageSource
-       << setw(24) << "\nNROWS:"  << theSignificantRows
-       << setw(24) << "\nNCOLS:"  << theSignificantCols
-       << setw(24) << "\nPVTYPE:" << thePixelValueType
-       << setw(24) << "\nIREP:"   << theRepresentation
-       << setw(24) << "\nICAT:"   << theCategory
-       << setw(24) << "\nABPP:"   << theActualBitsPerPixelPerBand
-       << setw(24) << "\nPJUST:"  << theJustification
-       << setw(24) << "\nICORDS:" << theCoordinateSystem
-       << setw(24) << "\nIGEOLO:" << theGeographicLocation
-       << setw(24) << "\nNICOM:"  << theNumberOfComments
-       << setw(24) << "\nIC:"     << theCompression
-       << setw(24) << "\nCOMRAT:" << theCompressionRateCode
-       << setw(24) << "\nNBANDS:" << theNumberOfBands
-       << setw(24) << "\nXBANDS:" << theNumberOfMultispectralBands;
+   out << setiosflags(ios::left)
+       << prefix << setw(24)
+       << "IM:"     << theType << "\n"
+       << prefix << setw(24)
+       << "IID1:"   << theImageId << "\n"
+       << prefix << setw(24)
+       << "IDATIM:" << theDateTime << "\n"
+       << prefix << setw(24)
+       << "TGTID:"  << theTargetId << "\n"
+       << prefix << setw(24)
+       << "IID2:"   << theTitle << "\n"
+       << prefix << setw(24)
+       << "ISCLAS:" << theSecurityClassification << "\n"
+       << prefix << setw(24)
+       << "ISCLSY:" << theSecurityClassificationSys << "\n"
+       << prefix << setw(24)
+       << "ISCODE:" << theCodewords << "\n"
+       << prefix << setw(24)
+       << "ISCTLH:" << theControlAndHandling << "\n"
+       << prefix << setw(24)
+       << "ISREL:"  << theReleasingInstructions << "\n"
+       << prefix << setw(24)
+       << "ISDCTP:" << theDeclassificationType << "\n"
+       << prefix << setw(24)
+       << "ISDCDT:" << theDeclassificationDate << "\n"
+       << prefix << setw(24)
+       << "ISDCXM:" << theDeclassificationExempt << "\n"
+       << prefix << setw(24)
+       << "ISDG:"   << theDowngrade << "\n"
+       << prefix << setw(24)
+       << "ISDGDT:" << theDowngradeDate << "\n"
+       << prefix << setw(24)
+       << "ISCLTX:" << theClassificationText << "\n"
+       << prefix << setw(24)
+       << "ISCATP:" << theClassificationAuthType << "\n"
+       << prefix << setw(24)
+       << "ISCAUT:" << theClassificationAuthority << "\n"
+       << prefix << setw(24)
+       << "ISCRSN:" << theClassificationReason << "\n"
+       << prefix << setw(24)
+       << "ISSRDT:" << theSecuritySourceDate << "\n"
+       << prefix << setw(24)
+       << "ISCTLN:" << theSecurityControlNumber << "\n"
+       << prefix << setw(24)
+       << "ENCRYP:" << theEncryption << "\n"
+       << prefix << setw(24)
+       << "ISORCE:" << theImageSource << "\n"
+       << prefix << setw(24)
+       << "NROWS:"  << theSignificantRows << "\n"
+       << prefix << setw(24)
+       << "NCOLS:"  << theSignificantCols << "\n"
+       << prefix << setw(24)
+       << "PVTYPE:" << thePixelValueType << "\n"
+       << prefix << setw(24)
+       << "IREP:"   << theRepresentation << "\n"
+       << prefix << setw(24)
+       << "ICAT:"   << theCategory << "\n"
+       << prefix << setw(24)
+       << "ABPP:"   << theActualBitsPerPixelPerBand << "\n"
+       << prefix << setw(24)
+       << "PJUST:"  << theJustification << "\n"
+       << prefix << setw(24)
+       << "ICORDS:" << theCoordinateSystem << "\n"
+       << prefix << setw(24)
+       << "IGEOLO:" << theGeographicLocation << "\n"
+       << prefix << setw(24)
+       << "NICOM:"  << theNumberOfComments << "\n"
+       << prefix << setw(24)
+       << "IC:"     << theCompression << "\n"
+       << prefix << setw(24)
+       << "COMRAT:" << theCompressionRateCode << "\n"
+       << prefix << setw(24)
+       << "NBANDS:" << theNumberOfBands << "\n"
+       << prefix << setw(24)
+       << "XBANDS:" << theNumberOfMultispectralBands << "\n";
    
    ossim_uint32 idx = 0;
    for(idx = 0; idx < theImageBands.size(); ++idx)
    {
       if(theImageBands[idx].valid())
       {
-         theImageBands[idx]->print(out, idx); 
+         theImageBands[idx]->print(out, prefix, idx); 
       }
    }
 
-   out << setw(24) << "\nISYNC:"     << theImageSyncCode
-       << setw(24) << "\nIMODE:"     << theImageMode
-       << setw(24) << "\nNBPR:"      << theNumberOfBlocksPerRow
-       << setw(24) << "\nNBPC:"      << theNumberOfBlocksPerCol
-       << setw(24) << "\nNPPBH:"     << theNumberOfPixelsPerBlockHoriz
-       << setw(24) << "\nNPPBV:"     << theNumberOfPixelsPerBlockVert
-       << setw(24) << "\nNBPP:"      << theNumberOfBitsPerPixelPerBand
-       << setw(24) << "\nIDLVL:"     << theDisplayLevel
-       << setw(24) << "\nIALVL:"     << theAttachmentLevel
-       << setw(24) << "\nILOC:"      << theImageLocation
-       << setw(24) << "\nIMAG:"      << theImageMagnification
-       << setw(24) << "\nUDIDL:"     << theUserDefinedImageDataLength
-       << setw(24) << "\nUDOFL:"     << theUserDefinedOverflow
-       << setw(24) << "\nIXSHDL:"    << theExtendedSubheaderDataLen
-       << setw(24) << "\nIXSOFL:"    << theExtendedSubheaderOverflow
-       << setw(24) << "\nIMDATOFF:"  << theBlockedImageDataOffset
-       << setw(24) << "\nBMRLNTH:"   << theBlockMaskRecordLength
-       << setw(24) << "\nTMRLNTH:"   << thePadPixelMaskRecordLength
-       << setw(24) << "\nTPXCDLNTH:" << theTransparentOutputPixelCodeLength
-       << setw(24) << "\nTPXCD:"     << thePadOutputPixelCode
-       << setw(24) << "\ntheDataLocation:" << theDataLocation
-       << std::endl;
-      
-   printTags(out);
-   
-   return out;
+   out << prefix << setw(24)
+       << "ISYNC:"     << theImageSyncCode << "\n"
+       << prefix << setw(24)
+       << "IMODE:"     << theImageMode << "\n"
+       << prefix << setw(24)
+       << "NBPR:"      << theNumberOfBlocksPerRow << "\n"
+       << prefix << setw(24)
+       << "NBPC:"      << theNumberOfBlocksPerCol << "\n"
+       << prefix << setw(24)
+       << "NPPBH:"     << theNumberOfPixelsPerBlockHoriz << "\n"
+       << prefix << setw(24)
+       << "NPPBV:"     << theNumberOfPixelsPerBlockVert << "\n"
+       << prefix << setw(24)
+       << "NBPP:"      << theNumberOfBitsPerPixelPerBand << "\n"
+       << prefix << setw(24)
+       << "IDLVL:"     << theDisplayLevel << "\n"
+       << prefix << setw(24)
+       << "IALVL:"     << theAttachmentLevel << "\n"
+       << prefix << setw(24)
+       << "ILOC:"      << theImageLocation << "\n"
+       << prefix << setw(24)
+       << "IMAG:"      << theImageMagnification << "\n"
+       << prefix << setw(24)
+       << "UDIDL:"     << theUserDefinedImageDataLength << "\n"
+       << prefix << setw(24)
+       << "UDOFL:"     << theUserDefinedOverflow << "\n"
+       << prefix << setw(24)
+       << "IXSHDL:"    << theExtendedSubheaderDataLen << "\n"
+       << prefix << setw(24)
+       << "IXSOFL:"    << theExtendedSubheaderOverflow << "\n"
+       << prefix << setw(24)
+       << "IMDATOFF:"  << theBlockedImageDataOffset << "\n"
+       << prefix << setw(24)
+       << "BMRLNTH:"   << theBlockMaskRecordLength << "\n"
+       << prefix << setw(24)
+       << "TMRLNTH:"   << thePadPixelMaskRecordLength << "\n"
+       << prefix << setw(24)
+       << "TPXCDLNTH:" << theTransparentOutputPixelCodeLength << "\n"
+       << prefix << setw(24)
+       << "TPXCD:"     << thePadOutputPixelCode << "\n";
+
+   if ( traceDebug() )
+   {
+      out << prefix << setw(24)
+          << "theDataLocation:" << theDataLocation << "\n";
+   }
+
+   out << std::endl;
+
+   return printTags(out, prefix);
 }
 
 bool ossimNitfImageHeaderV2_1::isCompressed()const
@@ -732,7 +794,7 @@ void ossimNitfImageHeaderV2_1::clearFields()
    memcpy(theDisplayLevel, "001", 3);
    memset(theAttachmentLevel, '0', 3);
    memset(theImageLocation, '0', 10);
-   memcpy(theImageMagnification, "01.0", 4);
+   memcpy(theImageMagnification, "1.0 ", 4);
    
    memset(theUserDefinedImageDataLength,'0', 5);
    memset(theUserDefinedOverflow, '0', 3);
@@ -817,12 +879,25 @@ ossim_int32 ossimNitfImageHeaderV2_1::getNumberOfBlocksPerCol()const
 
 ossim_int32 ossimNitfImageHeaderV2_1::getNumberOfPixelsPerBlockHoriz()const
 {
-   return ossimString(theNumberOfPixelsPerBlockHoriz).toInt32();
+ //  return ossimString(theNumberOfPixelsPerBlockHoriz).toInt32();
+   ossim_int32 rval = ossimString(theNumberOfPixelsPerBlockHoriz).toInt32();
+   if ((rval == 0) && (getNumberOfBlocksPerCol() == 1))
+   {
+      rval = getNumberOfCols();
+   }
+   return rval;
+   
 }
 
 ossim_int32 ossimNitfImageHeaderV2_1::getNumberOfPixelsPerBlockVert()const
 {
-   return ossimString(theNumberOfPixelsPerBlockVert).toInt32();
+//   return ossimString(theNumberOfPixelsPerBlockVert).toInt32();
+   ossim_int32 rval = ossimString(theNumberOfPixelsPerBlockVert).toInt32();
+   if ((rval == 0) && (getNumberOfBlocksPerRow() == 1))
+   {
+      rval = getNumberOfRows();
+   }
+   return rval;
 }
 
 ossimDrect ossimNitfImageHeaderV2_1::getImageRect()const
@@ -939,18 +1014,8 @@ void ossimNitfImageHeaderV2_1::setGeographicLocationDms(const ossimDpt& ul,
    }
       
    theCoordinateSystem[0] = 'G';
-   std::ostringstream out;
 
-   out << ossimDms(ul.y, true).toString("ddmmssC").c_str();
-   out << ossimDms(ul.x, false).toString("dddmmssC").c_str();
-   out << ossimDms(ur.y, true).toString("ddmmssC").c_str();
-   out << ossimDms(ur.x, false).toString("dddmmssC").c_str();
-   out << ossimDms(lr.y, true).toString("ddmmssC").c_str();
-   out << ossimDms(lr.x, false).toString("dddmmssC").c_str();
-   out << ossimDms(ll.y, true).toString("ddmmssC").c_str();
-   out << ossimDms(ll.x, false).toString("dddmmssC").c_str();
-
-   memcpy(theGeographicLocation, out.str().c_str(), 60);
+   memcpy(theGeographicLocation, ossimNitfCommon::encodeGeographicDms(ul, ur, lr, ll).c_str(), 60);
 }
 
 void ossimNitfImageHeaderV2_1::setGeographicLocationDecimalDegrees(
@@ -960,58 +1025,8 @@ void ossimNitfImageHeaderV2_1::setGeographicLocationDecimalDegrees(
    const ossimDpt& ll)
 {
    theCoordinateSystem[0] = 'D';
-   ostringstream out;
 
-   out << (ul.lat >= 0.0?"+":"")
-       << std::setw(6)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ul.lat
-       << (ul.lon >= 0.0?"+":"")
-       << std::setw(7)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ul.lon;
-   out << (ur.lat >= 0.0?"+":"")
-       << std::setw(6)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ur.lat
-       << (ur.lon >= 0.0?"+":"")
-       << std::setw(7)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ur.lon;
-   out << (lr.lat >= 0.0?"+":"")
-       << std::setw(6)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << lr.lat
-       << (lr.lon >= 0.0?"+":"")
-       << std::setw(7)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << lr.lon;
-   out << (ll.lat >= 0.0?"+":"")
-       << std::setw(6)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ll.lat
-       << (ll.lon >= 0.0?"+":"")
-       << std::setw(7)
-       << std::setfill('0')
-       << std::setprecision(3)
-       << std::setiosflags(std::ios::fixed)
-       << ll.lon;
-
-   memcpy(theGeographicLocation, out.str().c_str(), 60);
+   memcpy(theGeographicLocation, ossimNitfCommon::encodeGeographicDecimalDegrees(ul, ur, lr, ll).c_str(), 60);
 }
 
 void ossimNitfImageHeaderV2_1::setUtmNorth(ossim_uint32 zone,
@@ -1023,7 +1038,7 @@ void ossimNitfImageHeaderV2_1::setUtmNorth(ossim_uint32 zone,
    theCoordinateSystem[0] = 'N';
    
    memcpy(theGeographicLocation,
-          encodeUtm(zone, ul, ur, lr, ll).c_str(), 60);
+          ossimNitfCommon::encodeUtm(zone, ul, ur, lr, ll).c_str(), 60);
 }
 
 void ossimNitfImageHeaderV2_1::setUtmSouth(ossim_uint32 zone,
@@ -1035,7 +1050,7 @@ void ossimNitfImageHeaderV2_1::setUtmSouth(ossim_uint32 zone,
    theCoordinateSystem[0] = 'S';
    
    memcpy(theGeographicLocation,
-          encodeUtm(zone, ul, ur, lr, ll).c_str(), 60);
+          ossimNitfCommon::encodeUtm(zone, ul, ur, lr, ll).c_str(), 60);
 }
 
 void ossimNitfImageHeaderV2_1::setSecurityClassificationSystem(const ossimString& value)
@@ -1267,7 +1282,7 @@ ossimRefPtr<ossimProperty> ossimNitfImageHeaderV2_1::getProperty(const ossimStri
    }
    else
    {
-      return ossimNitfImageHeader::getProperty(name);
+      return ossimNitfImageHeaderV2_X::getProperty(name);
    }
    
    return property;
@@ -1275,7 +1290,7 @@ ossimRefPtr<ossimProperty> ossimNitfImageHeaderV2_1::getProperty(const ossimStri
 
 void ossimNitfImageHeaderV2_1::getPropertyNames(std::vector<ossimString>& propertyNames)const
 {
-   ossimNitfImageHeader::getPropertyNames(propertyNames);
+   ossimNitfImageHeaderV2_X::getPropertyNames(propertyNames);
 
    propertyNames.push_back(ISCLSY_KW);
    propertyNames.push_back(ISCODE_KW);
@@ -1293,160 +1308,6 @@ void ossimNitfImageHeaderV2_1::getPropertyNames(std::vector<ossimString>& proper
    propertyNames.push_back(ISSRDT_KW);
    propertyNames.push_back(ISCTLN_KW);
    propertyNames.push_back(XBANDS_KW);
-}
-
-ossimString ossimNitfImageHeaderV2_1::encodeUtm(
-   ossim_uint32 zone,
-   const ossimDpt& ul,
-   const ossimDpt& ur,
-   const ossimDpt& lr,
-   const ossimDpt& ll)const
-{
-   ostringstream out;
-
-   if(zone > 60)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nUTM zone greate than 60!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   ossim_float64 east  = ul.x;
-   ossim_float64 north = ul.y;
-   
-   if((ossim_uint32)(east+.5) > 999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nUpper left easting too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   if((ossim_uint32)(north+.5) > 9999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nUpper left northing too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-
-   out << setw(2)
-       << setfill('0')
-       << zone
-       << setw(6)
-       << setfill('0')
-       <<(ossim_uint32)(east+.5)
-       << setw(7)
-          << setfill('0')
-       <<(ossim_uint32)(north+.5);
-
-   
-   east  = ur.x;
-   north = ur.y;
-   
-   if((ossim_uint32)(east+.5) > 999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nUpper right easting too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   if((ossim_uint32)(north+.5) > 9999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nUpper right northing too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   out << setw(2)
-       << setfill('0')
-       << zone
-       << setw(6)
-       << setfill('0')
-       <<(ossim_uint32)(east+.5)
-       << setw(7)
-       << setfill('0')
-       <<(ossim_uint32)(north+.5);
-   east  = lr.x;
-   north = lr.y;
-
-   if((ossim_uint32)(east+.5) > 999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nLower right easting too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   if((ossim_uint32)(north+.5) > 9999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nLower right northing too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }   
-
-   out << setw(2)
-       << setfill('0')
-       << zone
-       << setw(6)
-       << setfill('0')
-       <<(ossim_uint32)(east+.5)
-       << setw(7)
-       << setfill('0')
-       <<(ossim_uint32)(north+.5);
-   
-   east  = ll.x;
-   north = ll.y;
-
-   if((ossim_uint32)(east+.5) > 999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nLower left easting too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   if((ossim_uint32)(north+.5) > 9999999)
-   {
-      std::string s = "ossimNitfImageHeaderV2_1::encodeUtm: ERROR\nLower left northing too large for NITF field!";
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_WARN) << s << std::endl;
-      }
-      throw std::out_of_range(s);
-   }
-   
-   out << setw(2)
-       << setfill('0')
-       << zone
-       << setw(6)
-       << setfill('0')
-       <<(ossim_uint32)(east+.5)
-       << setw(7)
-       << setfill('0')
-       <<(ossim_uint32)(north+.5);
-   
-   return out.str().c_str();
 }
 
 const ossimRefPtr<ossimNitfCompressionHeader> ossimNitfImageHeaderV2_1::getCompressionHeader()const

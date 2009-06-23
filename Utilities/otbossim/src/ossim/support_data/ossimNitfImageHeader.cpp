@@ -1,13 +1,15 @@
 //*******************************************************************
 //
-// LICENSE: See top level LICENSE.txt for more details.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfImageHeader.cpp 12403 2008-02-04 17:59:13Z gpotts $
+// $Id: ossimNitfImageHeader.cpp 14241 2009-04-07 19:59:23Z dburken $
 
 #include <cmath> /* for fmod */
 #include <iomanip>
@@ -101,7 +103,7 @@ ossim_uint32 ossimNitfImageHeader::getNumberOfTags()const
    return static_cast<ossim_uint32>(theTagList.size());
 }
 
-void ossimNitfImageHeader::addTag(ossimNitfTagInformation tag)
+void ossimNitfImageHeader::addTag(const ossimNitfTagInformation& tag)
 {
    removeTag(tag.getTagName());
    theTagList.push_back(tag);
@@ -205,23 +207,18 @@ ossim_uint32 ossimNitfImageHeader::getTotalTagLength()const
    return tagLength;
 }
 
-void ossimNitfImageHeader::printTags(std::ostream& out)const
+std::ostream& ossimNitfImageHeader::printTags(std::ostream& out,
+                                              const std::string& prefix)const
 {
-   out << setiosflags(std::ios::left)
-       << "ossimNitfImageHeader::printTags";
-   
    for(ossim_uint32 i = 0; i < theTagList.size(); ++i)
    {
-      out << std::setw(24) << "\nTag name:"   << theTagList[i].getTagName()
-          << std::setw(24) << "\nTag Length:" << theTagList[i].getTagLength()
-          << std::endl;
-
       ossimRefPtr<ossimNitfRegisteredTag> tag = theTagList[i].getTagData();
       if (tag.valid())
       {
-         tag->print(out);
+         tag->print(out, prefix);
       }
    }
+   return out;
 }
 
 void ossimNitfImageHeader::getMetadata(ossimKeywordlist& kwl,

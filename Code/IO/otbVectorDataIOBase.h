@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,6 +22,8 @@
 #include "itkObjectFactory.h"
 #include "itkIndent.h"
 #include "vnl/vnl_vector.h"
+#include "itkVector.h"
+#include "itkPoint.h"
 
 #include <string>
 
@@ -35,7 +37,7 @@ namespace otb
  * of a particular format (such as PNG or raw binary). The
  * VectorDataIOBase encapsulates both the reading and writing of data. The
  * VectorDataIOBase is used by the VectorDataFileReader class (to read data)
- * and the VectorDataFileWriter (to write data) into a single file. 
+ * and the VectorDataFileWriter (to write data) into a single file.
  * Normally the user does not directly
  * manipulate this class other than to instantiate it, set the FileName,
  * and assign it to a VectorDataFileReader/VectorDataFileWriter.
@@ -65,10 +67,14 @@ public:
   typedef typename VectorDataType::Pointer VectorDataPointerType;
   typedef typename VectorDataType::ConstPointer VectorDataConstPointerType;
 
+  itkStaticConstMacro(VDimension, unsigned int, VectorDataType::DataNodeType::Dimension);
+  typedef itk::Vector<double, VDimension> SpacingType;
+  typedef itk::Point<double, VDimension> PointType;
 
   /** Set/Get the name of the file to be read. */
   itkSetStringMacro(FileName);
   itkGetStringMacro(FileName);
+
 
   /** Enums used to specify byte order; whether Big Endian or Little Endian.
    * Some subclasses use this, some ignore it. */
@@ -88,13 +94,13 @@ public:
   itkSetEnumMacro(ByteOrder,ByteOrder);
   itkGetEnumMacro(ByteOrder,ByteOrder);
   void SetByteOrderToBigEndian()
-    {
+  {
     this->SetByteOrder(BigEndian);
-    }
+  }
   void SetByteOrderToLittleEndian()
-    {
+  {
     this->SetByteOrder(LittleEndian);
-    }
+  }
 
   /** Convenience method returns the ByteOrder as a string. This can be
    * used for writing output files. */
@@ -112,13 +118,13 @@ public:
   /** Determine if the VectorDataIO can stream reading from this
       file. Default is false. */
   virtual bool CanStreamRead()
-    {
+  {
     return false;
-    }
+  }
 
-/*   /\** Read the spacing and dimentions of the VectorData. */
-/*    * Assumes SetFileName has been called with a valid file name. *\/ */
-/*   virtual void ReadVectorDataInformation() = 0; */
+  /*   /\** Read the spacing and dimentions of the VectorData. */
+  /*    * Assumes SetFileName has been called with a valid file name. *\/ */
+  /*   virtual void ReadVectorDataInformation() = 0; */
 
   /** Reads the data from disk into the memory buffer provided. */
   virtual void Read(VectorDataPointerType data) = 0;
@@ -133,13 +139,13 @@ public:
   /** Determine if the ImageIO can stream writing to this
       file. Default is false. */
   virtual bool CanStreamWrite()
-    {
+  {
     return false;
-    }
+  }
 
-/*   /\** Writes the spacing and dimentions of the VectorData. */
-/*    * Assumes SetFileName has been called with a valid file name. *\/ */
-/*   virtual void WriteVectorDataInformation() = 0; */
+  /*   /\** Writes the spacing and dimentions of the VectorData. */
+  /*    * Assumes SetFileName has been called with a valid file name. *\/ */
+  /*   virtual void WriteVectorDataInformation() = 0; */
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegions has been set properly. The buffer is cast to a
@@ -165,14 +171,16 @@ protected:
   /** Return the object to an initialized state, ready to be used */
   virtual void Reset(const bool freeDynamic = true);
 
+
 private:
   VectorDataIOBase(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 
+
 };
 
-} // end namespace otb 
+} // end namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION
 #include "otbVectorDataIOBase.txx"

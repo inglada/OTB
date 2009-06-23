@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,7 +31,7 @@ int otbMorphologicalPyramidSynthesisFilter(int argc, char * argv[])
   const char * outputFilename = argv[2];
   const unsigned int numberOfLevels = atoi(argv[3]);
   const float decimationRatio = atof(argv[4]);
-  
+
   const unsigned int Dimension = 2;
   typedef unsigned char InputPixelType;
   typedef unsigned char OutputPixelType;
@@ -44,11 +44,11 @@ int otbMorphologicalPyramidSynthesisFilter(int argc, char * argv[])
 
   typedef itk::BinaryBallStructuringElement<InputPixelType,Dimension> StructuringElementType;
   typedef otb::OpeningClosingMorphologicalFilter<InputImageType,InputImageType,StructuringElementType>
-    OpeningClosingFilterType;
+  OpeningClosingFilterType;
   typedef otb::MorphologicalPyramidAnalysisFilter<InputImageType,OutputImageType,OpeningClosingFilterType>
-    PyramidAnalysisFilterType;
+  PyramidAnalysisFilterType;
   typedef otb::MorphologicalPyramidSynthesisFilter<InputImageType,OutputImageType>
-    PyramidSynthesisFilterType;
+  PyramidSynthesisFilterType;
 
   // Reading input image
   ReaderType::Pointer reader = ReaderType::New();
@@ -62,7 +62,7 @@ int otbMorphologicalPyramidSynthesisFilter(int argc, char * argv[])
   pyramidAnalysis->Update();
 
   // Synthesis
-  PyramidSynthesisFilterType::Pointer pyramidSynthesis = PyramidSynthesisFilterType::New();      
+  PyramidSynthesisFilterType::Pointer pyramidSynthesis = PyramidSynthesisFilterType::New();
   pyramidSynthesis->SetInput(pyramidAnalysis->GetOutput()->Back());
   pyramidSynthesis->SetSupFilter(pyramidAnalysis->GetSupFilter());
   pyramidSynthesis->SetSupDeci(pyramidAnalysis->GetSupDeci());
@@ -75,7 +75,7 @@ int otbMorphologicalPyramidSynthesisFilter(int argc, char * argv[])
   writer->SetFileName(outputFilename);
   writer->SetInput(pyramidSynthesis->GetOutput()->Back());
   writer->Update();
-      
- 
+
+
   return EXIT_SUCCESS;
 }

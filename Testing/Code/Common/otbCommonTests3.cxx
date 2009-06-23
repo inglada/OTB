@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,19 +21,20 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbMultiToMonoChannelExtractROI );
-REGISTER_TEST(otbMultiToMonoChannelExtractROINew );
-REGISTER_TEST(otbPointSetSourceTest);
-REGISTER_TEST(otbDrawLineSpatialObjectNew);
-REGISTER_TEST(otbDrawLineSpatialObject);
-REGISTER_TEST(otbDrawLineSpatialObjectListNew);
-REGISTER_TEST(otbDrawLineSpatialObjectList);
-REGISTER_TEST(otbImageToLineSpatialObjectListNew);
-REGISTER_TEST(otbPathListToHistogramGeneratorNew);
-REGISTER_TEST(otbPathListToHistogramGenerator);
+  REGISTER_TEST(otbMultiToMonoChannelExtractROI );
+  REGISTER_TEST(otbMultiToMonoChannelExtractROINew );
+  REGISTER_TEST(otbPointSetSourceTest);
+  REGISTER_TEST(otbDrawLineSpatialObjectNew);
+  REGISTER_TEST(otbDrawLineSpatialObject);
+  REGISTER_TEST(otbDrawLineSpatialObjectListNew);
+  REGISTER_TEST(otbDrawLineSpatialObjectList);
+  REGISTER_TEST(otbImageToLineSpatialObjectListNew);
+  REGISTER_TEST(otbPathListToHistogramGeneratorNew);
+  REGISTER_TEST(otbPathListToHistogramGenerator);
+  REGISTER_TEST(otbLineSpatialObjectListToPointSetFilterNew);
 }

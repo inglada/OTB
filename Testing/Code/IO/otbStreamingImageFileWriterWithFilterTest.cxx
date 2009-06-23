@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -40,16 +40,16 @@ int otbStreamingImageFileWriterWithFilterTest (int argc, char* argv[])
   int   iStreaming(::atoi(argv[4]));
   bool streaming = (bool)(iStreaming);
   int NumberOfStreamDivisions(10);
-  if( streaming == true )
-    {
-      NumberOfStreamDivisions = ::atoi(argv[5]);
-    }
-       
-        
+  if ( streaming == true )
+  {
+    NumberOfStreamDivisions = ::atoi(argv[5]);
+  }
 
-  typedef unsigned char  	                                InputPixelType;
-  typedef unsigned char  	                                OutputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+
+
+  typedef unsigned char                                    InputPixelType;
+  typedef unsigned char                                    OutputPixelType;
+  const   unsigned int                                  Dimension = 2;
 
   typedef itk::Image< InputPixelType,  Dimension >        InputImageType;
   typedef itk::Image< OutputPixelType, Dimension >        OutputImageType;
@@ -58,7 +58,7 @@ int otbStreamingImageFileWriterWithFilterTest (int argc, char* argv[])
   typedef otb::StreamingImageFileWriter< OutputImageType> StreamingWriterType;
   typedef otb::ImageFileWriter< OutputImageType >         WriterType;
   typedef itk::MeanImageFilter<InputImageType,OutputImageType> FilterType;
-        
+
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( inputFilename  );
   FilterType::Pointer filter = FilterType::New();
@@ -67,25 +67,25 @@ int otbStreamingImageFileWriterWithFilterTest (int argc, char* argv[])
   rad.Fill(radius);
   filter->SetRadius(rad);
 
-  if( streaming == true )
-    {
-      std::cout << "Streaming writing test"<<std::endl;
-      StreamingWriterType::Pointer writer = StreamingWriterType::New();
-      writer->SetFileName( outputFilename );
-      writer->SetNumberOfStreamDivisions( NumberOfStreamDivisions );
-      writer->SetInput( filter->GetOutput() );
-      writer->Update(); 
-    }
+  if ( streaming == true )
+  {
+    std::cout << "Streaming writing test"<<std::endl;
+    StreamingWriterType::Pointer writer = StreamingWriterType::New();
+    writer->SetFileName( outputFilename );
+    writer->SetNumberOfStreamDivisions( NumberOfStreamDivisions );
+    writer->SetInput( filter->GetOutput() );
+    writer->Update();
+  }
   else
-    {
-      std::cout << "Writing test"<<std::endl;
-      WriterType::Pointer writer = WriterType::New();
-      writer->SetFileName( outputFilename );
-      writer->SetInput( reader->GetOutput() );
-      writer->Update(); 
-    }
+  {
+    std::cout << "Writing test"<<std::endl;
+    WriterType::Pointer writer = WriterType::New();
+    writer->SetFileName( outputFilename );
+    writer->SetInput( reader->GetOutput() );
+    writer->Update();
+  }
 
-        
+
 
   return EXIT_SUCCESS;
 }

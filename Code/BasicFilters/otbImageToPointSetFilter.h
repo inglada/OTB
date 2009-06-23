@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,7 +24,7 @@ namespace otb
 {
 
 /** \class ImageToPointSetFilter
- * \brief 
+ * \brief Base class to output PointSet data with image data as input
  *
  * ImageToPointSetFilter is the base class for all process objects that output
  * Point Set data and require image data as input. Specifically, this class
@@ -42,43 +42,38 @@ public:
   typedef itk::SmartPointer<Self>          Pointer;
   typedef itk::SmartPointer<const Self>    ConstPointer;
 
-  
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToPointSetFilter, PointSetSource);
-
-  /** Create a valid output. */
-  itk::DataObject::Pointer  MakeOutput(unsigned int idx);
 
   /** Some Image related typedefs. */
   typedef   TInputImage                             InputImageType;
   typedef   typename InputImageType::Pointer        InputImagePointer;
   typedef   typename InputImageType::ConstPointer   InputImageConstPointer;
-  typedef   typename InputImageType::RegionType     InputImageRegionType; 
-  typedef   typename InputImageType::PixelType      InputImagePixelType; 
-  
+  typedef   typename InputImageType::RegionType     InputImageRegionType;
+  typedef   typename InputImageType::PixelType      InputImagePixelType;
+
   /** Some PointSet related typedefs. */
   typedef   typename Superclass::OutputPointSetType     OutputPointSetType;
   typedef   typename Superclass::OutputPointSetPointer  OutputPointSetPointer;
-  
-  typedef   itk::ProcessObject			    ProcessObjectType;
+
+  typedef   itk::ProcessObject          ProcessObjectType;
 
   /** Set the input image of this process object.  */
   void SetInput(unsigned int idx, const InputImageType *input);
+  void SetInput( const InputImageType *input);
 
   /** Get the input image of this process object.  */
   const InputImageType * GetInput(unsigned int idx);
-
-  /** Get the output Point Set of this process object.  */
-  OutputPointSetType * GetOutput(void);
+  const InputImageType * GetInput();
 
   /** Prepare the output */
   void GenerateOutputInformation(void);
-     
+
 protected:
   ImageToPointSetFilter();
   ~ImageToPointSetFilter();
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
- 
+
 private:
   ImageToPointSetFilter(const ImageToPointSetFilter&); //purposely not implemented
   void operator=(const ImageToPointSetFilter&); //purposely not implemented

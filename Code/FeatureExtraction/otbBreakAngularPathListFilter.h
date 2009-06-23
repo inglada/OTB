@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,29 +31,29 @@ namespace otb
  */
 template <class TPath>
 class ITK_EXPORT BreakAngularPathListFilter
-  : public PathListToPathListFilter<TPath>
+      : public PathListToPathListFilter<TPath>
 {
- public:
+public:
   /** Standard typedefs */
   typedef BreakAngularPathListFilter            Self;
   typedef PathListToPathListFilter<TPath>       Superclass;
   typedef itk::SmartPointer<Self>               Pointer;
   typedef itk::SmartPointer<const Self>         ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(BreakAngularPathListFilter, PathListToPathListFilter);
-  
+
   /** Template parameters typedefs */
   typedef typename Superclass::PathType         PathType;
   typedef typename Superclass::PathListType     PathListType;
   typedef typename Superclass::PathPointerType  PathPointerType;
   typedef typename PathListType::Pointer        PathListPointerType;
-  
-  typedef double MaxAngleType;  
-  
+
+  typedef double MaxAngleType;
+
   /** Set/Get the max angle */
   itkSetMacro(MaxAngle,MaxAngleType);
   itkGetConstMacro(MaxAngle,MaxAngleType);
@@ -77,7 +77,7 @@ private:
 
   /** Max angle value */
   MaxAngleType m_MaxAngle;
-  
+
 };
 }// End namespace otb
 #ifndef OTB_MANUAL_INSTANTIATION

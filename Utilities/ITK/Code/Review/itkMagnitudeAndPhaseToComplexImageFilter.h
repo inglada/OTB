@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMagnitudeAndPhaseToComplexImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2008-06-29 20:44:09 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009-02-24 19:03:15 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -65,7 +65,7 @@ public:
     {
     return !(*this != other);
     }
-  inline std::complex<TOutput> operator()( const TInput1 & A, const TInput2 & B)
+  inline std::complex<TOutput> operator()( const TInput1 & A, const TInput2 & B) const
     {
     return std::complex<TOutput>(std::polar(static_cast<TOutput>(A),  static_cast<TOutput>(B)) );
     }
@@ -103,6 +103,9 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(MagnitudeAndPhaseToComplexImageFilter, BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */

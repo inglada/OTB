@@ -10,25 +10,26 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef __otbMIRegistrationFilter_h_
-#define __otbMIRegistrationFilter_h_
+#ifndef __otbMIRegistrationFilter_h
+#define __otbMIRegistrationFilter_h
 
 #include "itkPDEDeformableRegistrationFilter.h"
 #include "itkMIRegistrationFunction.h"
 
-namespace otb {
+namespace otb
+{
 
 /** \class MIRegistrationFilter
  * \brief Deformably register two images using the PDEs and Mutual Information.
  *
- * MIRegistrationFilter implements the ####### 
- * register two images by computing the deformation field which will map a 
+ * MIRegistrationFilter implements the #######
+ * register two images by computing the deformation field which will map a
  * moving image onto a fixed image.
  *
  * A deformation field is represented as a image whose pixel type is some
@@ -55,20 +56,20 @@ namespace otb {
  *
  * \warning This filter assumes that the fixed image type, moving image type
  * and deformation field type all have the same number of dimensions.
- * 
- * \sa MIRegistrationFunction 
+ *
+ * \sa MIRegistrationFunction
  * \ingroup DeformableImageRegistration MultiThreaded
  */
 template<class TFixedImage, class TMovingImage, class TDeformationField>
-class ITK_EXPORT MIRegistrationFilter : 
-    public itk::PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
-                                            TDeformationField>
+class ITK_EXPORT MIRegistrationFilter :
+      public itk::PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
+      TDeformationField>
 {
 public:
   /** Standard class typedefs. */
   typedef MIRegistrationFilter    Self;
   typedef itk::PDEDeformableRegistrationFilter<
-    TFixedImage, TMovingImage,TDeformationField>    Superclass;
+  TFixedImage, TMovingImage,TDeformationField>    Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -76,7 +77,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( MIRegistrationFilter, 
+  itkTypeMacro( MIRegistrationFilter,
                 itk::PDEDeformableRegistrationFilter );
 
   /** Inherit types from superclass. */
@@ -89,11 +90,11 @@ public:
   /** MovingImage image type. */
   typedef typename Superclass::MovingImageType    MovingImageType;
   typedef typename Superclass::MovingImagePointer  MovingImagePointer;
-  
+
   /** Deformation field type. */
-  typedef typename Superclass::DeformationFieldType 
+  typedef typename Superclass::DeformationFieldType
   DeformationFieldType;
-  typedef typename Superclass::DeformationFieldPointer  
+  typedef typename Superclass::DeformationFieldPointer
   DeformationFieldPointer;
 
   /** FiniteDifferenceFunction type. */
@@ -102,10 +103,10 @@ public:
 
   /** MIRegistrationFilterFunction type. */
   typedef itk::MIRegistrationFunction<FixedImageType,MovingImageType,
-                                     DeformationFieldType>  MIRegistrationFunctionType;
+  DeformationFieldType>  MIRegistrationFunctionType;
 
   typedef typename MIRegistrationFunctionType::RadiusType RadiusType;
-  
+
   /** Get the metric value. The metric value is computed over the the
    * overlapping region between the two images.  This is value is only
    * available for the previous iteration and NOT the current
@@ -115,7 +116,7 @@ public:
 
   virtual void SetMIRadius(RadiusType radius);
   virtual RadiusType GetMIRadius() const;
-  
+
 protected:
   MIRegistrationFilter();
   ~MIRegistrationFilter() {}
@@ -126,6 +127,9 @@ protected:
 
   /** Apply update. */
   virtual void ApplyUpdate(TimeStepType dt);
+
+  /** Update the Input requested region. */
+  virtual void GenerateInputRequestedRegion();
 
 private:
   MIRegistrationFilter(const Self&); //purposely not implemented

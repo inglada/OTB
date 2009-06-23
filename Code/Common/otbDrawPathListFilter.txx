@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -37,8 +37,9 @@ DrawPathListFilter<TInputImage,TInputPath,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(2);
   this->SetNumberOfRequiredOutputs(1);
-  m_PathValue = static_cast<OutputImagePixelType>(255); 
+  m_PathValue = static_cast<OutputImagePixelType>(255);
   m_UseInternalPathValue = false;
+  m_AddValue = false;
 }
 
 
@@ -56,9 +57,9 @@ DrawPathListFilter<TInputImage,TInputPath,TOutputImage>
 ::GetInputPath(void)
 {
   if (this->GetNumberOfInputs() < 2)
-    {
+  {
     return 0;
-    }
+  }
   return static_cast<const InputPathListType *>(this->ProcessObjectType::GetInput(1));
 }
 /**
@@ -85,33 +86,38 @@ DrawPathListFilter<TInputImage,TInputPath,TOutputImage>
   OutputIteratorType outIt(outputPtr,outputPtr->GetLargestPossibleRegion());
   InputIteratorType inIt(inputPtr,inputPtr->GetLargestPossibleRegion());
 
-  for(outIt.GoToBegin(),inIt.GoToBegin();
-      (!outIt.IsAtEnd() && !inIt.IsAtEnd());
-      ++outIt,++inIt)
-    {
-      outIt.Set(static_cast<OutputImagePixelType>(inIt.Get()));
-    }
-  
-  // Then we use otb::PolyLineImageIterator to draw polylines
+  for (outIt.GoToBegin(),inIt.GoToBegin();
+       (!outIt.IsAtEnd() && !inIt.IsAtEnd());
+       ++outIt,++inIt)
+  {
+    outIt.Set(static_cast<OutputImagePixelType>(inIt.Get()));
+  }
 
-  for(PathListIteratorType plIt = pathListPtr->Begin(); plIt!=pathListPtr->End();++plIt)
+  // Then we use otb::PolyLineImageIterator to draw polylines
+  for (PathListIteratorType plIt = pathListPtr->Begin(); plIt!=pathListPtr->End();++plIt)
+  {
+    OutputImagePixelType value = itk::NumericTraits<OutputImagePixelType>::Zero;
+    if (m_UseInternalPathValue && plIt.Get()->GetMetaDataDictionary().HasKey("Value"))
     {
-      OutputImagePixelType value;
-      if(m_UseInternalPathValue && plIt.Get()->GetMetaDataDictionary().HasKey("Value"))
-	{
-	  itk::ExposeMetaData<OutputImagePixelType>(plIt.Get()->GetMetaDataDictionary(),"Value",value);
-	}
-      else
-	{
-	  value = static_cast<OutputImagePixelType>(m_PathValue);
-	}
-      PolyLineIteratorType imageIt(outputPtr,plIt.Get());
-      
-      for(imageIt.GoToBegin();!imageIt.IsAtEnd();++imageIt)
-	{
-	  imageIt.Set(value);
-	}
+      itk::ExposeMetaData<OutputImagePixelType>(plIt.Get()->GetMetaDataDictionary(),"Value",value);
     }
+    else
+    {
+      value = static_cast<OutputImagePixelType>(m_PathValue);
+    }
+    PolyLineIteratorType imageIt(outputPtr,plIt.Get());
+    for (imageIt.GoToBegin();!imageIt.IsAtEnd();++imageIt)
+    {
+      if (m_AddValue)
+      {
+        imageIt.Set(imageIt.Get()+1);
+      }
+      else
+      {
+        imageIt.Set(value);
+      }
+    }
+  }
 }
 /**
  * Printself method
@@ -126,4 +132,4 @@ DrawPathListFilter<TInputImage,TInputPath,TOutputImage>
 } // end namespace otb
 
 #endif
- 
+

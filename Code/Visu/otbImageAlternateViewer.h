@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,118 +34,120 @@ PURPOSE.  See the above copyright notices for more information.
 namespace otb
 {
 /** \class ImageAlternateViewer
- *  \brief 
+   *  \brief <b>DEPRECATED</b>
  *
- * \ingroup Visu
+   *  \deprecated use the new Visualization framework instead.
+   * \sa StandardImageViewer
+   *
  */
 template <class TPixel>
 class ITK_EXPORT ImageAlternateViewer
-  : public Fl_Gl_Window, public itk::Object
+      : public Fl_Gl_Window, public itk::Object
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageAlternateViewer            Self;
   typedef itk::Object                     Superclass;
   typedef itk::SmartPointer<Self>         Pointer;
   typedef itk::SmartPointer<const Self>   ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageAlternateViewer,Object);
-  
+
   /** Template related typedef */
-    typedef TPixel     PixelType;
-    typedef otb::VectorImage<PixelType,2> ImageType;
-    typedef otb::Image<PixelType,2> SingleImageType;
-    typedef typename ImageType::PixelType VectorPixelType;
-    typedef typename ImageType::Pointer ImagePointerType;
-    typedef typename ImageType::SizeType SizeType;
-    typedef typename ImageType::IndexType IndexType;
-    typedef typename ImageType::RegionType RegionType;
-    typedef typename ImageType::SpacingType SpacingType;
-    typedef typename ImageType::PointType PointType;
+  typedef TPixel     PixelType;
+  typedef otb::VectorImage<PixelType,2> ImageType;
+  typedef otb::Image<PixelType,2> SingleImageType;
+  typedef typename ImageType::PixelType VectorPixelType;
+  typedef typename ImageType::Pointer ImagePointerType;
+  typedef typename ImageType::SizeType SizeType;
+  typedef typename ImageType::IndexType IndexType;
+  typedef typename ImageType::RegionType RegionType;
+  typedef typename ImageType::SpacingType SpacingType;
+  typedef typename ImageType::PointType PointType;
 
-    typedef otb::ImageList<SingleImageType> ImageListType;
-    typedef otb::VectorImageToImageListFilter<ImageType,ImageListType> VectorImageDecompositionFilterType;
-    typedef typename VectorImageDecompositionFilterType::Pointer VectorImageDecompositionFilterPointerType;
-    
-    typedef itk::InterpolateImageFunction<SingleImageType,double> InterpolatorType;
-    typedef typename InterpolatorType::Pointer InterpolatorPointerType;
-    typedef itk::LinearInterpolateImageFunction<SingleImageType,double> DefaultInterpolatorType;
+  typedef otb::ImageList<SingleImageType> ImageListType;
+  typedef otb::VectorImageToImageListFilter<ImageType,ImageListType> VectorImageDecompositionFilterType;
+  typedef typename VectorImageDecompositionFilterType::Pointer VectorImageDecompositionFilterPointerType;
 
-    typedef itk::ImageRegionSplitter<2>  SplitterType;
-    typedef typename SplitterType::Pointer SplitterPointerType;
+  typedef itk::InterpolateImageFunction<SingleImageType,double> InterpolatorType;
+  typedef typename InterpolatorType::Pointer InterpolatorPointerType;
+  typedef itk::LinearInterpolateImageFunction<SingleImageType,double> DefaultInterpolatorType;
 
-    itkSetMacro(RedChannelIndex,unsigned int);
-    itkGetMacro(RedChannelIndex,unsigned int);
-    
-    itkSetMacro(GreenChannelIndex,unsigned int);
-    itkGetMacro(GreenChannelIndex,unsigned int);
+  typedef itk::ImageRegionSplitter<2>  SplitterType;
+  typedef typename SplitterType::Pointer SplitterPointerType;
 
-    itkSetMacro(BlueChannelIndex,unsigned int);
-    itkGetMacro(BlueChannelIndex,unsigned int);
+  itkSetMacro(RedChannelIndex,unsigned int);
+  itkGetMacro(RedChannelIndex,unsigned int);
 
-    itkSetMacro(MaxComponentValues,VectorPixelType);
-    itkGetMacro(MaxComponentValues,VectorPixelType);
+  itkSetMacro(GreenChannelIndex,unsigned int);
+  itkGetMacro(GreenChannelIndex,unsigned int);
 
-    itkSetMacro(MinComponentValues,VectorPixelType);
-    itkGetMacro(MinComponentValues,VectorPixelType);
+  itkSetMacro(BlueChannelIndex,unsigned int);
+  itkGetMacro(BlueChannelIndex,unsigned int);
 
-    itkSetMacro(SpacingZoomFactor,double);
-    itkGetMacro(SpacingZoomFactor,double);
+  itkSetMacro(MaxComponentValues,VectorPixelType);
+  itkGetMacro(MaxComponentValues,VectorPixelType);
 
-    itkSetMacro(OpenGlIsotropicZoom,double);
-    itkGetMacro(OpenGlIsotropicZoom,double);
+  itkSetMacro(MinComponentValues,VectorPixelType);
+  itkGetMacro(MinComponentValues,VectorPixelType);
 
-    void SetViewedRegionCenter(const IndexType & index);
-    itkGetMacro(ViewedRegionCenter,IndexType);
+  itkSetMacro(SpacingZoomFactor,double);
+  itkGetMacro(SpacingZoomFactor,double);
 
-    itkSetObjectMacro(Image,ImageType);
-    itkGetObjectMacro(Image,ImageType);
-    
-    itkSetObjectMacro(SecondImage,ImageType);
-    itkGetObjectMacro(SecondImage,ImageType);
+  itkSetMacro(OpenGlIsotropicZoom,double);
+  itkGetMacro(OpenGlIsotropicZoom,double);
+
+  void SetViewedRegionCenter(const IndexType & index);
+  itkGetMacro(ViewedRegionCenter,IndexType);
+
+  itkSetObjectMacro(Image,ImageType);
+  itkGetObjectMacro(Image,ImageType);
+
+  itkSetObjectMacro(SecondImage,ImageType);
+  itkGetObjectMacro(SecondImage,ImageType);
 
 
-    itkSetMacro(DisplayExtent,RegionType);
-    itkGetMacro(DisplayExtent,RegionType);
+  itkSetMacro(DisplayExtent,RegionType);
+  itkGetMacro(DisplayExtent,RegionType);
 
-    itkGetObjectMacro(ZoomInInterpolator,InterpolatorType);
-    itkSetObjectMacro(ZoomInInterpolator,InterpolatorType);
-    itkGetObjectMacro(ZoomOutInterpolator,InterpolatorType);
-    itkSetObjectMacro(ZoomOutInterpolator,InterpolatorType);
+  itkGetObjectMacro(ZoomInInterpolator,InterpolatorType);
+  itkSetObjectMacro(ZoomInInterpolator,InterpolatorType);
+  itkGetObjectMacro(ZoomOutInterpolator,InterpolatorType);
+  itkSetObjectMacro(ZoomOutInterpolator,InterpolatorType);
 
-    /**
-     * Set view mode to RGB.
-     */
-    void SetViewModelToRGB(void);
-    /**
-     * Set view mode to Grayscale.
-     */
-    void SetViewModelToGrayscale(void);
+  /**
+   * Set view mode to RGB.
+   */
+  void SetViewModelToRGB(void);
+  /**
+   * Set view mode to Grayscale.
+   */
+  void SetViewModelToGrayscale(void);
 
-    /**
-     * Set insight view model to RGB
-     */
-    void SetInsightViewModelToRGB(void);
+  /**
+   * Set insight view model to RGB
+   */
+  void SetInsightViewModelToRGB(void);
 
-    /** 
-     * Set insight view model to grayscale
-     */
-    void SetInsightViewModelToGrayscale(void);
+  /**
+   * Set insight view model to grayscale
+   */
+  void SetInsightViewModelToGrayscale(void);
 
-    /** Normalization function */
-    unsigned char Normalize(PixelType value, unsigned int channelIndex);
+  /** Normalization function */
+  unsigned char Normalize(PixelType value, unsigned int channelIndex);
 
-    void Show(void);
-    
-    void Reset(void);
+  void Show(void);
 
-    /** Initialize the widget */
-    virtual void Init(int x, int y, int w, int h, const char * l);
-  
+  void Reset(void);
+
+  /** Initialize the widget */
+  virtual void Init(int x, int y, int w, int h, const char * l);
+
   /** Resize the widget */
   virtual void resize(int x, int y, int w, int h);
 
@@ -154,43 +156,43 @@ protected:
   ImageAlternateViewer();
   /** Destructor */
   virtual ~ImageAlternateViewer();
-  
+
   /** Draw the widget */
   virtual void draw(void);
-  
+
   /** Partial draw routine */
   virtual void Draw(unsigned char * buffer,RegionType& region);
-  
+
   /** Reset opengl context */
   virtual void ResetOpenGlContext(void);
 
   /** Handle */
   virtual int  handle(int event);
 
- /*  /\** Rebuild opengl buffer *\/ */
-/*   virtual void RebuildOpenGlBuffer(void); */
+  /*  /\** Rebuild opengl buffer *\/ */
+  /*   virtual void RebuildOpenGlBuffer(void); */
 
 
-  
+
   virtual void IncrementalOpenGlBufferUpdate(void);
 
   RegionType GetAdditionalBufferRegion(unsigned int i);
-  
+
   unsigned char * CreateAdditionalBuffer(RegionType region,ImagePointerType image,bool rgb);
-  
-  virtual void MergeBuffersAndFreeMemory(std::vector<unsigned char *> bufferList, 
-					 std::vector<RegionType> bufferRegionList);
+
+  virtual void MergeBuffersAndFreeMemory(std::vector<unsigned char *> bufferList,
+                                         std::vector<RegionType> bufferRegionList);
 
   virtual void AdditionalRedraw(void);
 
   virtual void DecorationRedraw(void);
-  
+
   virtual void DrawRegionBoundary(RegionType& region);
 
   virtual long IndexInOldGrid(PointType point, PointType oldUpperLeft, SpacingType spacing, SizeType size);
 
   RegionType ComputeRequestedRegion(RegionType &region);
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
@@ -236,7 +238,7 @@ private:
   VectorImageDecompositionFilterPointerType m_DecompositionFilter;
   /** Region requested for decomposition */
   RegionType m_RequestedRegion;
-  
+
   /** buffered region */
   RegionType m_BufferedRegion;
 
@@ -269,9 +271,9 @@ private:
   RegionType m_SubWindowRegion;
   /** subwindow mode switch */
   bool m_SubWindowMode;
-/** subwindow mode switch */
+  /** subwindow mode switch */
   bool m_SubWindowMove;
-  
+
 };
 }// End namespace otb
 #ifndef OTB_MANUAL_INSTANTIATION

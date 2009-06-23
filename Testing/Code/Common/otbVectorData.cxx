@@ -9,20 +9,20 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
-  
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "itkExceptionObject.h"
 #include "otbMacro.h"
-
+#include <fstream>
 #include "otbVectorData.h"
 
 int otbVectorData(int argc, char * argv[])
 {
- 
+
   typedef otb::VectorData<double,2> VectorDataType;
   typedef VectorDataType::DataNodeType DataNodeType;
   typedef DataNodeType::PointType PointType;
@@ -31,13 +31,13 @@ int otbVectorData(int argc, char * argv[])
 
   //Instantiation
   VectorDataType::Pointer data = VectorDataType::New();
- 
+
   DataNodeType::Pointer document = DataNodeType::New();
   DataNodeType::Pointer folder = DataNodeType::New();
   DataNodeType::Pointer point = DataNodeType::New();
   DataNodeType::Pointer line = DataNodeType::New();
   DataNodeType::Pointer polygon = DataNodeType::New();
-  
+
 
   document->SetNodeType(otb::DOCUMENT);
   folder->SetNodeType(otb::FOLDER);
@@ -50,12 +50,12 @@ int otbVectorData(int argc, char * argv[])
   point->SetNodeId("FEATURE_POINT");
   line->SetNodeId("FEATURE_LINE");
   polygon->SetNodeId("FEATURE_POLYGON");
-  
+
   PointType p;
   p.Fill(5);
 
- point->SetPoint(p);;
-  
+  point->SetPoint(p);;
+
   LineType::Pointer l = LineType::New();
   line->SetLine(l);
 
@@ -70,7 +70,20 @@ int otbVectorData(int argc, char * argv[])
   data->GetDataTree()->Add(line,folder);
   data->GetDataTree()->Add(polygon,folder);
 
-  std::cout<<data<<std::endl;
+  if (argc < 2)
+  {
+    std::cout << data << std::endl;
+  }
+  else
+  {
+    const char * outfile = argv[1];
+    std::ofstream file;
+    file.open(outfile);
+
+    file << data << std::endl;
+    file.close();
+
+  }
 
   return EXIT_SUCCESS;
 }

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -35,9 +35,9 @@ template <class TInputImage, class TOutputPath>
 ImageToCarvingPathFilter<TInputImage, TOutputPath>
 ::ImageToCarvingPathFilter()
 {
-	m_ForegroundValue = PixelType(255);
-        m_Direction = 0;
-        m_EnergyPerPix = 0.0;
+  m_ForegroundValue = PixelType(255);
+  m_Direction = 0;
+  m_EnergyPerPix = 0.0;
 }
 /**
  * Main computation method.
@@ -47,49 +47,49 @@ void
 ImageToCarvingPathFilter<TInputImage, TOutputPath>
 ::GenerateData(void)
 {
-  
+
   const InputImageType * inputImage = this->GetInput();
   OutputPathType * outputPath       = this->GetOutput();
- 
+
   typedef itk::ImageSliceConstIteratorWithIndex
-      <InputImageType> IteratorType;
+  <InputImageType> IteratorType;
   typedef itk::NeighborhoodIterator< InputImageType >
-      NeighborhoodIteratorType;
-  
-  IteratorType it(inputImage, 
-           inputImage->GetLargestPossibleRegion()); 
+  NeighborhoodIteratorType;
+
+  IteratorType it(inputImage,
+                  inputImage->GetLargestPossibleRegion());
   it.GoToBegin();
- 
+
   PixelType maxValue = itk::NumericTraits< PixelType >::max();
-  
+
   typename InputImageType::Pointer energyImage = InputImageType::New();
   energyImage->SetRegions(inputImage-> GetLargestPossibleRegion());
   energyImage->Allocate();
-  
+
   typename NeighborhoodIteratorType::RadiusType radius;
   radius.Fill(1);
   NeighborhoodIteratorType neighIt(radius, energyImage,
                                    energyImage-> GetLargestPossibleRegion() );
   neighIt.GoToBegin();
-  
+
   unsigned int dir0;
   unsigned int dir1;
-  
+
   typename IteratorType::OffsetType UP0;
   typename IteratorType::OffsetType UP1;
   typename IteratorType::OffsetType UP2;
   typename IteratorType::OffsetType NEXT;
-  
-  
-    const typename IteratorType::OffsetType LEFT   ={{-1,0}}; 
-    const typename IteratorType::OffsetType RIGHT  ={{1,0}}; 
-    const typename IteratorType::OffsetType UP     ={{0,-1}}; 
-    const typename IteratorType::OffsetType DOWN   ={{0,1}}; 
-    const typename IteratorType::OffsetType LEFTUP   ={{-1,-1}}; 
-//    const typename IteratorType::OffsetType RIGHTDOWN ={{1,1}}; 
-    const typename IteratorType::OffsetType RIGHTUP  ={{1,-1}}; 
-    const typename IteratorType::OffsetType LEFTDOWN ={{-1,1}}; 
-//    const typename IteratorType::OffsetType CENTER ={{0,0}}; 
+
+
+  const typename IteratorType::OffsetType LEFT   ={{-1,0}};
+  const typename IteratorType::OffsetType RIGHT  ={{1,0}};
+  const typename IteratorType::OffsetType UP     ={{0,-1}};
+  const typename IteratorType::OffsetType DOWN   ={{0,1}};
+  const typename IteratorType::OffsetType LEFTUP   ={{-1,-1}};
+//    const typename IteratorType::OffsetType RIGHTDOWN ={{1,1}};
+  const typename IteratorType::OffsetType RIGHTUP  ={{1,-1}};
+  const typename IteratorType::OffsetType LEFTDOWN ={{-1,1}};
+//    const typename IteratorType::OffsetType CENTER ={{0,0}};
 
   if (m_Direction == 0)
   {
@@ -109,25 +109,26 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
     UP2 = LEFTDOWN;
     NEXT = RIGHT;
   }
-  
+
   /** Compute the energy image top-down or left-right
    * with cumulative energy (dynamic programming first step) */
   it.SetFirstDirection( dir0 );
   it.SetSecondDirection( dir1 );
-  it.GoToBegin(); neighIt.GoToBegin();
+  it.GoToBegin();
+  neighIt.GoToBegin();
   while (!it.IsAtEnd())
   {
     while (!it.IsAtEndOfSlice())
     {
-      while(!it.IsAtEndOfLine())
+      while (!it.IsAtEndOfLine())
       {
         neighIt.SetLocation(it.GetIndex());//TODO bad for performances... find a better option
         // this is really about 20% of total processing time !!!
-  
+
         PixelType min = maxValue;
         bool isInside = false;
         bool flag = false;
-        if (neighIt.GetPixel(UP0, isInside) < min) 
+        if (neighIt.GetPixel(UP0, isInside) < min)
         {
           if (isInside)
           {
@@ -135,7 +136,7 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
             flag = true;
           }
         }
-        if (neighIt.GetPixel(UP1, isInside) < min) 
+        if (neighIt.GetPixel(UP1, isInside) < min)
         {
           if (isInside)
           {
@@ -143,7 +144,7 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
             flag = true;
           }
         }
-        if (neighIt.GetPixel(UP2, isInside) < min) 
+        if (neighIt.GetPixel(UP2, isInside) < min)
         {
           if (isInside)
           {
@@ -151,44 +152,44 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
             flag = true;
           }
         }
-        
+
         if (!flag) //no previous value
         {
           min = 0;
         }
-        
+
         PixelType newValue = it.Get() + min;
         neighIt.SetCenterPixel(newValue);
-        
+
         ++it;
-        
+
       }
       it.NextLine();
     }
     it.NextSlice();
   }
-  
-  
 
-  
-    /** Follow the minima bottom-up or right-left
-     * (dynamic programming second step) */
-  
+
+
+
+  /** Follow the minima bottom-up or right-left
+   * (dynamic programming second step) */
+
   //find the starting point to follow on the last line
   typedef itk::ImageLinearConstIteratorWithIndex< InputImageType >
-      LinearIteratorType;
-    
-  LinearIteratorType LinIt(energyImage, 
-                  energyImage->GetLargestPossibleRegion());
+  LinearIteratorType;
+
+  LinearIteratorType LinIt(energyImage,
+                           energyImage->GetLargestPossibleRegion());
   LinIt.SetDirection(dir0);
   LinIt.GoToReverseBegin();
   typedef typename InputImageType::IndexType IndexType;
 
   PixelType min = maxValue;
   IndexType indexToAdd;
-  while(!LinIt.IsAtReverseEndOfLine())
+  while (!LinIt.IsAtReverseEndOfLine())
   {
-    if(LinIt.Get()<min)
+    if (LinIt.Get()<min)
     {
       min=LinIt.Get();
       indexToAdd=LinIt.GetIndex();
@@ -197,7 +198,7 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
   }
   outputPath->AddVertex(indexToAdd);
   m_EnergyPerPix = ((double) min)/ (inputImage->GetLargestPossibleRegion().GetSize())[dir1];
-  
+
   //follow the min
   neighIt.SetLocation(indexToAdd);
   bool flag=true;
@@ -207,8 +208,8 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
     PixelType min = maxValue;
     IndexType indexToAdd;
     bool isInside = false;
-    
-    if (neighIt.GetPixel(UP0, isInside) < min) 
+
+    if (neighIt.GetPixel(UP0, isInside) < min)
     {
       if (isInside)
       {
@@ -217,8 +218,8 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
         flag = true;
       }
     }
-    
-    if (neighIt.GetPixel(UP1, isInside) < min) 
+
+    if (neighIt.GetPixel(UP1, isInside) < min)
     {
       if (isInside)
       {
@@ -227,8 +228,8 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
         flag = true;
       }
     }
-    
-    if (neighIt.GetPixel(UP2, isInside) < min) 
+
+    if (neighIt.GetPixel(UP2, isInside) < min)
     {
       if (isInside)
       {
@@ -237,15 +238,15 @@ ImageToCarvingPathFilter<TInputImage, TOutputPath>
         flag = true;
       }
     }
-    
+
     if (flag)
     {
       outputPath->AddVertex(indexToAdd);
       neighIt.SetLocation(indexToAdd);
     }
-     
+
   }
-  
+
 }
 
 template <class TInputImage, class TOutputPath>

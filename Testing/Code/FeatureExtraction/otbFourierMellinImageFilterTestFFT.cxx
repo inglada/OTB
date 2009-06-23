@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,7 +33,7 @@ int otbFourierMellinImageFilterTestFFT(int argc, char* argv[])
   const char * outputFilename = argv[2];
   typedef double                                          InputPixelType;
   typedef std::complex<InputPixelType>                    OutputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+  const   unsigned int                                  Dimension = 2;
 
   typedef itk::VnlFFTRealToComplexConjugateImageFilter<InputPixelType,Dimension> FourierImageFilterType;
 
@@ -42,7 +42,7 @@ int otbFourierMellinImageFilterTestFFT(int argc, char* argv[])
 
   typedef otb::ImageFileReader< InputImageType  >         ReaderType;
   typedef otb::ImageFileWriter< OutputImageType >         WriterType;
-    
+
   FourierImageFilterType::Pointer FourierTransform = FourierImageFilterType::New();
 
   ReaderType::Pointer reader = ReaderType::New();
@@ -53,10 +53,10 @@ int otbFourierMellinImageFilterTestFFT(int argc, char* argv[])
 
   FourierTransform->SetInput( reader->GetOutput() );
   writer->SetInput( FourierTransform->GetOutput() );
-        
-  writer->Update(); 
-	
-  
-  
+
+  writer->Update();
+
+
+
   return EXIT_SUCCESS;
 }

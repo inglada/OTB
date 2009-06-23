@@ -1,12 +1,13 @@
 //*******************************************************************
-// Copyright (C) 2000 ImageLinks Inc. 
 //
-// License:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimDate.h 12992 2008-06-05 18:09:11Z gpotts $
+// $Id: ossimDate.h 14478 2009-05-08 18:24:22Z dburken $
 #ifndef ossimDate_HEADER
 #define ossimDate_HEADER
 #include <ctime>
@@ -123,6 +124,19 @@ public:
    std::ostream& printTime(std::ostream & os, int f =timefmt) const;
    std::ostream& printDate(std::ostream & os, int f =datefmt) const;
 
+   /**
+    * @brief method to dump all the data members.  This is the tm struct +
+    * the theFractionalSecond from this class.
+    *
+    * @note: tm_gmtoff and  tm_zone from tm struct are not printed as they
+    * are not standard.
+    *
+    * @param os Stream to dump to.
+    *
+    * @return stream.
+    */
+   std::ostream& dump(std::ostream& os) const;
+
 
     int getYear()const;
 
@@ -162,7 +176,8 @@ public:
     double getFractionalSecond()const;
     ossimLocalTm& setHour(int h);
     ossimLocalTm& setMin(int m);
-    ossimLocalTm& setSec(int s);
+   ossimLocalTm& setSec(int s);
+   ossimLocalTm& setFloatSec(double s);
     ossimLocalTm& setFractionalSecond(double fractS);
 
     /**
@@ -172,15 +187,15 @@ public:
     time_t getTicks()const;
     time_t getEpoc()const;
     
-    void addSeconds(ossim_float64 n);
-    void addMinutes(ossim_float64 n);
-    void addHours(ossim_float64 n);
-    void addDays(ossim_float64 n);
-    
-    ossim_float64 deltaInSeconds(const ossimLocalTm& d)const;
-    ossim_float64 deltaInMinutes(const ossimLocalTm& d)const;
-    ossim_float64 delatInHours(const ossimLocalTm& d)const;
-    ossim_float64 deltaInDays(const ossimLocalTm& d)const;
+   void addSeconds(ossim_float64 n);
+   void addMinutes(ossim_float64 n);
+   void addHours(ossim_float64 n);
+   void addDays(ossim_float64 n);
+   
+   ossim_float64 deltaInSeconds(const ossimLocalTm& d)const;
+   ossim_float64 deltaInMinutes(const ossimLocalTm& d)const;
+   ossim_float64 delatInHours(const ossimLocalTm& d)const;
+   ossim_float64 deltaInDays(const ossimLocalTm& d)const;
     /**
      * Will not adjust for timezone.  The passed in value is based on seconds.
      */ 
@@ -191,6 +206,8 @@ public:
      */ 
     void setTimeGivenEpoc(time_t ticks);
     
+   bool setIso8601(const std::string& timeString, bool shiftToGmtOffsetZero=false);
+   
     ossimRefPtr<ossimXmlNode> saveXml()const;
     bool loadXml(ossimRefPtr<ossimXmlNode> dateNode);
     

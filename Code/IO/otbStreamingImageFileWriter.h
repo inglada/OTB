@@ -10,17 +10,16 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #ifndef __otbStreamingImageFileWriter_h
 #define __otbStreamingImageFileWriter_h
 
-#include "itkMacro.h"
+#include "otbMacro.h"
 #include "itkImageIOBase.h"
-#include "itkImageSource.h"
 #include "itkImageToImageFilter.h"
 #include "itkImageRegionSplitter.h"
 #include "otbStreamingTraits.h"
@@ -35,13 +34,13 @@ namespace otb
  * StreamingImageFileWriter interfaces with an ImageIO class to write out the
  * data whith streaming process.
  *
- * StreamingImageFileWriter will divide the output into severalpieces 
+ * StreamingImageFileWriter will divide the output into severalpieces
  * (controlled by SetNumberOfStreamDivisions), and call the upstream
  * pipeline for each piece, tiling the individual outputs into one large
  * output. This reduces the memory footprint for the application since
  * each filter does not have to process the entire dataset at once.
  * StreamingImageFileWriter will write directly the streaming buffer in the image file.
- * The output image is not completely allocated ; just streaming size, 
+ * The output image is not completely allocated; just streaming size,
  * calculate whith the NumberOfStreamDivisions, is allocate.
  *
  * \sa ImageFileWriter
@@ -60,19 +59,19 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(StreamingImageFileWriter,itk::ImageToImageFilter);
 
   /** Some typedefs for the input and output. */
   typedef TInputImage InputImageType;
   typedef typename InputImageType::Pointer InputImagePointer;
-  typedef typename InputImageType::RegionType InputImageRegionType; 
-  typedef typename InputImageType::PixelType InputImagePixelType; 
+  typedef typename InputImageType::RegionType InputImageRegionType;
+  typedef typename InputImageType::PixelType InputImagePixelType;
   typedef TInputImage OutputImageType;
   typedef typename OutputImageType::Pointer OutputImagePointer;
-  typedef typename OutputImageType::RegionType OutputImageRegionType; 
-  typedef typename OutputImageType::PixelType OutputImagePixelType; 
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
+  typedef typename OutputImageType::PixelType OutputImagePixelType;
   typedef typename Superclass::DataObjectPointer DataObjectPointer;
 
   /** Streaming traits helper typedef */
@@ -85,23 +84,23 @@ public:
   /** SmartPointer to a region splitting object */
   typedef itk::ImageRegionSplitter<itkGetStaticConstMacro(InputImageDimension)>  SplitterType;
   typedef typename SplitterType::Pointer RegionSplitterPointer;
-  
+
   /**  Set buffer memory size (in bytes) use to calculate the number of stream divisions */
   void SetBufferMemorySize(unsigned long );
- 
+
   /**  Set the buffer number of lines use to calculate the number of stream divisions */
   void SetBufferNumberOfLinesDivisions(unsigned long);
- 
-  /**  The number of stream divisions is calculate by using 
-   * OTB_STREAM_IMAGE_SIZE_TO_ACTIVATE_STREAMING and 
+
+  /**  The number of stream divisions is calculate by using
+   * OTB_STREAM_IMAGE_SIZE_TO_ACTIVATE_STREAMING and
    * OTB_STREAM_MAX_SIZE_BUFFER_FOR_STREAMING cmake variables.
    */
   void SetAutomaticNumberOfStreamDivisions(void);
-	
-	/** Set the tiling automatic mode for streaming division */
-	void SetTilingStreamDivisions(void);
-	/** Choose number of divisions in tiling streaming division */
-	void SetTilingStreamDivisions(unsigned long);
+
+  /** Set the tiling automatic mode for streaming division */
+  void SetTilingStreamDivisions(void);
+  /** Choose number of divisions in tiling streaming division */
+  void SetTilingStreamDivisions(unsigned long);
 
   /** Return the string to indicate the method use to calculate number of stream divisions. */
   std::string GetMethodUseToCalculateNumberOfStreamDivisions(void);
@@ -109,7 +108,7 @@ public:
   /** Set the number of pieces to divide the input.  The upstream pipeline
    * will be executed this many times. */
   void SetNumberOfStreamDivisions(unsigned long);
-  
+
   /** Get the number of pieces to divide the input. The upstream pipeline
    * will be executed this many times. */
   unsigned long GetNumberOfStreamDivisions(void);
@@ -129,7 +128,7 @@ public:
 
 
   /** ImageFileWriter Methods */
-  
+
   /** Specify the name of the output file to write. */
   itkGetStringMacro(FileName);
 
@@ -138,13 +137,13 @@ public:
    * \param filename the name of the file.
    */
   virtual void SetFileName(std::string filename)
-    {
-      m_FileName = filename;
-      m_ImageIO = NULL;
-      this->Modified();
-    }
+  {
+    m_FileName = filename;
+    m_ImageIO = NULL;
+    this->Modified();
+  }
 
-  
+
   /** Specify the region to write. If left NULL, then the whole image
    * is written. */
   void SetIORegion(const itk::ImageIORegion & region);
@@ -155,10 +154,10 @@ public:
   itkGetConstReferenceMacro(UseCompression,bool);
   itkBooleanMacro(UseCompression);
 
-  /** By default the MetaDataDictionary is taken from the input image and 
-   *  passed to the ImageIO. In some cases, however, a user may prefer to 
+  /** By default the MetaDataDictionary is taken from the input image and
+   *  passed to the ImageIO. In some cases, however, a user may prefer to
    *  introduce her/his own MetaDataDictionary. This is often the case of
-   *  the ImageSeriesWriter. This flag defined whether the MetaDataDictionary 
+   *  the ImageSeriesWriter. This flag defined whether the MetaDataDictionary
    *  to use will be the one from the input image or the one already set in
    *  the ImageIO object. */
   itkSetMacro(UseInputMetaDataDictionary,bool);
@@ -183,30 +182,30 @@ protected:
 private:
   StreamingImageFileWriter(const StreamingImageFileWriter&); //purposely not implemented
   void operator=(const StreamingImageFileWriter&); //purposely not implemented
-  
+
   /** This method calculate the number of stream divisions, by using the CalculationDivision type */
   unsigned long CalculateNumberOfStreamDivisions(void);
-  
-  /** Use to define the method used to calculate number of divisions */ 
+
+  /** Use to define the method used to calculate number of divisions */
   unsigned long m_BufferMemorySize;
   unsigned long m_BufferNumberOfLinesDivisions;
   unsigned long m_NumberOfStreamDivisions;
-  
+
   RegionSplitterPointer m_RegionSplitter;
- 
+
   /** Use to determine method of calculation number of divisions */
   CalculationDivisionEnumType m_CalculationDivision;
-  
+
   /** ImageFileWriter Parameters */
   std::string        m_FileName;
-  
+
   itk::ImageIOBase::Pointer m_ImageIO;
-  
+
   bool m_UserSpecifiedImageIO; //track whether the ImageIO is user specified
-  
+
   itk::ImageIORegion m_IORegion;
   bool m_UserSpecifiedIORegion; //
-                                //track whether the region is user specified
+  //track whether the region is user specified
   bool m_FactorySpecifiedImageIO; //track whether the factory mechanism set the ImageIO
   bool m_UseCompression;
   bool m_UseInputMetaDataDictionary; // whether to use the MetaDataDictionary from the input or not.

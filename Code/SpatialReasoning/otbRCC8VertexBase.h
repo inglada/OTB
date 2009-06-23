@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -26,17 +26,17 @@ namespace otb
 {
 /** \class RCC8VertexBase
  *  \brief Base class to represent a vertex in a RCC8 Graph.
- *  
+ *
  *  This class can be derived to add attributes to the vertices of the
  *  RCC8 graph.
  *
  * \sa RCC8Graph, RCC8Edge
  */
 template <class TPath>
-class ITK_EXPORT RCC8VertexBase 
-: public itk::DataObject
+class ITK_EXPORT RCC8VertexBase
+      : public itk::DataObject
 {
- public:
+public:
   /** Standard class typedefs */
   typedef RCC8VertexBase Self;
   typedef itk::DataObject  Superclass;
@@ -50,14 +50,14 @@ class ITK_EXPORT RCC8VertexBase
   typedef TPath PathType;
   typedef typename PathType::Pointer PathPointerType;
   typedef typename PathType::ContinuousIndexType ContinuousIndexType;
-  
+
   /** char* vector attributes */
   typedef std::map<std::string,std::string> AttributesMapType;
- 
+
   /** Segmentation image index accessors */
   itkGetMacro(SegmentationLevel,unsigned int);
   itkSetMacro(SegmentationLevel,unsigned int);
- itkGetMacro(SegmentationType,bool);
+  itkGetMacro(SegmentationType,bool);
   itkSetMacro(SegmentationType,bool);
   /** Object label in image accessor */
   itkGetObjectMacro(Path,PathType);
@@ -77,11 +77,11 @@ protected:
   /** Constructor */
   RCC8VertexBase();
   /** Desctructor */
-  ~RCC8VertexBase(){};
-/** PrintSelf method */
+  ~RCC8VertexBase() {};
+  /** PrintSelf method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
- private:
+private:
   /** The segmentation level */
   unsigned int m_SegmentationLevel;
   /** True if bright details, false otherwise */

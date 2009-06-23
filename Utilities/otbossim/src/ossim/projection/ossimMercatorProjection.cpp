@@ -9,7 +9,7 @@
 //
 // Calls Geotrans Mercator projection code.  
 //*******************************************************************
-//  $Id: ossimMercatorProjection.cpp 9094 2006-06-13 19:12:40Z dburken $
+//  $Id: ossimMercatorProjection.cpp 14215 2009-04-03 11:31:42Z gpotts $
 
 #include <math.h>
 #include <ossim/projection/ossimMercatorProjection.h>
@@ -51,11 +51,10 @@ ossimMercatorProjection::ossimMercatorProjection(const ossimEllipsoid& ellipsoid
                                                  double scaleFactor)
    :ossimMapProjection(ellipsoid, origin)
 {
+   setDefaults();
    Merc_False_Easting  = falseEasting;
    Merc_False_Northing = falseNorthing;
    Merc_Scale_Factor   = scaleFactor;
-   Merc_Delta_Easting  = 20237883.0;
-   Merc_Delta_Northing = 23421740.0;
 
    update();
 }
@@ -116,6 +115,8 @@ void ossimMercatorProjection::setParameters(double falseEasting,
 
 void ossimMercatorProjection::setDefaults()
 {
+   Merc_False_Easting  = 0.0;
+   Merc_False_Northing = 0.0;
    Merc_Delta_Easting  = 20237883.0;
    Merc_Delta_Northing = 23421740.0;
    Merc_Scale_Factor   = 1.0;

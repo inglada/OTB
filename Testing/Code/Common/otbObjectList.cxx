@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -51,7 +51,7 @@ int otbObjectList(int argc, char * argv[])
 
   // Instantiating the tested object
   ImageListType::Pointer imageList = ImageListType::New();
-      
+
   // Testing reserve/capacity
   imageList->Reserve(2);
 
@@ -67,10 +67,10 @@ int otbObjectList(int argc, char * argv[])
   otbControlConditionTestMacro(imageList->Front()!=reader1->GetOutput(),"PushBack/Front()");
   otbControlConditionTestMacro(imageList->Back()!=reader2->GetOutput(),"PushBack/Back()");
 
-  // Testing resizing and related method 
+  // Testing resizing and related method
   imageList->Resize(3);
   otbControlConditionTestMacro(imageList->Size()!=3,"Resize/Size()");
-      
+
   // Testing explicit setter
   imageList->SetNthElement(2,reader3->GetOutput());
 
@@ -80,61 +80,74 @@ int otbObjectList(int argc, char * argv[])
   // Testing erase operation
   imageList->Erase(2);
   otbControlConditionTestMacro((imageList->Size()!=2)
-			       ||(imageList->GetNthElement(0)!=reader1->GetOutput())
-			       ||(imageList->GetNthElement(1)!=reader2->GetOutput()),"Erase(3)");
+                               ||(imageList->GetNthElement(0)!=reader1->GetOutput())
+                               ||(imageList->GetNthElement(1)!=reader2->GetOutput()),"Erase(3)");
 
   // Testing iterator
   ImageListType::Iterator iter = imageList->Begin();
 
   otbControlConditionTestMacro(!(iter!=imageList->End()),"Iterator/Begin()!=Iterator/End()");
   unsigned int index = 0;
-  while(iter!=imageList->End())
-    {
-      otbControlConditionTestMacro((index==0)&&(reader1->GetOutput()!=iter.Get()),"Iterator/1/iter.Get()");
-      otbControlConditionTestMacro((index==1)&&(reader2->GetOutput()!=iter.Get()),"Iterator/2/iter.Get()");
-      otbControlConditionTestMacro(index>1,"Iterator/OutOfBound/iter.Get()");
-      ++index;
-      ++iter;
-    }
-    
+  while (iter!=imageList->End())
+  {
+    otbControlConditionTestMacro((index==0)&&(reader1->GetOutput()!=iter.Get()),"Iterator/1/iter.Get()");
+    otbControlConditionTestMacro((index==1)&&(reader2->GetOutput()!=iter.Get()),"Iterator/2/iter.Get()");
+    otbControlConditionTestMacro(index>1,"Iterator/OutOfBound/iter.Get()");
+    ++index;
+    ++iter;
+  }
+
+  // Testing operator+
+  iter = imageList->Begin();
+  index=0;
+  otbControlConditionTestMacro(imageList->GetNthElement(0) != iter.Get(),
+                               "Iterator != GetNthElement(0)");
+  otbControlConditionTestMacro(imageList->GetNthElement(1) != (iter+1).Get(),
+                               "Iterator+1 != GetNthElement(1)");
+  ++iter;
+  otbControlConditionTestMacro(imageList->GetNthElement(1) != iter.Get(),
+                               "Iterator != GetNthElement(1)");
+  otbControlConditionTestMacro(imageList->GetNthElement(0) != (iter-1).Get(),
+                               "Iterator-1 != GetNthElement(0)");
+
   // Testing const iterator
   ImageListType::ConstIterator constIter = imageList->Begin();
   index = 0;
-  while(constIter!=imageList->End())
-    {
-      otbControlConditionTestMacro((index==0)&&(reader1->GetOutput()!=constIter.Get()),"ConstIterator/1/iter.Get()");
-      otbControlConditionTestMacro((index==1)&&(reader2->GetOutput()!=constIter.Get()),"ConstIterator/2/iter.Get()");
-      otbControlConditionTestMacro(index>1,"ConstIterator/OutOfBound/iter.Get()");
-      ++index;
-      ++constIter;
-    }
+  while (constIter!=imageList->End())
+  {
+    otbControlConditionTestMacro((index==0)&&(reader1->GetOutput()!=constIter.Get()),"ConstIterator/1/iter.Get()");
+    otbControlConditionTestMacro((index==1)&&(reader2->GetOutput()!=constIter.Get()),"ConstIterator/2/iter.Get()");
+    otbControlConditionTestMacro(index>1,"ConstIterator/OutOfBound/iter.Get()");
+    ++index;
+    ++constIter;
+  }
 
   //Testing reverse iterator
   ImageListType::ReverseIterator revIter = imageList->ReverseBegin();
   otbControlConditionTestMacro(!(revIter!=imageList->ReverseEnd()),"ReverseIterator/ReverseBegin()!=ReverseIterator/ReverseEnd()");
 
   index = 0;
-  while(revIter!=imageList->ReverseEnd())
-    {
-      otbControlConditionTestMacro((index==0)&&(reader2->GetOutput()!=revIter.Get()),"ReverseIterator/1/iter.Get()");
-      otbControlConditionTestMacro((index==1)&&(reader1->GetOutput()!=revIter.Get()),"ReverseIterator/2/iter.Get()");
-      otbControlConditionTestMacro(index>1,"ReverseIterator/OutOfBound/iter.Get()");
-      ++index;
-      ++revIter;
-    }
+  while (revIter!=imageList->ReverseEnd())
+  {
+    otbControlConditionTestMacro((index==0)&&(reader2->GetOutput()!=revIter.Get()),"ReverseIterator/1/iter.Get()");
+    otbControlConditionTestMacro((index==1)&&(reader1->GetOutput()!=revIter.Get()),"ReverseIterator/2/iter.Get()");
+    otbControlConditionTestMacro(index>1,"ReverseIterator/OutOfBound/iter.Get()");
+    ++index;
+    ++revIter;
+  }
 
   //Testing const reverse iterator
   ImageListType::ReverseConstIterator revConstIter = imageList->ReverseBegin();
   index = 0;
-  while(revConstIter!=imageList->ReverseEnd())
-    {
-      otbControlConditionTestMacro((index==0)&&(reader2->GetOutput()!=revConstIter.Get()),"ReverseConstIterator/1/iter.Get()");
-      otbControlConditionTestMacro((index==1)&&(reader1->GetOutput()!=revConstIter.Get()),"ReverseConstIterator/2/iter.Get()");
-      otbControlConditionTestMacro(index>1,"ReverseConstIterator/OutOfBound/iter.Get()");
-      ++index;
-      ++revConstIter;
-    }
-    
+  while (revConstIter!=imageList->ReverseEnd())
+  {
+    otbControlConditionTestMacro((index==0)&&(reader2->GetOutput()!=revConstIter.Get()),"ReverseConstIterator/1/iter.Get()");
+    otbControlConditionTestMacro((index==1)&&(reader1->GetOutput()!=revConstIter.Get()),"ReverseConstIterator/2/iter.Get()");
+    otbControlConditionTestMacro(index>1,"ReverseConstIterator/OutOfBound/iter.Get()");
+    ++index;
+    ++revConstIter;
+  }
+
   // Testing clear
   imageList->Clear();
 
@@ -151,7 +164,7 @@ int otbObjectList(int argc, char * argv[])
 
   otbControlConditionTestMacro(imageList->Size()!=1,"Erase(Iterator,Iterator)/Size()");
   otbControlConditionTestMacro(imageList->Back()!=reader1->GetOutput(),"Erase(Iterator,Iterator)/Back()");
- 
+
 
   return EXIT_SUCCESS;
 }

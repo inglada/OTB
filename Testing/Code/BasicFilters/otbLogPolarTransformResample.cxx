@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -49,14 +49,14 @@ int otbLogPolarTransformResample(int argc, char* argv[])
 
   std::cout<<interpolator<<std::endl;
   LogPolarTransformType::Pointer transform = LogPolarTransformType::New();
-    
+
   LogPolarTransformType::ParametersType params(4);
   // Center the transform
   params[0]=0.5*static_cast<double>(reader->GetOutput()->GetLargestPossibleRegion().GetSize()[0]);
   params[1]=0.5*static_cast<double>(reader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]);
   params[2]=360./1024;
   params[3]=vcl_log(vcl_sqrt(vcl_pow(static_cast<double>(reader->GetOutput()->GetLargestPossibleRegion().GetSize()[0]),2)
-			     +vcl_pow(static_cast<double>(reader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]),2))/2)/512;
+                             +vcl_pow(static_cast<double>(reader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]),2))/2)/512;
   transform->SetParameters(params);
 
   ImageType::SizeType size;
@@ -69,7 +69,7 @@ int otbLogPolarTransformResample(int argc, char* argv[])
   resampler->SetInterpolator(interpolator);
   resampler->SetDefaultPixelValue(0);
   resampler->SetSize(size);
-   
+
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(outputFileName);
   writer->SetInput(resampler->GetOutput());

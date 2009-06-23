@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,19 +22,19 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbTouziEdgeDetectorNew);
-REGISTER_TEST(otbTouziEdgeDetector);
-REGISTER_TEST(otbTouziEdgeDetectorDirection);
-REGISTER_TEST(otbLineCorrelationDetectorNew);
-REGISTER_TEST(otbLineCorrelationDetectorLinear);
-REGISTER_TEST(otbLineCorrelationDetector);
-REGISTER_TEST(otbLineDetectorBaseNew);
-REGISTER_TEST(otbLineRatioDetectorNew);
-REGISTER_TEST(otbLineRatioDetectorLinear);
-REGISTER_TEST(otbLineRatioDetector);
+  REGISTER_TEST(otbTouziEdgeDetectorNew);
+  REGISTER_TEST(otbTouziEdgeDetector);
+  REGISTER_TEST(otbTouziEdgeDetectorDirection);
+  REGISTER_TEST(otbLineCorrelationDetectorNew);
+  REGISTER_TEST(otbLineCorrelationDetectorLinear);
+  REGISTER_TEST(otbLineCorrelationDetector);
+  REGISTER_TEST(otbLineDetectorBaseNew);
+  REGISTER_TEST(otbLineRatioDetectorNew);
+  REGISTER_TEST(otbLineRatioDetectorLinear);
+  REGISTER_TEST(otbLineRatioDetector);
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryProjectionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2008-02-08 04:52:21 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009-01-28 18:14:36 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ namespace itk {
  *      http://insight-journal.org/midas/handle.php?handle=1926/164
  *
  *
- * \author Gaetan Lehmann. Biologie du Développement et de la Reproduction,
+ * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
  *  INRA de Jouy-en-Josas, France.
  *
  *
@@ -122,7 +122,7 @@ public:
 
   /** Set the value in the image to consider as "foreground". Defaults to
    * maximum value of PixelType. Subclasses may alias this to
-   * DilateValue or ErodeValue.*/
+   * DilateValue or ErodeValue. */
   itkSetMacro(ForegroundValue, InputPixelType);
 
   /** Get the value in the image considered as "foreground". Defaults to

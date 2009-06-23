@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianDerivativeImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007-01-30 20:56:08 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2009-02-05 19:04:56 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,25 +45,25 @@ public:
   /**Standard "Self" typedef */
   typedef GaussianDerivativeImageFunction Self;
 
-  /** Standard "Superclass" typedef*/
+  /** Standard "Superclass" typedef */
   typedef ImageFunction<TInputImage,
     Vector<TOutput,::itk::GetImageDimension<TInputImage>::ImageDimension>,
     TOutput > Superclass;
 
   /** Smart pointer typedef support. */
-  typedef SmartPointer<Self> Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>            Pointer;
+  typedef SmartPointer<const Self>      ConstPointer;
 
-  /** Method for creation through the object factory.*/
+  /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( GaussianDerivativeImageFunction, ImageFunction );
 
-  /** InputImageType typedef support.*/
+  /** InputImageType typedef support. */
   typedef TInputImage                                 InputImageType;
   typedef typename InputImageType::PixelType          InputPixelType;
-  typedef typename InputImageType::IndexType IndexType;
+  typedef typename InputImageType::IndexType          IndexType;
 
   /** Dimension of the underlying image. */
   itkStaticConstMacro(ImageDimension2, unsigned int,
@@ -86,8 +86,8 @@ public:
   typedef GaussianDerivativeSpatialFunction<TOutput,1>  GaussianDerivativeFunctionType;
   typedef typename GaussianDerivativeFunctionType::Pointer GaussianDerivativeFunctionPointer;
 
-  typedef GaussianSpatialFunction<TOutput,1>  GaussianFunctionType;
-  typedef typename GaussianFunctionType::Pointer GaussianFunctionPointer;
+  typedef GaussianSpatialFunction<TOutput,1>        GaussianFunctionType;
+  typedef typename GaussianFunctionType::Pointer    GaussianFunctionPointer;
 
   /** Point typedef support. */
   typedef Point<TOutput,itkGetStaticConstMacro(ImageDimension2)> PointType;
@@ -96,10 +96,10 @@ public:
   virtual OutputType Evaluate(const PointType& point) const;
 
 
-  /** Evaluate the function at specified Index position*/
+  /** Evaluate the function at specified Index position */
   virtual OutputType EvaluateAtIndex( const IndexType & index ) const;
 
-  /** Evaluate the function at specified ContinousIndex position.*/
+  /** Evaluate the function at specified ContinousIndex position. */
   virtual OutputType EvaluateAtContinuousIndex( 
     const ContinuousIndexType & index ) const;
 
@@ -107,7 +107,8 @@ public:
    * independently for each dimension, but 
    * see also SetVariance(const double v). The default is 0.0 in each
    * dimension. If UseImageSpacing is true, the units are the physical units
-   * of your image.  If UseImageSpacing is false then the units are pixels.*/
+   * of your image.  If UseImageSpacing is false then the units are
+   * pixels. */
   void SetSigma( const double* sigma);
   void SetSigma( const double sigma);
   const double* GetSigma() const {return m_Sigma;}
@@ -177,4 +178,3 @@ private:
 #endif
 
 #endif
-

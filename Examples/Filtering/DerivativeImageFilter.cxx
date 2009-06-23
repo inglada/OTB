@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -38,7 +38,7 @@
 //
 //  \index{itk::DerivativeImageFilter}
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 #include "otbImage.h"
@@ -54,7 +54,7 @@
 //
 //  \index{itk::DerivativeImageFilter!header}
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
@@ -64,13 +64,13 @@
 
 int main( int argc, char * argv[] )
 {
-  if( argc < 6 )
-    {
+  if ( argc < 6 )
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile   outputImageFile  normalizedOutputImageFile ";
     std::cerr << " derivativeOrder direction" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
   //  Software Guide : BeginLatex
@@ -80,7 +80,7 @@ int main( int argc, char * argv[] )
   //  select a signed type for the image, since the values of the derivatives
   //  will be positive as well as negative.
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef   float  InputPixelType;
@@ -105,17 +105,17 @@ int main( int argc, char * argv[] )
   //  Software Guide : BeginLatex
   //
   //  Using the image types, it is now possible to define the filter type
-  //  and create the filter object. 
+  //  and create the filter object.
   //
   //  \index{itk::DerivativeImageFilter!instantiation}
   //  \index{itk::DerivativeImageFilter!New()}
   //  \index{itk::DerivativeImageFilter!Pointer}
-  // 
-  //  Software Guide : EndLatex 
+  //
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef itk::DerivativeImageFilter<
-               InputImageType, OutputImageType >  FilterType;
+  InputImageType, OutputImageType >  FilterType;
 
   FilterType::Pointer filter = FilterType::New();
   // Software Guide : EndCodeSnippet
@@ -130,7 +130,7 @@ int main( int argc, char * argv[] )
   //  \index{itk::DerivativeImageFilter!SetOrder()}
   //  \index{itk::DerivativeImageFilter!SetDirection()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   filter->SetOrder(     atoi( argv[4] ) );
@@ -148,7 +148,7 @@ int main( int argc, char * argv[] )
   //  \index{itk::DerivativeImageFilter!SetInput()}
   //  \index{itk::DerivativeImageFilter!GetOutput()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
@@ -159,13 +159,13 @@ int main( int argc, char * argv[] )
 
 
   //  Software Guide : BeginLatex
-  // 
+  //
   // \begin{figure}
   // \center
   // \includegraphics[width=0.44\textwidth]{ROISpot5.eps}
   // \includegraphics[width=0.44\textwidth]{DerivativeImageFilterOutput.eps}
   // \itkcaption[Effect of the Derivative filter.]{Effect of the
-  // Derivative filter.} 
+  // Derivative filter.}
   // \label{fig:DerivativeImageFilterOutput}
   // \end{figure}
   //
@@ -174,14 +174,14 @@ int main( int argc, char * argv[] )
   //  is taken along the $x$ direction.  The sensitivity to noise in the image
   //  is evident from this result.
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
 
   typedef otb::Image< unsigned char, Dimension >  WriteImageType;
 
-  typedef itk::RescaleIntensityImageFilter< 
-                                  OutputImageType,
-                                  WriteImageType >    NormalizeFilterType;
+  typedef itk::RescaleIntensityImageFilter<
+  OutputImageType,
+  WriteImageType >    NormalizeFilterType;
 
   typedef otb::ImageFileWriter< WriteImageType >       NormalizedWriterType;
 

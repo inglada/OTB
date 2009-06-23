@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,28 +23,28 @@ PURPOSE.  See the above copyright notices for more information.
 namespace otb
 {
 /** \class BSplinesInterpolateDeformationFieldGenerator
- *  \brief This filters encapsulate the itk::DeformationFieldSource to produce a BSpline interpolation of the point in point set whose metric values are 
+ *  \brief This filters encapsulate the itk::DeformationFieldSource to produce a BSpline interpolation of the point in point set whose metric values are
  * sufficient.
  * \sa itk::DeformationFieldSource
  * \ingroup DisparityMap
  */
 template <class TPointSet, class TDeformationField>
 class ITK_EXPORT BSplinesInterpolateDeformationFieldGenerator
-  : public PointSetToDeformationFieldGenerator<TPointSet, TDeformationField>
+      : public PointSetToDeformationFieldGenerator<TPointSet, TDeformationField>
 {
- public:
+public:
   /** Standard typedefs */
   typedef BSplinesInterpolateDeformationFieldGenerator Self;
   typedef PointSetToDeformationFieldGenerator<TPointSet,TDeformationField> Superclass;
   typedef itk::SmartPointer<Self>        Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(BSplinesInterpolateDeformationFieldGenerator,PointSetToDeformationFieldGenerator);
-  
+
   /** Template parameters typedefs */
   typedef typename Superclass::PointSetType PointSetType;
   typedef typename Superclass::PointSetPointerType PointSetPointerType;
@@ -62,7 +62,7 @@ protected:
   BSplinesInterpolateDeformationFieldGenerator() {};
   /** Destructor */
   virtual ~BSplinesInterpolateDeformationFieldGenerator() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
   /** Main computation method */
   virtual void GenerateData();

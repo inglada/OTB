@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -29,16 +29,16 @@ int otbSVMClassifierNew(int argc, char* argv[] )
 {
   typedef double InputPixelType;
   typedef int LabelPixelType;
-  typedef itk::PointSet< InputPixelType, 2 > PointSetType ;
-  
+  typedef itk::PointSet< InputPixelType, 2 > PointSetType;
+
   typedef itk::Statistics::PointSetToListAdaptor< PointSetType >
-    DataSampleType;
-  
-  
-  typedef otb::SVMClassifier< DataSampleType, LabelPixelType > ClassifierType ;
-  
+  DataSampleType;
+
+
+  typedef otb::SVMClassifier< DataSampleType, LabelPixelType > ClassifierType;
+
   ClassifierType::Pointer classifier = ClassifierType::New();
-  
+
   return EXIT_SUCCESS;
 }
 

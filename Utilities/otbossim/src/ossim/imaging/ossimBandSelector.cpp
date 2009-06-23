@@ -10,17 +10,19 @@
 // Contains class declaration for ossimBandSelector.
 // 
 //*******************************************************************
-//  $Id: ossimBandSelector.cpp 13022 2008-06-10 16:25:36Z dburken $
+//  $Id: ossimBandSelector.cpp 14193 2009-03-30 11:38:10Z gpotts $
 
 #include <iostream>
 #include <algorithm>
 
 #include <ossim/imaging/ossimBandSelector.h>
+#include <ossim/base/ossimTrace.h>
 #include <ossim/base/ossimKeywordlist.h>
 #include <ossim/base/ossimKeywordNames.h>
 #include <ossim/base/ossimNotifyContext.h>
 #include <ossim/imaging/ossimImageDataFactory.h>
 #include <ossim/base/ossimStringProperty.h>
+static ossimTrace traceDebug("ossimBandSelector:debug");
 
 RTTI_DEF1(ossimBandSelector,"ossimBandSelector", ossimImageSourceFilter)
 
@@ -28,7 +30,8 @@ ossimBandSelector::ossimBandSelector()
    :
       ossimImageSourceFilter(),
       theTile(0),
-      theWithinRangeFlag(ossimBandSelectorWithinRangeFlagState_NOT_SET)
+      theWithinRangeFlag(ossimBandSelectorWithinRangeFlagState_NOT_SET),
+      theOrderedCorrectlyFlag(false)
 
 {
 //   theEnableFlag = false; // Start off disabled.
@@ -58,7 +61,7 @@ ossimRefPtr<ossimImageData> ossimBandSelector::getTile(
       return t;  // This tile source bypassed, return the input tile source.
    }
 
-   if (isOrderedCorrectly())
+   if (theOrderedCorrectlyFlag)
    {
       return t; // Input band order same as output band order.
    }
@@ -117,6 +120,7 @@ void ossimBandSelector::setOutputBandList(
       theTile = 0;       // Force an allocate call next getTile.
 
       theWithinRangeFlag = ossimBandSelectorWithinRangeFlagState_NOT_SET;
+      theOrderedCorrectlyFlag = isOrderedCorrectly();
    }
 }
 
@@ -147,6 +151,8 @@ void ossimBandSelector::initialize()
 
       if ( theEnableFlag )
       {
+         theOrderedCorrectlyFlag = isOrderedCorrectly();
+
          if ( theTile.valid() )
          {
             //---
@@ -155,7 +161,7 @@ void ossimBandSelector::initialize()
             // - band change
             // - scalar change
             //---
-            if( isOrderedCorrectly() ||
+            if( theOrderedCorrectlyFlag ||
                 ( theTile->getNumberOfBands() != theOutputBandList.size() ) ||
                 ( theTile->getScalarType() !=
                   theInputConnection->getOutputScalarType() ) )
@@ -177,8 +183,8 @@ void ossimBandSelector::initialize()
 
 void ossimBandSelector::allocate()
 {
-   initialize(); // Update the connection.
-
+   //initialize(); // Update the connection.
+   //theOrderedCorrectlyFlag = isOrderedCorrectly();
    theTile = ossimImageDataFactory::instance()->create(this, this);
    theTile->initialize();
 }
@@ -317,29 +323,44 @@ bool ossimBandSelector::loadState(const ossimKeywordlist& kwl,
 
 bool ossimBandSelector::isOrderedCorrectly() const
 {
+   bool result = false;
+
    if(theInputConnection)
    {
       std::vector<ossim_uint32> inputList;
       theInputConnection->getOutputBandList(inputList);
-      
-      ossim_uint32 output_bands = (ossim_uint32)theOutputBandList.size();
 
-      if(inputList.size() != output_bands) return false;
-      
-      for (ossim_uint32 i=0; i<output_bands; ++i)
+      if ( inputList.size() == theOutputBandList.size() )
       {
-         if (inputList[i] != theOutputBandList[i]) return false;
+         const std::vector<ossim_uint32>::size_type SIZE =
+            theOutputBandList.size();
+      
+         std::vector<ossim_uint32>::size_type i = 0;
+         while (i < SIZE)
+         {
+            if ( inputList[i] != theOutputBandList[i] )
+            {
+               break;
+            }
+            ++i;
+         }
+         if (i == SIZE)
+         {
+            result = true;
+         }
       }
-      return true;
    }
    else
    {
-      ossimNotify(ossimNotifyLevel_WARN)
+      if(traceDebug())
+      {
+         ossimNotify(ossimNotifyLevel_WARN)
          << "ossimBandSelector::isOrderedCorrectly() ERROR:"
          << "Method called prior to initialization!\n";
+      }
    }
 
-   return false;
+   return result;
 }
 
 bool ossimBandSelector::outputBandsWithinInputRange() const
@@ -402,17 +423,20 @@ void ossimBandSelector::setProperty(ossimRefPtr<ossimProperty> property)
 {
    if(!property) return;
 
-   if(property->getName() == "Selected bands")
+   if(property->getName() == "bandSelection")
    {
      ossimString str = property->valueToString();
      std::vector<ossimString> str_vec;
      std::vector<ossim_uint32> int_vec;
      
-     str.split( str_vec, "," );
+     str.split( str_vec, " " );
      
      for ( ossim_uint32 i = 0; i < str_vec.size(); ++i )
      {
-        int_vec.push_back( str_vec[i].toUInt32() );
+        if(!str_vec[i].empty())
+        {
+           int_vec.push_back( str_vec[i].toUInt32() );
+        }
      }
      setOutputBandList( int_vec );
    }
@@ -424,7 +448,7 @@ void ossimBandSelector::setProperty(ossimRefPtr<ossimProperty> property)
 
 ossimRefPtr<ossimProperty> ossimBandSelector::getProperty(const ossimString& name)const
 {
-   if(name == "Selected bands")
+   if(name == "bandSelection")
    {
       std::vector<ossim_uint32> bands;
 	  
@@ -439,9 +463,9 @@ ossimRefPtr<ossimProperty> ossimBandSelector::getProperty(const ossimString& nam
 	  
 	  ossimString str;
 	  
-	  str.join( bandNames, "," );
+	  str.join( bandNames, " " );
 	  
-      ossimStringProperty* stringProp = new ossimStringProperty("Selected bands", str);
+      ossimStringProperty* stringProp = new ossimStringProperty(name, str);
 									
       stringProp->clearChangeType();
       stringProp->setReadOnlyFlag(false);
@@ -456,6 +480,6 @@ ossimRefPtr<ossimProperty> ossimBandSelector::getProperty(const ossimString& nam
 void ossimBandSelector::getPropertyNames(std::vector<ossimString>& propertyNames)const
 {
    ossimImageSourceFilter::getPropertyNames(propertyNames);
-   propertyNames.push_back("Selected bands");
+   propertyNames.push_back("bandSelection");
 }
 

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,19 +23,20 @@
 #include "itkConstNeighborhoodIterator.h"
 #include "itkProcessObject.h"
 
-namespace otb {
+namespace otb
+{
 /** \class UnaryFunctorNeighborhoodImageFilter
  * \brief Implements neighborhood-wise generic operation on image
  *
  * This class is parameterized over the input image type
  * and the type of the output image.  It is also parameterized by the
  * operation to be applied.  A Functor style is used.
- * 
+ *
  * \ingroup IntensityImageFilters   Multithreaded
- */	
+ */
 template <class TInputImage, class TOutputImage, class TFunction >
-class ITK_EXPORT UnaryFunctorNeighborhoodImageFilter 
-	: public itk::ImageToImageFilter<TInputImage,TOutputImage> 
+class ITK_EXPORT UnaryFunctorNeighborhoodImageFilter
+      : public itk::ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -46,7 +47,7 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(UnaryFunctorNeighborhoodImageFilter,ImageToImageFilter);
 
@@ -55,7 +56,7 @@ public:
   typedef TFunction                             FunctorType;
   typedef typename Superclass::InputImageType   InputImageType;
   typedef typename InputImageType::ConstPointer InputImagePointer;
-  typedef typename InputImageType::RegionType   InputImageRegionType; 
+  typedef typename InputImageType::RegionType   InputImageRegionType;
   typedef typename InputImageType::PixelType    InputImagePixelType;
   typedef typename InputImageType::SizeType     InputImageSizeType;
   typedef typename Superclass::OutputImageType  OutputImageType;
@@ -66,8 +67,14 @@ public:
   typedef itk::ProcessObject ProcessObjectType;
 
   /**Set/Get the radius of neighborhood.*/
-  itkSetMacro(Radius,unsigned int);
-  itkGetMacro(Radius,unsigned int);
+  itkSetMacro(Radius,InputImageSizeType);
+  itkGetMacro(Radius,InputImageSizeType);
+
+  /** Set unsinged int radius */
+  void SetRadius(unsigned int radius)
+  {
+    m_Radius.Fill(radius);
+  }
 
   /** Get the functor object.  The functor is returned by reference.
    * (Functors do not have to derive from itk::LightObject, so they do
@@ -75,15 +82,18 @@ public:
    * SmartPointer.) */
   FunctorType& GetFunctor()
   {
-        this->Modified();
-        return m_Functor;
+    this->Modified();
+    return m_Functor;
   }
 
   /** Get the functor object.  The functor is returned by reference.
    * (Functors do not have to derive from itk::LightObject, so they do
    * not necessarily have a reference count. So we cannot return a
    * SmartPointer.) */
-  const FunctorType& GetFunctor() const { return m_Functor; };
+  const FunctorType& GetFunctor() const
+  {
+    return m_Functor;
+  };
 
   /** Set the functor object.  This replaces the current Functor with a
    * copy of the specified Functor. This allows the user to specify a
@@ -97,7 +107,7 @@ public:
     this->Modified();
   }
 
-  typedef itk::ConstNeighborhoodIterator<TInputImage>     NeighborhoodIteratorType; 
+  typedef itk::ConstNeighborhoodIterator<TInputImage>     NeighborhoodIteratorType;
   typedef typename NeighborhoodIteratorType::RadiusType   RadiusType;
   typedef unsigned char RadiusSizeType;
 
@@ -132,7 +142,7 @@ private:
   UnaryFunctorNeighborhoodImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-  unsigned int m_Radius;
+  InputImageSizeType m_Radius;
   FunctorType m_Functor;
 };
 

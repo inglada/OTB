@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2005-07-26 15:06:24 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-12-17 18:56:53 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,10 +44,10 @@ class ITK_EXPORT GaussianImageSource : public ImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef GaussianImageSource   Self;
+  typedef GaussianImageSource        Self;
   typedef ImageSource<TOutputImage>  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>         Pointer;
+  typedef SmartPointer<const Self>   ConstPointer;
 
   /** Typedef for the output image PixelType. */
   typedef typename TOutputImage::PixelType OutputImagePixelType;
@@ -62,6 +62,10 @@ public:
   /** Origin typedef support.  The origin is the geometric coordinates
    * of the index (0,0). */
   typedef typename TOutputImage::PointType PointType;
+  
+  /** Direction typedef support.  The direction is the direction
+   * cosines of the image. */
+  typedef typename TOutputImage::DirectionType DirectionType;
   
   /** Dimensionality of the output image */
   itkStaticConstMacro(NDimensions, unsigned int, TOutputImage::ImageDimension);
@@ -88,21 +92,25 @@ public:
   itkGetVectorMacro(Size,const unsigned long,NDimensions);
   
   /** Specify the spacing of the output image. */
-  virtual void SetSpacing( const SpacingType& values);
+  itkSetMacro(Spacing, SpacingType);
   virtual void SetSpacing( const float* values);
   virtual void SetSpacing( const double* values);
   
   /** Get the spacing of the output image. */
-  itkGetMacro(Spacing,const SpacingType);
+  itkGetConstReferenceMacro(Spacing,SpacingType);
 
   /** Specify the origin of the output image. */
-  virtual void SetOrigin( const PointType& values);
+  itkSetMacro(Origin, PointType);
   virtual void SetOrigin( const float* values);
   virtual void SetOrigin( const double* values);
 
   /** Get the origin of the output image. */
-  itkGetMacro(Origin,PointType);
+  itkGetConstReferenceMacro(Origin,PointType);
 
+  /** Specify the direction of the output image. */
+  itkSetMacro(Direction, DirectionType);
+  itkGetConstReferenceMacro(Direction, DirectionType);
+  
   /** Gets and sets for gaussian parameters */
   itkSetMacro(Scale, double);
   itkGetMacro(Scale, double);
@@ -126,8 +134,9 @@ private:
   void operator=(const GaussianImageSource&); //purposely not implemented
 
   unsigned long  m_Size[NDimensions];    //size of the output image
-  SpacingType    m_Spacing; //spacing
-  PointType      m_Origin;  //origin
+  SpacingType    m_Spacing;   //spacing
+  PointType      m_Origin;    //origin
+  DirectionType  m_Direction; // direction
 
   /** Parameters for the Gaussian. */
   

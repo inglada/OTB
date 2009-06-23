@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorFuzzyConnectednessImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006-03-19 04:37:20 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009-01-31 17:23:45 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,17 +14,18 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkVectorFuzzyConnectednessImageFilter_txx
-#define _itkVectorFuzzyConnectednessImageFilter_txx
+#ifndef __itkVectorFuzzyConnectednessImageFilter_txx
+#define __itkVectorFuzzyConnectednessImageFilter_txx
 #include "itkVectorFuzzyConnectednessImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkStatisticsImageFilter.h"
 #include "itkConstNeighborhoodIterator.h"
 
-namespace itk {
+namespace itk
+{
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -47,7 +48,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     }
 }
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -61,7 +62,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
   m_ObjectCovariances.resize(0);
 }
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -73,7 +74,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
 }
 
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -86,7 +87,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
 }
 
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -97,7 +98,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
   m_ObjectMeans[object_num] = mean;
 }
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -108,7 +109,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
   m_ObjectSeeds[object_num].push_front(seed);
 }
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -131,7 +132,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
 }
 
 
-/*
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
@@ -218,10 +219,14 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     }
   int volume_size = 1;
   for(unsigned int i = 0;i<ImageDimension;i++)
-    {volume_size = volume_size*static_cast<int>(m_Size[i]);}
+    {
+    volume_size = volume_size*static_cast<int>(m_Size[i]);
+    }
 
   for(unsigned int i = 0;i<VectorDimension;i++)
-    {m_Mean[i] = static_cast<int>(sum[i]/volume_size);}
+    {
+    m_Mean[i] = static_cast<int>(sum[i]/volume_size);
+    }
 }
 
 
@@ -248,7 +253,9 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
  
   int volume_size = 1;
   for(unsigned int i = 0;i<ImageDimension;i++)
-    {volume_size = volume_size*static_cast<int>(m_Size[i]);}
+    {
+    volume_size = volume_size*static_cast<int>(m_Size[i]);
+    }
 
   m_ScaleArray.resize(volume_size);
   std::vector<char>::iterator itscale;
@@ -354,7 +361,9 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
   region.SetIndex(index);
 
   m_FilterImage->SetRegions( region );
+  m_FilterImage->SetOrigin(m_InputImage->GetOrigin());
   m_FilterImage->SetSpacing(m_InputImage->GetSpacing());
+  m_FilterImage->SetDirection(m_InputImage->GetDirection());
   m_FilterImage->Allocate();
 
   ImageRegionConstIterator <InputImageType> it(m_InputImage,m_InputImage->GetRequestedRegion());
@@ -379,7 +388,9 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     }
 
   for( i = 0;i<VectorDimension;i++)
-    {zeroValue[i] = 0;}
+    {
+    zeroValue[i] = 0;
+    }
 
   typename std::vector<char>::iterator itscale;
 
@@ -393,7 +404,9 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     iscale =  *itscale;
     count = 0.0;
     for(i = 0;i<VectorDimension;i++)
-      {sum[i] = 0;}
+      {
+      sum[i] = 0;
+      }
 
     if((m_SuppressBckgFlag==1)&&(value[0]<m_Mean[0]))
       {itf.Set(zeroValue);}
@@ -591,12 +604,13 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
 
   chash.resize(topIndex+1);
   for(int i=0;i<=topIndex;i++)
+    {
     chash[i].clear();
-
+    }
   unsigned short  initialValue=0;
   m_FuzzyConnImage->FillBuffer( initialValue );
 
-  /** object tracking...*/
+  /** object tracking... */
   while(!m_ObjectSeeds[object].empty())
     {
     current = m_ObjectSeeds[object].back();
@@ -612,7 +626,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     {
     max_index[i] = static_cast<typename IndexType::IndexValueType>(size[i])-1;
     }
-  while((topIndex>0) && (chash[topIndex].size() !=0))
+  while((topIndex>0) && (chash[topIndex].size() != 0))
     {
     current = chash[topIndex].back();
     chash[topIndex].pop_back();
@@ -643,7 +657,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
             } 
           else
             {
-            for( iter = chash[value].begin();iter !=chash[value].end();iter++)
+            for( iter = chash[value].begin();iter != chash[value].end();iter++)
               {
               index2 = *iter;
               if(index2 == index1)
@@ -677,7 +691,7 @@ VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
             }
           else
             {
-            for( iter = chash[value].begin();iter !=chash[value].end();iter++)
+            for( iter = chash[value].begin();iter != chash[value].end();iter++)
               {
               index2 = *iter;
               if(index2 == index1)
@@ -749,7 +763,6 @@ void VectorFuzzyConnectednessImageFilter<TInputImage,TOutputImage>
     fuzzyScene[i].resize(volume_size);
     }
   typedef ImageRegionIterator<UShortImageType> Iterator;
-  //typename ListSeedType::iterator iterList;  
 
   for (int i = 0;i<m_NumberOfObjects;i++)
     {

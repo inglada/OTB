@@ -3,10 +3,10 @@ INCLUDE_REGULAR_EXPRESSION("^.*$")
 
 
 ADD_EXECUTABLE(FuzzyConnectednessImageFilter FuzzyConnectednessImageFilter.cxx )
-TARGET_LINK_LIBRARIES(FuzzyConnectednessImageFilter OTBIO OTBCommon ITKNumerics ITKIO)
+TARGET_LINK_LIBRARIES(FuzzyConnectednessImageFilter OTBIO OTBCommon ITKNumerics)
 
 #ADD_EXECUTABLE(HybridSegmentationFuzzyVoronoi HybridSegmentationFuzzyVoronoi.cxx )
-#TARGET_LINK_LIBRARIES(HybridSegmentationFuzzyVoronoi OTBIO OTBCommon ITKNumerics ITKIO)
+#TARGET_LINK_LIBRARIES(HybridSegmentationFuzzyVoronoi OTBIO OTBCommon ITKNumerics)
 
 
 
@@ -14,7 +14,7 @@ IF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 
 SET(BASELINE ${OTB_DATA_ROOT}/Baseline/Examples/Patented)
 
-SET(INPUTDATA ${OTB_SOURCE_DIR}/Examples/Data)
+SET(INPUTDATA ${OTB_DATA_ROOT}/Examples)
 SET(TEMP ${OTB_BINARY_DIR}/Testing/Temporary)
 
 SET(EXE_TESTS ${CXX_TEST_PATH}/otbPatentedExamplesTests)
@@ -24,7 +24,7 @@ SET(TOL 0.0)
 
 # ------- HybridSegmentationFuzzyVoronoiTest----------
 
-ADD_TEST(HybridSegmentationFuzzyVoronoiTest ${EXE_TESTS}
+ADD_TEST(paTeHybridSegmentationFuzzyVoronoiTest ${EXE_TESTS}
 	--compare-n-images ${TOL} 1
 	${BASELINE}/HybridSegmentationFuzzyVoronoiOutput.png
 	${TEMP}/HybridSegmentationFuzzyVoronoiOutput.png
@@ -34,8 +34,8 @@ ADD_TEST(HybridSegmentationFuzzyVoronoiTest ${EXE_TESTS}
     111 38 75 20 0.5 3.0
 )
 
-
+INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 ADD_EXECUTABLE(otbPatentedExamplesTests otbPatentedExamplesTests.cxx)
-TARGET_LINK_LIBRARIES(otbPatentedExamplesTests gdal ITKIO ITKAlgorithms ITKStatistics ITKCommon OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale)
+TARGET_LINK_LIBRARIES(otbPatentedExamplesTests  ITKAlgorithms ITKStatistics OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBTesting)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

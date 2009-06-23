@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,16 +24,24 @@ PURPOSE.  See the above copyright notices for more information.
 
 namespace otb
 {
+  /**
+   *\class ImageViewerFullResolutionEventsInterface
+   * \brief <b>DEPRECATED</b>
+   *
+   *  \deprecated use the new Visualization framework instead.
+   * \sa StandardImageViewer
+   *
+   */
 class ImageViewerFullResolutionEventsInterface
-: public itk::Object
+      : public itk::Object
 {
- public:
+public:
   /** Standard class typedefs */
   typedef ImageViewerFullResolutionEventsInterface Self;
   typedef itk::Object                      Superclass;
   typedef itk::SmartPointer<Self>          Pointer;
   typedef itk::SmartPointer<const Self>    ConstPointer;
- 
+
   /** Standard type macros */
   itkTypeMacro(ImageViewerFullResolutionEventsInterface,Superclass);
 
@@ -44,20 +52,20 @@ class ImageViewerFullResolutionEventsInterface
   itkGetMacro(ForwardEvents,bool);
 
   /** Users actions */
-  virtual void RegionSelected(const RegionType & region){};
-  virtual void ViewedRegionChanged(){};
-  virtual void PixelClicked(const IndexType& index){};
+  virtual void RegionSelected(const RegionType & region) {};
+  virtual void ViewedRegionChanged() {};
+  virtual void PixelClicked(const IndexType& index) {};
 
- protected:
+protected:
   /** Constructor */
   ImageViewerFullResolutionEventsInterface()
-    {
-      m_ForwardEvents = false;
-    }
+  {
+    m_ForwardEvents = false;
+  }
   /** Destructor */
-  ~ImageViewerFullResolutionEventsInterface(){}
+  ~ImageViewerFullResolutionEventsInterface() {}
 
- private:
+private:
   ImageViewerFullResolutionEventsInterface(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 

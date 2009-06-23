@@ -1,14 +1,15 @@
 //*******************************************************************
-// Copyright (C) 2000 ImageLinks Inc. 
 //
-// LICENSE:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfImageHeaderV2_0.h 13101 2008-07-01 18:44:31Z dburken $
+// $Id: ossimNitfImageHeaderV2_0.h 14241 2009-04-07 19:59:23Z dburken $
 #ifndef ossimNitfImageHeaderV2_0_HEADER
 #define ossimNitfImageHeaderV2_0_HEADER
 #include <ossim/support_data/ossimNitfImageHeaderV2_X.h>
@@ -24,7 +25,12 @@ public:
    virtual void parseStream(std::istream &in);
    virtual void writeStream(std::ostream &out);
    
-   virtual std::ostream& print(std::ostream &out)const;
+   /**
+    * @brief print method that outputs a key/value type format adding prefix
+    * to keys.
+    */
+   virtual std::ostream& print(std::ostream& out,
+                               const std::string& prefix=std::string()) const;
    
    virtual void setProperty(ossimRefPtr<ossimProperty> property);
    virtual ossimRefPtr<ossimProperty> getProperty(const ossimString& name)const;
@@ -71,6 +77,31 @@ public:
    virtual const ossimRefPtr<ossimNitfCompressionHeader> getCompressionHeader()const;
    virtual const ossimRefPtr<ossimNitfImageBand> getBandInformation(ossim_uint32 idx)const;
 
+   virtual void setNumberOfBands(ossim_uint32 nbands);
+   virtual void setBandInfo(ossim_uint32 idx,
+                            const ossimNitfImageBandV2_0& info);
+   virtual void setNumberOfRows(ossim_uint32 rows);
+   virtual void setNumberOfCols(ossim_uint32 cols);
+   virtual void setGeographicLocationDms(const ossimDpt& ul,
+                                         const ossimDpt& ur,
+                                         const ossimDpt& lr,
+                                         const ossimDpt& ll);
+   
+   virtual void setGeographicLocationDecimalDegrees(const ossimDpt& ul,
+                                                    const ossimDpt& ur,
+                                                    const ossimDpt& lr,
+                                                    const ossimDpt& ll);
+   virtual void setUtmNorth(ossim_uint32 zone,
+                            const ossimDpt& ul,
+                            const ossimDpt& ur,
+                            const ossimDpt& lr,
+                            const ossimDpt& ll);
+   virtual void setUtmSouth(ossim_uint32 zone,
+                            const ossimDpt& ul,
+                            const ossimDpt& ur,
+                            const ossimDpt& lr,
+                            const ossimDpt& ll);
+   
    static const ossimString ISCODE_KW;
    static const ossimString ISCTLH_KW;
    static const ossimString ISREL_KW;

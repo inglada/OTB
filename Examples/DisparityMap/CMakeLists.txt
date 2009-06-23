@@ -2,11 +2,15 @@ PROJECT(DisparityMapExamples)
 INCLUDE_REGULAR_EXPRESSION("^.*$")
 
 ADD_EXECUTABLE(SimpleDisparityMapEstimationExample SimpleDisparityMapEstimationExample.cxx )
-TARGET_LINK_LIBRARIES(SimpleDisparityMapEstimationExample OTBFeatureExtraction OTBCommon OTBIO ITKCommon
+TARGET_LINK_LIBRARIES(SimpleDisparityMapEstimationExample OTBFeatureExtraction OTBCommon OTBIO
 ITKIO)
 
 ADD_EXECUTABLE(NCCRegistrationFilterExample NCCRegistrationFilterExample.cxx )
-TARGET_LINK_LIBRARIES(NCCRegistrationFilterExample OTBFeatureExtraction OTBCommon OTBIO ITKCommon
+TARGET_LINK_LIBRARIES(NCCRegistrationFilterExample OTBFeatureExtraction OTBCommon OTBIO
+ITKIO)
+
+ADD_EXECUTABLE(SIFTDisparityMapEstimation SIFTDisparityMapEstimation.cxx )
+TARGET_LINK_LIBRARIES(SIFTDisparityMapEstimation OTBFeatureExtraction OTBCommon OTBIO
 ITKIO)
 
 
@@ -14,7 +18,7 @@ IF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 
 SET(BASELINE ${OTB_DATA_ROOT}/Baseline/Examples/DisparityMap)
 
-SET(INPUTDATA ${OTB_SOURCE_DIR}/Examples/Data)
+SET(INPUTDATA ${OTB_DATA_ROOT}/Examples)
 SET(TEMP ${OTB_BINARY_DIR}/Testing/Temporary)
 
 SET(EXE_TESTS ${CXX_TEST_PATH}/otbDisparityMapExamplesTests)
@@ -24,7 +28,7 @@ SET(TOL 0.0)
 # ------- SimpleDisparityMapEstimationExampleTest ----------
 
 
-ADD_TEST(SimpleDisparityMapEstimationExampleTest ${EXE_TESTS}
+ADD_TEST(dmTeSimpleDisparityMapEstimationExampleTest ${EXE_TESTS}
  --compare-n-images ${TOL} 2
  ${BASELINE}/deformationFieldOutput.png
  ${TEMP}/deformationFieldOutput.png
@@ -38,8 +42,8 @@ ADD_TEST(SimpleDisparityMapEstimationExampleTest ${EXE_TESTS}
  100 10 15 10 10 250 0.9
 )
 
-
+INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 ADD_EXECUTABLE(otbDisparityMapExamplesTests otbDisparityMapExamplesTests.cxx)
-TARGET_LINK_LIBRARIES(otbDisparityMapExamplesTests gdal ITKIO ITKAlgorithms ITKStatistics ITKCommon OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale)
+TARGET_LINK_LIBRARIES(otbDisparityMapExamplesTests  ITKAlgorithms ITKStatistics OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBTesting)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

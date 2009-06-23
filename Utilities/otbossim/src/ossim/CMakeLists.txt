@@ -1,3 +1,4 @@
+FILE(GLOB_RECURSE ossim_init_SRCS "init/*.cpp" "init/*.c")
 FILE(GLOB_RECURSE ossim_base_SRCS "base/*.cpp" "base/*.c")
 FILE(GLOB_RECURSE ossim_elevation_SRCS "elevation/*.cpp" "elevation/*.c")
 FILE(GLOB_RECURSE ossim_font_SRCS "font/*.cpp" "font/*.c")
@@ -9,15 +10,19 @@ FILE(GLOB_RECURSE ossim_support_data_SRCS "support_data/*.cpp" "support_data/*.c
 FILE(GLOB_RECURSE ossim_vec_SRCS "vec/*.cpp" "vec/*.c")
 FILE(GLOB_RECURSE ossim_vpfutil_SRCS "vpfutil/*.cpp" "vpfutil/*.c")
 FILE(GLOB_RECURSE ossim_plugin_SRCS "plugin/*.cpp" "plugin/*.c")
-FILE(GLOB_RECURSE ossim_init_SRCS "init/*.cpp" "init/*.c")
 FILE(GLOB_RECURSE ossim_kbool_SRCS "kbool/*.cpp" "kbool/*.c")
 FILE(GLOB_RECURSE ossim_dll_main_SRCS "dll_main/*.cpp")
 
+# Removing empty source file causing compilation warning on visual
+REMOVE(ossim_support_data_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/support_data/ossimDemPoint.cpp")
+REMOVE(ossim_plugin_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/plugin/ossimSharedObjectBridge.cpp")
+REMOVE(ossim_base_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/base/ossimFactoryBaseTemplate.cpp")
+
 # Adjust the compiler flags to avoid problems with ossim code.
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  FOREACH(f      ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS} 
+  FOREACH(f      ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
                  ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
-                 ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS} 
+                 ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
                  ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
         SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS -w )
   ENDFOREACH(f)
@@ -25,9 +30,9 @@ ELSE(CMAKE_COMPILER_IS_GNUCXX)
   IF(NOT BORLAND)
     IF(NOT CYGWIN)
       IF(NOT MINGW)
-        FOREACH(f       ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS} 
+        FOREACH(f       ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
                         ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
-                        ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS} 
+                        ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
                         ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
                 SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS /W0 )
         ENDFOREACH(f)
@@ -46,30 +51,65 @@ IF(WIN32)
   ENDIF(NOT BORLAND)
 ENDIF(WIN32)
 
-INCLUDE_DIRECTORIES(${OTB_BINARY_DIR}/Utilities/otbgeotiff/)
+
+ADD_EXECUTABLE(version-config version-config.cpp)
+#FIND_PROGRAM( VERSION_CONFIG_PROGRAM
+#              NAMES version-config
+#              PATHS  ${EXECUTABLE_OUTPUT_PATH}
+#                     ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE}
+#                     ${EXECUTABLE_OUTPUT_PATH}/Release
+#                     ${EXECUTABLE_OUTPUT_PATH}/Debug
+#                     ${EXECUTABLE_OUTPUT_PATH}/MinSizeRel
+#                     ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo
+#              NO_DEFAULT_PATH )
+
+
+IF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${OTB_BINARY_DIR}/Utilities/otbossim/include/ossim/ossimVersion.h
+        COMMAND ${OTB_BINARY_DIR}/bin/version-config
+        ARGS "${OTB_BINARY_DIR}/Utilities/otbossim/include/ossim/ossimVersion.h" "${OSSIM_VERSION}"
+        DEPENDS version-config
+        COMMENT "Generating ossimVersion.h" )
+ELSE("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${OTB_BINARY_DIR}/Utilities/otbossim/include/ossim/ossimVersion.h
+        COMMAND version-config
+        ARGS "${OTB_BINARY_DIR}/Utilities/otbossim/include/ossim/ossimVersion.h" "${OSSIM_VERSION}"
+        DEPENDS version-config
+        COMMENT "Generating ossimVersion.h" )
+ENDIF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
+
+
+
+SET_SOURCE_FILES_PROPERTIES(
+    init/ossimInit.cpp PROPERTIES
+    OBJECT_DEPENDS "${OTB_BINARY_DIR}/Utilities/otbossim/include/ossim/ossimVersion.h"
+    )
 
 #Specify that we are making DLL here
 ADD_DEFINITIONS(-DNOMINMAX -DOSSIMMAKINGDLL)
 
-ADD_LIBRARY(otbossim 
+ADD_LIBRARY(otbossim
+${ossim_init_SRCS}
 ${ossim_base_SRCS}
 ${ossim_kbool_SRCS}
 ${ossim_matrix_SRCS}
 ${ossim_vec_SRCS}
 ${ossim_vpfutil_SRCS}
 ${ossim_plugin_SRCS}
-${ossim_init_SRCS}
 ${ossim_font_SRCS}
 ${ossim_support_data_SRCS}
 ${ossim_projection_SRCS}
-${ossim_imaging_SRCS} 
-${ossim_parallel_SRCS} 
+${ossim_imaging_SRCS}
+${ossim_parallel_SRCS}
 ${ossim_elevation_SRCS}
 )
-TARGET_LINK_LIBRARIES(otbossim otbgeotiff otbxtiff itktiff itkjpeg8 itkjpeg12 itkjpeg16 OpenThreads)
+TARGET_LINK_LIBRARIES(otbossim ${TIFF_LIBRARY} ${GEOTIFF_LIBRARY} ${JPEG_LIBRARY} OpenThreads)
 
-INSTALL(TARGETS otbossim
-RUNTIME DESTINATION ${OTB_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries
-LIBRARY DESTINATION ${OTB_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
-ARCHIVE DESTINATION ${OTB_INSTALL_LIB_DIR} COMPONENT Development)
-
+IF(NOT OTB_INSTALL_NO_LIBRARIES)
+ INSTALL(TARGETS otbossim
+ RUNTIME DESTINATION ${OTB_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries
+ LIBRARY DESTINATION ${OTB_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+ ARCHIVE DESTINATION ${OTB_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+ENDIF(NOT OTB_INSTALL_NO_LIBRARIES)

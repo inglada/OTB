@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -38,13 +38,13 @@ int otbFourierMellinImageFilter(int argc, char* argv[])
   const char * outputImaginaryFilename = argv[3];
   typedef double                                          InputPixelType;
   typedef std::complex<double>                            OutputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+  const   unsigned int                                  Dimension = 2;
 
   typedef otb::Image< InputPixelType, Dimension >         InputImageType;
   typedef otb::ImageFileReader< InputImageType  >         ReaderType;
   typedef otb::ImageFileWriter< InputImageType> WriterType;
-   
-  typedef itk::LinearInterpolateImageFunction< InputImageType, double >	InterpolatorType;
+
+  typedef itk::LinearInterpolateImageFunction< InputImageType, double >  InterpolatorType;
   typedef otb::ForwardFourierMellinTransformImageFilter<InputPixelType,InterpolatorType,Dimension> FourierMellinTransformType;
   typedef FourierMellinTransformType::OutputImageType OutputImageType;
   typedef itk::ComplexToRealImageFilter<OutputImageType,InputImageType> RealFilterType;
@@ -68,7 +68,7 @@ int otbFourierMellinImageFilter(int argc, char* argv[])
   OutputImageType::SizeType size;
   size[0]=512;
   size[1]=256;
-	
+
   FourierMellinTransform->SetInput( reader->GetOutput() );
   FourierMellinTransform->SetOutputSize(size);
 
@@ -77,7 +77,7 @@ int otbFourierMellinImageFilter(int argc, char* argv[])
   realRescaler->SetOutputMinimum(-1);
   realRescaler->SetOutputMaximum(1);
 
-  realWriter->SetInput( realRescaler->GetOutput() );       
+  realWriter->SetInput( realRescaler->GetOutput() );
   realWriter->Update();
 
   imaginary->SetInput(FourierMellinTransform->GetOutput());
@@ -85,9 +85,9 @@ int otbFourierMellinImageFilter(int argc, char* argv[])
   imaginaryRescaler->SetOutputMinimum(-1);
   imaginaryRescaler->SetOutputMaximum(1);
 
-  imaginaryWriter->SetInput( imaginaryRescaler->GetOutput() );       
+  imaginaryWriter->SetInput( imaginaryRescaler->GetOutput() );
   imaginaryWriter->Update();
-	
- 
+
+
   return EXIT_SUCCESS;
 }

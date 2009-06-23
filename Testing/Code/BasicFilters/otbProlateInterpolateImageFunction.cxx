@@ -10,10 +10,10 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
-     
+
 =========================================================================*/
 #include "itkExceptionObject.h"
 
@@ -32,7 +32,7 @@
 #include "itkDifferenceImageFilter.h"
 
 int otbProlateInterpolateImageFunction(int argc, char * argv[])
-{  
+{
   const char * infname = argv[1];
   const char * outfname = argv[2];
   const char * cosfname = argv[3];
@@ -44,18 +44,18 @@ int otbProlateInterpolateImageFunction(int argc, char * argv[])
   typedef InterpolatorType::ContinuousIndexType            ContinuousIndexType;
   typedef otb::ImageFileReader<ImageType>                  ReaderType;
 
-   unsigned int i = 7;
+  unsigned int i = 7;
 
-   std::vector<ContinuousIndexType> indicesList;
-  while(i<static_cast<unsigned int>(argc) && (i+1)<static_cast<unsigned int>(argc))
-    {  
-      ContinuousIndexType idx;
-      idx[0]=atof(argv[i]);
-      idx[1]=atof(argv[i+1]);     
-      indicesList.push_back(idx);
+  std::vector<ContinuousIndexType> indicesList;
+  while (i<static_cast<unsigned int>(argc) && (i+1)<static_cast<unsigned int>(argc))
+  {
+    ContinuousIndexType idx;
+    idx[0]=atof(argv[i]);
+    idx[1]=atof(argv[i+1]);
+    indicesList.push_back(idx);
 
-      i+=2;
-    }
+    i+=2;
+  }
 
   // Instantiating object
   InterpolatorType::Pointer prolate = InterpolatorType::New();
@@ -64,15 +64,16 @@ int otbProlateInterpolateImageFunction(int argc, char * argv[])
   reader->Update();
   prolate->SetInputImage(reader->GetOutput());
   prolate->SetRadius(atoi(argv[6]));
+  prolate->Initialize();
 
   std::ofstream file;
   file.open(outfname);
 
 
-  for(std::vector<ContinuousIndexType>::iterator it = indicesList.begin();it!=indicesList.end();++it)
-    {
-      file<<(*it)<<" -> "<<prolate->EvaluateAtContinuousIndex((*it))<<std::endl;
-    }
+  for (std::vector<ContinuousIndexType>::iterator it = indicesList.begin();it!=indicesList.end();++it)
+  {
+    file<<(*it)<<" -> "<<prolate->EvaluateAtContinuousIndex((*it))<<std::endl;
+  }
   file.close();
 
   /**********************************************************/
@@ -85,9 +86,12 @@ int otbProlateInterpolateImageFunction(int argc, char * argv[])
   InterpolatorType::Pointer        pro     = InterpolatorType::New();
   // Resampler connected to input image
   proresampler->SetInput(reader->GetOutput());
+  pro->SetInputImage(reader->GetOutput());
   pro->SetRadius(atoi(argv[6]));
+  pro->Initialize();
+
   proresampler->SetInterpolator(pro);
- StreamingResampleImageFilterType::SizeType size;
+  StreamingResampleImageFilterType::SizeType size;
   size[0]=512;
   size[1]=512;
   double tutu = 1;
@@ -96,164 +100,37 @@ int otbProlateInterpolateImageFunction(int argc, char * argv[])
   // Result of resampler is written
   prowriter->SetInput(proresampler->GetOutput());
   //prowriter->SetNumberOfStreamDivisions(1);
- prowriter->SetFileName(profname);
- prowriter->Update();
- 
- typedef otb::WindowedSincInterpolateImageCosineFunction<ImageType>          CosInterpolatorType;
- typedef itk::Function::CosineWindowFunction<1, double, double>              itkCosType;
- typedef itk::WindowedSincInterpolateImageFunction<ImageType, 1, itkCosType> itkCosInterpolatorType;
- 
- WriterType::Pointer itkcoswriter  = WriterType::New();
- WriterType::Pointer coswriter = WriterType::New();
- StreamingResampleImageFilterType::Pointer cosresampler = StreamingResampleImageFilterType::New();
- StreamingResampleImageFilterType::Pointer itkcosresampler = StreamingResampleImageFilterType::New();
- CosInterpolatorType::Pointer     cos     = CosInterpolatorType::New();
- itkCosInterpolatorType::Pointer  itkcos  = itkCosInterpolatorType::New();
- cosresampler->SetSize(size);
- cosresampler->SetOutputSpacing(tutu);
- itkcosresampler->SetSize(size);
- itkcosresampler->SetOutputSpacing(tutu);
- cosresampler->SetInput(reader->GetOutput());
- cos->SetRadius(atoi(argv[6]));
- cosresampler->SetInterpolator(cos);
- itkcosresampler->SetInput(reader->GetOutput());
- itkcosresampler->SetInterpolator(itkcos);
- coswriter->SetInput(cosresampler->GetOutput());
- coswriter->SetFileName(cosfname);
- itkcoswriter->SetInput(itkcosresampler->GetOutput());
- itkcoswriter->SetFileName(itkcosfname);
- coswriter->Update();
- itkcoswriter->Update();
-  /*
-  unsigned int rad = 10;
-  
-  typedef otb::WindowedSincInterpolateImageGaussianFunction<ImageType>        GaussInterpolatorType;
-  typedef otb::WindowedSincInterpolateImageHammingFunction<ImageType>         HamInterpolatorType;
+  prowriter->SetFileName(profname);
+  prowriter->Update();
+
   typedef otb::WindowedSincInterpolateImageCosineFunction<ImageType>          CosInterpolatorType;
-  typedef itk::Function::HammingWindowFunction<10, double, double>             itkHamType;
-  typedef itk::WindowedSincInterpolateImageFunction<ImageType, 10, itkHamType> itkHamInterpolatorType;
-  typedef itk::Function::CosineWindowFunction<10, double, double>              itkCosType;
-  typedef itk::WindowedSincInterpolateImageFunction<ImageType, 10, itkCosType> itkCosInterpolatorType;
-  typedef itk::DifferenceImageFilter<ImageType, ImageType>                    DiffType;
-  */
-  // Instantiating object
+  typedef itk::Function::CosineWindowFunction<1, double, double>              itkCosType;
+  typedef itk::WindowedSincInterpolateImageFunction<ImageType, 1, itkCosType> itkCosInterpolatorType;
 
-  /*
-  WriterType::Pointer gausswriter   = WriterType::New();
-  WriterType::Pointer hamwriter     = WriterType::New();
-  WriterType::Pointer coswriter     = WriterType::New();
-  WriterType::Pointer itkhamwriter  = WriterType::New();
   WriterType::Pointer itkcoswriter  = WriterType::New();
-  WriterType::Pointer cosdiffwriter = WriterType::New();
-  WriterType::Pointer hamdiffwriter = WriterType::New();
-  */
-
-  /*
-  StreamingResampleImageFilterType::Pointer gaussresampler = StreamingResampleImageFilterType::New();
-  StreamingResampleImageFilterType::Pointer hamresampler = StreamingResampleImageFilterType::New();
+  WriterType::Pointer coswriter = WriterType::New();
   StreamingResampleImageFilterType::Pointer cosresampler = StreamingResampleImageFilterType::New();
-  StreamingResampleImageFilterType::Pointer itkhamresampler = StreamingResampleImageFilterType::New();
   StreamingResampleImageFilterType::Pointer itkcosresampler = StreamingResampleImageFilterType::New();
-  DiffType::Pointer                         hamdiff = DiffType::New();
-  DiffType::Pointer                         cosdiff = DiffType::New();
-  */
-
-
-  /*
-  HamInterpolatorType::Pointer     ham     = HamInterpolatorType::New();
   CosInterpolatorType::Pointer     cos     = CosInterpolatorType::New();
-  itkHamInterpolatorType::Pointer  itkham  = itkHamInterpolatorType::New();
   itkCosInterpolatorType::Pointer  itkcos  = itkCosInterpolatorType::New();
-  GaussInterpolatorType::Pointer   gauss   = GaussInterpolatorType::New();
-  */
-
-  //proresampler->SetInterpolatorNeighborhoodRadius(rad);  
-  /*
-  gaussresampler->SetInput(reader->GetOutput());
-  gauss->SetRadius(rad);
-  gaussresampler->SetInterpolator(gauss);
-  //gaussresampler->SetInterpolatorNeighborhoodRadius(rad); 
-
-  hamresampler->SetInput(reader->GetOutput());
-  ham->SetRadius(rad);
-  hamresampler->SetInterpolator(ham);
-  //hamresampler->SetInterpolatorNeighborhoodRadius(rad); 
-
-  cosresampler->SetInput(reader->GetOutput());
-  cos->SetRadius(rad);
-  cosresampler->SetInterpolator(cos);
-  //cosresampler->SetInterpolatorNeighborhoodRadius(30); 
-
-  itkhamresampler->SetInput(reader->GetOutput());
-  itkhamresampler->SetInterpolator(itkham);
-  //itkhamresampler->SetInterpolatorNeighborhoodRadius(rad);
- 
-  itkcosresampler->SetInput(reader->GetOutput());
-  itkcosresampler->SetInterpolator(itkcos);
-  //itkcosresampler->SetInterpolatorNeighborhoodRadius(30); 
-  */
-  // Size of output resampler result
- 
-  /*
-  gaussresampler->SetSize(size);
-  gaussresampler->SetOutputSpacing(tutu);
-
-  hamresampler->SetSize(size);
-  hamresampler->SetOutputSpacing(tutu);
-
   cosresampler->SetSize(size);
   cosresampler->SetOutputSpacing(tutu);
-
-  itkhamresampler->SetSize(size);
-  itkhamresampler->SetOutputSpacing(tutu);
-
   itkcosresampler->SetSize(size);
   itkcosresampler->SetOutputSpacing(tutu);
-  */
-
-  /*
-  gausswriter->SetInput(gaussresampler->GetOutput());
-  //gausswriter->SetNumberOfStreamDivisions(1);
-  gausswriter->SetFileName("gaussresample.tif");
- 
-  hamwriter->SetInput(hamresampler->GetOutput());
-  //hamwriter->SetNumberOfStreamDivisions(1);
-  hamwriter->SetFileName("hamresample.tif");
-  
+  cosresampler->SetInput(reader->GetOutput());
+  cos->SetInputImage(reader->GetOutput());
+  cos->SetRadius(atoi(argv[6]));
+  cos->Initialize();
+  cosresampler->SetInterpolator(cos);
+  itkcosresampler->SetInput(reader->GetOutput());
+  itkcosresampler->SetInterpolator(itkcos);
   coswriter->SetInput(cosresampler->GetOutput());
-  //coswriter->SetNumberOfStreamDivisions(1);
-  coswriter->SetFileName("cosresample.tif");
-  
-  itkhamwriter->SetInput(itkhamresampler->GetOutput());
-  //itkhamwriter->SetNumberOfStreamDivisions(1);
-  itkhamwriter->SetFileName("itkhamresample.tif");
-
+  coswriter->SetFileName(cosfname);
   itkcoswriter->SetInput(itkcosresampler->GetOutput());
-  //itkcoswriter->SetNumberOfStreamDivisions(1);
-  itkcoswriter->SetFileName("itkcosresample.tif");
-
-  gausswriter->Update();
-  hamwriter->Update();
+  itkcoswriter->SetFileName(itkcosfname);
   coswriter->Update();
-  itkhamwriter->Update();
   itkcoswriter->Update();
-  
-  cosdiff->SetInput(0, cosresampler->GetOutput());
-  cosdiff->SetInput(1, itkcosresampler->GetOutput());
-  //cosdiffwriter->SetNumberOfStreamDivisions(1);
-  cosdiffwriter->SetFileName("cosdiff.tif");
-  cosdiffwriter->SetInput(cosdiff->GetOutput());
-  
-  hamdiff->SetInput(0, hamresampler->GetOutput());
-  hamdiff->SetInput(1, itkhamresampler->GetOutput());
-  //hamdiffwriter->SetNumberOfStreamDivisions(1);
-  hamdiffwriter->SetFileName("hamdiff.tif");
-  hamdiffwriter->SetInput(hamdiff->GetOutput());
 
-  cosdiffwriter->Update();
-  hamdiffwriter->Update();
-  */
- 
 
   return EXIT_SUCCESS;
 }

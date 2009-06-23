@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolylineMask2DImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2008-01-20 18:00:40 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-11-07 19:39:44 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -99,8 +99,9 @@ void PolylineMask2DImageFilter<TInputImage,TPolyline,TOutputImage>
       this->ProcessObject::GetOutput(0)));  
 
 
-  outputImagePtr->SetSpacing(inputImagePtr->GetSpacing());
   outputImagePtr->SetOrigin(inputImagePtr->GetOrigin());
+  outputImagePtr->SetSpacing(inputImagePtr->GetSpacing());
+  outputImagePtr->SetDirection(inputImagePtr->GetDirection());
   outputImagePtr->SetRequestedRegion( inputImagePtr->GetRequestedRegion() );
   outputImagePtr->SetBufferedRegion(  inputImagePtr->GetBufferedRegion() );
   outputImagePtr->SetLargestPossibleRegion( inputImagePtr->GetLargestPossibleRegion() );

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -38,61 +38,61 @@ CompacityPathFunction< TInputPath, TOutput >
 
 template < class TInputPath, class TOutput>
 typename CompacityPathFunction<TInputPath,
-                                   TOutput>::OutputType
+TOutput>::OutputType
 CompacityPathFunction<TInputPath,TOutput>
 ::Evaluate(const PathType& path) const
 {
   typedef double                      RealType;
-  
+
   VertexListPointer                   vertexList;
   VertexType                          cindex;
   VertexType                          IndexOut;
   int                                 nbPath;
-  RealType  	     		      Surface=0.0;
-  RealType  	     		      Perimeter=0.0;
+  RealType                   Surface=0.0;
+  RealType                   Perimeter=0.0;
   RealType                            Compacity;
-  RealType			      x1,x2,y1,y2;
-  
+  RealType            x1,x2,y1,y2;
+
   vertexList = path.GetVertexList();
   nbPath = vertexList->Size();
 
-  if(nbPath >2)
-     {
-     for(int i =0 ; i<nbPath ;i++)
-       {
-       cindex = vertexList->GetElement(i);
-       x1 = cindex[0];
-       y1 = cindex[1];
-       
-       if( i == (nbPath-1) )
-       {
-          cindex = vertexList->GetElement(0);
-       }
-       else
-       {
-          cindex = vertexList->GetElement(i+1);
-       }
-       x2 = cindex[0];
-       y2 = cindex[1];
-       
-       RealType Norm;
-       
-       Norm  = vcl_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
-       
-       Perimeter += Norm;
-	 
-       RealType P = x2 * (y2-y1);
-       RealType Q = y2 * (x2-x1);
-	 
-       Surface += ( P - Q );
-       } // FOR loop
-     } // IF loop  
-     else
-     {
-        itkExceptionMacro(<<"CompacityPathFunction::Evaluate() FAILED -- path must contains at least 3 points"); 
-     }
+  if (nbPath >2)
+  {
+    for (int i =0; i<nbPath;++i)
+    {
+      cindex = vertexList->GetElement(i);
+      x1 = cindex[0];
+      y1 = cindex[1];
+
+      if ( i == (nbPath-1) )
+      {
+        cindex = vertexList->GetElement(0);
+      }
+      else
+      {
+        cindex = vertexList->GetElement(i+1);
+      }
+      x2 = cindex[0];
+      y2 = cindex[1];
+
+      RealType Norm;
+
+      Norm  = vcl_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+
+      Perimeter += Norm;
+
+      RealType P = x2 * (y2-y1);
+      RealType Q = y2 * (x2-x1);
+
+      Surface += ( P - Q );
+    } // FOR loop
+  } // IF loop
+  else
+  {
+    itkExceptionMacro(<<"CompacityPathFunction::Evaluate() FAILED -- path must contains at least 3 points");
+  }
   Surface /= 2.0;
-  
+
   Compacity = Surface / (Perimeter * Perimeter);
   Compacity *= ( 4.* acos(-1.0) );
 
@@ -102,18 +102,18 @@ CompacityPathFunction<TInputPath,TOutput>
 
 template < class TInputPath, class TOutput>
 typename CompacityPathFunction<TInputPath,
-                                   TOutput>::OutputType
+TOutput>::OutputType
 CompacityPathFunction<TInputPath,TOutput>
 ::Evaluate() const
 {
-  if( !this->GetInputPath() )
-    {
+  if ( !this->GetInputPath() )
+  {
     otbMsgDevMacro( << "Problem with GetInputPath" );
     return static_cast<OutputType>(itk::NumericTraits<OutputType>::max() );
-    }
+  }
 
   OutputType Result =  Evaluate( *(this->GetInputPath()) );
-  
+
   return Result;
 }
 

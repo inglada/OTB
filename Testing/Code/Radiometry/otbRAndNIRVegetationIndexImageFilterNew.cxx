@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,7 +21,7 @@
 
 #include "itkExceptionObject.h"
 
-#include "otbRAndNIRVegetationIndexImageFilter.h"
+#include "otbRAndNIRIndexImageFilter.h"
 #include "itkImage.h"
 #include "otbImage.h"
 
@@ -32,11 +32,11 @@ int otbRAndNIRVegetationIndexImageFilterNew(int argc, char * argv[])
   typedef otb::Image<PixelType,Dimension> InputRImageType;
   typedef itk::Image<PixelType,Dimension> InputNIRImageType;
   typedef itk::Image<PixelType,Dimension> OutputImageType;
-  
-  typedef otb::RAndNIRVegetationIndexImageFilter<InputRImageType,InputNIRImageType,OutputImageType>  RAndNIRVegetationIndexImageFilterType;
-  
+
+  typedef otb::RAndNIRIndexImageFilter<InputRImageType,InputNIRImageType,OutputImageType>  RAndNIRIndexImageFilterType;
+
   // Instantiating object
-  RAndNIRVegetationIndexImageFilterType::Pointer object = RAndNIRVegetationIndexImageFilterType::New();
+  RAndNIRIndexImageFilterType::Pointer object = RAndNIRIndexImageFilterType::New();
 
   return EXIT_SUCCESS;
 }

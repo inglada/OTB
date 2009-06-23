@@ -10,19 +10,19 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
 #include "otbAtmosphericRadiativeTerms.h"
 
-namespace otb 
+namespace otb
 {
-/*********************************** AtmosphericRadiativeTermsSingleChannel***********************************************/ 
+/*********************************** AtmosphericRadiativeTermsSingleChannel***********************************************/
 /**PrintSelf method */
-void 
+void
 AtmosphericRadiativeTermsSingleChannel
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
@@ -37,11 +37,11 @@ AtmosphericRadiativeTermsSingleChannel
   os << indent << "Upward diffuse transmittance for rayleigh: " << m_UpwardDiffuseTransmittanceForRayleigh << std::endl;
   os << indent << "Upward diffuse transmittance for aerosols: " << m_UpwardDiffuseTransmittanceForAerosol << std::endl;
 }
-  
 
 
 
-/*********************************** AtmosphericRadiativeTerms **********************************************************/ 
+
+/*********************************** AtmosphericRadiativeTerms **********************************************************/
 /**CONSTRUCTOR. */
 AtmosphericRadiativeTerms
 ::AtmosphericRadiativeTerms()
@@ -50,298 +50,298 @@ AtmosphericRadiativeTerms
   m_IsInitialized = false;
 }
 
-void 
+void
 AtmosphericRadiativeTerms
 ::ValuesInitialization(unsigned int nbChannel)
 {
   ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-  for (unsigned int j=0; j<nbChannel; j++)
-    {
-      m_Values.push_back(temp);
-    }
+  for (unsigned int j=0; j<nbChannel; ++j)
+  {
+    m_Values.push_back(temp);
+  }
   m_IsInitialized = true;
 }
 
 /** SET ACCESSORS WITH VECTORS. */
-void 
+void
 AtmosphericRadiativeTerms
 ::SetIntrinsicAtmosphericReflectances(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-      
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    { 
-      m_Values[nbChannel]->SetIntrinsicAtmosphericReflectance(vect[nbChannel]);
-    }
+  {
+    this->ValuesInitialization(vect.size());
+
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetIntrinsicAtmosphericReflectance(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetSphericalAlbedos(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetSphericalAlbedo(vect[nbChannel]);
-    } 
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetSphericalAlbedo(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetTotalGaseousTransmissions(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetTotalGaseousTransmission(vect[nbChannel]);
-    }  
-  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetTotalGaseousTransmission(vect[nbChannel]);
+  }
+
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetDownwardTransmittances(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetDownwardTransmittance(vect[nbChannel]);
-    }
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetDownwardTransmittance(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetUpwardTransmittances(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetUpwardTransmittance(vect[nbChannel]);
-    }  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetUpwardTransmittance(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetUpwardDiffuseTransmittances(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetUpwardDiffuseTransmittance(vect[nbChannel]);
-    }  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetUpwardDiffuseTransmittance(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetUpwardDirectTransmittances(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetUpwardDirectTransmittance(vect[nbChannel]);
-    }  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetUpwardDirectTransmittance(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetUpwardDiffuseTransmittancesForRayleigh(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetUpwardDiffuseTransmittanceForRayleigh(vect[nbChannel]);
-    }  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetUpwardDiffuseTransmittanceForRayleigh(vect[nbChannel]);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetUpwardDiffuseTransmittancesForAerosol(const DataVectorType & vect)
 {
   if ( !m_IsInitialized)
-    { 
-      this->ValuesInitialization(vect.size());
-    }
-  for (unsigned int nbChannel=0; nbChannel<vect.size(); nbChannel++)
-    {
-      m_Values[nbChannel]->SetUpwardDiffuseTransmittanceForAerosol(vect[nbChannel]);
-    }  
+  {
+    this->ValuesInitialization(vect.size());
+  }
+  for (unsigned int nbChannel=0; nbChannel<vect.size(); ++nbChannel)
+  {
+    m_Values[nbChannel]->SetUpwardDiffuseTransmittanceForAerosol(vect[nbChannel]);
+  }
 }
 
 /** SET ACCESSORS WITH INDEX. */
-void 
+void
 AtmosphericRadiativeTerms
 ::SetValueByIndex(unsigned int id, const ValueType & val)
 {
   if ( m_IsInitialized )
+  {
+    if ( m_Values.size()<id+1 )
     {
-      if ( m_Values.size()<id+1 )
-	{ 
-	  for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	    {
-	      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	      m_Values.push_back(temp);
-	    }
-	}
-      m_Values[id] = val;
+      for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+      {
+        ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+        m_Values.push_back(temp);
+      }
     }
+    m_Values[id] = val;
+  }
   else
-    {
-      itkExceptionMacro(<< "Can't insert value before iniatilizing vector value..."<<std::endl);
-    }
+  {
+    itkExceptionMacro(<< "Can't insert value before iniatilizing vector value..."<<std::endl);
+  }
 }
-void 
+void
 AtmosphericRadiativeTerms
 ::SetIntrinsicAtmosphericReflectance(unsigned int id, const double & val)
 {
   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetIntrinsicAtmosphericReflectance(val);
-} 
+}
 void
 AtmosphericRadiativeTerms
 ::SetSphericalAlbedo(unsigned int id, const double & val)
 {
   if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
     {
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetSphericalAlbedo(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
 ::SetTotalGaseousTransmission(unsigned int id, const double & val)
 {
   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetTotalGaseousTransmission(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetDownwardTransmittance(unsigned int id, const double & val ) 
+::SetDownwardTransmittance(unsigned int id, const double & val )
 {
- if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetDownwardTransmittance(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetUpwardTransmittance(unsigned int id, const  double & val ) 
+::SetUpwardTransmittance(unsigned int id, const  double & val )
 {
-   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetUpwardTransmittance(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetUpwardDiffuseTransmittance(unsigned int id, const  double & val ) 
+::SetUpwardDiffuseTransmittance(unsigned int id, const  double & val )
 {
-   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetUpwardDiffuseTransmittance(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetUpwardDirectTransmittance(unsigned int id, const  double & val ) 
+::SetUpwardDirectTransmittance(unsigned int id, const  double & val )
 {
-   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetUpwardDirectTransmittance(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetUpwardDiffuseTransmittanceForRayleigh(unsigned int id, const  double & val ) 
+::SetUpwardDiffuseTransmittanceForRayleigh(unsigned int id, const  double & val )
 {
-   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetUpwardDiffuseTransmittanceForRayleigh(val);
-} 
-void 
+}
+void
 AtmosphericRadiativeTerms
-::SetUpwardDiffuseTransmittanceForAerosol(unsigned int id, const  double & val ) 
+::SetUpwardDiffuseTransmittanceForAerosol(unsigned int id, const  double & val )
 {
-   if ( m_Values.size()<id+1 )
-    { 
-      for(unsigned int j=0; j<(id+1-m_Values.size());j++)
-	{
-	  ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
-	  m_Values.push_back(temp);
-	}
+  if ( m_Values.size()<id+1 )
+  {
+    for (unsigned int j=0; j<(id+1-m_Values.size());++j)
+    {
+      ValueType temp = AtmosphericRadiativeTermsSingleChannel::New();
+      m_Values.push_back(temp);
     }
+  }
   m_Values[id]->SetUpwardDiffuseTransmittanceForAerosol(val);
-} 
+}
 
 /** GET ACCESSORS WITH VECTORS. */
-AtmosphericRadiativeTerms::DataVectorType 
+AtmosphericRadiativeTerms::DataVectorType
 AtmosphericRadiativeTerms
 ::GetIntrinsicAtmosphericReflectances()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetIntrinsicAtmosphericReflectance();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetIntrinsicAtmosphericReflectance();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -349,10 +349,10 @@ AtmosphericRadiativeTerms
 ::GetSphericalAlbedos()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetSphericalAlbedo();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetSphericalAlbedo();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -360,21 +360,21 @@ AtmosphericRadiativeTerms
 ::GetTotalGaseousTransmissions()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetTotalGaseousTransmission();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetTotalGaseousTransmission();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
 AtmosphericRadiativeTerms
-::GetDownwardTransmittances() 
+::GetDownwardTransmittances()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetDownwardTransmittance();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetDownwardTransmittance();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -382,10 +382,10 @@ AtmosphericRadiativeTerms
 ::GetUpwardTransmittances()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetUpwardTransmittance();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetUpwardTransmittance();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -393,10 +393,10 @@ AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittances()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittance();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittance();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -404,10 +404,10 @@ AtmosphericRadiativeTerms
 ::GetUpwardDirectTransmittances()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetUpwardDirectTransmittance();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetUpwardDirectTransmittance();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -415,10 +415,10 @@ AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittancesForRayleigh()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittanceForRayleigh();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittanceForRayleigh();
+  }
   return vect;
 }
 AtmosphericRadiativeTerms::DataVectorType
@@ -426,10 +426,10 @@ AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittancesForAerosol()
 {
   DataVectorType vect(m_Values.size(), 0);
-  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); nbChannel++)
-    {
-      vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittanceForAerosol();
-    } 
+  for (unsigned int nbChannel=0; nbChannel<m_Values.size(); ++nbChannel)
+  {
+    vect[nbChannel] = m_Values[nbChannel]->GetUpwardDiffuseTransmittanceForAerosol();
+  }
   return vect;
 }
 
@@ -442,7 +442,7 @@ AtmosphericRadiativeTerms
 }
 double
 AtmosphericRadiativeTerms
-::GetSphericalAlbedo(unsigned int id) 
+::GetSphericalAlbedo(unsigned int id)
 {
   return m_Values[id]->GetSphericalAlbedo();
 }
@@ -452,44 +452,44 @@ AtmosphericRadiativeTerms
 {
   return m_Values[id]->GetTotalGaseousTransmission();
 }
-double 
+double
 AtmosphericRadiativeTerms
-::GetDownwardTransmittance(unsigned int id) 
+::GetDownwardTransmittance(unsigned int id)
 {
   return m_Values[id]->GetDownwardTransmittance();
 }
-double 
+double
 AtmosphericRadiativeTerms
 ::GetUpwardTransmittance(unsigned int id)
 {
   return m_Values[id]->GetUpwardTransmittance();
 }
-double 
+double
 AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittance(unsigned int id)
 {
   return m_Values[id]->GetUpwardDiffuseTransmittance();
 }
-double 
+double
 AtmosphericRadiativeTerms
 ::GetUpwardDirectTransmittance(unsigned int id)
 {
   return m_Values[id]->GetUpwardDirectTransmittance();
 }
-double 
+double
 AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittanceForRayleigh(unsigned int id)
 {
   return m_Values[id]->GetUpwardDiffuseTransmittanceForRayleigh();
 }
-double 
+double
 AtmosphericRadiativeTerms
 ::GetUpwardDiffuseTransmittanceForAerosol(unsigned int id)
 {
   return m_Values[id]->GetUpwardDiffuseTransmittanceForAerosol();
 }
 
-const AtmosphericRadiativeTerms::ValueType 
+const AtmosphericRadiativeTerms::ValueType
 AtmosphericRadiativeTerms
 ::GetValueByIndex(unsigned int id) const
 {
@@ -497,15 +497,15 @@ AtmosphericRadiativeTerms
 }
 
 /**PrintSelf method */
-void 
+void
 AtmosphericRadiativeTerms
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-  for (unsigned int i=0; i<m_Values.size(); i++)
-    {
-      os << indent << "Channel "<< i << " : "<< std::endl;
-      //ValueType::(os,indent);
-    }
+  for (unsigned int i=0; i<m_Values.size(); ++i)
+  {
+    os << indent << "Channel "<< i << " : "<< std::endl;
+    //ValueType::(os,indent);
+  }
 }
 
 

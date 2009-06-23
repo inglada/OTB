@@ -10,7 +10,7 @@
 // Contains declaration of class ossimSpot5Model.
 // 
 //*****************************************************************************
-// $Id: ossimSpot5Model.h 12138 2007-12-07 14:30:22Z gpotts $
+// $Id: ossimSpot5Model.h 13976 2009-01-20 16:00:16Z gpotts $
 #ifndef ossimSpot5Model_HEADER
 #define ossimSpot5Model_HEADER
 
@@ -118,7 +118,8 @@ protected:
    
    void loadGeometry(FILE*);
    void loadSupportData();
-   void computeSatToOrbRotation(ossim_float64 t)const;
+   //void computeSatToOrbRotation(ossim_float64 t)const;
+   void computeSatToOrbRotation(NEWMAT::Matrix& result, ossim_float64 t)const;
 
 /*    virtual ossimDpt extrapolate (const ossimGpt& gp) const; */
 /*    virtual ossimGpt extrapolate (const ossimDpt& ip, */
@@ -140,8 +141,8 @@ protected:
    
    ossim_float64  theLineSamplingPeriod;
    ossimDpt       theSpotSubImageOffset;
-   mutable NEWMAT::Matrix theSatToOrbRotation;
-   mutable NEWMAT::Matrix theOrbToEcfRotation;
+//   mutable NEWMAT::Matrix theSatToOrbRotation;
+//   mutable NEWMAT::Matrix theOrbToEcfRotation;
 
    //---
    // Adjustable parameters:

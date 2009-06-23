@@ -8,42 +8,28 @@
 //               (ACC) of a DTED Level 1 file.
 //
 //********************************************************************
-// $Id: ossimDtedAcc.cpp 13025 2008-06-13 17:06:30Z sbortman $
+// $Id: ossimDtedAcc.cpp 14248 2009-04-08 19:38:11Z dburken $
 
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <string>
 
 #include <ossim/support_data/ossimDtedAcc.h>
-#include <ossim/base/ossimNotifyContext.h>
+#include <ossim/base/ossimNotify.h>
+#include <ossim/base/ossimProperty.h>
+#include <ossim/base/ossimStringProperty.h>
 
 //**************************************************************************
 // CONSTRUCTOR
 //**************************************************************************
 ossimDtedAcc::ossimDtedAcc(const ossimFilename& dted_file,
                            ossim_int32 offset)
-   :
-      theRecSen(),
-      theAbsoluteCE(),
-      theAbsoluteLE(),
-      theRelativeCE(),
-      theRelativeLE(),
-      theField6(),
-      theField7(),
-      theField8(),
-      theField9(),
-      theField10(),
-      theField11(),
-      theField12(),
-      theField13(),
-      theField14(),
-      theField15(),
-      theField16(),
-      theField17(),
-      theStartOffset(offset),
-      theStopOffset(0)
 {
-   // Check to see that dted file exists.
+   clearFields();
+   theStartOffset = offset;
+   // Check to see that dted file exists. 
    if(!dted_file.exists())
    {
       theErrorStatus = ossimErrorCodes::OSSIM_ERROR;
@@ -71,32 +57,37 @@ ossimDtedAcc::ossimDtedAcc(const ossimFilename& dted_file,
    parse(in);
 }
 
+void ossimDtedAcc::clearFields()
+{
+   memset(theRecSen, '\0', FIELD1_SIZE+1);
+   memset(theAbsoluteCE, '\0',FIELD2_SIZE+1);
+   memset(theAbsoluteLE, '\0',FIELD3_SIZE+1);
+   memset(theRelativeCE, '\0',FIELD4_SIZE+1);
+   memset(theRelativeLE, '\0',FIELD5_SIZE+1);
+   memset(theField6, '\0',FIELD6_SIZE+1);
+   memset(theField7, '\0',FIELD7_SIZE+1);
+   memset(theField8, '\0',FIELD8_SIZE+1);
+   memset(theField9, '\0',FIELD9_SIZE+1);
+   memset(theField10, '\0',FIELD10_SIZE+1);
+   memset(theField11, '\0',FIELD11_SIZE+1);
+   memset(theField12, '\0',FIELD12_SIZE+1);
+   memset(theField13, '\0',FIELD13_SIZE+1);
+   memset(theField14, '\0',FIELD14_SIZE+1);
+   memset(theField15, '\0',FIELD15_SIZE+1);
+   memset(theField16, '\0',FIELD16_SIZE+1);
+   memset(theField17, '\0',FIELD17_SIZE+1);
+   
+   theStartOffset = 0;
+   theStopOffset = 0;
+}
 //**************************************************************************
 // CONSTRUCTOR
 //**************************************************************************
 ossimDtedAcc::ossimDtedAcc(std::istream& in,
                            ossim_int32 offset)
-   :
-      theRecSen(),
-      theAbsoluteCE(),
-      theAbsoluteLE(),
-      theRelativeCE(),
-      theRelativeLE(),
-      theField6(),
-      theField7(),
-      theField8(),
-      theField9(),
-      theField10(),
-      theField11(),
-      theField12(),
-      theField13(),
-      theField14(),
-      theField15(),
-      theField16(),
-      theField17(),
-      theStartOffset(offset),
-      theStopOffset(0)
 {
+	clearFields();
+	theStartOffset = offset;
    parse(in);
 }
 
@@ -186,6 +177,62 @@ void ossimDtedAcc::parse(std::istream& in)
    theStopOffset = theStartOffset + ACC_LENGTH;
 }
 
+ossimRefPtr<ossimProperty> ossimDtedAcc::getProperty(
+   const ossimString& name) const
+{
+   ossimRefPtr<ossimProperty> result = 0;
+   if (name == "recognition_sentinel")
+   {
+      result = new ossimStringProperty(name, theRecSen);
+      
+   }
+   else if (name == "absolute_ce")
+   {
+      result = new ossimStringProperty(name, theAbsoluteCE);
+   }
+   else if (name == "absolute_le")
+   {
+      result = new ossimStringProperty(name, theAbsoluteLE); 
+   }
+   else if (name == "relative_ce")
+   {
+      result = new ossimStringProperty(name, theRelativeCE);
+   }
+   else if (name == "relative_le")
+   {
+      result = new ossimStringProperty(name, theRelativeLE);
+   }
+   return result;
+}
+
+void ossimDtedAcc::getPropertyNames(
+   std::vector<ossimString>& propertyNames) const
+{
+   propertyNames.push_back(ossimString("recognition_sentinel"));
+   propertyNames.push_back(ossimString("absolute_ce"));
+   propertyNames.push_back(ossimString("absolute_le"));
+   propertyNames.push_back(ossimString("relative_ce"));
+   propertyNames.push_back(ossimString("relative_le"));
+}
+
+std::ostream& ossimDtedAcc::print(std::ostream& out,
+                                  const std::string& prefix) const
+{
+   std::string pfx = prefix;
+   pfx += "acc.";
+
+   out << setiosflags(ios::left)
+       << pfx << setw(28) << "recognition_sentinel:" << theRecSen << "\n"
+       << pfx << setw(28) << "absolute_ce:"  << theAbsoluteCE << "\n"
+       << pfx << setw(28) << "absolute_le:"  << theAbsoluteLE << "\n"
+       << pfx << setw(28) << "relative ce:"  << theRelativeCE << "\n"
+       << pfx << setw(28) << "relative le:"  << theRelativeLE << "\n"
+       << pfx << setw(28) << "start_offset:" << theStartOffset << "\n"
+       << pfx << setw(28) << "stop_offset:"  << theStopOffset
+       << std::endl;
+   return out;
+}
+
 ossim_int32 ossimDtedAcc::absCE() const
 {
    return (theAbsoluteCE ? atoi(theAbsoluteCE) : 0);
@@ -223,18 +270,8 @@ ossim_int32 ossimDtedAcc::stopOffset()  const
 //**************************************************************************
 std::ostream& operator<<( std::ostream& os, const ossimDtedAcc& acc)
 {
-   os << "\nDTED Header (ACC):"
-      << "\n-------------------------------"
-      << "\nRecoginition Sentinel: " << acc.theRecSen
-      << "\nAbsolute CE:           " << acc.theAbsoluteCE
-      << "\nAbsolute LE:           " << acc.theAbsoluteLE
-      << "\nRelative CE:           " << acc.theRelativeCE
-      << "\nRelative LE:           " << acc.theRelativeLE
-      << "\nStart Offset:          " << acc.theStartOffset
-      << "\nStop Offset:           " << acc.theStopOffset
-      << std::endl;
-
-   return os;
+   std::string prefix;
+   return acc.print(os, prefix);
 }
 
 ossimDtedAcc::ossimDtedAcc(const ossimDtedAcc& source)

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,17 +22,17 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbFlusserPathNew);
-REGISTER_TEST(otbFlusserPath);
-REGISTER_TEST(otbOrientationPathNew);
-REGISTER_TEST(otbOrientationPath);
-REGISTER_TEST(otbCompacityPathNew);
-REGISTER_TEST(otbCompacityPathCircle);
-REGISTER_TEST(otbCompacityPathSquare);
-REGISTER_TEST(otbCompacityPathRectangle);
+  REGISTER_TEST(otbFlusserPathNew);
+  REGISTER_TEST(otbFlusserPath);
+  REGISTER_TEST(otbOrientationPathNew);
+  REGISTER_TEST(otbOrientationPath);
+  REGISTER_TEST(otbCompacityPathNew);
+  REGISTER_TEST(otbCompacityPathCircle);
+  REGISTER_TEST(otbCompacityPathSquare);
+  REGISTER_TEST(otbCompacityPathRectangle);
 }

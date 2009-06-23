@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -48,7 +48,7 @@
 // Some image processing routines do not need to visit every pixel in an
 // image. Flood-fill and connected-component algorithms, for example, only
 // visit pixels that are locally connected to one another.  Algorithms
-// such as these can be efficiently written using the random access 
+// such as these can be efficiently written using the random access
 // capabilities of the neighborhood iterator.
 //
 // The following example finds local minima.  Given a seed point, we can search
@@ -64,20 +64,20 @@
 // neighborhood iterators, but can be found in the source code of this
 // example. Some noise has been added to the distance transform image for
 // additional interest.
-// 
+//
 // Software Guide : EndLatex
 
 int main( int argc, char *argv[] )
 {
   if ( argc < 4 )
-    {
+  {
     std::cerr << "Missing parameters. " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0]
               << " outputImageFile startX startY"
               << std::endl;
     return -1;
-    }
+  }
 
   typedef float PixelType;
   typedef otb::Image< PixelType, 2 > ImageType;
@@ -91,9 +91,9 @@ int main( int argc, char *argv[] )
   typedef FastMarchingFilterType::NodeType       NodeType;
 
   NodeContainer::Pointer seeds = NodeContainer::New();
- 
+
   ImageType::IndexType  seedPosition;
-  
+
   seedPosition[0] = 128;
   seedPosition[1] = 128;
   const double initialDistance = 1.0;
@@ -103,7 +103,7 @@ int main( int argc, char *argv[] )
   const double seedValue = - initialDistance;
 
   ImageType::SizeType size = {{256, 256}};
-  
+
   node.SetValue( seedValue );
   node.SetIndex( seedPosition );
   seeds->Initialize();
@@ -113,29 +113,30 @@ int main( int argc, char *argv[] )
   fastMarching->SetSpeedConstant( 1.0 );
 
   itk::AddImageFilter<ImageType, ImageType, ImageType>::Pointer adder
-    = itk::AddImageFilter<ImageType, ImageType, ImageType>::New();
+  = itk::AddImageFilter<ImageType, ImageType, ImageType>::New();
   itk::RandomImageSource<ImageType>::Pointer noise
-    = itk::RandomImageSource<ImageType>::New();
+  = itk::RandomImageSource<ImageType>::New();
 
   noise->SetSize(size.m_Size);
   noise->SetMin(-.7);
   noise->SetMax(.8);
+  noise->SetNumberOfThreads(1);
   adder->SetInput1(noise->GetOutput());
   adder->SetInput2(fastMarching->GetOutput());
-  
+
   try
-    {
+  {
     fastMarching->SetOutputSize( size );
     fastMarching->Update();
 
     adder->Update();
 
-    }
-  catch( itk::ExceptionObject & excep )
-    {
+  }
+  catch ( itk::ExceptionObject & excep )
+  {
     std::cerr << "Exception caught !" << std::endl;
     std::cerr << excep << std::endl;
-    }
+  }
 
   ImageType::Pointer input = adder->GetOutput();
 
@@ -165,7 +166,7 @@ int main( int argc, char *argv[] )
 // Software Guide : EndCodeSnippet
 
 // Software Guide : BeginLatex
-// 
+//
 // Searching for the local minimum involves finding the minimum in the current
 // neighborhood, then shifting the neighborhood in the direction of that
 // minimum.  The \code{for} loop below records the \doxygen{itk}{Offset} of the
@@ -179,29 +180,29 @@ int main( int argc, char *argv[] )
 // Software Guide : BeginCodeSnippet
   bool flag = true;
   while ( flag == true )
-    {
+  {
     NeighborhoodIteratorType::OffsetType nextMove;
     nextMove.Fill(0);
 
     flag = false;
-    
+
     PixelType min = it.GetCenterPixel();
     for (unsigned i = 0; i < it.Size(); i++)
-      {
+    {
       if ( it.GetPixel(i) < min )
-        {
+      {
         min = it.GetPixel(i);
         nextMove = it.GetOffset(i);
         flag = true;
-        }
       }
+    }
     it.SetCenterPixel( 255.0 );
     it += nextMove;
-    }
+  }
 // Software Guide : EndCodeSnippet
 
-  
-    
+
+
 // Software Guide : BeginLatex
 //
 // Figure~\ref{fig:NeighborhoodExample6} shows the results of the algorithm
@@ -214,7 +215,7 @@ int main( int argc, char *argv[] )
 // \includegraphics[width=0.3\textwidth]{NeighborhoodIterators6b.eps}
 // \includegraphics[width=0.3\textwidth]{NeighborhoodIterators6c.eps}
 // \itkcaption[Finding local minima]{Paths traversed by the neighborhood
-// iterator from different seed points to the local minimum. 
+// iterator from different seed points to the local minimum.
 // The true minimum is at the center
 // of the image.  The path of the iterator is shown in white. The effect of
 // noise in the image is seen as small perturbations in each path. }
@@ -225,28 +226,28 @@ int main( int argc, char *argv[] )
   typedef unsigned char WritePixelType;
   typedef otb::Image< WritePixelType, 2 > WriteImageType;
   typedef otb::ImageFileWriter< WriteImageType > WriterType;
-  
+
   typedef itk::RescaleIntensityImageFilter< ImageType,
-    WriteImageType > RescaleFilterType;
-  
+  WriteImageType > RescaleFilterType;
+
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
-  
+
   rescaler->SetOutputMinimum(   0 );
   rescaler->SetOutputMaximum( 255 );
   rescaler->SetInput( input );
-  
+
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( argv[1] );
   writer->SetInput( rescaler->GetOutput() );
   try
-    {
+  {
     writer->Update();
-    }
+  }
   catch ( itk::ExceptionObject &err)
-    {
+  {
     std::cout << "ExceptionObject caught !" << std::endl;
     std::cout << err << std::endl;
     return -1;
-    }
-  return 0;
+  }
+  return EXIT_SUCCESS;
 }

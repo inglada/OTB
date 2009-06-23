@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPDEDeformableRegistrationFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004-12-21 22:47:28 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2009-01-26 21:45:56 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkPDEDeformableRegistrationFilter_txx_
-#define _itkPDEDeformableRegistrationFilter_txx_
+#ifndef __itkPDEDeformableRegistrationFilter_txx
+#define __itkPDEDeformableRegistrationFilter_txx
 
 #include "itkPDEDeformableRegistrationFilter.h"
 
@@ -31,7 +31,7 @@
 
 namespace itk {
 
-/*
+/**
  * Default constructor
  */
 template <class TFixedImage, class TMovingImage, class TDeformationField>
@@ -138,7 +138,7 @@ PDEDeformableRegistrationFilter<TFixedImage,TMovingImage,TDeformationField>
 }
 
 
-/*
+/**
  * Set the standard deviations.
  */
 template <class TFixedImage, class TMovingImage, class TDeformationField>
@@ -263,7 +263,7 @@ PDEDeformableRegistrationFilter<TFixedImage,TMovingImage,TDeformationField>
   f->SetFixedImage( fixedPtr );
   f->SetMovingImage( movingPtr );
 
-  this->Superclass::InitializeIteration();           
+  this->Superclass::InitializeIteration();
 
 }
 
@@ -417,8 +417,9 @@ PDEDeformableRegistrationFilter<TFixedImage,TMovingImage,TDeformationField>
   DeformationFieldPointer field = this->GetOutput();
 
   // copy field to TempField
-  m_TempField->SetSpacing( field->GetSpacing() );
   m_TempField->SetOrigin( field->GetOrigin() );
+  m_TempField->SetSpacing( field->GetSpacing() );
+  m_TempField->SetDirection( field->GetDirection() );
   m_TempField->SetLargestPossibleRegion( 
     field->GetLargestPossibleRegion() );
   m_TempField->SetRequestedRegion(
@@ -426,12 +427,12 @@ PDEDeformableRegistrationFilter<TFixedImage,TMovingImage,TDeformationField>
   m_TempField->SetBufferedRegion( field->GetBufferedRegion() );
   m_TempField->Allocate();
   
-  typedef typename DeformationFieldType::PixelType VectorType;
-  typedef typename VectorType::ValueType           ScalarType;
+  typedef typename DeformationFieldType::PixelType    VectorType;
+  typedef typename VectorType::ValueType              ScalarType;
   typedef GaussianOperator<ScalarType,ImageDimension> OperatorType;
   typedef VectorNeighborhoodOperatorImageFilter<
     DeformationFieldType,
-    DeformationFieldType> SmootherType;
+    DeformationFieldType>                             SmootherType;
 
   OperatorType * oper = new OperatorType;
   typename SmootherType::Pointer smoother = SmootherType::New();
@@ -488,12 +489,12 @@ PDEDeformableRegistrationFilter<TFixedImage,TMovingImage,TDeformationField>
   // The update buffer will be overwritten with new data.
   DeformationFieldPointer field = this->GetUpdateBuffer();
 
-  typedef typename DeformationFieldType::PixelType VectorType;
-  typedef typename VectorType::ValueType           ScalarType;
+  typedef typename DeformationFieldType::PixelType    VectorType;
+  typedef typename VectorType::ValueType              ScalarType;
   typedef GaussianOperator<ScalarType,ImageDimension> OperatorType;
   typedef VectorNeighborhoodOperatorImageFilter<
     DeformationFieldType,
-    DeformationFieldType> SmootherType;
+    DeformationFieldType>                             SmootherType;
   
   OperatorType opers[ImageDimension];
   typename SmootherType::Pointer smoothers[ImageDimension];

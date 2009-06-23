@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -20,7 +20,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "otbRCC8GraphSource.h"
 
-namespace otb 
+namespace otb
 {
 /** \class ImageListToRCC8GraphFilter
  * \brief Base class for filters taking an images list as input to
@@ -28,7 +28,7 @@ namespace otb
  */
 template <class TInputImage, class TOutputGraph>
 class ITK_EXPORT ImageListToRCC8GraphFilter
-  : public RCC8GraphSource<TOutputGraph>
+      : public RCC8GraphSource<TOutputGraph>
 {
 public:
   /** Standard typedefs */
@@ -50,7 +50,7 @@ public:
   typedef ImageList<InputImageType>               InputImageListType;
   typedef typename InputImageListType::Pointer    InputImageListPointerType;
   typedef typename InputImageListType::ConstPointer InputImageListConstPointer;
- /** Template output parameters typedefs */
+  /** Template output parameters typedefs */
   typedef TOutputGraph OutputGraphType;
   typedef typename Superclass::OutputGraphPointerType OutputGraphPointerType;
   typedef typename OutputGraphType::VertexType VertexType;
@@ -67,7 +67,7 @@ protected:
   ImageListToRCC8GraphFilter();
   /** Destructor */
   virtual ~ImageListToRCC8GraphFilter() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:

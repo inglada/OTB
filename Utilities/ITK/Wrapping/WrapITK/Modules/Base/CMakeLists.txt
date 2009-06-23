@@ -13,6 +13,7 @@ SET(WRAPPER_LIBRARY_GROUPS
   itkCovariantVector
   itkVector
   itkRGBPixel
+  itkRGBAPixel
   itkVariableLengthVector
   itkImage
   itkVectorImage
@@ -26,6 +27,9 @@ SET(WRAPPER_LIBRARY_GROUPS
   itkInPlaceImageFilterA
   itkInPlaceImageFilterB
   itkFiniteDifferenceImageFilter
+  itkPath
+  itkParametricPath
+  itkPolyLineParametricPath
 )
 
 SET(WRAPPER_LIBRARY_DEPENDS VXLNumerics)

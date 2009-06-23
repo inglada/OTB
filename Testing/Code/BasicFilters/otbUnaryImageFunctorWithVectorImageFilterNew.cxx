@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -30,9 +30,9 @@ int otbUnaryImageFunctorWithVectorImageFilterNew(int argc, char * argv[])
   typedef InputImageType::InternalPixelType                              InternalPixelType;
   typedef itk::Functor::Cos<InternalPixelType,InternalPixelType>         FunctorType;
   typedef otb::UnaryImageFunctorWithVectorImageFilter<InputImageType,
-    InputImageType,
-    FunctorType     >  UnaryImageFunctorWithVectorImageFilterType;
-  
+  InputImageType,
+  FunctorType     >  UnaryImageFunctorWithVectorImageFilterType;
+
   // Instantiating object
   UnaryImageFunctorWithVectorImageFilterType::Pointer filter = UnaryImageFunctorWithVectorImageFilterType::New();
 

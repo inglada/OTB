@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -30,7 +30,7 @@
 //
 // The user must specify a sample size when creating this iterator. The sample
 // size, rather than a specific image index, defines the end position for the
-// iterator.  \code{IsAtEnd()} returns 
+// iterator.  \code{IsAtEnd()} returns
 // \code{true} when the current sample number equals the sample size.
 // \code{IsAtBegin()} returns \code{true} when the current sample number equals
 // zero.  An important difference from other image iterators is that
@@ -57,39 +57,39 @@ int main( int argc, char *argv[] )
 {
   // Verify the number of parameters on the command line.
   if ( argc < 3 )
-    {
+  {
     std::cerr << "Missing parameters. " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0]
               << " inputImageFile numberOfSamples"
               << std::endl;
-      return -1;
-    }
+    return -1;
+  }
 
 // Software Guide : BeginCodeSnippet
   const unsigned int Dimension = 2;
 
   typedef unsigned short  PixelType;
-  typedef otb::Image< PixelType, Dimension >  ImageType;  
+  typedef otb::Image< PixelType, Dimension >  ImageType;
   typedef itk::ImageRandomConstIteratorWithIndex< ImageType >  ConstIteratorType;
 // Software Guide : EndCodeSnippet
-  
+
   typedef otb::ImageFileReader< ImageType > ReaderType;
 
   ImageType::ConstPointer inputImage;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( argv[1] );
   try
-    {
+  {
     reader->Update();
     inputImage = reader->GetOutput();
-    }
+  }
   catch ( itk::ExceptionObject &err)
-    {
-    std::cout << "ExceptionObject caught !" << std::endl; 
-    std::cout << err << std::endl; 
+  {
+    std::cout << "ExceptionObject caught !" << std::endl;
+    std::cout << err << std::endl;
     return -1;
-    }
+  }
 
 // Software Guide : BeginLatex
 //
@@ -117,11 +117,11 @@ int main( int argc, char *argv[] )
 // Software Guide : BeginCodeSnippet
   float mean = 0.0f;
   for ( inputIt.GoToBegin(); ! inputIt.IsAtEnd(); ++inputIt)
-    {
+  {
     mean += static_cast<float>( inputIt.Get() );
-    }
+  }
   mean = mean / ::atof( argv[2] );
-  
+
 // Software Guide : EndCodeSnippet
   std::cout << "Mean estimate with " << argv[2] << " samples is " << mean << std::endl;
 
@@ -134,11 +134,11 @@ int main( int argc, char *argv[] )
 // \begin{table}
 // \begin{center}
 // \begin{tabular}[]{rc|c|c|c}
-// & \multicolumn{4}{c}{\emph{Sample Size}} \\  & \code{\textbf{10}} & \code{\textbf{100}} 
-// & \code{\textbf{1000}}  
+// & \multicolumn{4}{c}{\emph{Sample Size}} \\  & \code{\textbf{10}} & \code{\textbf{100}}
+// & \code{\textbf{1000}}
 // & \code{\textbf{10000}} \\ \cline{2-5}
-// \code{RatLungSlice1.mha} & 50.5 & 52.4 & 53.0 & 52.4 \\ \code{RatLungSlice2.mha} 
-// & 46.7 & 47.5 & 47.4 & 47.6  \\ \code{BrainT1Slice.png} 
+// \code{RatLungSlice1.mha} & 50.5 & 52.4 & 53.0 & 52.4 \\ \code{RatLungSlice2.mha}
+// & 46.7 & 47.5 & 47.4 & 47.6  \\ \code{BrainT1Slice.png}
 // & 47.2 & 64.1 & 68.0 & 67.8  \\ \end{tabular}
 // \protect\label{fig:ImageRandomConstIteratorWithIndexExample}
 // \itkcaption[ImageRandomConstIteratorWithIndex usage]{Estimates of mean image pixel
@@ -149,6 +149,6 @@ int main( int argc, char *argv[] )
 //
 // \index{itk::Image\-Random\-Const\-Iterator\-With\-Index!example of using|)}
 // Software Guide : EndLatex
-  
-  return 0;
+
+  return EXIT_SUCCESS;
 }

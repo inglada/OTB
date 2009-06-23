@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianImageSource.txx,v $
   Language:  C++
-  Date:      $Date: 2007-02-13 16:14:57 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-12-17 18:56:53 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkGaussianImageSource_txx
-#define _itkGaussianImageSource_txx
+#ifndef __itkGaussianImageSource_txx
+#define __itkGaussianImageSource_txx
 
 #include "itkGaussianImageSource.h"
 #include "itkGaussianSpatialFunction.h"
@@ -37,6 +37,7 @@ GaussianImageSource<TOutputImage>
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0.0;
     }
+  m_Direction.SetIdentity();
 
   // Gaussian parameters, defined so that the gaussian
   // is centered in the default image
@@ -78,6 +79,9 @@ GaussianImageSource<TOutputImage>
 
   os << indent << "Spacing: " << m_Spacing << std::endl;
 
+  os << indent << "Direction:" << std::endl;
+  os << m_Direction << std::endl;
+
   os << indent << "Gaussian sigma: [";
   for (i=0; i < NDimensions - 1; i++)
     {
@@ -116,6 +120,7 @@ GaussianImageSource<TOutputImage>
 
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
+  output->SetDirection(m_Direction);
 }
 
 template <typename TOutputImage>
@@ -154,7 +159,7 @@ GaussianImageSource<TOutputImage>
                             outputPtr->GetRequestedRegion()
                                          .GetNumberOfPixels());
   // Walk the output image, evaluating the spatial function at each pixel
-  for ( ; !outIt.IsAtEnd(); ++outIt)
+  for (; !outIt.IsAtEnd(); ++outIt)
     {
     typename TOutputImage::IndexType index = outIt.GetIndex();
     outputPtr->TransformIndexToPhysicalPoint(index, evalPoint );
@@ -163,29 +168,6 @@ GaussianImageSource<TOutputImage>
     // Set the pixel value to the function value
     outIt.Set( (typename TOutputImage::PixelType) value);
     progress.CompletedPixel();
-    }
-}
-
-template<typename TOutputImage>
-void 
-GaussianImageSource<TOutputImage>
-::SetSpacing(const SpacingType& spacing )
-{
-  unsigned int i; 
-  for (i=0; i<TOutputImage::ImageDimension; i++)
-    {
-    if ( (double)spacing[i] != m_Spacing[i] )
-      {
-      break;
-      }
-    } 
-  if ( i < TOutputImage::ImageDimension ) 
-    { 
-    for (i=0; i<TOutputImage::ImageDimension; i++)
-      {
-      m_Spacing[i] = spacing[i];
-      }
-    this->Modified();
     }
 }
 
@@ -230,29 +212,6 @@ GaussianImageSource<TOutputImage>
     for (i=0; i<TOutputImage::ImageDimension; i++)
       {
       m_Spacing[i] = spacing[i];
-      }
-    this->Modified();
-    }
-}
-
-template<typename TOutputImage>
-void 
-GaussianImageSource<TOutputImage>
-::SetOrigin(const PointType& origin)
-{
-  unsigned int i; 
-  for (i=0; i<TOutputImage::ImageDimension; i++)
-    {
-    if ( (double)origin[i] != m_Origin[i] )
-      {
-      break;
-      }
-    } 
-  if ( i < TOutputImage::ImageDimension ) 
-    { 
-    for (i=0; i<TOutputImage::ImageDimension; i++)
-      {
-      m_Origin[i] = origin[i];
       }
     this->Modified();
     }

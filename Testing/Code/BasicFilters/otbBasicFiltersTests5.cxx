@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,20 +22,20 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbStreamingResampleImageFilterNew);
-REGISTER_TEST(otbStreamingResampleImageFilter);
-REGISTER_TEST(otbStreamingResampleImageFilterCompareWithITK);
-REGISTER_TEST(otbStreamingStatisticsVectorImageFilterNew);
-REGISTER_TEST(otbStreamingStatisticsVectorImageFilter);
-REGISTER_TEST(otbMatrixTransposeMatrixImageFilterNew);
-REGISTER_TEST(otbMatrixTransposeMatrixImageFilter);
-REGISTER_TEST(otbUnaryImageFunctorWithVectorImageFilterNew);
-REGISTER_TEST(otbUnaryImageFunctorWithVectorImageFilter);
-REGISTER_TEST(otbPrintableImageFilterNew);
-REGISTER_TEST(otbPrintableImageFilter);
+  REGISTER_TEST(otbStreamingResampleImageFilterNew);
+  REGISTER_TEST(otbStreamingResampleImageFilter);
+  REGISTER_TEST(otbStreamingResampleImageFilterCompareWithITK);
+  REGISTER_TEST(otbStreamingStatisticsVectorImageFilterNew);
+  REGISTER_TEST(otbStreamingStatisticsVectorImageFilter);
+  REGISTER_TEST(otbMatrixTransposeMatrixImageFilterNew);
+  REGISTER_TEST(otbMatrixTransposeMatrixImageFilter);
+  REGISTER_TEST(otbUnaryImageFunctorWithVectorImageFilterNew);
+  REGISTER_TEST(otbUnaryImageFunctorWithVectorImageFilter);
+  REGISTER_TEST(otbPrintableImageFilterNew);
+  REGISTER_TEST(otbPrintableImageFilter);
 }

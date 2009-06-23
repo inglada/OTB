@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,15 +22,13 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbOrthoRectificationFilterNew);
-REGISTER_TEST(otbOrthoRectificationFilter);
-REGISTER_TEST(otbOrthoRectificationFilterWithDEM);
- REGISTER_TEST(otbOrthoRectificationMonoThreadFilter);
-//REGISTER_TEST(otbSensorImageToCarto);
-//REGISTER_TEST(otbSensorImageDEMToCarto);
+  REGISTER_TEST(otbOrthoRectificationFilterNew);
+  REGISTER_TEST(otbOrthoRectificationFilter);
+  REGISTER_TEST(otbOrthoRectificationFilterWithDEM);
+  REGISTER_TEST(otbOrthoRectificationMonoThreadFilter);
 }

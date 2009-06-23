@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,20 +24,20 @@
 // Software Guide : BeginLatex
 //
 // This example illustrates the use of \doxygen{itk}{ImageAdaptor}
-// to obtain access to the components of a vector image. 
+// to obtain access to the components of a vector image.
 // Specifically, it shows how to manage pixel accessors containing
 // internal parameters. In this example we create an image of vectors by using
 // a gradient filter. Then, we use an image adaptor to extract one of the
 // components of the vector image. The vector type used by the gradient filter
-// is the \doxygen{itk}{CovariantVector} class. 
+// is the \doxygen{itk}{CovariantVector} class.
 //
 // We start by including the relevant headers.
-// 
+//
 // \index{itk::ImageAdaptor!Instantiation}
 // \index{itk::ImageAdaptor!Header}
 // \index{itk::PixelAccessor!with parameters}
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 #include "otbImage.h"
 #include "itkImageAdaptor.h"
@@ -59,34 +59,34 @@
 //  operations performed on input pixel data. Image adaptors support
 //  parameters in their internal pixel accessor by using
 //  the assignment operator. Any pixel accessor which has internal
-//  parameters must therefore implement the assignment operator. 
-//  The following defines a pixel accessor for extracting 
-//  components from a vector pixel. The 
-//  \code{m\_Index} member variable is used to select the vector component 
+//  parameters must therefore implement the assignment operator.
+//  The following defines a pixel accessor for extracting
+//  components from a vector pixel. The
+//  \code{m\_Index} member variable is used to select the vector component
 //  to be returned.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
-class VectorPixelAccessor  
+class VectorPixelAccessor
 {
 public:
   typedef itk::CovariantVector<float,2>   InternalType;
   typedef                      float      ExternalType;
 
   void operator=( const VectorPixelAccessor & vpa )
-    {
-      m_Index = vpa.m_Index;
-    }
-  ExternalType Get( const InternalType & input ) const 
-    {
-      return static_cast<ExternalType>( input[ m_Index ] );
-    }
+  {
+    m_Index = vpa.m_Index;
+  }
+  ExternalType Get( const InternalType & input ) const
+  {
+    return static_cast<ExternalType>( input[ m_Index ] );
+  }
   void SetIndex( unsigned int index )
-    {
-      m_Index = index;
-    }
+  {
+    m_Index = index;
+  }
 private:
   unsigned int m_Index;
 };
@@ -100,7 +100,7 @@ private:
 //  value of the index member variable from one instance of the pixel accessor
 //  to another.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 //-------------------------
@@ -109,15 +109,15 @@ private:
 //
 //-------------------------
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 {
-  if( argc < 4 )
-    {
+  if ( argc < 4 )
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << "ImageAdaptor3   inputFileName outputComponentFileName ";
     std::cerr << " indexOfComponentToExtract" << std::endl;
     return -1;
-    }
+  }
 
 
 //  Software Guide : BeginLatex
@@ -128,17 +128,17 @@ int main( int argc, char *argv[] )
 //  Covariant vectors are the natural representation for gradients since they
 //  are the equivalent of normals to iso-values manifolds.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
   typedef unsigned char  InputPixelType;
   const   unsigned int   Dimension = 2;
   typedef otb::Image< InputPixelType,  Dimension  >   InputImageType;
-  typedef itk::CovariantVector< float, Dimension  >   VectorPixelType; 
+  typedef itk::CovariantVector< float, Dimension  >   VectorPixelType;
   typedef otb::Image< VectorPixelType, Dimension  >   VectorImageType;
   typedef itk::GradientRecursiveGaussianImageFilter< InputImageType,
-                                        VectorImageType> GradientFilterType;
+  VectorImageType> GradientFilterType;
 
   GradientFilterType::Pointer gradient = GradientFilterType::New();
 // Software Guide : EndCodeSnippet
@@ -150,13 +150,13 @@ int main( int argc, char *argv[] )
 //  the first template parameter and the pixel accessor as the second
 //  template parameter.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 
 // Software Guide : BeginCodeSnippet
-  typedef itk::ImageAdaptor<  VectorImageType, 
-                              VectorPixelAccessor > ImageAdaptorType;
+  typedef itk::ImageAdaptor<  VectorImageType,
+  VectorPixelAccessor > ImageAdaptorType;
 
   ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
 // Software Guide : EndCodeSnippet
@@ -169,7 +169,7 @@ int main( int argc, char *argv[] )
 //  set the index and connect the accessor to the image adaptor using
 //  the \code{SetPixelAccessor()} method.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
@@ -181,39 +181,39 @@ int main( int argc, char *argv[] )
 
 //  Software Guide : BeginLatex
 //
-//  We create a reader to load the image specified from the 
+//  We create a reader to load the image specified from the
 //  command line and pass its output as the input to the gradient filter.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
   typedef otb::ImageFileReader< InputImageType >   ReaderType;
-  ReaderType::Pointer reader = ReaderType::New();  
+  ReaderType::Pointer reader = ReaderType::New();
   gradient->SetInput( reader->GetOutput() );
 
   reader->SetFileName( argv[1] );
   gradient->Update();
-//  Software Guide : EndCodeSnippet 
+//  Software Guide : EndCodeSnippet
 
 
 //  Software Guide : BeginLatex
 //
-//  We now connect the output of the gradient filter as input to the 
-//  image adaptor.  The adaptor emulates a  scalar image whose pixel values 
+//  We now connect the output of the gradient filter as input to the
+//  image adaptor.  The adaptor emulates a  scalar image whose pixel values
 //  are taken from the selected component of the vector image.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
   adaptor->SetImage( gradient->GetOutput() );
 // Software Guide : EndCodeSnippet
- 
+
 
   typedef otb::Image< unsigned char, Dimension >   OutputImageType;
-  typedef itk::RescaleIntensityImageFilter< ImageAdaptorType, OutputImageType> 
-    RescalerType;
+  typedef itk::RescaleIntensityImageFilter< ImageAdaptorType, OutputImageType>
+  RescalerType;
   RescalerType::Pointer rescaler = RescalerType::New();
   typedef otb::ImageFileWriter< OutputImageType >   WriterType;
   WriterType::Pointer writer = WriterType::New();
@@ -229,7 +229,7 @@ int main( int argc, char *argv[] )
 
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

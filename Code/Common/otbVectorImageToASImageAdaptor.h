@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,7 +24,7 @@
 
 namespace otb
 {
- 
+
 
 /** \class VectorImageToASImageAdaptor
  * \brief Presents an image of pixel type Vector as being and image of
@@ -36,20 +36,20 @@ namespace otb
 template <class TImage>
 class ITK_EXPORT VectorImageToASImageAdaptor : public
       itk::ImageAdaptor<TImage,otb::Accessor::VectorImageToASPixelAccessor<
-           typename TImage::PixelType::ValueType> >
+      typename TImage::PixelType::ValueType> >
 {
 public:
   /** Standard class typedefs. */
   typedef VectorImageToASImageAdaptor  Self;
   typedef itk::ImageAdaptor<TImage,
-              otb::Accessor::VectorImageToASPixelAccessor<
-                 typename TImage::PixelType::ValueType
-                                       >  > Superclass;
+  otb::Accessor::VectorImageToASPixelAccessor<
+  typename TImage::PixelType::ValueType
+  >  > Superclass;
   typedef itk::SmartPointer<Self>  Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
-  
+
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);  
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro( VectorImageToASImageAdaptor, ImageAdaptor );
@@ -59,17 +59,17 @@ public:
   typedef typename Superclass::PixelContainer        PixelContainer;
   typedef typename Superclass::PixelContainerPointer PixelContainerPointer;
   typedef typename Superclass::PixelContainerConstPointer PixelContainerConstPointer;
-  
- protected:
+
+protected:
   VectorImageToASImageAdaptor() {}
   virtual ~VectorImageToASImageAdaptor() {}
-  
- private:
+
+private:
   VectorImageToASImageAdaptor(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 };
 
-} // end namespace itk
+} // end namespace otb
 
 #endif

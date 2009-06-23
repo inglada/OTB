@@ -8,7 +8,7 @@
 
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
-  
+
   Some parts of this code are derived from ITK. See ITKCopyright.txt
   for details.
 
@@ -30,17 +30,17 @@
 
 namespace otb
 {
- /** \class UnaryImageFunctorWithVectorImageFilter
-  *  \brief  The aim of the class is to work with vector images but with a functor that uses as input a componant of the pixel. 
-  *
-  *  For N components pixel, the fucntor will be called N times and completes the Nth component the corresponding output pixel.
-  *
-  * \ingroup Functor
-  * \ingroup VectorImage
-  */
+/** \class UnaryImageFunctorWithVectorImageFilter
+ *  \brief  The aim of the class is to work with vector images but with a functor that uses as input a componant of the pixel.
+ *
+ *  For N components pixel, the fucntor will be called N times and completes the Nth component the corresponding output pixel.
+ *
+ * \ingroup Functor
+ * \ingroup VectorImage
+ */
 template <class TInputImage, class TOutputImage, class TFunction>
-class ITK_EXPORT UnaryImageFunctorWithVectorImageFilter : public itk::InPlaceImageFilter<TInputImage,TOutputImage> 
- 
+class ITK_EXPORT UnaryImageFunctorWithVectorImageFilter : public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+
 {
 public:
   /** Standard class typedefs. */
@@ -51,9 +51,9 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  
 
-  /** 	Extract input and output images dimensions.*/
+
+  /**   Extract input and output images dimensions.*/
   itkStaticConstMacro( InputImageDimension, unsigned int, TInputImage::ImageDimension);
   itkStaticConstMacro( OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
@@ -61,7 +61,7 @@ public:
   typedef TInputImage         InputImageType;
   typedef TOutputImage        OutputImageType;
   typedef TFunction           FunctorType;
-  
+
   /** Supported images definition. */
   typedef typename InputImageType::PixelType                           InputPixelType;
   typedef typename InputImageType::InternalPixelType                   InputInternalPixelType;
@@ -73,20 +73,20 @@ public:
   /** Image size "typedef" definition. */
   typedef typename InputImageType::SizeType SizeType;
 
-  typedef std::vector<FunctorType> FunctorVectorType; 
+  typedef std::vector<FunctorType> FunctorVectorType;
 
   /** return class name. */
   itkTypeMacro(UnaryImageFunctorWithVectorImageFilter, itk::InPlaceImageFilter);
-    
+
   /** Get the functor list */
   FunctorVectorType& GetFunctorVector(void)
-    {
-      return m_FunctorVector;
-    }
+  {
+    return m_FunctorVector;
+  }
 
- protected:
+protected:
   UnaryImageFunctorWithVectorImageFilter();
-  virtual ~UnaryImageFunctorWithVectorImageFilter(){};
+  virtual ~UnaryImageFunctorWithVectorImageFilter() {};
 
   /** UnaryImageFunctorWithVectorImageFilter can produce an image which is a different
    * resolution than its input image.  As such, UnaryImageFunctorWithVectorImageFilter
@@ -112,7 +112,7 @@ public:
   void ThreadedGenerateData(const OutputImageRegionType &outputRegionForThread, int threadId);
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
-                        
+
 private:
   /** Ponderation declaration*/
   FunctorVectorType m_FunctorVector;

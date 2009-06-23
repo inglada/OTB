@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,14 +23,8 @@
 #endif
 
 #include "itkImage.h"
-#include "itkDefaultPixelAccessor.h"
-#include "itkDefaultPixelAccessorFunctor.h"
-#include "itkWeakPointer.h"
-#include "itkNeighborhoodAccessorFunctor.h"
+#include "otbImageMetadataInterface.h"
 
-#include "otbImageBase.h"
-
-#include <iostream>
 #include <string.h>
 
 namespace otb
@@ -39,23 +33,20 @@ namespace otb
  * \brief Creation of an "otb" image which contains metadata.
  *
  */
- 
-// Le 3ieme parametre template est bidon MAIS necessaire pour compiler avec Microsoft Visual C++ 6.0 
-template <class TPixel,unsigned int VImageDimension> 
-class ITK_EXPORT Image : public itk::Image<TPixel,VImageDimension>,
-				ImageBase
-					 
+
+template <class TPixel,unsigned int VImageDimension>
+class ITK_EXPORT Image : public itk::Image<TPixel,VImageDimension>
 {
-public: 
+public:
   /** Standard class typedefs. */
   typedef Image   Self;
   typedef itk::Image<TPixel, VImageDimension>  Superclass;
   typedef itk::SmartPointer<Self>  Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
   typedef itk::WeakPointer<const Self>  ConstWeakPointer;
-  
-  typedef ImageBase::VectorType	VectorType;	
-  typedef ImageBase::ImageKeywordlistType	ImageKeywordlistType;	
+
+  typedef ImageMetadataInterface::VectorType  VectorType;
+  typedef ImageMetadataInterface::ImageKeywordlistType  ImageKeywordlistType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -85,8 +76,8 @@ public:
   typedef itk::DefaultPixelAccessorFunctor< Self > AccessorFunctorType;
 
   /** Tyepdef for the functor used to access a neighborhood of pixel pointers.*/
-  typedef itk::NeighborhoodAccessorFunctor< Self > 
-                                            NeighborhoodAccessorFunctorType;
+  typedef itk::NeighborhoodAccessorFunctor< Self >
+  NeighborhoodAccessorFunctorType;
 
 
   /** Dimension of the image.  This constant is used by functions that are
@@ -129,70 +120,79 @@ public:
   typedef typename Superclass::OffsetValueType OffsetValueType;
 
   /** Return the Pixel Accessor object */
-  AccessorType GetPixelAccessor( void ) 
-    { return AccessorType(); }
+  AccessorType GetPixelAccessor( void )
+  {
+    return AccessorType();
+  }
 
   /** Return the Pixel Accesor object */
   const AccessorType GetPixelAccessor( void ) const
-    { return AccessorType(); }
+  {
+    return AccessorType();
+  }
 
   /** Return the NeighborhoodAccessor functor */
-  NeighborhoodAccessorFunctorType GetNeighborhoodAccessor() 
-    { return NeighborhoodAccessorFunctorType(); }
-  
+  NeighborhoodAccessorFunctorType GetNeighborhoodAccessor()
+  {
+    return NeighborhoodAccessorFunctorType();
+  }
+
   /** Return the NeighborhoodAccessor functor */
   const NeighborhoodAccessorFunctorType GetNeighborhoodAccessor() const
-    { return NeighborhoodAccessorFunctorType(); }
+  {
+    return NeighborhoodAccessorFunctorType();
+  }
 
 
 
   /** Get the projection coordinate system of the image. */
-  virtual std::string GetProjectionRef( void );
-  
+  virtual std::string GetProjectionRef( void ) const;
+
   /** Get the GCP projection coordinates of the image. */
-  virtual std::string GetGCPProjection( void );
-  
-  virtual unsigned int GetGCPCount( void );
-  
+  virtual std::string GetGCPProjection( void ) const;
+
+  virtual unsigned int GetGCPCount( void ) const;
+
   virtual OTB_GCP & GetGCPs ( unsigned int GCPnum );
-    
-  virtual std::string GetGCPId( unsigned int GCPnum );   
-  virtual std::string GetGCPInfo( unsigned int GCPnum );
-  virtual double GetGCPRow( unsigned int GCPnum ); 
-  virtual double GetGCPCol( unsigned int GCPnum ); 	
-  virtual double GetGCPX( unsigned int GCPnum ); 
-  virtual double GetGCPY( unsigned int GCPnum ); 
-  virtual double GetGCPZ( unsigned int GCPnum );
-  
+
+  virtual std::string GetGCPId( unsigned int GCPnum ) const;
+  virtual std::string GetGCPInfo( unsigned int GCPnum ) const;
+  virtual double GetGCPRow( unsigned int GCPnum ) const;
+  virtual double GetGCPCol( unsigned int GCPnum ) const;
+  virtual double GetGCPX( unsigned int GCPnum ) const;
+  virtual double GetGCPY( unsigned int GCPnum ) const;
+  virtual double GetGCPZ( unsigned int GCPnum ) const;
+
   /** Get the six coefficients of affine geoTtransform. */
-  virtual VectorType GetGeoTransform( void ); 
-  
+  virtual VectorType GetGeoTransform( void ) const;
+
   /** Get image corners. */
-  virtual VectorType GetUpperLeftCorner( void );
-  virtual VectorType GetUpperRightCorner( void );
-  virtual VectorType GetLowerLeftCorner( void );
-  virtual VectorType GetLowerRightCorner( void );
-  
+  virtual VectorType GetUpperLeftCorner( void ) const;
+  virtual VectorType GetUpperRightCorner( void ) const;
+  virtual VectorType GetLowerLeftCorner( void ) const;
+  virtual VectorType GetLowerRightCorner( void ) const;
+
   /** Get image keyword list */
   virtual ImageKeywordlistType GetImageKeywordlist(void);
+  virtual const ImageKeywordlistType GetImageKeywordlist(void) const;
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 /// Copy metadata from a DataObject
-virtual void CopyInformation(const itk::DataObject *);
+  virtual void CopyInformation(const itk::DataObject *);
 
 protected:
   Image();
-  virtual ~Image(){};
+  virtual ~Image() {};
 
 
 private:
   Image(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-  
+  typename ImageMetadataInterface::Pointer m_ImageMetadataInterface;
 };
-  
-  
+
+
 } // end namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION

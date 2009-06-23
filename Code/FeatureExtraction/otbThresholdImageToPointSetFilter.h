@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,30 +28,30 @@ namespace otb
  *
  */
 
-template <class TInputImage, 
+template <class TInputImage,
 //          class TOutputPointSet>
-         class TOutputPointSet = itk::PointSet<ITK_TYPENAME TInputImage::PixelType,2> >
-class ITK_EXPORT ThresholdImageToPointSetFilter :  
-           public ImageToPointSetFilter< TInputImage,TOutputPointSet >
+class TOutputPointSet = itk::PointSet<ITK_TYPENAME TInputImage::PixelType,2> >
+class ITK_EXPORT ThresholdImageToPointSetFilter :
+      public ImageToPointSetFilter< TInputImage,TOutputPointSet >
 {
 public:
 
-  itkStaticConstMacro(		InputImageDimension,
-  				unsigned int,
-                      		TInputImage::ImageDimension);
+  itkStaticConstMacro(    InputImageDimension,
+                          unsigned int,
+                          TInputImage::ImageDimension);
 
   typedef TInputImage     InputImageType;
 
   typedef ThresholdImageToPointSetFilter                             Self;
   typedef ImageToPointSetFilter< InputImageType, TOutputPointSet> Superclass;
-  typedef typename Superclass::OutputPointSetType             		OutputPointSetType;
+  typedef typename Superclass::OutputPointSetType                 OutputPointSetType;
   typedef itk::SmartPointer<Self>                                    Pointer;
   typedef itk::SmartPointer<const Self>                              ConstPointer;
 
   itkNewMacro(Self);
 
   itkTypeMacro(ThresholdImageToPointSetFilter, ImageToPointSetFilter);
-  
+
   typedef typename Superclass::InputImagePixelType        InputPixelType;
   typedef typename Superclass::InputImagePointer          InputImagePointer;
   typedef typename Superclass::InputImageConstPointer     InputImageConstPointer;
@@ -72,7 +72,7 @@ protected:
   virtual ~ThresholdImageToPointSetFilter() {};
 
   virtual void GenerateData();
-  
+
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
@@ -88,5 +88,5 @@ private:
 #include "otbThresholdImageToPointSetFilter.txx"
 #endif
 
-  
+
 #endif

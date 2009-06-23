@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,18 +21,20 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbRCC8GraphSourceNew);
-REGISTER_TEST(otbRCC8GraphFileWriterNew);
-REGISTER_TEST(otbRCC8GraphFileWriter);
-REGISTER_TEST(otbRCC8GraphFileReaderNew);
-REGISTER_TEST(otbRCC8GraphFileReader);
-REGISTER_TEST(otbRCC8GraphIOEndToEnd);
-REGISTER_TEST(otbImageListToRCC8GraphFilterNew);
-REGISTER_TEST(otbImageMultiSegmentationToRCC8GraphFilterNew);
-REGISTER_TEST(otbImageMultiSegmentationToRCC8GraphFilter);
+  REGISTER_TEST(otbRCC8GraphSourceNew);
+  REGISTER_TEST(otbRCC8GraphFileWriterNew);
+  REGISTER_TEST(otbRCC8GraphFileWriter);
+  REGISTER_TEST(otbRCC8GraphFileReaderNew);
+  REGISTER_TEST(otbRCC8GraphFileReader);
+  REGISTER_TEST(otbRCC8GraphIOEndToEnd);
+  REGISTER_TEST(otbImageListToRCC8GraphFilterNew);
+  REGISTER_TEST(otbImageMultiSegmentationToRCC8GraphFilterNew);
+  REGISTER_TEST(otbImageMultiSegmentationToRCC8GraphFilter);
+  REGISTER_TEST(otbPolygonListToRCC8GraphFilterNew);
+  REGISTER_TEST(otbPolygonListToRCC8GraphFilter);
 }

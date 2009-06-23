@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,12 +24,12 @@
 
 int otbKullbackLeiblerDistanceImageFilter(int argc, char * argv[])
 {
-  if(argc != 5)
-    {
-      std::cerr<<"Detection de changements par mesure de Kullback-Leibler, optimisee par un developpement de Edgeworth\n";
-      std::cerr << argv[0] << " imgAv imgAp imgResu winSize\n";
-      return 1;
-    }
+  if (argc != 5)
+  {
+    std::cerr<<"Detection de changements par mesure de Kullback-Leibler, optimisee par un developpement de Edgeworth\n";
+    std::cerr << argv[0] << " imgAv imgAp imgResu winSize\n";
+    return 1;
+  }
 
   char * fileName1 = argv[1];
   char * fileName2 = argv[2];
@@ -60,8 +60,8 @@ int otbKullbackLeiblerDistanceImageFilter(int argc, char * argv[])
   writer->SetFileName(fileNameOut);
   writer->SetInput(filter->GetOutput());
   writer->Update();
-      
-   
+
+
 
   return EXIT_SUCCESS;
 }

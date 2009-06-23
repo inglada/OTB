@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,11 +25,11 @@ namespace otb
 /**
  * \class ImageToPathFilter
  * \brief Base class for filters taking an image as input, and producing an
- * output of type Path. 
+ * output of type Path.
  */
 template <class TInputImage, class TOutputPath>
 class ITK_EXPORT ImageToPathFilter
-  : public itk::PathSource<TOutputPath>
+      : public itk::PathSource<TOutputPath>
 {
 public:
   /// Standard class typedefs
@@ -55,7 +55,7 @@ public:
 
 protected:
   ImageToPathFilter();
-  virtual ~ImageToPathFilter(){};
+  virtual ~ImageToPathFilter() {};
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:

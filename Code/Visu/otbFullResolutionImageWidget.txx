@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,7 +24,7 @@
 
 namespace otb
 {
-/** 
+/**
  * Constructor.
  */
 template <class TPixel>
@@ -40,45 +40,45 @@ FullResolutionImageWidget<TPixel>
   this->SetViewedRegion(region);
 }
 
-/** 
+/**
  * Destructor.
  */
 template <class TPixel>
 FullResolutionImageWidget<TPixel>
 ::~FullResolutionImageWidget()
 {}
-/** 
+/**
  * Initialize the widget.
  */
 template <class TPixel>
-void 
+void
 FullResolutionImageWidget<TPixel>
 ::Init(int x, int y, int w, int h, const char * l)
 {
 
-  if(!this->GetInput())
-    {
-      itkExceptionMacro("No input image!");
-    }
+  if (!this->GetInput())
+  {
+    itkExceptionMacro("No input image!");
+  }
   else
+  {
+    Superclass::Init(x,y,w,h,l);
+    if (this->GetImageOverlayVisible())
     {
-      Superclass::Init(x,y,w,h,l);
-      if(this->GetImageOverlayVisible())
-	{
-	  if(!this->GetInputOverlay())
-	    {
-	      itkExceptionMacro("No input image overlay!");
-	    }
-	}
-      this->label(l);
-      this->resize(x, y, w, h);
+      if (!this->GetInputOverlay())
+      {
+        itkExceptionMacro("No input image overlay!");
+      }
     }
+    this->label(l);
+    this->resize(x, y, w, h);
+  }
 }
-/** 
+/**
  * Resize the widget.
  */
 template <class TPixel>
-void 
+void
 FullResolutionImageWidget<TPixel>
 ::resize(int x, int y, int w, int h)
 {
@@ -94,16 +94,16 @@ FullResolutionImageWidget<TPixel>
   this->SetViewedRegion(region);
   this->redraw();
   this->Fl_Gl_Window::resize(x,
-	       y, 
-	       region.GetSize()[0],
-	       region.GetSize()[1]);
-  
+                             y,
+                             region.GetSize()[0],
+                             region.GetSize()[1]);
+
 }
-/** 
+/**
  * Test if the buffer has to be updated.
  */
 template <class TPixel>
-bool 
+bool
 FullResolutionImageWidget<TPixel>
 ::UpdateOpenGlBufferedRegionRequested(void)
 {
@@ -114,16 +114,16 @@ FullResolutionImageWidget<TPixel>
   IndexType viewedRDCorner = viewed.GetIndex()+viewed.GetSize();
   IndexType bufferedRDCorner = buffered.GetIndex()+buffered.GetSize();
   return ( viewedULCorner[0]<bufferedULCorner[0]
-	   ||viewedULCorner[1]<bufferedULCorner[1]
-	   ||viewedRDCorner[0]>bufferedRDCorner[0]
-	   ||viewedRDCorner[1]>bufferedRDCorner[1]);
+           ||viewedULCorner[1]<bufferedULCorner[1]
+           ||viewedRDCorner[0]>bufferedRDCorner[0]
+           ||viewedRDCorner[1]>bufferedRDCorner[1]);
 }
 
-/** 
- * Update OpenGlBuffer. 
+/**
+ * Update OpenGlBuffer.
  */
 template <class TPixel>
-void 
+void
 FullResolutionImageWidget<TPixel>
 ::UpdateOpenGlBufferedRegion(void)
 {
@@ -135,7 +135,7 @@ FullResolutionImageWidget<TPixel>
  * \param index the upper right corner index.
  */
 template <class TPixel>
-void 
+void
 FullResolutionImageWidget<TPixel>
 ::SetUpperLeftCorner(IndexType index)
 {

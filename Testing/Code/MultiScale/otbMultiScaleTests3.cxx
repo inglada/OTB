@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,17 +21,17 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbProfileToProfileDerivativeFilterNew);
-REGISTER_TEST(otbProfileToProfileDerivativeFilter);
-REGISTER_TEST(otbProfileDerivativeToMultiScaleCharacteristicsFilterNew); 
-REGISTER_TEST(otbProfileDerivativeToMultiScaleCharacteristicsFilter);
-REGISTER_TEST(otbMultiScaleConvexOrConcaveClassificationFilterNew);
-REGISTER_TEST(otbMultiScaleConvexOrConcaveClassificationFilter);
-REGISTER_TEST(otbGeodesicMorphologyIterativeDecompositionImageFilterNew);
-REGISTER_TEST(otbGeodesicMorphologyIterativeDecompositionImageFilter);
+  REGISTER_TEST(otbProfileToProfileDerivativeFilterNew);
+  REGISTER_TEST(otbProfileToProfileDerivativeFilter);
+  REGISTER_TEST(otbProfileDerivativeToMultiScaleCharacteristicsFilterNew);
+  REGISTER_TEST(otbProfileDerivativeToMultiScaleCharacteristicsFilter);
+  REGISTER_TEST(otbMultiScaleConvexOrConcaveClassificationFilterNew);
+  REGISTER_TEST(otbMultiScaleConvexOrConcaveClassificationFilter);
+  REGISTER_TEST(otbGeodesicMorphologyIterativeDecompositionImageFilterNew);
+  REGISTER_TEST(otbGeodesicMorphologyIterativeDecompositionImageFilter);
 }

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,25 +22,23 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbWindowedSincInterpolateImageCosineFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageCosineFunction);
-REGISTER_TEST(otbWindowedSincInterpolateImageWelchFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageWelchFunction);
-REGISTER_TEST(otbWindowedSincInterpolateImageLanczosFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageLanczosFunction);
-REGISTER_TEST(otbWindowedSincInterpolateImageBlackmanFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageBlackmanFunction);
-REGISTER_TEST(otbProlateValidationTest);
-REGISTER_TEST(otbVectorImageToAmplitudeImageFilterNew);
-REGISTER_TEST(otbVectorImageToAmplitudeImageFilter);
-REGISTER_TEST(otbRationalQuotientResampleImageFilterNew);
-REGISTER_TEST(otbRationalQuotientResampleImageFilter);
-REGISTER_TEST(otbVectorImageToIntensityImageFilterNew);
-REGISTER_TEST(otbVectorImageToIntensityImageFilter);
+  REGISTER_TEST(otbWindowedSincInterpolateImageCosineFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageCosineFunction);
+  REGISTER_TEST(otbWindowedSincInterpolateImageWelchFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageWelchFunction);
+  REGISTER_TEST(otbWindowedSincInterpolateImageLanczosFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageLanczosFunction);
+  REGISTER_TEST(otbWindowedSincInterpolateImageBlackmanFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageBlackmanFunction);
+  REGISTER_TEST(otbProlateValidationTest);
+  REGISTER_TEST(otbVectorImageToAmplitudeImageFilterNew);
+  REGISTER_TEST(otbVectorImageToAmplitudeImageFilter);
+  REGISTER_TEST(otbVectorImageToIntensityImageFilterNew);
+  REGISTER_TEST(otbVectorImageToIntensityImageFilter);
 }
 

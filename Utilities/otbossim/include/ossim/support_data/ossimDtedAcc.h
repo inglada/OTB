@@ -1,6 +1,8 @@
 //*******************************************************************
 //
-// License:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Ken Melero
 // 
@@ -8,7 +10,7 @@
 //               (ACC) of a DTED Level 1 file.
 //
 //********************************************************************
-// $Id: ossimDtedAcc.h 10262 2007-01-14 18:58:38Z dburken $
+// $Id: ossimDtedAcc.h 14246 2009-04-08 15:48:07Z dburken $
 
 #ifndef ossimDtedAcc_H
 #define ossimDtedAcc_H
@@ -17,6 +19,9 @@
 #include <ossim/base/ossimConstants.h>
 #include <ossim/base/ossimErrorStatusInterface.h>
 #include <ossim/base/ossimFilename.h>
+#include <ossim/base/ossimRefPtr.h>
+
+class ossimProperty;
 
 class OSSIM_DLL ossimDtedAcc : public ossimErrorStatusInterface
 {
@@ -68,7 +73,36 @@ public:
    
    friend OSSIM_DLL std::ostream& operator<<( std::ostream& os,
                                               const ossimDtedAcc& acc);
+
+   /**
+    * @brief print method that outputs a key/value type format adding prefix
+    * to keys.
+    * @param out String to output to.
+    * @param prefix This will be prepended to key.
+    * e.g. Where prefix = "nitf." and key is "file_name" key becomes:
+    * "nitf.file_name:"
+    * @return output stream.
+    */
+   std::ostream& print(std::ostream& out,
+                       const std::string& prefix) const;
+   
    void parse(std::istream& in);
+
+   void clearFields();
+
+   /**
+    * @brief Gets a property for name.
+    * @param name Property name to get.
+    * @return ossimRefPtr<ossimProperty> Note that this can be empty if
+    * property for name was not found.
+    */
+   ossimRefPtr<ossimProperty> getProperty(const ossimString& name)const;
+
+   /**
+    * @brief Adds this class's properties to list.
+    * @param propertyNames list to append to.
+    */
+   void getPropertyNames(std::vector<ossimString>& propertyNames)const;
 
 private:
    // Do not allow...

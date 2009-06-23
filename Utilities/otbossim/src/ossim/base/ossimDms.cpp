@@ -8,10 +8,11 @@
 //
 // Contains class definition for Degrees Minutes Seconds (ossimDms)
 //*******************************************************************
-//  $Id: ossimDms.cpp 12953 2008-06-01 16:24:05Z dburken $
+//  $Id: ossimDms.cpp 14482 2009-05-12 11:42:38Z gpotts $
 
 #include <cmath>
 #include <cstring> /* for strcpy */
+#include <cstdio>
 #include <iomanip>
 #include <sstream>
 

@@ -63,6 +63,10 @@ do.
 #include <dirent.h>    /* DIR, dirent */
 #include <ctype.h>     /* isspace */
 
+#ifdef __HAIKU__
+#undef __BEOS__
+#endif
+
 #if defined(KWSYS_C_HAS_PTRDIFF_T) && KWSYS_C_HAS_PTRDIFF_T
 typedef ptrdiff_t kwsysProcess_ptrdiff_t;
 #else
@@ -75,7 +79,7 @@ typedef ssize_t kwsysProcess_ssize_t;
 typedef int kwsysProcess_ssize_t;
 #endif
 
-#if defined(__BEOS__) && !defined(__ZETA__)
+#if defined(__BEOS__) && !defined(__ZETA__) 
 /* BeOS 5 doesn't have usleep(), but it has snooze(), which is identical. */
 # include <be/kernel/OS.h>
 static inline void kwsysProcess_usleep(unsigned int msec)
@@ -719,7 +723,8 @@ void kwsysProcess_Execute(kwsysProcess* cp)
   if(cp->WorkingDirectory)
     {
     int r;
-    if(!getcwd(cp->RealWorkingDirectory, cp->RealWorkingDirectoryLength))
+    if(!getcwd(cp->RealWorkingDirectory,
+               (size_t)(cp->RealWorkingDirectoryLength)))
       {
       kwsysProcessCleanup(cp, 1);
       return;
@@ -770,14 +775,14 @@ void kwsysProcess_Execute(kwsysProcess* cp)
     return;
     }
 
-#if !KWSYSPE_USE_SELECT
+  /* Set to non-blocking in case select lies, or for the polling
+     implementation.  */
   if(!kwsysProcessSetNonBlocking(p[0]))
     {
     kwsysProcessCleanup(cp, 1);
     kwsysProcessCleanupDescriptor(&si.StdErr);
     return;
     }
-#endif
   }
 
   /* Replace the stderr pipe with a file if requested.  In this case
@@ -830,14 +835,12 @@ void kwsysProcess_Execute(kwsysProcess* cp)
       failed = 1;
       }
 
-#if !KWSYSPE_USE_SELECT
-    /* Set the output pipe of the last process to be non-blocking so
-       we can poll it.  */
-    if(i == cp->NumberOfCommands-1 && !kwsysProcessSetNonBlocking(readEnd))
+    /* Set the output pipe of the last process to be non-blocking in
+       case select lies, or for the polling implementation.  */
+    if(i == (cp->NumberOfCommands-1) && !kwsysProcessSetNonBlocking(readEnd))
       {
       failed = 1;
       }
-#endif
 
     if(failed)
       {
@@ -1056,6 +1059,11 @@ static int kwsysProcessWaitForPipe(kwsysProcess* cp, char** data, int* length,
             };
           return 1;
           }
+        }
+      else if(n < 0 && errno == EAGAIN)
+        {
+        /* No data are really ready.  The select call lied.  See the
+           "man select" page on Linux for cases when this occurs.  */
         }
       else
         {
@@ -1419,7 +1427,8 @@ static int kwsysProcessInitialize(kwsysProcess* cp)
 #else
     cp->RealWorkingDirectoryLength = 4096;
 #endif
-    cp->RealWorkingDirectory = malloc(cp->RealWorkingDirectoryLength);
+    cp->RealWorkingDirectory =
+      malloc((size_t)(cp->RealWorkingDirectoryLength));
     if(!cp->RealWorkingDirectory)
       {
       return 0;
@@ -1729,7 +1738,7 @@ static int kwsysProcessCreate(kwsysProcess* cp, int prIndex,
     {
     /* Keep trying to read until the operation is not interrupted.  */
     while(((n = read(si->ErrorPipe[0], cp->ErrorMessage+total,
-                     KWSYSPE_PIPE_BUFFER_SIZE-total)) < 0) &&
+                     (size_t)(KWSYSPE_PIPE_BUFFER_SIZE-total))) < 0) &&
           (errno == EINTR));
     if(n > 0)
       {
@@ -2658,7 +2667,7 @@ static int kwsysProcessAppendByte(char* local,
   if((*end - *begin) >= *size)
     {
     kwsysProcess_ptrdiff_t length = *end - *begin;
-    char* newBuffer = (char*)malloc(*size*2);
+    char* newBuffer = (char*)malloc((size_t)(*size*2));
     if(!newBuffer)
       {
       return 0;
@@ -2712,14 +2721,14 @@ static int kwsysProcessAppendArgument(char** local,
     }
 
   /* Allocate space for the argument string.  */
-  **end = (char*)malloc(*arg_end - *arg_begin);
+  **end = (char*)malloc((size_t)(*arg_end - *arg_begin));
   if(!**end)
     {
     return 0;
     }
 
   /* Store the argument in the command array.  */
-  memcpy(**end, *arg_begin, *arg_end - *arg_begin);
+  memcpy(**end, *arg_begin,(size_t)(*arg_end - *arg_begin));
   ++(*end);
 
   /* Reset the argument to be empty.  */

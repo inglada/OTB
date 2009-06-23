@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,23 +23,26 @@
 namespace otb
 {
 /** \class FullResolutionImageWidget
-   * \brief Widget for the full resolution window in viewer.
+   * \brief <b>DEPRECATED</b>: Widget for the full resolution window in viewer.
+ *
+ * \deprecated use the new Visualization framework instead.
+ * \sa StandardImageViewer
  *
  */
 template <class TPixel>
 class FullResolutionImageWidget
-  : public ImageWidgetBase<TPixel>
+      : public ImageWidgetBase<TPixel>
 {
- public:
+public:
   /** Standard class typedefs */
   typedef FullResolutionImageWidget Self;
   typedef ImageWidgetBase<TPixel> Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
-  
+
   /** Method for creation through the object factory */
   itkNewMacro(Self);
-  
+
   /** Runtime information */
   itkTypeMacro(FullResolutionImageWidget,ImageWidgetBase);
 
@@ -65,17 +68,17 @@ class FullResolutionImageWidget
   virtual void SetUpperLeftCorner(IndexType index);
   itkGetMacro(UpperLeftCorner,IndexType);
 
- protected:
+protected:
   /** Constructor. */
-    FullResolutionImageWidget();
-    /** Destructor. */
-    ~FullResolutionImageWidget();
+  FullResolutionImageWidget();
+  /** Destructor. */
+  ~FullResolutionImageWidget();
 
- private:
-    FullResolutionImageWidget(const Self&);// purposely not implemented
-    void operator=(const Self&);// purposely not implemented
+private:
+  FullResolutionImageWidget(const Self&);// purposely not implemented
+  void operator=(const Self&);// purposely not implemented
 
-    IndexType m_UpperLeftCorner;
+  IndexType m_UpperLeftCorner;
 };
 } // end namespace otb
 #ifndef OTB_MANUAL_INSTANTIATION

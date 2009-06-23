@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,20 +21,20 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbImageWidgetBaseNew);
-REGISTER_TEST(otbFixedSizeFullImageWidgetNew);
-REGISTER_TEST(otbFixedSizeFullImageWidget);
-REGISTER_TEST(otbFullResolutionImageWidgetNew);
-REGISTER_TEST(otbFullResolutionImageWidget);
-REGISTER_TEST(otbZoomableImageWidgetNew);
-REGISTER_TEST(otbZoomableImageWidget); 
-REGISTER_TEST(otbImageViewer);
-REGISTER_TEST(otbImageViewerWithOtbImage);
-REGISTER_TEST(otbImageViewerNew);
+  REGISTER_TEST(otbImageWidgetBaseNew);
+  REGISTER_TEST(otbFixedSizeFullImageWidgetNew);
+  REGISTER_TEST(otbFixedSizeFullImageWidget);
+  REGISTER_TEST(otbFullResolutionImageWidgetNew);
+  REGISTER_TEST(otbFullResolutionImageWidget);
+  REGISTER_TEST(otbZoomableImageWidgetNew);
+  REGISTER_TEST(otbZoomableImageWidget);
+  REGISTER_TEST(otbImageViewer);
+  REGISTER_TEST(otbImageViewerWithOtbImage);
+  REGISTER_TEST(otbImageViewerNew);
 
 }

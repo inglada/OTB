@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,9 +33,9 @@ int otbImageFileReaderRADComplexDouble(int argc, char* argv[])
   const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
-  typedef std::complex<double>  	                        InputPixelType;
-  typedef std::complex<double>                 		OutputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+  typedef std::complex<double>                            InputPixelType;
+  typedef std::complex<double>                     OutputPixelType;
+  const   unsigned int                                  Dimension = 2;
 
   typedef otb::Image< InputPixelType,  Dimension >        InputImageType;
   typedef otb::Image< OutputPixelType, Dimension >        OutputImageType;
@@ -45,13 +45,13 @@ int otbImageFileReaderRADComplexDouble(int argc, char* argv[])
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
- 
+
   reader->SetFileName( inputFilename  );
   writer->SetFileName( outputFilename );
-        
+
   writer->SetInput( reader->GetOutput() );
-  writer->Update(); 
-   
+  writer->Update();
+
   return EXIT_SUCCESS;
 }
 

@@ -4,12 +4,12 @@
 //
 // Author:  Oscar Kramer (ossim port by D. Burken)
 //
-// Description:  
+// Description:
 //
 // Contains definition of class ossimSpot5Model.
-// 
+//
 //*****************************************************************************
-// $Id: ossimSpot5Model.cpp 13027 2008-06-15 01:37:00Z dburken $
+// $Id: ossimSpot5Model.cpp 14206 2009-04-01 12:11:20Z gpotts $
 
 #include <iostream>
 #include <iomanip>
@@ -74,10 +74,10 @@ ossimSpot5Model::ossimSpot5Model()
    theIllumElevation     (0.0),
    thePositionError      (0.0),
    theRefImagingTime     (0.0),
-   theRefImagingTimeLine (0.0),   
+   theRefImagingTimeLine (0.0),
    theLineSamplingPeriod (0.0),
-   theSatToOrbRotation   (3, 3),
-   theOrbToEcfRotation   (3, 3),
+//   theSatToOrbRotation   (3, 3),
+//   theOrbToEcfRotation   (3, 3),
    theRollOffset         (0.0),
    thePitchOffset        (0.0),
    theYawOffset          (0.0),
@@ -98,10 +98,10 @@ ossimSpot5Model::ossimSpot5Model(ossimSpotDimapSupportData* sd)
    theIllumElevation     (0.0),
    thePositionError      (0.0),
    theRefImagingTime     (0.0),
-   theRefImagingTimeLine (0.0),   
+   theRefImagingTimeLine (0.0),
    theLineSamplingPeriod (0.0),
-   theSatToOrbRotation   (3, 3),
-   theOrbToEcfRotation   (3, 3),
+//   theSatToOrbRotation   (3, 3),
+//   theOrbToEcfRotation   (3, 3),
    theRollOffset         (0.0),
    thePitchOffset        (0.0),
    theYawOffset          (0.0),
@@ -133,7 +133,7 @@ ossimSpot5Model::ossimSpot5Model(ossimSpotDimapSupportData* sd)
 
 //*****************************************************************************
 //  DESTRUCTOR: ~ossimSpot5Model()
-//  
+//
 //*****************************************************************************
 ossimSpot5Model::~ossimSpot5Model()
 {
@@ -144,7 +144,7 @@ ossimSpot5Model::~ossimSpot5Model()
       delete theSupportData;
       theSupportData = NULL;
    }
-   
+
    if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG DESTRUCTOR: ~ossimSpot5Model(): returning..." << std::endl;
 }
 
@@ -153,7 +153,7 @@ ossimSpot5Model::ossimSpot5Model(const ossimSpot5Model& rhs)
 {
    if(theSupportData)
    {
-      
+
       delete theSupportData;
       theSupportData = 0;
    }
@@ -165,6 +165,52 @@ ossimSpot5Model::ossimSpot5Model(const ossimSpot5Model& rhs)
    updateModel();
 }
 
+
+void ossimSpot5Model::computeSatToOrbRotation(NEWMAT::Matrix& result, ossim_float64 t)const
+{
+   if (traceExec())
+   {
+      ossimNotify(ossimNotifyLevel_DEBUG)
+      << "DEBUG ossimSpot5Model::computeSatToOrbRotation(): entering..."
+      << std::endl;
+   }
+   //---
+   // Linearly interpolate attitudes angles:
+   //---
+   ossimDpt3d att;
+   theSupportData->getAttitude(t, att);
+
+   //---
+   // Apply the attitude adjustable parameters:
+   //---
+   double dt = theRefImagingTime - t;
+   att.x     += thePitchOffset + dt*thePitchRate;
+   att.y     += theRollOffset  + dt*theRollRate;
+   att.z     += theYawOffset   + dt*theYawRate;
+
+   //---
+   // Compute trig functions to populate rotation matrices: ANGLES IN RADIANS
+   //---
+   double cp = cos(att.x);
+   double sp = sin(att.x);
+   double cr = cos(att.y);
+   double sr = sin(att.y);
+   double cy = cos(att.z);
+   double sy = sin(att.z);
+
+   //---
+   // Populate rotation matrix:
+   //---
+   result = NEWMAT::Matrix(3,3);
+   result << (cr*cy) << (-cr*sy) << (-sr)
+   << (cp*sy+sp*sr*cy) << (cp*cy-sp*sr*sy) << (sp*cr)
+   << (-sp*sy+cp*sr*cy) << (-sp*cy-cp*sr*sy) <<  cp*cr;
+
+
+   if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::computeSatToOrbRotation(): returning..." << std::endl;
+}
+
+#if 0
 //*****************************************************************************
 //  METHOD
 //*****************************************************************************
@@ -190,7 +236,7 @@ void ossimSpot5Model::computeSatToOrbRotation(ossim_float64 t)const
    att.x     += thePitchOffset + dt*thePitchRate;
    att.y     += theRollOffset  + dt*theRollRate;
    att.z     += theYawOffset   + dt*theYawRate;
-   
+
    //---
    // Compute trig functions to populate rotation matrices: ANGLES IN RADIANS
    //---
@@ -208,58 +254,67 @@ void ossimSpot5Model::computeSatToOrbRotation(ossim_float64 t)const
     theSatToOrbRotation << (cr*cy) << (-cr*sy) << (-sr)
                         << (cp*sy+sp*sr*cy) << (cp*cy-sp*sr*sy) << (sp*cr)
                         << (-sp*sy+cp*sr*cy) << (-sp*cy-cp*sr*sy) <<  cp*cr;
-    
-   
+
+
     if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::computeSatToOrbRotation(): returning..." << std::endl;
 }
-
+#endif
 //*****************************************************************************
 // PUBLIC METHOD: ossimSpot5Model::updateModel()
-//  
+//
 //  Updates the model parameters given the normalized adjustable parameter
 //  array.
-//  
+//
 //*****************************************************************************
 void ossimSpot5Model::updateModel()
 {
-   if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::updateModel(): entering..." << std::endl;
+   clearErrorStatus();
 
-   if(getNumberOfAdjustableParameters() < 1)
+   try
    {
-      theRollOffset     = 0;
-      thePitchOffset    = 0;
-      theYawOffset      = 0;
-      theRollRate       = 0;
-      thePitchRate      = 0;
-      theYawRate        = 0;
-      theFocalLenOffset = 0;
+      if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::updateModel(): entering..." << std::endl;
+
+      if(getNumberOfAdjustableParameters() < 1)
+      {
+         theRollOffset     = 0;
+         thePitchOffset    = 0;
+         theYawOffset      = 0;
+         theRollRate       = 0;
+         thePitchRate      = 0;
+         theYawRate        = 0;
+         theFocalLenOffset = 0;
+      }
+      else
+      {
+         theRollOffset     = computeParameterOffset(0);
+         thePitchOffset    = computeParameterOffset(1);
+         theYawOffset      = computeParameterOffset(2);
+         theRollRate       = computeParameterOffset(3);
+         thePitchRate      = computeParameterOffset(4);
+         theYawRate        = computeParameterOffset(5);
+         theFocalLenOffset = computeParameterOffset(6);
+      }
+      theSeedFunction = 0;
+      ossimGpt ulg, urg, lrg, llg;
+      lineSampleToWorld(theImageClipRect.ul(), ulg);
+      lineSampleToWorld(theImageClipRect.ur(), urg);
+      lineSampleToWorld(theImageClipRect.lr(), lrg);
+      lineSampleToWorld(theImageClipRect.ll(), llg);
+      theSeedFunction = new ossimBilinearProjection(theImageClipRect.ul(),
+                                                    theImageClipRect.ur(),
+                                                    theImageClipRect.lr(),
+                                                    theImageClipRect.ll(),
+                                                    ulg,
+                                                    urg,
+                                                    lrg,
+                                                    llg);
+
+      if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::updateModel(): returning..." << std::endl;
    }
-   else
+   catch(...)
    {
-      theRollOffset     = computeParameterOffset(0);
-      thePitchOffset    = computeParameterOffset(1);
-      theYawOffset      = computeParameterOffset(2);
-      theRollRate       = computeParameterOffset(3);
-      thePitchRate      = computeParameterOffset(4);
-      theYawRate        = computeParameterOffset(5);
-      theFocalLenOffset = computeParameterOffset(6);
+      setErrorStatus(ossimErrorCodes::OSSIM_ERROR);
    }
-   theSeedFunction = 0;
-   ossimGpt ulg, urg, lrg, llg;
-   lineSampleToWorld(theImageClipRect.ul(), ulg);
-   lineSampleToWorld(theImageClipRect.ur(), urg);
-   lineSampleToWorld(theImageClipRect.lr(), lrg);
-   lineSampleToWorld(theImageClipRect.ll(), llg);
-   theSeedFunction = new ossimBilinearProjection(theImageClipRect.ul(),
-                                                 theImageClipRect.ur(),
-                                                 theImageClipRect.lr(),
-                                                 theImageClipRect.ll(),
-                                                 ulg,
-                                                 urg,
-                                                 lrg,
-                                                 llg);
-   
-   if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::updateModel(): returning..." << std::endl;   
 }
 
 void ossimSpot5Model::initAdjustableParameters()
@@ -272,7 +327,7 @@ void ossimSpot5Model::initAdjustableParameters()
    //---
    resizeAdjustableParameterArray(7);
    ossim_uint32 numParams = getNumberOfAdjustableParameters();
-   
+
    //---
    // Initialize base-class adjustable parameter array:
    //---
@@ -283,7 +338,7 @@ void ossimSpot5Model::initAdjustableParameters()
       setParameterUnit(i,PARAM_UNITS[i]);
       setParameterSigma(i, SIGMA[i]);
    }
-   
+
    if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::initAdjustableParameters(): returning..." << std::endl;
 }
 
@@ -302,7 +357,7 @@ void ossimSpot5Model::loadSupportData()
       if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::loadSupportData(): returning..." << std::endl;
       return;
    }
-      
+
    if (theSupportData->getErrorStatus() != ossimErrorCodes::OSSIM_OK)
    {
       setErrorStatus();
@@ -315,7 +370,7 @@ void ossimSpot5Model::loadSupportData()
    //---
    // Initialize some member variables from the support data:
    //---
-   theSensorID     = "Spot 5";
+   theSensorID     = theSupportData->getSensorID();
    theImageID      = theSupportData->getImageID();
    theMetaDataFile = theSupportData->getMetadataFile();
 
@@ -329,7 +384,7 @@ void ossimSpot5Model::loadSupportData()
    theImageSize = sz;
    theSupportData->getRefLineTime(theRefImagingTime);
    theSupportData->getRefLineTimeLine(theRefImagingTimeLine);
-   
+
    theSupportData->getLineSamplingPeriod(theLineSamplingPeriod);
    theSupportData->getSubImageOffset(theSpotSubImageOffset);
 
@@ -339,7 +394,7 @@ void ossimSpot5Model::loadSupportData()
    //---
    theSupportData->getImageRect(theImageClipRect);
    theSupportData->getRefImagePoint(theRefImgPt);
-    
+
    ossimGpt p1;
    ossimGpt p2;
    ossimGpt p3;
@@ -347,7 +402,7 @@ void ossimSpot5Model::loadSupportData()
 
 
    // I need to find the nominal scale of the spot 5 dataset
-   
+
    //---
    // Position error is a function of whether star tracker information was
    // available:
@@ -361,7 +416,6 @@ void ossimSpot5Model::loadSupportData()
       thePositionError = 200.0; // meters
    }
    updateModel();
-
    lineSampleToWorld(theImageClipRect.ul(), p1);
    lineSampleToWorld(theImageClipRect.ur(), p2);
    lineSampleToWorld(theImageClipRect.lr(), p3);
@@ -390,7 +444,7 @@ void ossimSpot5Model::loadSupportData()
 
    theGSD     = ossimDpt((ossimEcefPoint(cgpt) - ossimEcefPoint(hgpt)).magnitude(),
 			 (ossimEcefPoint(cgpt) - ossimEcefPoint(vgpt)).magnitude());
-   
+
    theMeanGSD = (theGSD.x+theGSD.y)/2.0;
 
    if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::loadSupportData(): returning..." << std::endl;
@@ -432,7 +486,7 @@ std::ostream& ossimSpot5Model::print(std::ostream& out) const
 
    // Set the flags back.
    out.flags(f);
- 
+
    return ossimSensorModel::print(out);
 }
 
@@ -444,12 +498,12 @@ bool ossimSpot5Model::saveState(ossimKeywordlist& kwl,
       ossimString supportPrefix = ossimString(prefix) + "support_data.";
       theSupportData->saveState(kwl, supportPrefix);
     }
-  else 
+  else
     {
       return false;
     }
- 
-   
+
+
    return ossimSensorModel::saveState(kwl, prefix);
 }
 
@@ -457,12 +511,12 @@ bool ossimSpot5Model::loadState(const ossimKeywordlist& kwl,
                                 const char* prefix)
 {
    ossimString supportPrefix = ossimString(prefix) + "support_data.";
-   
+
    if(!theSupportData)
    {
       theSupportData = new ossimSpotDimapSupportData;
    }
-   
+
    if(theSupportData->loadState(kwl, supportPrefix))
    {
       if(!ossimSensorModel::loadState(kwl, prefix))
@@ -474,18 +528,18 @@ bool ossimSpot5Model::loadState(const ossimKeywordlist& kwl,
    {
       return false;
    }
-   
+
    loadSupportData();
    updateModel();
-   
-   return true;
+
+   return (getErrorStatus()==ossimErrorCodes::OSSIM_OK);
 }
 
 void ossimSpot5Model::imagingRay(const ossimDpt& image_point,
                                  ossimEcefRay&   image_ray) const
 {
    bool runtime_dbflag = 0;
-
+   NEWMAT::Matrix satToOrbit;
    ossimDpt iPt = image_point;
    iPt.samp += theSpotSubImageOffset.samp;
    iPt.line += theSpotSubImageOffset.line;
@@ -517,7 +571,7 @@ void ossimSpot5Model::imagingRay(const ossimDpt& image_point,
          << "DEBUG:\n\tP_ecf = " << P_ecf
          << "\n\t V_ecf = " << V_ecf << std::endl;
    }
-                   
+
    //
    // 3. Establish the look direction in Vehicle LSR space (S_sat).
    //    ANGLES IN RADIANS
@@ -544,13 +598,13 @@ void ossimSpot5Model::imagingRay(const ossimDpt& image_point,
    // 4. Transform vehicle LSR space look direction vector to orbital LSR space
    //    (S_orb):
    //
-    computeSatToOrbRotation(t_line);
-    
-    ossimColumnVector3d u_orb = (theSatToOrbRotation*u_sat).unit();
+    computeSatToOrbRotation(satToOrbit, t_line);
+
+    ossimColumnVector3d u_orb = (satToOrbit*u_sat).unit();
     if (traceDebug() || runtime_dbflag)
     {
        ossimNotify(ossimNotifyLevel_DEBUG)
-          << "DEBUG:\n\t theSatToOrbRotation = " << theSatToOrbRotation
+          << "DEBUG:\n\t theSatToOrbRotation = " << satToOrbit
           << "\n\t u_orb = " << u_orb << endl;
     }
 
@@ -571,25 +625,25 @@ void ossimSpot5Model::imagingRay(const ossimDpt& image_point,
                                                     V_ecf.z()).cross(Z_orb).unit();
     ossimColumnVector3d Y_orb = Z_orb.cross(X_orb);
 
-    theOrbToEcfRotation = NEWMAT::Matrix(3, 3);
-    theOrbToEcfRotation << X_orb[0] << Y_orb[0] << Z_orb[0]
+    NEWMAT::Matrix orbToEcfRotation = NEWMAT::Matrix(3, 3);
+    orbToEcfRotation << X_orb[0] << Y_orb[0] << Z_orb[0]
                         << X_orb[1] << Y_orb[1] << Z_orb[1]
                         << X_orb[2] << Y_orb[2] << Z_orb[2];
-    
 
-   ossimColumnVector3d u_ecf  = (theOrbToEcfRotation*u_orb);
+
+   ossimColumnVector3d u_ecf  = (orbToEcfRotation*u_orb);
     if (traceDebug() || runtime_dbflag)
     {
        ossimNotify(ossimNotifyLevel_DEBUG)
-          << "DEBUG:\n\t theOrbToEcfRotation = " << theOrbToEcfRotation
+          << "DEBUG:\n\t orbToEcfRotation = " << orbToEcfRotation
           << "\n\t u_ecf = " << u_ecf << endl;
     }
-   
+
    //
    // Establish the imaging ray given direction and origin:
    //
     image_ray = ossimEcefRay(P_ecf, ossimEcefVector(u_ecf[0], u_ecf[1], u_ecf[2]));
-    
+
     if (traceExec())
     {
        ossimNotify(ossimNotifyLevel_DEBUG)
@@ -614,7 +668,7 @@ void ossimSpot5Model::lineSampleHeightToWorld(const ossimDpt& image_point,
       if (traceExec())  ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSpot5Model::lineSampleHeightToWorld(): returning..." << std::endl;
       return;
    }
-   
+
    //***
    // First establish imaging ray from image point:
    //***
@@ -635,7 +689,7 @@ void ossimSpot5Model::lineSampleHeightToWorld(const ossimDpt& image_point,
 //   ossimDpt tempGpt = gp;
 //   ossimDpt dest;
 //   theGroundToImageMap.map(tempGpt, dest);
-  
+
 //  return dest;
 
 // }
@@ -648,7 +702,7 @@ void ossimSpot5Model::lineSampleHeightToWorld(const ossimDpt& image_point,
 //    ossimDpt dest;
 
 //    theImageToGroundMap.map(ip, dest);
-  
+
 
 //    return ossimGpt(dest.lat, dest.lon, ossim::nan(), origin().datum());
 // }
@@ -660,7 +714,7 @@ ossimSpot5Model::setupOptimizer(const ossimString& init_file)
    ossimFilename geomFile = init_file;
    geomFile = geomFile.setExtension("geom");
    bool tryKwl = false;
-   
+
    if(!spot5Test.exists())
    {
       spot5Test = geomFile.path();
@@ -714,8 +768,8 @@ ossimSpot5Model::initFromMetadata(ossimSpotDimapSupportData* sd)
    thePositionError      = 0.0;
    theRefImagingTime     = 0.0;
    theLineSamplingPeriod = 0.0;
-   theSatToOrbRotation   = 0.0; //matrix
-   theOrbToEcfRotation   = 0.0; //matrix
+//   theSatToOrbRotation   = 0.0; //matrix
+//   theOrbToEcfRotation   = 0.0; //matrix
    theRollOffset         = 0.0;
    thePitchOffset        = 0.0;
    theYawOffset          = 0.0;

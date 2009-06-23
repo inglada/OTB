@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,18 +22,18 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbExtractSegmentsNew);
-REGISTER_TEST(otbExtractSegments);
+  REGISTER_TEST(otbExtractSegmentsNew);
+  REGISTER_TEST(otbExtractSegments);
 //REGISTER_TEST(otbFourierMellinImageFilterNew);
 //REGISTER_TEST(otbFourierMellinImageFilterTestFFT);
-REGISTER_TEST(otbFourierMellinImageFilter);
-REGISTER_TEST(otbImageToEdgePathFilterNew);
-REGISTER_TEST(otbImageToEdgePathFilter);
-REGISTER_TEST(otbNeighborhoodScalarProductFilterNew);
-REGISTER_TEST(otbNeighborhoodScalarProductFilter);
+  REGISTER_TEST(otbFourierMellinImageFilter);
+  REGISTER_TEST(otbImageToEdgePathFilterNew);
+  REGISTER_TEST(otbImageToEdgePathFilter);
+  REGISTER_TEST(otbNeighborhoodScalarProductFilterNew);
+  REGISTER_TEST(otbNeighborhoodScalarProductFilter);
 }

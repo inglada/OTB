@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,7 +24,8 @@
 #define USE_OPJ_DEPRECATED
 #endif
 
-extern "C" {
+extern "C"
+{
 #include "otb_openjpeg.h"
 }
 
@@ -60,16 +61,19 @@ public:
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
   virtual bool CanReadFile(const char*);
-  
+
   /** Determine the file type. Returns true if the ImageIO can stream read the specified file */
-  virtual bool CanStreamRead(){  return true; };
+  virtual bool CanStreamRead()
+  {
+    return true;
+  };
 
   /** Set the spacing and dimention information for the set filename. */
   virtual void ReadImageInformation();
- 
+
   /** Reads the data from disk into the memory buffer provided. */
   virtual void Read(void* buffer);
-    
+
   /** Reads 3D data from multiple files assuming one slice per file. */
   virtual void ReadVolume(void* buffer);
 
@@ -80,7 +84,10 @@ public:
   virtual bool CanWriteFile(const char*);
 
   /** Determine the file type. Returns true if the ImageIO can stream write the specified file */
-  virtual bool CanStreamWrite() { return true; };
+  virtual bool CanStreamWrite()
+  {
+    return true;
+  };
 
   /** Writes the spacing and dimentions of the image.
    * Assumes SetFileName has been called with a valid file name. */
@@ -89,7 +96,7 @@ public:
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
   virtual void Write(const void* buffer);
- 
+
 protected:
   /** Construtor.*/
   JPEG2000ImageIO();
@@ -114,7 +121,7 @@ private:
   opj_stream_t * m_OpenJpegStream;
   /** pixel nb of octets */
   unsigned int m_NbOctetPixel;
-  
+
 };
 
 } // end namespace otb

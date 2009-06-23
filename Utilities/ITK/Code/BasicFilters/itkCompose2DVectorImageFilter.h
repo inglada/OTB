@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCompose2DVectorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007-09-27 11:36:40 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2009-01-14 18:39:05 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -20,17 +20,6 @@
 #include "itkBinaryFunctorImageFilter.h"
 #include "itkVector.h"
 
-/** \class Compose2DVectorImageFilter
- * \brief Implements pixel-wise composition of an 2D vector pixel from two scalar images.
- *
- * This filter receives two scalar images as input. Each image containing
- * one of the 2D vector components. The filter produces as output a
- * 2D vector image in which the two components have been unified. The Component
- * type is preserved from the PixelType of the input images.
- *
- * \ingroup IntensityImageFilters
- */
-
 namespace itk
 {
   
@@ -44,23 +33,34 @@ public:
   Compose2DVector() {}
   ~Compose2DVector() {}
   bool operator!=( const Compose2DVector & ) const
-  {
+    {
     return false;
-  }
+    }
   bool operator==( const Compose2DVector & other ) const
-  {
+    {
     return !(*this != other);
-  }
+    }
   inline OutputType operator()(  const TInput & s1, 
                                  const TInput & s2 )
-  {
+    {
     OutputType v;
     v[0] = s1;
     v[1] = s2;
     return v;
-  }
+    }
 }; 
 }
+
+/** \class Compose2DVectorImageFilter
+ * \brief Implements pixel-wise composition of an 2D vector pixel from two scalar images.
+ *
+ * This filter receives two scalar images as input. Each image containing
+ * one of the 2D vector components. The filter produces as output a
+ * 2D vector image in which the two components have been unified. The Component
+ * type is preserved from the PixelType of the input images.
+ *
+ * \ingroup IntensityImageFilters
+ */
 
 template <typename TInputImage, 
           typename TOutputImage= 
@@ -75,13 +75,14 @@ BinaryFunctorImageFilter<TInputImage,TInputImage,
 public:
   /** Standard class typedefs. */
   typedef Compose2DVectorImageFilter  Self;
-  typedef BinaryFunctorImageFilter<TInputImage,TInputImage,
-                                    TOutputImage, 
-                                    Function::Compose2DVector< 
-    ITK_TYPENAME TInputImage::PixelType > 
-  >  Superclass;
-  typedef SmartPointer<Self>   Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef BinaryFunctorImageFilter<
+    TInputImage,TInputImage,
+    TOutputImage, 
+    Function::Compose2DVector< 
+      ITK_TYPENAME TInputImage::PixelType > >
+                                      Superclass;
+  typedef SmartPointer<Self>          Pointer;
+  typedef SmartPointer<const Self>    ConstPointer;
 
   typedef typename Superclass::OutputImageType OutputImageType;
   

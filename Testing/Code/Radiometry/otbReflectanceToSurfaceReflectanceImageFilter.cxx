@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -45,7 +45,7 @@ int otbReflectanceToSurfaceReflectanceImageFilter(int argc, char * argv[])
   reader->SetFileName(inputFileName);
   writer->SetFileName(outputFileName);
 
-  reader->GenerateOutputInformation();
+  reader->UpdateOutputInformation();
   unsigned int nbChannel = reader->GetOutput()->GetNumberOfComponentsPerPixel();
 
   DataVectorType intrinsic;
@@ -53,23 +53,23 @@ int otbReflectanceToSurfaceReflectanceImageFilter(int argc, char * argv[])
   DataVectorType gaseous;
   DataVectorType downTrans;
   DataVectorType upTrans;
-    
+
   std::cout<<nbChannel<<std::endl;
-  for( unsigned int j=0; j<nbChannel; j++)
-    {
-      intrinsic.push_back(static_cast<double>(atof(argv[3+j])));
-      albedo.push_back(static_cast<double>(atof(argv[3+j+nbChannel])));
-      gaseous.push_back(static_cast<double>(atof(argv[3+j+2*nbChannel])));
-      downTrans.push_back(static_cast<double>(atof(argv[3+j+3*nbChannel])));
-      upTrans.push_back(static_cast<double>(atof(argv[3+j+4*nbChannel])));
-    }
+  for ( unsigned int j=0; j<nbChannel; j++)
+  {
+    intrinsic.push_back(static_cast<double>(atof(argv[3+j])));
+    albedo.push_back(static_cast<double>(atof(argv[3+j+nbChannel])));
+    gaseous.push_back(static_cast<double>(atof(argv[3+j+2*nbChannel])));
+    downTrans.push_back(static_cast<double>(atof(argv[3+j+3*nbChannel])));
+    upTrans.push_back(static_cast<double>(atof(argv[3+j+4*nbChannel])));
+  }
 
   atmo->SetIntrinsicAtmosphericReflectances(intrinsic);
   atmo->SetSphericalAlbedos(albedo);
   atmo->SetTotalGaseousTransmissions(gaseous);
   atmo->SetDownwardTransmittances(downTrans);
-  atmo->SetUpwardTransmittances(upTrans);  
-      
+  atmo->SetUpwardTransmittances(upTrans);
+
   // Instantiating object
   ReflectanceToSurfaceReflectanceImageFilterType::Pointer filter = ReflectanceToSurfaceReflectanceImageFilterType::New();
   filter->SetAtmosphericRadiativeTerms(atmo);

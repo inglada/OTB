@@ -12,7 +12,7 @@ SET(ITKIOReview_SRCS
   )
  
 ADD_LIBRARY(ITKIOReview ${ITK_REVIEW_BUILD_TYPE} ${ITKIOReview_SRCS})
-TARGET_LINK_LIBRARIES (ITKIOReview ITKIO ITKCommon itkvnl)
+TARGET_LINK_LIBRARIES (ITKIOReview ITKIO)
 IF(ITK_LIBRARY_PROPERTIES)
   SET_TARGET_PROPERTIES(ITKIOReview PROPERTIES ${ITK_LIBRARY_PROPERTIES})
 ENDIF(ITK_LIBRARY_PROPERTIES)
@@ -39,7 +39,7 @@ SET(ITKTransformIOReview_SRCS
   )
 
 ADD_LIBRARY(ITKTransformIOReview ${ITK_REVIEW_BUILD_TYPE} ${ITKTransformIOReview_SRCS})
-TARGET_LINK_LIBRARIES (ITKTransformIOReview ITKCommon itkvnl)
+TARGET_LINK_LIBRARIES (ITKTransformIOReview ITKCommon)
 IF(ITK_LIBRARY_PROPERTIES)
   SET_TARGET_PROPERTIES(ITKTransformIOReview PROPERTIES ${ITK_LIBRARY_PROPERTIES})
 ENDIF(ITK_LIBRARY_PROPERTIES)
@@ -136,7 +136,7 @@ IF(NOT ITK_INSTALL_NO_DEVELOPMENT)
 ENDIF(NOT ITK_INSTALL_NO_DEVELOPMENT)
 # Warn the user about the license issues and lack of stability of the API
 # of the code in this directory
-SET(msg "Warning: You have chosen to use the files in the Review directory.")
+SET(msg "Attention: You have chosen to use the files in the Review directory.")
 SET(msg "${msg} The Copyright of these files has not been cleared up, and the coding")
 SET(msg "${msg} style and API of the classes in the Review directory may change")
 SET(msg "${msg} drastically as it get code reviews from the developers.")

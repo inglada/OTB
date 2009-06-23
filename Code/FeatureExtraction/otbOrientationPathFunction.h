@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,14 +28,14 @@ namespace otb
  * \class OrientationPathFunction
  * \brief Calculate the orientation angle of a path defined by 2 points.
  * The result value is in radian.
- * 
+ *
  * \ingroup PathFunctions
  */
 
-template < class TInputPath,    
-           class TOutput      = double>
+template < class TInputPath,
+class TOutput      = double>
 class ITK_EXPORT OrientationPathFunction :
-  public PathFunction< TInputPath, TOutput >
+      public PathFunction< TInputPath, TOutput >
 {
 public:
   /** Standard class typedefs. */
@@ -43,7 +43,7 @@ public:
   typedef PathFunction<TInputPath, TOutput>             Superclass;
   typedef itk::SmartPointer<Self>                       Pointer;
   typedef itk::SmartPointer<const Self>                 ConstPointer;
-  
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(OrientationPathFunction, PathFunction);
 
@@ -59,15 +59,15 @@ public:
   typedef TOutput                                       OutputType;
 
   typedef double                                        RealType;
-   
-  			
+
+
   /** Evaluate the function at non-integer positions */
   virtual OutputType Evaluate( const PathType& path) const;
   virtual OutputType Evaluate( ) const;
 
 protected:
-  OrientationPathFunction(){};
-  ~OrientationPathFunction(){};
+  OrientationPathFunction() {};
+  ~OrientationPathFunction() {};
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:

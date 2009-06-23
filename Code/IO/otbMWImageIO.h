@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -47,7 +47,7 @@ public:
 
   /** Byte order typedef */
   typedef Superclass::ByteOrder  ByteOrder;
-  
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -59,16 +59,19 @@ public:
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
   virtual bool CanReadFile(const char*);
-  
+
   /** Determine the file type. Returns true if the ImageIO can stream read the specified file */
-  virtual bool CanStreamRead(){  return true; };
+  virtual bool CanStreamRead()
+  {
+    return true;
+  };
 
   /** Set the spacing and dimention information for the set filename. */
   virtual void ReadImageInformation();
- 
+
   /** Reads the data from disk into the memory buffer provided. */
   virtual void Read(void* buffer);
-    
+
   /** Reads 3D data from multiple files assuming one slice per file. */
   virtual void ReadVolume(void* buffer);
 
@@ -79,7 +82,10 @@ public:
   virtual bool CanWriteFile(const char*);
 
   /** Determine the file type. Returns true if the ImageIO can stream write the specified file */
-  virtual bool CanStreamWrite() { return true; };
+  virtual bool CanStreamWrite()
+  {
+    return true;
+  };
 
   /** Writes the spacing and dimentions of the image.
    * Assumes SetFileName has been called with a valid file name. */
@@ -90,7 +96,7 @@ public:
   virtual void Write(const void* buffer);
   // JULIEN: NOT USED, NOT IMPLEMENTED
   //void SampleImage(void* buffer,int XBegin, int YBegin, int SizeXRead, int SizeYRead, int XSample, int YSample);
-  
+
 protected:
   /** Construtor.*/
   MWImageIO();
@@ -103,7 +109,7 @@ protected:
 
   bool OpenOneraDataFileForWriting(const char* filename);
   bool OpenOneraHeaderFileForWriting(const char* filename);
-  
+
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
@@ -111,15 +117,16 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   /** Internal method to read filename extension */
-  
+
   std::string GetExtension( const std::string& filename );
-  
+
   /** Internal method to read header informations */
   bool InternalReadHeaderInformation(std::fstream & file, const bool reportError);
-  inline void ByteSplitting(unsigned short a, unsigned short &low, unsigned short &high){
-	  unsigned short b = 255;
-	  low = a & b;
-	  high = (a>>8) & b;
+  inline void ByteSplitting(unsigned short a, unsigned short &low, unsigned short &high)
+  {
+    unsigned short b = 255;
+    low = a & b;
+    high = (a>>8) & b;
   }
 
 

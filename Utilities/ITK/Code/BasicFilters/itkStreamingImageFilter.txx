@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStreamingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004-12-21 22:47:31 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2009-02-04 16:34:09 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkStreamingImageFilter_txx
-#define _itkStreamingImageFilter_txx
+#ifndef __itkStreamingImageFilter_txx
+#define __itkStreamingImageFilter_txx
 #include "itkStreamingImageFilter.h"
 #include "itkCommand.h"
 #include "itkImageRegionIterator.h"
@@ -66,6 +66,49 @@ StreamingImageFilter<TInputImage,TOutputImage>
     {
     os << indent << "Region splitter: (none)" << std::endl;
     }
+}
+
+
+/**
+ *
+ */
+template<class TInputImage, class TOutputImage>
+void 
+StreamingImageFilter<TInputImage,TOutputImage>
+::PropagateRequestedRegion(DataObject *output)
+{
+  /**
+   * check flag to avoid executing forever if there is a loop
+   */
+  if (this->m_Updating)
+    {
+    return;
+    }
+  
+  /**
+   * Give the subclass a chance to indicate that it will provide
+   * more data then required for the output. This can happen, for
+   * example, when a source can only produce the whole output.
+   * Although this is being called for a specific output, the source
+   * may need to enlarge all outputs.
+   */
+  this->EnlargeOutputRequestedRegion( output );
+
+  
+  /**
+   * Give the subclass a chance to define how to set the requested
+   * regions for each of its outputs, given this output's requested
+   * region.  The default implementation is to make all the output
+   * requested regions the same.  A subclass may need to override this
+   * method if each output is a different resolution.
+   */
+  this->GenerateOutputRequestedRegion( output );
+
+  // we don't call GenerateInputRequestedRegion since the requested
+  // regions are manage when the pipeline is execute
+  
+  // we don't call inputs PopafateRequestedRegion either
+  // because the pipeline managed later
 }
 
 /**
@@ -133,8 +176,8 @@ StreamingImageFilter<TInputImage,TOutputImage>
   unsigned int numDivisions, numDivisionsFromSplitter;
 
   numDivisions = m_NumberOfStreamDivisions;
-  numDivisionsFromSplitter
-    = m_RegionSplitter
+  numDivisionsFromSplitter =
+    m_RegionSplitter
     ->GetNumberOfSplits(outputRegion, m_NumberOfStreamDivisions);
   if (numDivisionsFromSplitter < numDivisions)
     {

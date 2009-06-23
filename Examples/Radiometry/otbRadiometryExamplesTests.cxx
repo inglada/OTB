@@ -25,9 +25,10 @@
 
 void RegisterTests()
 {
-REGISTER_TEST(ARVIMultiChannelRAndBAndNIRVegetationIndexImageFilterTest);
-REGISTER_TEST(NDVIRAndNIRVegetationIndexImageFilterTest);
-REGISTER_TEST(AtmosphericCorrectionSequencementTest);
+  REGISTER_TEST(ARVIMultiChannelRAndBAndNIRVegetationIndexImageFilterTest);
+  REGISTER_TEST(AVIMultiChannelRAndGAndNIRVegetationIndexImageFilterTest);
+  REGISTER_TEST(NDVIRAndNIRVegetationIndexImageFilterTest);
+  REGISTER_TEST(AtmosphericCorrectionSequencementTest);
 }
 
 #undef main
@@ -37,6 +38,10 @@ REGISTER_TEST(AtmosphericCorrectionSequencementTest);
 #undef main
 #define main NDVIRAndNIRVegetationIndexImageFilterTest
 #include "NDVIRAndNIRVegetationIndexImageFilter.cxx"
+
+#undef main
+#define main AVIMultiChannelRAndGAndNIRVegetationIndexImageFilterTest
+#include "AVIMultiChannelRAndGAndNIRVegetationIndexImageFilter.cxx"
 
 #undef main
 #define main AtmosphericCorrectionSequencementTest

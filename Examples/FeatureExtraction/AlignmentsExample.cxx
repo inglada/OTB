@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,7 +36,7 @@
 // This filter allows to extract meaninful alignments. Alignments
 // (that is edges and lines) are detected using the {\em Gestalt}
 // approach proposed by Desolneux et al. \cite{desolneux}. In this
-// context, an event is 
+// context, an event is
 // considered meaningful if the expectation of its occurrence would be
 // very small in a random image. One can thus consider that in a
 // random image the direction of the gradient of a given point is
@@ -46,9 +46,9 @@
 // coordinates under the form of a \code{std::list} of
 // \code{itk::PolyLineParametricPath}.
 //
-// The first step required to use this filter is to include its header. 
+// The first step required to use this filter is to include its header.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
 #include "otbImageToPathListAlignFilter.h"
@@ -76,24 +76,24 @@
 
 int main( int argc, char *argv[] )
 {
-  if(argc!=4)
-    {
+  if (argc!=4)
+  {
 
     std::cout << "Usage : " << argv[0] << " inputImage outputImage epsilon" << std::endl;
     return EXIT_FAILURE;
-    
-    }
+
+  }
 
   const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
-       
+
 
   typedef unsigned short                                   InputPixelType;
-  typedef unsigned short   	                        OutputPixelType;
+  typedef unsigned short                             OutputPixelType;
 
-  const   unsigned int        	                        Dimension = 2;
+  const   unsigned int                                  Dimension = 2;
 
-  typedef otb::Image< InputPixelType,  Dimension >	InputImageType;
+  typedef otb::Image< InputPixelType,  Dimension >  InputImageType;
   typedef otb::Image< OutputPixelType, Dimension >        OutputImageType;
 
   typedef otb::ImageFileReader< InputImageType  >         ReaderType;
@@ -113,20 +113,20 @@ int main( int argc, char *argv[] )
   //  input image type and the output path type, so we start by
   //  defining:
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::PolyLineParametricPath< Dimension >		  PathType;
+  typedef itk::PolyLineParametricPath< Dimension >      PathType;
   typedef otb::ImageToPathListAlignFilter<InputImageType,PathType>
-                                                       ListAlignFilterType;
+  ListAlignFilterType;
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
   //
   //  Next, we build the pipeline.
   //
-  //  Software Guide : EndLatex 
-  
+  //  Software Guide : EndLatex
+
   // Software Guide : BeginCodeSnippet
   ListAlignFilterType::Pointer alignFilter = ListAlignFilterType::New();
 
@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
   // Software Guide : BeginCodeSnippet
   alignFilter->SetEps( atoi(argv[3]) );
   // Software Guide : EndCodeSnippet
-  
+
   alignFilter->Update();
 
   //  Software Guide : BeginLatex
@@ -158,7 +158,7 @@ int main( int argc, char *argv[] )
 
   // Software Guide : BeginCodeSnippet
   typedef otb::DrawPathFilter< InputImageType, PathType,
-                                   OutputImageType >  DrawPathFilterType;
+  OutputImageType >  DrawPathFilterType;
 
 
   // Software Guide : EndCodeSnippet
@@ -170,7 +170,7 @@ int main( int argc, char *argv[] )
   // Software Guide : BeginCodeSnippet
   typedef ListAlignFilterType::OutputPathListType ListType;
 
-  
+
   ListType* pathList = alignFilter->GetOutput();
 
   ListType::Iterator listIt = pathList->Begin();
@@ -187,16 +187,16 @@ int main( int argc, char *argv[] )
   // Software Guide : BeginCodeSnippet
   InputImageType::Pointer backgroundImage = reader->GetOutput();
   // Software Guide : EndCodeSnippet
-  
+
   // Software Guide : BeginLatex
   //
   // We iterate through the list and write the result to a file.
   //
   //  Software Guide : EndLatex
-  
+
   // Software Guide : BeginCodeSnippet
-  while( listIt != pathList->End())
-    {
+  while ( listIt != pathList->End())
+  {
 
     DrawPathFilterType::Pointer drawPathFilter = DrawPathFilterType::New();
     drawPathFilter->SetImageInput( backgroundImage );
@@ -206,14 +206,14 @@ int main( int argc, char *argv[] )
     drawPathFilter->Update();
 
     backgroundImage = drawPathFilter->GetOutput();
-    
+
     ++listIt;
 
-    }
-    
+  }
+
   writer->SetInput( backgroundImage );
   // Software Guide : EndCodeSnippet
-  
+
   writer->Update();
 
   //  Software Guide : BeginLatex
@@ -223,20 +223,13 @@ int main( int argc, char *argv[] )
   // \center
   // \includegraphics[width=0.35\textwidth]{QB_Suburb.eps}
   // \includegraphics[width=0.35\textwidth]{QB_SuburbAlign.eps}
-  // \itkcaption[Lee Filter Application]{Result of applying the
-  // \doxygen{otb}{ImageToPathListAlignFilter} to a VHR image of a suburb.} 
+  // \itkcaption[Alignment Detection Application]{Result of applying the
+  // \doxygen{otb}{ImageToPathListAlignFilter} to a VHR image of a suburb.}
   // \label{fig:Align}
   // \end{figure}
   //
-  //  Software Guide : EndLatex 
-
-  //  \relatedClasses
-  //  \begin{itemize}
-  //  \item \doxygen{otb}{FrostImageFilter}
-  //  \end{itemize}
-  //
   //  Software Guide : EndLatex
-  
+
 
 
   return EXIT_SUCCESS;

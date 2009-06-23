@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -58,24 +58,24 @@ template <class TInputImage, class TInputPath,class TOutputImage>
 void
 RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
 ::GenerateData(void)
-{  
-  
+{
+
   const InputImageType * inputImage = this->GetImageInput();
   const InputPathType * inputPath = this->GetPathInput();
   OutputImageType * outputImage = this->GetOutput();
-  
+
   outputImage->SetBufferedRegion( outputImage->GetRequestedRegion() );
   outputImage->Allocate();
-  
-  
-  InputIteratorType inputIterator(inputImage, 
+
+
+  InputIteratorType inputIterator(inputImage,
                                   inputImage->GetLargestPossibleRegion());
-  OutputIteratorType outputIterator(outputImage, 
-                                  outputImage->GetLargestPossibleRegion());
-  
+  OutputIteratorType outputIterator(outputImage,
+                                    outputImage->GetLargestPossibleRegion());
+
   unsigned int dir0;
   unsigned int dir1;
-  
+
   if (m_Direction == 0)
   {
     dir0=0;
@@ -86,52 +86,52 @@ RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
     dir0=1;
     dir1=0;
   }
-  
+
   inputIterator.SetFirstDirection( dir0 );
   inputIterator.SetSecondDirection( dir1 );
   inputIterator.GoToBegin();
   outputIterator.SetFirstDirection( dir0 );
   outputIterator.SetSecondDirection( dir1 );
   outputIterator.GoToBegin();
-  
+
   int line=-1;
   typename InputImageType::IndexType index;
   typename InputPathType::VertexListType::ConstPointer vertexList = inputPath->GetVertexList();
   typename InputPathType::VertexListType::ConstIterator pathIterator;
   typename InputImageType::IndexType indexToRemove;
-  
+
   //go to the end of the path
   pathIterator = vertexList->Begin();
-  while(pathIterator != vertexList->End())
+  while (pathIterator != vertexList->End())
   {
     ++pathIterator;
   }
   --pathIterator;
-  
+
   while (!inputIterator.IsAtEnd())
   {
     while (!inputIterator.IsAtEndOfSlice())
     {
-      while(!inputIterator.IsAtEndOfLine())
+      while (!inputIterator.IsAtEndOfLine())
       {
         index = inputIterator.GetIndex();
-        
-        if(index[dir1] != line)
+
+        if (index[dir1] != line)
         {
           line = index[dir1];
           typename InputImageType::PointType tmpIndex;
           inputImage->TransformContinuousIndexToPhysicalPoint(pathIterator.Value(),tmpIndex);
           inputImage->TransformPhysicalPointToIndex(tmpIndex,indexToRemove);
 
-          if(pathIterator!=vertexList->Begin())
+          if (pathIterator!=vertexList->Begin())
           {
             --pathIterator;
           }
-          if(index[dir1] != indexToRemove[dir1])
+          if (index[dir1] != indexToRemove[dir1])
           {
             itkExceptionMacro(<< "Error!!!");
           }
-        } 
+        }
         if (index[dir0] != indexToRemove[dir0])
         {
           outputIterator.Set(inputIterator.Get());
@@ -145,8 +145,8 @@ RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
     inputIterator.NextSlice();
     outputIterator.NextSlice();
   }
-  
-  
+
+
 }
 
 
@@ -163,9 +163,9 @@ RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
 }
 
 template <class TInputImage, class TInputPath,class TOutputImage>
-    void 
-        RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
-  ::GenerateOutputInformation()
+void
+RemoveCarvingPathFilter<TInputImage,TInputPath,TOutputImage>
+::GenerateOutputInformation()
 {
   // call the superclass' implementation of this method
   Superclass::GenerateOutputInformation();
@@ -173,10 +173,10 @@ template <class TInputImage, class TInputPath,class TOutputImage>
   // get pointers to the input and output
   typename Superclass::InputImageConstPointer inputPtr = this->GetInput();
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
-  
+
   unsigned int dir0;
   unsigned int dir1;
-  
+
   if (m_Direction == 0)
   {
     dir0=0;
@@ -187,21 +187,21 @@ template <class TInputImage, class TInputPath,class TOutputImage>
     dir0=1;
     dir1=0;
   }
-  
+
   // we need to compute the output spacing, the output image size, and the
   // output image start index
   const typename TInputImage::SpacingType&
-      inputSpacing = inputPtr->GetSpacing();
+  inputSpacing = inputPtr->GetSpacing();
   const typename TInputImage::SizeType&   inputSize
-      = inputPtr->GetLargestPossibleRegion().GetSize();
+  = inputPtr->GetLargestPossibleRegion().GetSize();
   const typename TInputImage::IndexType&  inputStartIndex
-      = inputPtr->GetLargestPossibleRegion().GetIndex();
+  = inputPtr->GetLargestPossibleRegion().GetIndex();
 
   typename TOutputImage::SpacingType      outputSpacing;
   typename TOutputImage::SizeType         outputSize;
   typename TOutputImage::IndexType        outputStartIndex;
-  
-  for (unsigned int i = 0; i < TOutputImage::ImageDimension; i++)
+
+  for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
   {
     outputSpacing[i] = inputSpacing[i];
     outputSize[i] = (unsigned int) (inputSize[i]);
@@ -209,7 +209,7 @@ template <class TInputImage, class TInputPath,class TOutputImage>
   }
   // we remove one column of the image
   outputSize[dir0] = inputSize[dir0] - 1;
-  
+
 
   outputPtr->SetSpacing( outputSpacing );
 
@@ -225,4 +225,4 @@ template <class TInputImage, class TInputPath,class TOutputImage>
 } // end namespace otb
 
 #endif
- 
+

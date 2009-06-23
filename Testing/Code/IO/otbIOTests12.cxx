@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,17 +22,22 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 
 void RegisterTests()
 {
-REGISTER_TEST(otbOSSIMImageMetaDataReaderTest);
-REGISTER_TEST(otbDEMHandlerNew);
-REGISTER_TEST(otbDEMHandlerTest);
-REGISTER_TEST(otbDEMToImageGeneratorNew);
-REGISTER_TEST(otbDEMToImageGeneratorTest);
-REGISTER_TEST(otbImageGeometryHandlerNew);
-REGISTER_TEST(otbOssimElevManagerTest);
+  REGISTER_TEST(otbOSSIMImageMetaDataReaderTest);
+  REGISTER_TEST(otbDEMHandlerNew);
+  REGISTER_TEST(otbDEMHandlerTest);
+  REGISTER_TEST(otbDEMToImageGeneratorNew);
+  REGISTER_TEST(otbDEMToImageGeneratorTest);
+  REGISTER_TEST(otbImageGeometryHandlerNew);
+  REGISTER_TEST(otbOssimElevManagerTest);
+  REGISTER_TEST(otbOssimElevManagerTest2);
+  REGISTER_TEST(otbDEMToOrthoImageGeneratorNew);
+  REGISTER_TEST(otbDEMToOrthoImageGeneratorTest);
+  REGISTER_TEST(otbPrepareSRTMDirectoryNew);
+  REGISTER_TEST(otbPrepareSRTMDirectoryTest);
 }

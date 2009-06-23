@@ -1,15 +1,15 @@
-
 //*******************************************************************
-// Copyright (C) 2000 ImageLinks Inc. 
 //
-// LICENSE: LGPL
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfFileHeader.h 10552 2007-02-28 20:35:07Z gpotts $
+// $Id: ossimNitfFileHeader.h 14241 2009-04-07 19:59:23Z dburken $
 #ifndef ossimNitfFileHeader_HEADER
 #define ossimNitfFileHeader_HEADER
 
@@ -128,6 +128,8 @@ public:
    virtual ossim_int32 getNumberOfDataExtSegments()const=0;
    virtual ossim_int32 getHeaderSize()const=0;
    
+   void addTag(const ossimNitfTagInformation& tag);
+   virtual void removeTag(const ossimString& tagName);
    virtual bool  getTagInformation(ossimNitfTagInformation& tag,
                                    int idx)const;
 
@@ -171,6 +173,20 @@ public:
    virtual ossimRefPtr<ossimProperty> getProperty(const ossimString& name)const;
    virtual void getPropertyNames(std::vector<ossimString>& propertyNames)const;
 
+   /**
+    * @brief Print method that outputs a key/value type format
+    * adding prefix to keys.
+    */
+   virtual std::ostream& print(std::ostream& out,
+                               const std::string& prefix=std::string()) const;
+   
+   /**
+    * @brief print tags method that outputs a key/value type format adding
+    * prefix to keys.
+    */
+   virtual std::ostream& printTags(
+      std::ostream& out,
+      const std::string& prefix=std::string()) const;
    
 protected:
    std::vector<ossimNitfTagInformation> theTagList;

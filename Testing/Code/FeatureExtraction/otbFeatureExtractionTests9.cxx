@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,15 +22,20 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbImageToSIFTKeyPointSetFilterNew);
-REGISTER_TEST(otbImageToSIFTKeyPointSetFilterDistanceMap);
-REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputImage);
-REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputAscii);
-// This test is only used to make validation image from sift code
-//REGISTER_TEST(otbImageToSIFTKeyPointSetFilterValid);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterNew);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterDistanceMap);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputAscii);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputImage);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputInterestPointAscii);
+  REGISTER_TEST(otbImageToSIFTKeyPointSetFilterOutputDescriptorAscii);
+  REGISTER_TEST(otbImageToHessianDeterminantImageFilterNew);
+  REGISTER_TEST(otbImageToHessianDeterminantImageFilter);
+  REGISTER_TEST(otbImageFittingPolygonListFilter);
+  REGISTER_TEST(otbImageFittingPolygonListFilterNew);
+  REGISTER_TEST(otbSimplePointCountStrategyTest);
 }

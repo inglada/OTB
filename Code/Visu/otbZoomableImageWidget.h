@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,23 +23,26 @@
 namespace otb
 {
 /** \class ZoomableImageWidget
- * \brief Widget for the zoom window in viewer.
+   * \brief <b>DEPRECATED</b>: Widget for the zoom window in viewer.
+ *
+ *  \deprecated use the new Visualization framework instead.
+ * \sa StandardImageViewer
  *
  */
 template <class TPixel>
 class ZoomableImageWidget
-  : public ImageWidgetBase<TPixel>
+      : public ImageWidgetBase<TPixel>
 {
- public:
+public:
   /** Standard class typedefs */
   typedef ZoomableImageWidget Self;
   typedef ImageWidgetBase<TPixel> Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
-  
+
   /** Method for creation through the object factory */
   itkNewMacro(Self);
-  
+
   /** Runtime information */
   itkTypeMacro(ZoomableImageWidget,ImageWidgetBase);
 
@@ -58,8 +61,8 @@ class ZoomableImageWidget
   /** Resize the widget */
   virtual void resize(int x, int y, int w, int h);
 
-  /** 
-   * Set a new zoom factor (>1). 
+  /**
+   * Set a new zoom factor (>1).
    * \param zoomFactor The new zoom factor.
    */
   void SetZoomFactor(double zoomFactor);
@@ -70,17 +73,17 @@ class ZoomableImageWidget
   void SetZoomUpperLeftCorner(IndexType index);
   itkGetMacro(ZoomUpperLeftCorner,IndexType);
 
- protected:
+protected:
   /** Constructor. */
-    ZoomableImageWidget();
-    /** Destructor. */
-    ~ZoomableImageWidget();
+  ZoomableImageWidget();
+  /** Destructor. */
+  ~ZoomableImageWidget();
 
- private:
-    ZoomableImageWidget(const Self&);// purposely not implemented
-    void operator=(const Self&);// purposely not implemented
+private:
+  ZoomableImageWidget(const Self&);// purposely not implemented
+  void operator=(const Self&);// purposely not implemented
 
-    IndexType m_ZoomUpperLeftCorner;
+  IndexType m_ZoomUpperLeftCorner;
 };
 } // end namespace otb
 #ifndef OTB_MANUAL_INSTANTIATION

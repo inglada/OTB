@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToVectorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006-12-09 05:06:19 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2009-01-13 18:32:19 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,22 +14,22 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkImageToVectorImageFilter_h_
-#define __itkImageToVectorImageFilter_h_
+#ifndef __itkImageToVectorImageFilter_h
+#define __itkImageToVectorImageFilter_h
 
 #include "itkImageToImageFilter.h"
 #include "itkVectorContainer.h"
 #include "itkVectorImage.h"
 
-namespace itk{
+namespace itk {
 /** \class ImageToVectorImageFilter 
  * \brief This class takes as input 'n' itk::Image's and composes them into
  * a single itk::VectorImage. 
  *
  * \par Inputs and Usage
  * \code
- *    filter->SetNthInput( 0, image0 );
- *    filter->SetNthInput( 1, image1 );
+ *    filter->SetInput( 0, image0 );
+ *    filter->SetInput( 1, image1 );
  *    ...
  *    filter->Update();
  *    itk::VectorImage< PixelType, dimension >::Pointer = filter->GetOutput();
@@ -52,7 +52,7 @@ public:
   typedef SmartPointer<Self>                        Pointer;
   typedef SmartPointer<const Self>                  ConstPointer;
   itkNewMacro(Self);  
-  itkTypeMacro(Self, ImageToImageFilter);
+  itkTypeMacro(ImageToVectorImageFilter, ImageToImageFilter);
 
   itkStaticConstMacro(Dimension, unsigned int, TInputImage::ImageDimension);
 
@@ -65,8 +65,9 @@ public:
    
   typedef typename Superclass::InputImageRegionType RegionType;
 
-  virtual void SetNthInput(unsigned int idx, const InputImageType *);
-  
+  virtual void SetNthInput(unsigned int idx, const InputImageType * inputImage)
+  { this->SetInput(idx, inputImage); }
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   // Check if the pixeltype is a scalar, (native pixel type).
@@ -75,14 +76,15 @@ public:
 
 protected:
   ImageToVectorImageFilter();
-  ~ImageToVectorImageFilter() {};
-  void PrintSelf(std::ostream& os, Indent indent) const;
 
-  virtual void AllocateOutputs();
+  virtual void GenerateOutputInformation(void);
   virtual void BeforeThreadedGenerateData();
   virtual void ThreadedGenerateData( const RegionType &outputRegionForThread, int);
+  virtual void SetNthInput(unsigned int num, DataObject *input)
+    {
+    Superclass::SetNthInput(num, input);
+    }
 };
-
 }
 
 #ifndef ITK_MANUAL_INSTANTIATION
@@ -90,4 +92,3 @@ protected:
 #endif
 
 #endif
-

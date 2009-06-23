@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,19 +22,23 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbChangeLabelImageFilterNew);
-REGISTER_TEST(otbChangeLabelImageFilterTest);
-REGISTER_TEST(otbContinuousMinimumMaximumImageCalculatorNew);
-REGISTER_TEST(otbContinuousMinimumMaximumImageCalculatorTest);
-REGISTER_TEST(otbMeanShiftImageFilterNew);
-REGISTER_TEST(otbMeanShiftImageFilter);
-REGISTER_TEST(otbMeanShiftVectorImageFilterNew);
-REGISTER_TEST(otbMeanShiftVectorImageFilter);
-REGISTER_TEST(otbFunctionToImageFilterNew);
-REGISTER_TEST(otbFunctionToImageFilter);
+  REGISTER_TEST(otbContinuousMinimumMaximumImageCalculatorNew);
+  REGISTER_TEST(otbContinuousMinimumMaximumImageCalculatorTest);
+  REGISTER_TEST(otbMeanShiftImageFilterNew);
+  REGISTER_TEST(otbMeanShiftImageFilter);
+  REGISTER_TEST(otbMeanShiftVectorImageFilterNew);
+  REGISTER_TEST(otbMeanShiftVectorImageFilter);
+  REGISTER_TEST(otbFunctionToImageFilterNew);
+  REGISTER_TEST(otbFunctionToImageFilter);
+  REGISTER_TEST(otbBinaryImageDensityFunctionNew);
+  REGISTER_TEST(otbBinaryImageDensityFunction);
+  REGISTER_TEST(otbBinaryImageToDensityImageFilterNew);
+  REGISTER_TEST(otbBinaryImageToDensityImageFilter);
+  REGISTER_TEST(otbEdgeDensityImageFilterNew);
+  REGISTER_TEST(otbEdgeDensityImageFilter);
 }

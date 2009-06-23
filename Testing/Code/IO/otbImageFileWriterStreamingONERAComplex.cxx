@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,30 +34,30 @@ int otbImageFileWriterStreamingONERAComplex(int argc, char* argv[])
   const char * inputFilename  = argv[1];
   const char * outputFilename = argv[2];
 
-  typedef std::complex<float>  	                        PixelType;
-  const   unsigned int        	                        Dimension = 2;
+  typedef std::complex<float>                            PixelType;
+  const   unsigned int                                  Dimension = 2;
 
   typedef otb::Image<PixelType,  Dimension >              ImageType;
 
   typedef otb::ImageFileReader< ImageType  >         ReaderType;
   typedef otb::StreamingImageFileWriter< ImageType >          WriterType;
-  /*        typedef itk::StreamingImageFilter< ImageType, 
-	    ImageType >       StreamingType;*/
+  /*        typedef itk::StreamingImageFilter< ImageType,
+      ImageType >       StreamingType;*/
 
-  ReaderType::Pointer complexReader = ReaderType::New(); 
+  ReaderType::Pointer complexReader = ReaderType::New();
   complexReader->SetFileName( inputFilename  );
 
   /*        StreamingType::Pointer streaming = StreamingType::New();
-	    streaming->SetNumberOfStreamDivisions(100);
-	    streaming->SetInput(complexReader->GetOutput());
-  */ 
+      streaming->SetNumberOfStreamDivisions(100);
+      streaming->SetInput(complexReader->GetOutput());
+  */
   WriterType::Pointer complexWriter = WriterType::New();
   complexWriter->SetNumberOfStreamDivisions(100);
   complexWriter->SetFileName( outputFilename  );
   complexWriter->SetInput( complexReader->GetOutput()  );
   complexWriter->Update();
 
-	
+
   return EXIT_SUCCESS;
 }
 

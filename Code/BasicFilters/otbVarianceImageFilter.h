@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,19 +28,19 @@ namespace otb
  * \brief Applies an averaging filter to an image
  *
  * Computes an image where a given pixel is the value over the standard 8, 26, etc. connected
- * neighborhood.  This calculation uses a ZeroFluxNeumannBoundaryCondition.
+ * neighborhood. This calculation uses a ZeroFluxNeumannBoundaryCondition.
  *
  *
  * \sa Image
  * \sa Neighborhood
  * \sa NeighborhoodOperator
  * \sa NeighborhoodIterator
- * 
+ *
  * \ingroup IntensityImageFilters
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT VarianceImageFilter :
-    public itk::ImageToImageFilter< TInputImage, TOutputImage >
+      public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Extract dimension from input and output image. */
@@ -64,12 +64,12 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VarianceImageFilter, ImageToImageFilter);
-  
+
   /** Image typedef support. */
   typedef typename InputImageType::PixelType InputPixelType;
   typedef typename OutputImageType::PixelType OutputPixelType;
   typedef typename itk::NumericTraits<InputPixelType>::RealType InputRealType;
-  
+
   typedef typename InputImageType::RegionType InputImageRegionType;
   typedef typename OutputImageType::RegionType OutputImageRegionType;
 
@@ -80,7 +80,7 @@ public:
 
   /** Get the radius of the neighborhood used to compute the mean */
   itkGetConstReferenceMacro(Radius, InputSizeType);
-  
+
   /** VarianceImageFilter needs a larger input requested region than
    * the output requested region.  As such, VarianceImageFilter needs
    * to provide an implementation for GenerateInputRequestedRegion()
@@ -120,7 +120,7 @@ private:
 
   InputSizeType m_Radius;
 };
-  
+
 } // end namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION

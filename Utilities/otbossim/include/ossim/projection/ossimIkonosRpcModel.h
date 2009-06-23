@@ -1,6 +1,8 @@
 //*******************************************************************
 //
-// License:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 // 
 // AUTHOR: Oscar Kramer
 //
@@ -11,7 +13,7 @@
 // LIMITATIONS: None.
 //
 //*****************************************************************************
-//  $Id: ossimIkonosRpcModel.h 11720 2007-09-12 14:59:30Z gpotts $
+//  $Id: ossimIkonosRpcModel.h 14413 2009-04-27 17:11:12Z dburken $
 
 #ifndef ossimIkonosRpcModel_HEADER
 #define ossimIkonosRpcModel_HEADER
@@ -20,6 +22,7 @@
 #include <ossim/projection/ossimRpcModel.h>
 
 class ossimFilename;
+class ossimIkonosMetaData;
 
 /*!****************************************************************************
  *
@@ -35,8 +38,19 @@ public:
    ossimIkonosRpcModel(const ossimFilename& metadata,
                        const ossimFilename& rpcdata);
 
+   virtual ~ossimIkonosRpcModel();
+
   virtual bool saveState(ossimKeywordlist& kwl,
 			 const char* prefix=0)const;
+
+  /**
+    * @brief loadState
+    * Fulfills ossimObject base-class pure virtuals. Loads and saves geometry
+    * KWL files. Returns true if successful.
+    */
+   virtual bool loadState(const ossimKeywordlist& kwl,
+                          const char* prefix=0);
+  
    /*!
     * STATIC METHOD: writeGeomTemplate(ostream)
     * Writes a template of an ossimIkonosRpcModel geometry file.
@@ -54,6 +68,8 @@ protected:
    bool parseTiffFile(const ossimFilename& filename);
 /*    bool parseNitfFile(const ossimFilename& geom_file); */
    bool parseHdrData(const ossimFilename& data_file);
+
+   ossimIkonosMetaData* theSupportData;
 
    TYPE_DATA
 };

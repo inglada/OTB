@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,13 +36,13 @@ int otbImageToLuminanceImageFilter(int argc, char * argv[])
   typedef otb::ImageFileReader<InputImageType>  ReaderType;
   typedef otb::ImageFileWriter<OutputImageType> WriterType;
   typedef otb::ImageToLuminanceImageFilter<InputImageType,OutputImageType> ImageToLuminanceImageFilterType;
-  typedef ImageToLuminanceImageFilterType::VectorType VectorType; 
+  typedef ImageToLuminanceImageFilterType::VectorType VectorType;
 
   ReaderType::Pointer reader  = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
   reader->SetFileName(inputFileName);
   writer->SetFileName(outputFileName);
-  reader->GenerateOutputInformation();
+  reader->UpdateOutputInformation();
 
   unsigned int nbOfComponent = reader->GetOutput()->GetNumberOfComponentsPerPixel();
 
@@ -52,12 +52,12 @@ int otbImageToLuminanceImageFilter(int argc, char * argv[])
   beta.Fill(0);
 
   for (unsigned int i=0;i<nbOfComponent;i++)
-    {
-      alpha[i] = static_cast<double>(atof(argv[i+3]));
-      beta[i] = static_cast<double>(atof(argv[i+7]));
-    }
+  {
+    alpha[i] = static_cast<double>(atof(argv[i+3]));
+    beta[i] = static_cast<double>(atof(argv[i+7]));
+  }
 
-   
+
 
   // Instantiating object
   ImageToLuminanceImageFilterType::Pointer filter = ImageToLuminanceImageFilterType::New();

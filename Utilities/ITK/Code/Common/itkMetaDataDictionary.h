@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDataDictionary.h,v $
   Language:  C++
-  Date:      $Date: 2007-01-18 15:35:23 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2009-02-05 22:04:15 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,7 +25,7 @@
 namespace itk
 {
 
-/**
+/** \class MetaDataDictionary
  * \author Hans J. Johnson
  * The MetaDataDictionary, along with the MetaDataObject derived template
  * classes, is designed to provide a mechanism for storing a collection of
@@ -46,8 +46,8 @@ public:
   // dictionary. 
   class MetaDataDictionaryMapType 
     : public std::map<std::string, MetaDataObjectBase::Pointer>
-      {
-      };
+    {
+    };
 
   typedef MetaDataDictionaryMapType::iterator       Iterator;
   typedef MetaDataDictionaryMapType::const_iterator ConstIterator;
@@ -63,8 +63,8 @@ public:
   virtual ~MetaDataDictionary();
 
   /** Returns a vector of keys to the key/value entries in the
-    dictionary.  Iterate through the dictionary using these keys.
-    */
+   * dictionary.  Iterate through the dictionary using these keys.
+   */
   std::vector<std::string> GetKeys() const;
 
   // Implement map's api. On some Micorsoft compilers, stl containers
@@ -73,7 +73,7 @@ public:
   // API. The implementation will be in the DLL.
   MetaDataObjectBase::Pointer &operator [](const std::string &);
   const MetaDataObjectBase   * operator [](const std::string &) const;
-  bool HasKey (const std::string &);
+  bool HasKey (const std::string &) const;
 
 
   /** \warning the following functions SHOULD NOT be used with 
@@ -104,4 +104,3 @@ private:
 
 }
 #endif // __itkMetaDataDictionary_h
-

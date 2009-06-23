@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMINC2ImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2008-01-27 12:53:07 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-12-28 08:08:48 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,11 +34,9 @@
 #include "itkMatrix.h"
 
 extern "C" {
-#include <netcdf.h>
-#include <hdf5.h>
 #include <minc2.h>
-
 }
+
 namespace itk
 {
 
@@ -76,14 +74,11 @@ public:
    * file specified. */
   virtual bool CanReadFile(const char*);
   
-  /** Set the spacing and diemention information for the set filename. */
+  /** Set the spacing and dimension information for the set filename. */
   virtual void ReadImageInformation();
   
   /** Reads the data from disk into the memory buffer provided. */
   virtual void Read(void* buffer);
-
-  /** Reads 3D data from multiple files assuming one slice per file. */
-  virtual void ReadVolume(void* buffer);
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
@@ -111,6 +106,7 @@ protected:
 
   void WriteSlice(std::string& fileName, const void* buffer);
 
+  // Num. dimensions in base class (c.f. GetNumberOfDimensions); why keep a second copy here?
   unsigned int m_NDims;
 
   char **m_DimensionName;
@@ -143,6 +139,7 @@ protected:
 private:
   MINC2ImageIO(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
+
   // Description
   // Get slice scaling from local slice scaling
   void SetSliceScalingFromLocalScaling(mihandle_t volume);

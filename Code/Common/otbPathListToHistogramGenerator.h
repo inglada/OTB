@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -26,7 +26,8 @@
 #include "itkVector.h"
 #include "itkDenseFrequencyContainer.h"
 
-namespace otb {
+namespace otb
+{
 
 
 
@@ -39,27 +40,27 @@ namespace otb {
  *  the ListSampleToHistogramGenerator.
  *
  */
-  
- 
+
+
 template< class TPath,class TFunction >
 class PathListToHistogramGenerator : public itk::Object
 {
 public:
   /** Standard typedefs */
-  typedef PathListToHistogramGenerator   Self ;
+  typedef PathListToHistogramGenerator   Self;
   typedef itk::Object                    Superclass;
   typedef itk::SmartPointer<Self>        Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(PathListToHistogramGenerator, itk::Object) ;
+  itkTypeMacro(PathListToHistogramGenerator, itk::Object);
 
   /** standard New() method support */
-  itkNewMacro(Self) ;
+  itkNewMacro(Self);
 
-  typedef TPath                                   	  PathType;
+  typedef TPath                                       PathType;
   typedef typename PathType::Pointer                      PathPointer;
-  typedef std::vector< PathPointer >   		          PathListType;
+  typedef std::vector< PathPointer >                 PathListType;
 
   typedef PathListType *                                  PathListPointer;
   typedef const PathListType *                            PathListConstPointer;
@@ -69,18 +70,18 @@ public:
   typedef typename TFunction::OutputType                  RealType;
 
   typedef RealType                                                 MeasurementType;
-  typedef itk::Vector< MeasurementType ,1 >                        ListSampleVectorType ;
-  typedef itk::Statistics::ListSample< ListSampleVectorType >      ListSampleType ;
+  typedef itk::Vector< MeasurementType ,1 >                        ListSampleVectorType;
+  typedef itk::Statistics::ListSample< ListSampleVectorType >      ListSampleType;
   typedef typename ListSampleType::Pointer                         ListSamplePointer;
   typedef typename ListSampleType::ConstPointer                    ListSampleConstPointer;
-  
+
   typedef itk::Statistics::DenseFrequencyContainer        FrequencyContainerType;
 
 
-  typedef itk::Statistics::ListSampleToHistogramGenerator< 
-                         ListSampleType, 
-			 MeasurementType,
-                         FrequencyContainerType,1>        GeneratorType;
+  typedef itk::Statistics::ListSampleToHistogramGenerator<
+  ListSampleType,
+  MeasurementType,
+  FrequencyContainerType,1>        GeneratorType;
 
 
   typedef typename GeneratorType::Pointer                 GeneratorPointer;
@@ -98,15 +99,15 @@ public:
 
   /** Connects the input PathList for which the histogram is going to be computed */
   void SetInput( PathListPointer path);
-  
+
   /** Return the histogram. o00
-   \warning This output is only valid after the Compute() method has been invoked 
+   \warning This output is only valid after the Compute() method has been invoked
    \sa Compute */
   const HistogramType * GetOutput() const;
-  
+
   /** Set number of histogram bins */
   void SetNumberOfBins( const SizeType & size );
- 
+
   /** Set marginal scale value to be passed to the histogram generator */
   void SetMarginalScale( double marginalScale );
   void SetHistogramMin(const MeasurementVectorType & histogramMin);
@@ -129,7 +130,7 @@ private:
 };
 
 
-} // end of namespace OTB 
+} // end of namespace OTB
 
 #ifndef OTB_MANUAL_INSTANTIATION
 #include "otbPathListToHistogramGenerator.txx"

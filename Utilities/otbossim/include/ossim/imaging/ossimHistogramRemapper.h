@@ -28,7 +28,7 @@
 //   but is provided for convenience.
 //   
 //*************************************************************************
-// $Id: ossimHistogramRemapper.h 12961 2008-06-03 13:20:35Z gpotts $
+// $Id: ossimHistogramRemapper.h 14075 2009-03-08 22:56:29Z gpotts $
 #ifndef ossimHistogramRemapper_HEADER
 #define ossimHistogramRemapper_HEADER
 
@@ -71,11 +71,29 @@ public:
    void reset();
    
    /**
-    * Sets remap mode to mode.
+    * Sets remap mode to mode.  If rebuildTableFlag is true, the table will
+    * be built at this time; else just the dirty flag is set.
+    *
+    * @param mode The stretch mode.
+    * 
+    * @param rebuildTableFlag If the true the table will be rebuilt; else,
+    * just the dirty flag will be set.
     */
-   void setStretchMode(StretchMode mode);
+   void setStretchMode(StretchMode mode, bool rebuildTableFlag=false);
 
-   void setStretchModeAsString(const ossimString& mode);
+   /**
+    * Stretch mode values can be linear_one_piece, linear_1std_from_mean,
+    * linear_2std_from_mean, linear_3std_from_mean, linear_auto_min_max,
+    * If rebuildTableFlag is true, the table will
+    * be built at this time; else just the dirty flag is set.
+    *
+    * @param mode The stretch mode.
+    * 
+    * @param rebuildTableFlag If the true the table will be rebuilt; else,
+    * just the dirty flag will be set.
+    */
+   void setStretchModeAsString(const ossimString& mode,
+                               bool rebuildTableFlag=false);
    
    /**
     * Returns the current enumerated node.
@@ -482,6 +500,10 @@ private:
     */
    void setupTable();
 
+   /**
+    * This set theBypassFlag.  This is an internally used flag to signal that
+    * there is nothing to do in this filter; hence, bypass.
+    */
    void verifyEnabled();
 
    /**
@@ -491,11 +513,16 @@ private:
     */
    ossim_uint32 getHistogramBand(ossim_uint32 input_band) const;
 
+   /**
+    * Sets theBypassFlag.  If the start changes from bypassed to not bypassed
+    * this will set theDirtyFlag to true.
+    */
+   void setBypassFlag(bool flag);
+
 
    StretchMode                   theStretchMode;
    bool                          theDirtyFlag;
    ossimRefPtr<ossimMultiResLevelHistogram>  theHistogram;
-   ossim_uint32                  theTableSizeInBytes;
    vector<ossim_float64>         theNormalizedLowClipPoint;
    vector<ossim_float64>         theNormalizedHighClipPoint;
    vector<ossim_float64>         theMidPoint;
@@ -504,6 +531,9 @@ private:
 
    // Maps zero based band to histogram band.
    vector<ossim_uint32>          theBandList;
+
+   // Internally bypassed flag.
+   bool theBypassFlag;
    
    TYPE_DATA
 };

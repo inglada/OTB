@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 /* Use prototypes in function declarations. */

@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,7 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "itkImageSource.h"
 #include "otbImageList.h"
 
-namespace otb 
+namespace otb
 {
 /** \class ImageListToImageFilter
  *
@@ -33,7 +33,7 @@ namespace otb
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT ImageListToImageFilter
-  : public itk::ImageSource<TOutputImage>
+      : public itk::ImageSource<TOutputImage>
 {
 public:
   /** Standard typedefs */
@@ -70,7 +70,7 @@ protected:
   ImageListToImageFilter();
   /** Destructor */
   virtual ~ImageListToImageFilter() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:

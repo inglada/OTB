@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,20 +36,20 @@
 int otbAssymmetricFusionOfLineDetectorNew( int argc, char * argv[] )
 {
   typedef unsigned char                             InputPixelType;
-  typedef double		   	            OutputPixelType;
-  const   unsigned int        	                    Dimension = 2;
+  typedef double                     OutputPixelType;
+  const   unsigned int                              Dimension = 2;
 
   typedef itk::Image< InputPixelType,  Dimension >  InputImageType;
   typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
   typedef itk::Image< OutputPixelType, Dimension >  OutputImageDirectionType;
 
-  typedef itk::LinearInterpolateImageFunction< InputImageType, double >	InterpolatorType;
-	
+  typedef itk::LinearInterpolateImageFunction< InputImageType, double >  InterpolatorType;
+
   typedef otb::AssymmetricFusionOfLineDetectorImageFilter< InputImageType, OutputImageType, OutputImageDirectionType, InterpolatorType >   FilterType;
-  
+
   FilterType::Pointer FilterAssSymSum = FilterType::New();
 
- 
+
 
   return EXIT_SUCCESS;
 }

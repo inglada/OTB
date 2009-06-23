@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkObjectMorphologyImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006-03-19 04:36:56 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2009-01-14 13:06:25 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -105,8 +105,6 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
     }
 }
 
-
-
 template<class TInputImage, class TOutputImage, class TKernel>
 void
 ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
@@ -126,7 +124,7 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
   oRegIter.GoToBegin();
   while(!oRegIter.IsAtEnd())
     {
-    if(oRegIter.Get()!=m_ObjectValue)
+    if(oRegIter.Get() != m_ObjectValue)
       {
        oRegIter.Set(iRegIter.Get());
       }
@@ -158,7 +156,10 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
     { 
     oSNIter = OutputNeighborhoodIteratorType(m_Kernel.GetRadius(),
                                              this->GetOutput(), *fit);
-    oSNIter.OverrideBoundaryCondition(m_BoundaryCondition);
+    // No need to overwrite on output...and m_BoundaryCondition is 
+    // templated over inputImageType - and cannot be applied to the
+    // output image
+    //oSNIter.OverrideBoundaryCondition(m_BoundaryCondition);
     oSNIter.GoToBegin();
 
     iSNIter = InputNeighborhoodIteratorType(bKernelSize,
@@ -172,7 +173,7 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
         {
         if(this->IsObjectPixelOnBoundary(iSNIter))
           {
-          this->Evaluate(oSNIter, m_Kernel);    
+          this->Evaluate(oSNIter, m_Kernel);
           }
         }
       ++iSNIter;

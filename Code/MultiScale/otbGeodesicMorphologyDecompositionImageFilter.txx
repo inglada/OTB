@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -80,11 +80,11 @@ GeodesicMorphologyDecompositionImageFilter<TInputImage,TOutputImage,TStructuring
   m_ConvexFilter->GraftOutput(this->GetConvexMap());
   m_ConvexFilter->Update();
   this->GraftNthOutput(1,m_ConvexFilter->GetOutput());
-  
+
   m_ConcaveFilter->GraftOutput(this->GetConcaveMap());
   m_ConcaveFilter->Update();
   this->GraftNthOutput(2,m_ConcaveFilter->GetOutput());
-  
+
   m_LevelingFilter->GraftOutput(this->GetOutput());
   m_LevelingFilter->Update();
   this->GraftOutput(m_LevelingFilter->GetOutput());
@@ -99,11 +99,11 @@ GeodesicMorphologyDecompositionImageFilter<TInputImage,TOutputImage,TStructuring
 ::GetConvexMap()
 {
   if (this->GetNumberOfOutputs() < 2)
-    {
-      return 0;
-    }
+  {
+    return 0;
+  }
   return static_cast<OutputImageType * >
-    (this->itk::ProcessObject::GetOutput(1));
+         (this->itk::ProcessObject::GetOutput(1));
 }
 
 /**
@@ -115,11 +115,11 @@ GeodesicMorphologyDecompositionImageFilter<TInputImage,TOutputImage,TStructuring
 ::GetConcaveMap()
 {
   if (this->GetNumberOfOutputs() < 3)
-    {
-      return 0;
-    }
+  {
+    return 0;
+  }
   return static_cast<OutputImageType * >
-    (this->itk::ProcessObject::GetOutput(2));
+         (this->itk::ProcessObject::GetOutput(2));
 }
 
 /**

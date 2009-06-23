@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -37,7 +37,7 @@ int otbImageFileReaderRGBTest(int argc, char* argv[])
 
   typedef itk::RGBPixel<unsigned char>                    InputPixelType;
   typedef itk::RGBPixel<unsigned char>                    OutputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+  const   unsigned int                                  Dimension = 2;
 
   typedef otb::Image< InputPixelType,  Dimension >        InputImageType;
   typedef otb::Image< OutputPixelType, Dimension >        OutputImageType;
@@ -47,14 +47,14 @@ int otbImageFileReaderRGBTest(int argc, char* argv[])
 
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
- 
+
   reader->SetFileName( inputFilename  );
   writer->SetFileName( outputFilename );
-        
-  writer->SetInput( reader->GetOutput() );
-  writer->Update(); 
 
-  
+  writer->SetInput( reader->GetOutput() );
+  writer->Update();
+
+
   return EXIT_SUCCESS;
 }
 

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,20 +22,23 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbScalarImageTextureFunctorNew);
-REGISTER_TEST(otbScalarImageTextureFunctor);
-REGISTER_TEST(otbScalarVectorImageTextureFunctorNew);
-REGISTER_TEST(otbScalarVectorImageTextureFunctor);
-REGISTER_TEST(otbGaborFilterGeneratorNew);
-REGISTER_TEST(otbGaborFilterGenerator);
+  REGISTER_TEST(otbScalarImageTextureFunctorNew);
+  REGISTER_TEST(otbScalarImageTextureFunctor);
+  REGISTER_TEST(otbScalarVectorImageTextureFunctorNew);
+  REGISTER_TEST(otbScalarVectorImageTextureFunctor);
+  REGISTER_TEST(otbGaborFilterGeneratorNew);
+  REGISTER_TEST(otbGaborFilterGenerator);
 #if defined(USE_FFTWD)
-REGISTER_TEST(otbOverlapSaveConvolutionImageFilterNew);
-REGISTER_TEST(otbOverlapSaveConvolutionImageFilter);
-REGISTER_TEST(otbCompareOverlapSaveAndClassicalConvolutionWithGaborFilter);
+  REGISTER_TEST(otbOverlapSaveConvolutionImageFilterNew);
+  REGISTER_TEST(otbOverlapSaveConvolutionImageFilter);
+  REGISTER_TEST(otbCompareOverlapSaveAndClassicalConvolutionWithGaborFilter);
 #endif
+  REGISTER_TEST(otbPolygonCompacityFunctor);
+  REGISTER_TEST(otbPersistentVectorizationFilterNew);
+  REGISTER_TEST(otbPersistentVectorizationFilter);
 }

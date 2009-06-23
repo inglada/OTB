@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,7 +31,7 @@ template <class TPointSet, class TDeformationField>
 PointSetWithTransformToDeformationFieldGenerator<TPointSet, TDeformationField>
 ::PointSetWithTransformToDeformationFieldGenerator()
 {
- m_Transform = 0;    // has to be provided by the user
+  m_Transform = 0;    // has to be provided by the user
 }
 /**
  * PrintSelf Method

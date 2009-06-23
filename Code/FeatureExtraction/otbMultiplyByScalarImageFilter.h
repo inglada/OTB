@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,25 +22,29 @@
 
 namespace otb
 {
-  
+
 /** \class MultiplyByScalarImageFilter
- * 
+ *
  */
 
-namespace Functor {  
-  
+namespace Functor
+{
+
 template< class TInput, class TOutput >
 class MultiplyByScalar
 {
 public:
-  MultiplyByScalar() {m_Coef = 1.0;}
+  MultiplyByScalar()
+  {
+    m_Coef = 1.0;
+  }
   ~MultiplyByScalar() {};
   inline TOutput operator()( const TInput & value )
   {
     TOutput result;
-       
+
     result = static_cast<TOutput>( m_Coef * value );
-    
+
     return result;
   }
 
@@ -50,46 +54,46 @@ public:
   }
   double GetCoef(void)const
   {
-  	return (  m_Coef ); 
+    return (  m_Coef );
   }
 
 private:
-  double  m_Coef;  
-}; 
+  double  m_Coef;
+};
 }
 
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT MultiplyByScalarImageFilter :
-    public itk::UnaryFunctorImageFilter<
-            TInputImage,TOutputImage,
-            Functor::MultiplyByScalar<
-                   ITK_TYPENAME TInputImage::PixelType, 
-		   ITK_TYPENAME TOutputImage::PixelType>   >
+      public itk::UnaryFunctorImageFilter<
+      TInputImage,TOutputImage,
+      Functor::MultiplyByScalar<
+      ITK_TYPENAME TInputImage::PixelType,
+      ITK_TYPENAME TOutputImage::PixelType>   >
 {
 public:
   /** Standard class typedefs. */
   typedef MultiplyByScalarImageFilter                                      Self;
   typedef typename itk::UnaryFunctorImageFilter<
-                             TInputImage,
-		             TOutputImage, 
-                             Functor::MultiplyByScalar< 
-				       ITK_TYPENAME TInputImage::PixelType, 
-		                       ITK_TYPENAME TOutputImage::PixelType> > Superclass;
+  TInputImage,
+  TOutputImage,
+  Functor::MultiplyByScalar<
+  ITK_TYPENAME TInputImage::PixelType,
+  ITK_TYPENAME TOutputImage::PixelType> > Superclass;
   typedef itk::SmartPointer<Self>        Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  
+
   void SetCoef(double Coef)
   {
-	this->GetFunctor().SetCoef( Coef );
-	this->Modified();
-  }  
+    this->GetFunctor().SetCoef( Coef );
+    this->Modified();
+  }
   double GetCoef(void)const
   {
-	return( this->GetFunctor().GetCoef() );
-  }  
+    return( this->GetFunctor().GetCoef() );
+  }
 protected:
   MultiplyByScalarImageFilter() {}
   virtual ~MultiplyByScalarImageFilter() {}
@@ -98,7 +102,7 @@ private:
   MultiplyByScalarImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-  
+
 };
 
 } // end namespace otb

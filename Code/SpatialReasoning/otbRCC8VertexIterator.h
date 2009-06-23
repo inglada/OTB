@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,9 +27,9 @@ namespace otb
  * \brief Iterates on the graph vertices
  */
 template <class TGraph>
-class ITK_EXPORT RCC8VertexIterator 
+class ITK_EXPORT RCC8VertexIterator
 {
- public:
+public:
   /** self typedef */
   typedef RCC8VertexIterator Self;
 
@@ -41,14 +41,14 @@ class ITK_EXPORT RCC8VertexIterator
   typedef typename GraphType::VertexDescriptorType VertexDescriptorType;
   /** typedef of the internal iterator */
   typedef typename boost::graph_traits<InternalGraphType>::vertex_iterator InternalIteratorType;
-/** Typedef of the index map */
+  /** Typedef of the index map */
   typedef typename boost::property_map<InternalGraphType, boost::vertex_index_t>::type IndexMapType;
   /** Constructor */
-  RCC8VertexIterator();  
-   /** Copy constructor */
-   RCC8VertexIterator(const Self& iter);
-   /**  Constructor with input graph */
-   RCC8VertexIterator(TGraph * graph);
+  RCC8VertexIterator();
+  /** Copy constructor */
+  RCC8VertexIterator(const Self& iter);
+  /**  Constructor with input graph */
+  RCC8VertexIterator(TGraph * graph);
   /**
    * Get the current vertex.
    * \return The current vertex pointed by the iterator.
@@ -64,15 +64,15 @@ class ITK_EXPORT RCC8VertexIterator
    * \return The current vertex index.
    */
   VertexDescriptorType GetIndex(void);
-   /** 
-    * Return true if the iterator is at the end.
-    * \return True if the iterator is at the end.
-    */
-   bool IsAtEnd(void);
-   /**
-    * Go to the beginning.
-    */
-   void GoToBegin(void);
+  /**
+   * Return true if the iterator is at the end.
+   * \return True if the iterator is at the end.
+   */
+  bool IsAtEnd(void);
+  /**
+   * Go to the beginning.
+   */
+  void GoToBegin(void);
   /**
    * Increment.
    */
@@ -102,7 +102,7 @@ class ITK_EXPORT RCC8VertexIterator
    * Instantiation operator.
    */
   Self& operator=(const Self& it);
- private:
+private:
   // End
   InternalIteratorType m_End;
   // Internal iterator.

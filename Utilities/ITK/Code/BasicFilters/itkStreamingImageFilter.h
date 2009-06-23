@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStreamingImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006-03-23 15:24:22 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2009-02-04 16:34:11 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,10 +45,10 @@ class ITK_EXPORT StreamingImageFilter : public ImageToImageFilter<TInputImage, T
 {
 public:
   /** Standard class typedefs. */
-  typedef StreamingImageFilter  Self;
+  typedef StreamingImageFilter                           Self;
   typedef ImageToImageFilter<TInputImage, TOutputImage>  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>                             Pointer;
+  typedef SmartPointer<const Self>                       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -57,14 +57,15 @@ public:
   itkTypeMacro(StreamingImageFilter,ImageToImageFilter);
 
   /** Some typedefs for the input and output. */
-  typedef TInputImage InputImageType;
-  typedef typename InputImageType::Pointer InputImagePointer;
+  typedef TInputImage                         InputImageType;
+  typedef typename InputImageType::Pointer    InputImagePointer;
   typedef typename InputImageType::RegionType InputImageRegionType; 
-  typedef typename InputImageType::PixelType InputImagePixelType; 
-  typedef TOutputImage OutputImageType;
-  typedef typename OutputImageType::Pointer OutputImagePointer;
-  typedef typename OutputImageType::RegionType OutputImageRegionType; 
-  typedef typename OutputImageType::PixelType OutputImagePixelType; 
+  typedef typename InputImageType::PixelType  InputImagePixelType; 
+
+  typedef TOutputImage                           OutputImageType;
+  typedef typename OutputImageType::Pointer      OutputImagePointer;
+  typedef typename OutputImageType::RegionType   OutputImageRegionType; 
+  typedef typename OutputImageType::PixelType    OutputImagePixelType; 
   typedef typename Superclass::DataObjectPointer DataObjectPointer;
 
   /** Dimension of input image. */
@@ -98,6 +99,13 @@ public:
    * in UpdateOutputData() since it must update a little, execute a little,
    * update some more, execute some more, etc. */
   virtual void UpdateOutputData(DataObject *output);
+  
+  /** Override PropagateRequestedRegion from ProcessObject
+   *  Since inside UpdateOutputData we iterate over streaming pieces
+   *  we don't need to proapage up the pipeline
+   */
+  virtual void PropagateRequestedRegion(DataObject *output);
+
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
@@ -117,7 +125,7 @@ private:
   StreamingImageFilter(const StreamingImageFilter&); //purposely not implemented
   void operator=(const StreamingImageFilter&); //purposely not implemented
 
-  unsigned int m_NumberOfStreamDivisions;
+  unsigned int          m_NumberOfStreamDivisions;
   RegionSplitterPointer m_RegionSplitter;
 };
 

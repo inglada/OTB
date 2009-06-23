@@ -25,17 +25,46 @@
 
 void RegisterTests()
 {
-REGISTER_TEST(LeeImageFilterTest);
-REGISTER_TEST(DEMToRainbowExampleTest);
+  REGISTER_TEST(LeeImageFilterTest);
+  REGISTER_TEST(FrostImageFilterTest);
+  REGISTER_TEST(DEMToRainbowExampleTest);
+  REGISTER_TEST(ScalingFilterExampleTest);
+  REGISTER_TEST(PrintableImageFilterExample1Test);
+  REGISTER_TEST(PrintableImageFilterExample2Test);
+  REGISTER_TEST(IndexedToRGBExampleTest);
+  REGISTER_TEST(MeanShiftVectorImageFilterExampleTest);
 }
 
 #undef main
 #define main LeeImageFilterTest
 #include "LeeImageFilter.cxx"
-             
+
+#undef main
+#define main FrostImageFilterTest
+#include "FrostImageFilter.cxx"
+
 #undef main
 #define main DEMToRainbowExampleTest
 #include "DEMToRainbowExample.cxx"
-             
-             
+
+
+#undef main
+#define main ScalingFilterExampleTest
+#include "ScalingFilterExample.cxx"
+
+#undef main
+#define main PrintableImageFilterExample1Test
+#include "PrintableImageFilterExample.cxx"
+
+#undef main
+#define main PrintableImageFilterExample2Test
+#include "PrintableImageFilterExample.cxx"
+
+#undef main
+#define main IndexedToRGBExampleTest
+#include "IndexedToRGBExample.cxx"
+
+#undef main
+#define main MeanShiftVectorImageFilterExampleTest
+#include "MeanShiftVectorImageFilterExample.cxx"
 

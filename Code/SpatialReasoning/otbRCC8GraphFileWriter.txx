@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -49,7 +49,7 @@ RCC8GraphFileWriter<TInputGraph>
  * \param inputGraph The graph to write.
  */
 template <class TInputGraph>
-void 
+void
 RCC8GraphFileWriter<TInputGraph>
 ::SetInput(const InputGraphType * graph)
 {
@@ -61,7 +61,7 @@ RCC8GraphFileWriter<TInputGraph>
  */
 template <class TInputGraph>
 typename RCC8GraphFileWriter<TInputGraph>
-::InputGraphPointerType 
+::InputGraphPointerType
 RCC8GraphFileWriter<TInputGraph>
 ::GetInput(void)
 {
@@ -93,35 +93,36 @@ RCC8GraphFileWriter<TInputGraph>
 
   // Make sure input is available
   if ( input == 0 )
-    {
+  {
     itkExceptionMacro(<< "No input to writer!");
-    }
+  }
 
   // Make sure that we can write the file given the name
   //
   if ( m_FileName == "" )
-    {
+  {
     itkExceptionMacro(<<"No filename was specified");
-    }
+  }
 
-  if(input->GetSource())
-    {
-      input->GetSource()->UpdateOutputData(input);
-    }
+  // Pipeline updating sequence
+  input->UpdateOutputInformation();
+  input->PropagateRequestedRegion();
+  input->UpdateOutputData();
+  // GenerateData (actually write file)
   this->GenerateData();
 }
 /**
  * Main computation method.
  */
 template <class TInputGraph>
-void 
+void
 RCC8GraphFileWriter<TInputGraph>
 ::GenerateData()
-{ 
+{
   otbMsgDevMacro(<<"RCC8GraphFileWriter: GenerateData call");
   // input graph pointer
   InputGraphPointerType input = this->GetInput();
-  
+
   // iterators typedefs
   typedef otb::RCC8VertexIterator<InputGraphType> VertexIteratorType;
   typedef otb::RCC8EdgeIterator<InputGraphType> EdgeIteratorType;
@@ -133,35 +134,35 @@ RCC8GraphFileWriter<TInputGraph>
   out.open(m_FileName.c_str(), std::ios::out);
 
   // Test if the file has been opened correctly
-  if(!out)
-    {
-      RCC8GraphFileWriterException e(__FILE__, __LINE__);
-      itk::OStringStream msg;
-      msg << " Could not create IO object for file ";
-      msg<<m_FileName<<"."<<std::endl;
-      e.SetDescription(msg.str().c_str());
-      throw e;
-      return;
-    }
-  
+  if (!out)
+  {
+    RCC8GraphFileWriterException e(__FILE__, __LINE__);
+    itk::OStringStream msg;
+    msg << " Could not create IO object for file ";
+    msg<<m_FileName<<"."<<std::endl;
+    e.SetDescription(msg.str().c_str());
+    throw e;
+    return;
+  }
+
   // Start writing the graph to file
   out<<"digraph G {"<<std::endl;
 
   // For each vertex in the graph
   VertexIteratorType vIt(input);
-  for(vIt.GoToBegin();!vIt.IsAtEnd();++vIt)
-    {
-      this->WriteVertex(out,vIt.GetIndex(),vIt.Get());
-    }
+  for (vIt.GoToBegin();!vIt.IsAtEnd();++vIt)
+  {
+    this->WriteVertex(out,vIt.GetIndex(),vIt.Get());
+  }
 
   // For each edge in the graph
   EdgeIteratorType eIt(input);
-  for(eIt.GoToBegin();!eIt.IsAtEnd();++eIt)
-    {
-      this->WriteEdge(out, eIt.GetSourceIndex(),
-		      eIt.GetTargetIndex(),
-		      eIt.GetValue());
-    }
+  for (eIt.GoToBegin();!eIt.IsAtEnd();++eIt)
+  {
+    this->WriteEdge(out, eIt.GetSourceIndex(),
+                    eIt.GetTargetIndex(),
+                    eIt.GetValue());
+  }
 
   // Ends the graph writing
   out<<"}"<<std::endl;
@@ -176,11 +177,11 @@ RCC8GraphFileWriter<TInputGraph>
  * \param target The index of the target vertex.
  * \param value  The value of the edge.
  */
- template <class TInputGraph>
+template <class TInputGraph>
 void
 RCC8GraphFileWriter<TInputGraph>
 ::WriteEdge(std::ofstream& of,VertexDescriptorType source,
-		 VertexDescriptorType target, RCC8ValueType value)
+            VertexDescriptorType target, RCC8ValueType value)
 {
   otbMsgDevMacro(<<"RCC8GraphFileWriter: WriteEdge call: "<<source<<" "<<target<<" "<<value);
   of<<source<<" -> "<<target<<" ";
@@ -197,7 +198,7 @@ template <class TInputGraph>
 void
 RCC8GraphFileWriter<TInputGraph>
 ::WriteVertex(std::ofstream& of, VertexDescriptorType index,
-		   VertexPointerType vertex)
+              VertexPointerType vertex)
 {
   typedef typename VertexType::AttributesMapType AttributesMapType;
   typedef typename AttributesMapType::iterator IteratorType;
@@ -205,20 +206,20 @@ RCC8GraphFileWriter<TInputGraph>
   otbMsgDevMacro(<<"RCC8GraphFileWriter: WriteVertex call: "<<index);
   of<<index<<" [";
   IteratorType it = attr.begin();
-  while(it!=attr.end())
+  while (it!=attr.end())
+  {
+    of<<(*it).first<<"=\"";
+    of<<(*it).second<<"\"";
+    ++it;
+    if (it==attr.end())
     {
-      of<<(*it).first<<"=\"";
-      of<<(*it).second<<"\"";
-      ++it;
-      if(it==attr.end())
-	{
-	  of<<"];"<<std::endl;
-	}
-      else
-	{
-	  of<<",";
-	} 
+      of<<"];"<<std::endl;
     }
+    else
+    {
+      of<<",";
+    }
+  }
 }
 /**
  * PrintSelf method

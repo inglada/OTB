@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -40,7 +40,7 @@
 // estimation algorithms of the two parameters. If we want more robust
 // estimation algorithm, we can replace these estimation algorithms with more
 // alternatives without changing other components in the classifier system.
-// 
+//
 // It is a bad idea to use the same sample for test and training
 // (parameter estimation) of the parameters. However, for simplicity, in
 // this example, we use a sample for test and training.
@@ -56,9 +56,9 @@
 // We use the \subdoxygen{itk}{Statistics}{ListSample} as the sample (test
 // and training). The \doxygen{itk}{Vector} is our measurement vector
 // class. To store measurement vectors into two separate sample
-// containers, we use the \subdoxygen{itk}{Statistics}{Subsample} objects. 
+// containers, we use the \subdoxygen{itk}{Statistics}{Subsample} objects.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
 #include "itkVector.h"
@@ -81,7 +81,7 @@
 //
 // The following files define the components required by ITK statistical
 // classification framework: the decision rule, the membership
-// function, and the classifier. 
+// function, and the classifier.
 //
 // Software Guide : EndLatex
 
@@ -93,7 +93,7 @@
 
 // Software Guide : BeginLatex
 //
-// We will fill the sample with random variables from two normal 
+// We will fill the sample with random variables from two normal
 // distribution using the \subdoxygen{itk}{Statistics}{NormalVariateGenerator}.
 //
 // Software Guide : EndLatex
@@ -109,7 +109,7 @@ int main( int,  char *[])
   // Since the NormalVariateGenerator class only supports 1-D, we define our
   // measurement vector type as a one component vector. We then, create a
   // ListSample object for data inputs.
-  // 
+  //
   // We also create two Subsample objects that will store
   // the measurement vectors in \code{sample} into two separate
   // sample containers. Each Subsample object stores only the
@@ -123,15 +123,15 @@ int main( int,  char *[])
   typedef itk::Statistics::ListSample< MeasurementVectorType > SampleType;
   SampleType::Pointer sample = SampleType::New();
   sample->SetMeasurementVectorSize( 1 ); // length of measurement vectors
-                                         // in the sample.
+  // in the sample.
 
   typedef itk::Statistics::Subsample< SampleType > ClassSampleType;
   std::vector< ClassSampleType::Pointer > classSamples;
-  for ( unsigned int i = 0 ; i < 2 ; ++i )
-    {
+  for ( unsigned int i = 0; i < 2; ++i )
+  {
     classSamples.push_back( ClassSampleType::New() );
     classSamples[i]->SetSample( sample );
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -163,24 +163,24 @@ int main( int,  char *[])
   double mean = 100;
   double standardDeviation = 30;
   SampleType::InstanceIdentifier id = 0UL;
-  for ( unsigned int i = 0 ; i < 100 ; ++i )
-    {
+  for ( unsigned int i = 0; i < 100; ++i )
+  {
     mv.Fill( (normalGenerator->GetVariate() * standardDeviation ) + mean);
     sample->PushBack( mv );
     classSamples[0]->AddInstance( id );
     ++id;
-    }
+  }
 
   normalGenerator->Initialize( 3024 );
   mean = 200;
   standardDeviation = 30;
-  for ( unsigned int i = 0 ; i < 100 ; ++i )
-    {
+  for ( unsigned int i = 0; i < 100; ++i )
+  {
     mv.Fill( (normalGenerator->GetVariate() * standardDeviation ) + mean);
     sample->PushBack( mv );
     classSamples[1]->AddInstance( id );
     ++id;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -196,22 +196,22 @@ int main( int,  char *[])
   // Software Guide : BeginCodeSnippet
   typedef itk::Statistics::MeanCalculator< ClassSampleType > MeanEstimatorType;
   typedef itk::Statistics::CovarianceCalculator< ClassSampleType >
-    CovarianceEstimatorType;
-  
+  CovarianceEstimatorType;
+
   std::vector< MeanEstimatorType::Pointer > meanEstimators;
   std::vector< CovarianceEstimatorType::Pointer > covarianceEstimators;
 
-  for ( unsigned int i = 0 ; i < 2 ; ++i )
-    {
+  for ( unsigned int i = 0; i < 2; ++i )
+  {
     meanEstimators.push_back( MeanEstimatorType::New() );
     meanEstimators[i]->SetInputSample( classSamples[i] );
     meanEstimators[i]->Update();
-    
+
     covarianceEstimators.push_back( CovarianceEstimatorType::New() );
     covarianceEstimators[i]->SetInputSample( classSamples[i] );
     covarianceEstimators[i]->SetMean( meanEstimators[i]->GetOutput() );
     covarianceEstimators[i]->Update();
-    }
+  }
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -221,28 +221,28 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  for ( unsigned int i = 0 ; i < 2 ; ++i )
-    {
+  for ( unsigned int i = 0; i < 2; ++i )
+  {
     std::cout << "class[" << i << "] " << std::endl;
-    std::cout << "    estimated mean : " 
-              << *(meanEstimators[i]->GetOutput()) 
-              << "    covariance matrix : " 
+    std::cout << "    estimated mean : "
+              << *(meanEstimators[i]->GetOutput())
+              << "    covariance matrix : "
               << *(covarianceEstimators[i]->GetOutput()) << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
-  
+
   // Software Guide : BeginLatex
   //
   // After creating a SampleClassifier object and a
   // MaximumRatioDecisionRule object, we plug in the
   // \code{decisionRule} and the \code{sample} to the classifier. Then,
   // we specify the number of classes that will be considered using
-  // the \code{SetNumberOfClasses()} method. 
+  // the \code{SetNumberOfClasses()} method.
   //
   // The MaximumRatioDecisionRule requires a vector of \emph{a
   // priori} probability values. Such \emph{a priori} probability will
   // be the $P(\omega_{i})$ of the following variation of the Bayes
-  // decision rule: 
+  // decision rule:
   // \begin{equation}
   //   \textrm{Decide } \omega_{i} \textrm{ if }
   //   \frac{p(\overrightarrow{x}|\omega_{i})}
@@ -250,7 +250,7 @@ int main( int,  char *[])
   // > \frac{P(\omega_{j})}{P(\omega_{i})} \textrm{ for all } j \not= i
   //   \label{eq:bayes2}
   // \end{equation}
-  // 
+  //
   // The remainder of the code snippet shows how to use user-specified class
   // labels. The classification result will be stored in a
   // MembershipSample object, and for each measurement vector, its
@@ -260,16 +260,16 @@ int main( int,  char *[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef itk::Statistics::GaussianDensityFunction< MeasurementVectorType > 
-    MembershipFunctionType;
+  typedef itk::Statistics::GaussianDensityFunction< MeasurementVectorType >
+  MembershipFunctionType;
   typedef itk::MaximumRatioDecisionRule DecisionRuleType;
   DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
 
   DecisionRuleType::APrioriVectorType aPrioris;
-  aPrioris.push_back( classSamples[0]->GetTotalFrequency() 
-                      / sample->GetTotalFrequency() ) ; 
-  aPrioris.push_back( classSamples[1]->GetTotalFrequency() 
-                      / sample->GetTotalFrequency() ) ; 
+  aPrioris.push_back( classSamples[0]->GetTotalFrequency()
+                      / sample->GetTotalFrequency() );
+  aPrioris.push_back( classSamples[1]->GetTotalFrequency()
+                      / sample->GetTotalFrequency() );
   decisionRule->SetAPriori( aPrioris );
 
   typedef itk::Statistics::SampleClassifier< SampleType > ClassifierType;
@@ -298,19 +298,19 @@ int main( int,  char *[])
   // plug-in two distance functions, we call the
   // \code{AddMembershipFunction()} method. Then invocation of the
   // \code{Update()} method will perform the classification.
-  // 
+  //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   std::vector< MembershipFunctionType::Pointer > membershipFunctions;
-  for ( unsigned int i = 0 ; i < 2 ; i++ ) 
-    {
+  for ( unsigned int i = 0; i < 2; i++ )
+  {
     membershipFunctions.push_back(MembershipFunctionType::New());
     membershipFunctions[i]->SetMean( meanEstimators[i]->GetOutput() );
     membershipFunctions[i]->
-      SetCovariance( covarianceEstimators[i]->GetOutput() );
+    SetCovariance( covarianceEstimators[i]->GetOutput() );
     classifier->AddMembershipFunction(membershipFunctions[i].GetPointer());
-    }
+  }
 
   classifier->Update();
   // Software Guide : EndCodeSnippet
@@ -327,14 +327,14 @@ int main( int,  char *[])
   ClassifierType::OutputType::ConstIterator iter = membershipSample->Begin();
 
   while ( iter != membershipSample->End() )
-    {
+  {
     std::cout << "measurement vector = " << iter.GetMeasurementVector()
               << "class label = " << iter.GetClassLabel() << std::endl;
     ++iter;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

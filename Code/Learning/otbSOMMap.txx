@@ -9,12 +9,12 @@ Version:   $Revision$
 Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
-Copyright (c) Institut Telecom ; Telecom Bretagne. All right reserved.
+Copyright (c) Institut Telecom; Telecom Bretagne. All right reserved.
 See GETCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,14 +28,14 @@ namespace otb
 /**
  * Constructor
  */
-template <class TNeuron, class TDistance,unsigned int VMapDimension>  
+template <class TNeuron, class TDistance,unsigned int VMapDimension>
 SOMMap<TNeuron,TDistance,VMapDimension>
 ::SOMMap()
 {}
 /**
  * Destructor
  */
-template <class TNeuron, class TDistance,unsigned int VMapDimension>  
+template <class TNeuron, class TDistance,unsigned int VMapDimension>
 SOMMap<TNeuron,TDistance,VMapDimension>
 ::~SOMMap()
 {}
@@ -44,9 +44,9 @@ SOMMap<TNeuron,TDistance,VMapDimension>
  * \param the sample.
  * \return The index of the winning neuron.
  */
-template <class TNeuron,class TDistance, unsigned int VMapDimension>  
+template <class TNeuron,class TDistance, unsigned int VMapDimension>
 typename SOMMap<TNeuron,TDistance,VMapDimension>
-:: IndexType 
+:: IndexType
 SOMMap<TNeuron,TDistance,VMapDimension>
 ::GetWinner(const NeuronType& sample)
 {
@@ -56,25 +56,25 @@ SOMMap<TNeuron,TDistance,VMapDimension>
   // Define the euclidean distance used to compute the neural response
   DistancePointerType activation = DistanceType::New();
 
-  // Define the iterator used to walk through the map  
+  // Define the iterator used to walk through the map
   IteratorType it(this,this->GetLargestPossibleRegion());
   it.GoToBegin();
-  
+
   // Define the minimum distance and position
   IndexType minPos = it.GetIndex();
 
   double minDistance = activation->Evaluate(sample,it.Get());
- 
+
   // Iterate through the map to get the minimum distance position
-  for(;!it.IsAtEnd();++it)
+  for (;!it.IsAtEnd();++it)
+  {
+    double tempDistance = activation->Evaluate(sample,it.Get());
+    if (tempDistance<=minDistance)
     {
-      double tempDistance = activation->Evaluate(sample,it.Get());
-      if(tempDistance<=minDistance)
-	{
-	  minDistance = tempDistance;
-	  minPos = it.GetIndex();
-	}
+      minDistance = tempDistance;
+      minPos = it.GetIndex();
     }
+  }
   // Return the index of the winner
   return minPos;
 }

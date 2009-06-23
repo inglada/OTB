@@ -25,12 +25,14 @@
 
 void RegisterTests()
 {
-REGISTER_TEST(ExtractRoadByStepsExampleTest);
-REGISTER_TEST(ExtractRoadExampleTest);
-REGISTER_TEST(SeamCarvingExampleTest);
-REGISTER_TEST(SeamCarvingOtherExampleTest);
-//REGISTER_TEST(ImageToSIFTKeyPointSetFilterTest);
-REGISTER_TEST(ScaleInvariantFeatureImageFilterTest);
+  REGISTER_TEST(ExtractRoadByStepsExampleTest);
+  REGISTER_TEST(ExtractRoadExampleTest);
+  REGISTER_TEST(SeamCarvingExampleTest);
+  REGISTER_TEST(SeamCarvingOtherExampleTest);
+  //REGISTER_TEST(ImageToSIFTKeyPointSetFilterTest);
+  REGISTER_TEST(ScaleInvariantFeatureImageFilterTest);
+  REGISTER_TEST(CloudDetectionExampleTest);
+  REGISTER_TEST( RightAngleDetectionExample);
 }
 
 #undef main
@@ -56,3 +58,11 @@ REGISTER_TEST(ScaleInvariantFeatureImageFilterTest);
 #undef main
 #define main ScaleInvariantFeatureImageFilterTest
 #include "ScaleInvariantFeatureImageFilter.cxx"
+
+#undef main
+#define main CloudDetectionExampleTest
+#include "CloudDetectionExample.cxx"
+
+#undef main
+#define main RightAngleDetectionExample
+#include "RightAngleDetectionExample.cxx"

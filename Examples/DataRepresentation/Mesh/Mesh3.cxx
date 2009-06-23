@@ -13,8 +13,8 @@
   for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,16 +33,16 @@
 //
 //  \index{itk::Mesh!Cell data}
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
-  //  Software Guide : BeginLatex
-  //
-  //  Consider the example of a mesh containing lines on which values are
-  //  associated with each line. The mesh and cell header files should be
-  //  included first.
-  //
-  //  Software Guide : EndLatex 
+//  Software Guide : BeginLatex
+//
+//  Consider the example of a mesh containing lines on which values are
+//  associated with each line. The mesh and cell header files should be
+//  included first.
+//
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
@@ -54,13 +54,13 @@
 int main(int, char *[])
 {
   //  Software Guide : BeginLatex
-  //  
-  //  Then the PixelType is defined and the mesh type is instantiated with it. 
+  //
+  //  Then the PixelType is defined and the mesh type is instantiated with it.
   //
   //  \index{itk::Mesh!Instantiation}
   //  \index{itk::Mesh!PixelType}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef float                             PixelType;
@@ -71,11 +71,11 @@ int main(int, char *[])
   //  Software Guide : BeginLatex
   //
   //  The \doxygen{itk}{LineCell} type can now be instantiated using the traits
-  //  taken from the Mesh.  
+  //  taken from the Mesh.
   //
   //  \index{itk::LineCell!Instantiation}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef MeshType::CellType                CellType;
@@ -94,7 +94,7 @@ int main(int, char *[])
   //  \index{itk::Mesh!PointType}
   //  \index{itk::Mesh!Pointer}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   MeshType::Pointer  mesh = MeshType::New();
@@ -103,12 +103,12 @@ int main(int, char *[])
   PointType point;
 
   const unsigned int numberOfPoints = 10;
-  for(unsigned int id=0; id<numberOfPoints; id++) 
-    {
+  for (unsigned int id=0; id<numberOfPoints; id++)
+  {
     point[0] = static_cast<PointType::ValueType>( id ); // x
     point[1] = log( static_cast<double>( id ) );        // y
     mesh->SetPoint( id, point );
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -124,18 +124,18 @@ int main(int, char *[])
   //  \index{CellType!creation}
   //  \index{itk::Mesh!SetCell()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   CellType::CellAutoPointer line;
   const unsigned int numberOfCells = numberOfPoints-1;
-  for(unsigned int cellId=0; cellId<numberOfCells; cellId++)
-    {
+  for (unsigned int cellId=0; cellId<numberOfCells; cellId++)
+  {
     line.TakeOwnership(  new LineType  );
-    line->SetPointId( 0, cellId   ); // first point 
+    line->SetPointId( 0, cellId   ); // first point
     line->SetPointId( 1, cellId+1 ); // second point
-    mesh->SetCell( cellId, line );   // insert the cell 
-    }
+    mesh->SetCell( cellId, line );   // insert the cell
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -152,13 +152,13 @@ int main(int, char *[])
   //  identifier is used as cell data. Note the use of \code{static\_cast} to
   //  \code{PixelType} in the assignment.
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  for(unsigned int cellId=0; cellId<numberOfCells; cellId++)
-    {
-    mesh->SetCellData( cellId, static_cast<PixelType>( cellId * cellId ) );  
-    }
+  for (unsigned int cellId=0; cellId<numberOfCells; cellId++)
+  {
+    mesh->SetCellData( cellId, static_cast<PixelType>( cellId * cellId ) );
+  }
 
   // Software Guide : EndCodeSnippet
 
@@ -173,15 +173,15 @@ int main(int, char *[])
   //
   //  \index{itk::Mesh!GetCellData()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  for(unsigned int cellId=0; cellId<numberOfCells; cellId++)
-    {
-    PixelType value;
+  for (unsigned int cellId=0; cellId<numberOfCells; cellId++)
+  {
+    PixelType value = itk::NumericTraits<PixelType>::Zero;
     mesh->GetCellData( cellId, &value );
     std::cout << "Cell " << cellId << " = " << value << std::endl;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -213,11 +213,11 @@ int main(int, char *[])
   //  \index{CellDataContainer!Iterator}
   //  \index{CellDataContainer!ConstIterator}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  CellDataIterator cellDataIterator  = mesh->GetCellData()->Begin();  
-  CellDataIterator end               = mesh->GetCellData()->End();  
+  CellDataIterator cellDataIterator  = mesh->GetCellData()->Begin();
+  CellDataIterator end               = mesh->GetCellData()->End();
   // Software Guide : EndCodeSnippet
 
 
@@ -231,17 +231,17 @@ int main(int, char *[])
   //  \index{CellDataIterator!Value()}
   //  \index{CellDataIterator!increment}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  while( cellDataIterator != end ) 
-    {
+  while ( cellDataIterator != end )
+  {
     PixelType cellValue = cellDataIterator.Value();
     std::cout << cellValue << std::endl;
     ++cellDataIterator;
-    }
+  }
   // Software Guide : EndCodeSnippet
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

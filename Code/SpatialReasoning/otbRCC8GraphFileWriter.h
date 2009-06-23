@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,44 +25,44 @@
 namespace otb
 {
 /** \class RCC8GraphFileWriterException
- * \brief Base exception class for IO problems during writing. 
- */ 
-class ITK_EXPORT RCC8GraphFileWriterException 
-  : public itk::ExceptionObject 
+ * \brief Base exception class for IO problems during writing.
+ */
+class ITK_EXPORT RCC8GraphFileWriterException
+      : public itk::ExceptionObject
 {
 public:
   /** Run-time information. */
   itkTypeMacro( RCC8GraphFileWriterException, ExceptionObject );
 
   /** Constructor. */
-  RCC8GraphFileWriterException(const char *file, unsigned int line, 
-                           const char* message = "Error in IO",
-                           const char* loc = "Unknown" ) : 
-    ExceptionObject(file, line, message, loc)
+  RCC8GraphFileWriterException(const char *file, unsigned int line,
+                               const char* message = "Error in IO",
+                               const char* loc = "Unknown" ) :
+      ExceptionObject(file, line, message, loc)
   {}
   /** Constructor. */
-  RCC8GraphFileWriterException(const std::string &file, unsigned int line, 
-                           const char* message = "Error in IO",
-                           const char* loc = "Unknown" ) :
-    ExceptionObject(file, line, message, loc)
+  RCC8GraphFileWriterException(const std::string &file, unsigned int line,
+                               const char* message = "Error in IO",
+                               const char* loc = "Unknown" ) :
+      ExceptionObject(file, line, message, loc)
   {}
 };
 /**
- * \class RCC8GraphFileWriter 
+ * \class RCC8GraphFileWriter
  * \brief This class writes a RCC8 Graph to a dot file (graphviz file format).
- * 
- * The writer first loops on the vertices of the graph, getting the property map 
+ *
+ * The writer first loops on the vertices of the graph, getting the property map
  * from each vertex and printing it in a line.
  *
- * It then iterates on the edges of the graphs, printing source index, target index, 
- * and RCC8 value in a line for each of them. 
+ * It then iterates on the edges of the graphs, printing source index, target index,
+ * and RCC8 value in a line for each of them.
  *
  * \sa RCC8GraphFileReader
  * \sa RCC8Graph
  */
-template <class TInputGraph> 
-class ITK_EXPORT RCC8GraphFileWriter 
-  : public itk::ProcessObject
+template <class TInputGraph>
+class ITK_EXPORT RCC8GraphFileWriter
+      : public itk::ProcessObject
 {
 public:
   /** Standards typedefs */
@@ -111,11 +111,11 @@ protected:
    * Main computation method.
    */
   virtual void GenerateData(void);
- /**
-  * Write Method.
-  * Performs checkings and invoke GenerateData().
-  */
-  virtual void Write(void);  
+  /**
+   * Write Method.
+   * Performs checkings and invoke GenerateData().
+   */
+  virtual void Write(void);
   /**
    * Write an edge to file.
    * \param of The output file stream.
@@ -124,7 +124,7 @@ protected:
    * \param value  The value of the edge.
    */
   void WriteEdge(std::ofstream& of,VertexDescriptorType source,
-		 VertexDescriptorType target, RCC8ValueType value);
+                 VertexDescriptorType target, RCC8ValueType value);
   /**
    * Write a vertex to file.
    * \param of The output file stream.
@@ -132,7 +132,7 @@ protected:
    * \param vertex The pointer to the vertex object.
   */
   void WriteVertex(std::ofstream& of, VertexDescriptorType index,
-		   VertexPointerType vertex);
+                   VertexPointerType vertex);
   /**
    * PrintSelf method
    */
@@ -148,4 +148,4 @@ private:
 #include "otbRCC8GraphFileWriter.txx"
 #endif
 
-#endif 
+#endif

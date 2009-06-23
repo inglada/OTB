@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -37,7 +37,6 @@ ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>
 {
   m_P    = 0;
   m_Q    = 0;
-  m_Step = 1.0;
 }
 
 /**
@@ -55,97 +54,132 @@ ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>
 
 
 template < class TInputPath, class TOutput, class TPrecision>
-typename ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>::ComplexType 
+typename ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>::ComplexPrecisionType
 ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>
 ::EvaluateComplexMomentAtIndex(VertexType index) const
 {
-    ComplexPrecisionType                         ValP;
-    ComplexPrecisionType                         ValQ;
-    ComplexPrecisionType                         Result;
-    PrecisionType                                PixelValue(1.0);
+  ComplexPrecisionType                         ValP;
+  ComplexPrecisionType                         ValQ;
+  ComplexPrecisionType                         Result;
+  PrecisionType                                PixelValue(1.0);
 
-    ValP = ComplexPrecisionType(1.0,0.0);
-    ValQ = ComplexPrecisionType(1.0,0.0);
-    unsigned int p  = m_P;
-    while(p>0)
-     {
-      ValP *= ComplexPrecisionType(index[0], index[1]);
-      --p; 
-     }
-    unsigned int q  = m_Q;
-    while(q>0)
-     {
-      ValQ *= ComplexPrecisionType(index[0], -index[1]);
-      --q; 
-     }
+  ValP = ComplexPrecisionType(1.0,0.0);
+  ValQ = ComplexPrecisionType(1.0,0.0);
+  unsigned int p  = m_P;
+  while (p>0)
+  {
+    ValP *= ComplexPrecisionType(index[0], index[1]);
+    --p;
+  }
+  unsigned int q  = m_Q;
+  while (q>0)
+  {
+    ValQ *= ComplexPrecisionType(index[0], -index[1]);
+    --q;
+  }
 
-    Result = ValP * ValQ * ComplexPrecisionType( static_cast<PrecisionType>(PixelValue), 0.0); 
-    return ( static_cast<ComplexType>(Result) );
+  Result = ValP * ValQ * ComplexPrecisionType( static_cast<PrecisionType>(PixelValue), 0.0);
+  return Result;
 }
 
 
 template < class TInputPath, class TOutput, class TPrecision>
 typename ComplexMomentPathFunction<TInputPath,
-                                   TOutput,TPrecision>::OutputType
+TOutput,TPrecision>::OutputType
 ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>
 ::Evaluate(const PathType& path) const
 {
-  PathConstPointer                    Path;
-  VertexListPointer                   vertexList;
-  VertexType                          cindex;
-  VertexType                          IndexOut;
-  int                                 nbPath;
-  ComplexType  	     		      Value;
-
-  Value = static_cast<ComplexType>(0.0);
+  // Retrieve the vertex list
+  VertexListPointer vertexList =  path.GetVertexList();
+  // Get the number of vertices in the path
+  unsigned int pathSize        = vertexList->Size();
   
-  vertexList = path.GetVertexList();
-  nbPath = vertexList->Size();
-   
-  if(nbPath >1)
-     {
-     for(int i =0 ; i<nbPath-1 ;i++)
-       {
-       cindex = vertexList->GetElement(i);
-       PrecisionType x1 = cindex[0];
-       PrecisionType y1 = cindex[1];
-       cindex = vertexList->GetElement(i+1);
-       PrecisionType x2 = cindex[0];
-       PrecisionType y2 = cindex[1];
-       
-       PrecisionType Theta;
-       PrecisionType Norm;
-       
-       Theta = vcl_atan2(y2-y1,x2-x1);
-       Norm  = vcl_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+  // value will store the result
+  ComplexPrecisionType value = static_cast<ComplexPrecisionType>(0.0);
+ 
+  // Check if we there are enough vertices in the path to actually
+  // compute something
+  if(pathSize < 2)
+    {
+    return static_cast<OutputType>(value);
+    }
+  
+  // First, we compute the centroid of the path so as to center the moment
+  typename VertexListType::ConstIterator it = vertexList->Begin();
+  VertexType centroid = it.Value();
+  ++it;
 
-       for(RealType k = 0 ; k <=Norm ; k+=m_Step)
-         {
-	 IndexOut[0] = x1 + k * vcl_cos(Theta);
-	 IndexOut[1] = y1 + k * vcl_sin(Theta);
-	 
-	 Value += EvaluateComplexMomentAtIndex(IndexOut );
-	 }
-       } // FOR loop
-     } // IF loop
-  return (static_cast<OutputType>(Value) );
+  // Cumulate points
+  while(it!=vertexList->End())
+    {
+    centroid[0]+=it.Value()[0];
+    centroid[1]+=it.Value()[1];
+    ++it;
+    }
+  
+  // Normalize
+  centroid[0]/=static_cast<PrecisionType>(pathSize);
+  centroid[1]/=static_cast<PrecisionType>(pathSize);
+
+  // Second, we integrate along the edge
+  it = vertexList->Begin();
+
+  VertexType source = it.Value();
+  source[0]-= centroid[0];
+  source[1]-= centroid[1];
+  ++it;
+
+  PrecisionType ds;
+  VertexType dest;
+
+  // This variable will be used to normalize the moment 
+  PrecisionType norm = 0.;
+
+  while(it!=vertexList->End())
+    {
+    dest = it.Value();
+    
+    // Get source and destination coordinates
+    dest[0]  -= centroid[0];
+    dest[1]  -= centroid[1];
+  
+    // Don't forget the ds part of the integration process
+    ds = vcl_sqrt(vcl_pow(dest[0]-source[0],2.)+vcl_pow(dest[1]-source[1],2.)); 
+    norm+=ds;
+    value += ds * EvaluateComplexMomentAtIndex(source);
+    source=dest;
+    ++it;
+    }
+  // Close the loop
+  dest = vertexList->Begin().Value();  
+  dest[0]  -= centroid[0];
+  dest[1]  -= centroid[1];
+  ds = vcl_sqrt(vcl_pow(dest[0]-source[0],2.)+vcl_pow(dest[1]-source[1],2.)); 
+  norm+=ds;
+  value += EvaluateComplexMomentAtIndex(source)*ds;
+  norm = vcl_pow(norm,((PrecisionType)m_P+(PrecisionType)m_Q)/2.);
+
+  // Normalize with edge perimeter
+  value/=norm;
+  
+  return static_cast<OutputType>(value);
 
 }
 
 template < class TInputPath, class TOutput, class TPrecision>
 typename ComplexMomentPathFunction<TInputPath,
-                                   TOutput,TPrecision>::OutputType
+TOutput,TPrecision>::OutputType
 ComplexMomentPathFunction<TInputPath,TOutput,TPrecision>
 ::Evaluate() const
 {
-  if( !this->GetInputPath() )
-    {
+  if ( !this->GetInputPath() )
+  {
     otbMsgDevMacro( << "Pb with GetInputPath" );
-    return static_cast<OutputType>(ComplexPrecisionType( itk::NumericTraits<PrecisionType>::max(), itk::NumericTraits<PrecisionType>::max() ) );
-    }
+    return static_cast<OutputType>(ComplexPrecisionType( itk::NumericTraits<PrecisionType>::Zero, itk::NumericTraits<PrecisionType>::Zero ) );
+  }
 
   OutputType Result =  Evaluate( *(this->GetInputPath()) );
-  
+
   return Result;
 }
 

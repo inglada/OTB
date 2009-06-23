@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -19,10 +19,8 @@
 #define __otbImageFileWriter_h
 
 #include "itkImageFileWriter.h"
-#include "itkImageIOBase.h"
-#include "itkExceptionObject.h"
-#include "itkSize.h"
-#include "itkImageIORegion.h"
+#include "otbImageIOFactory.h"
+#include "otbStreamingTraits.h"
 
 namespace otb
 {
@@ -32,13 +30,13 @@ namespace otb
  *
  * \sa ImageSeriesWriter
  * \sa ImageIOBase
- * 
+ *
  * \ingroup IOFilters
  *
  */
 
-// Le 3ieme parametre template est bidon MAIS necessaire pour compiler avec Microsoft Visual C++ 6.0 
-template <class TInputImage, unsigned int toto=0>
+
+template <class TInputImage>
 class ITK_EXPORT ImageFileWriter : public itk::ImageFileWriter<TInputImage>
 {
 public:
@@ -57,24 +55,54 @@ public:
   /** Some convenient typedefs. */
   typedef TInputImage InputImageType;
   typedef typename InputImageType::Pointer InputImagePointer;
-  typedef typename InputImageType::RegionType InputImageRegionType; 
-  typedef typename InputImageType::PixelType InputImagePixelType; 
-  
-  /** A special version of the Update() method for writers.  It
-   * invokes start and end events and handles releasing data. It
-   * eventually calls GenerateData() which does the actual writing.
-   * Note: the write method will write data specified by the
-   * IORegion. If not set, then then the whole image is written.  Note
-   * that the region will be cropped to fit the input image's
-   * LargestPossibleRegion. */
+  typedef typename InputImageType::RegionType InputImageRegionType;
+  typedef typename InputImageType::PixelType InputImagePixelType;
+
+  /** Dimension of input image. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      InputImageType::ImageDimension);
+
+  /** Streaming traits helper typedef */
+  typedef StreamingTraits<InputImageType> StreamingTraitsType;
+
+  /** SmartPointer to a region splitting object */
+  typedef itk::ImageRegionSplitter<itkGetStaticConstMacro(InputImageDimension)>  SplitterType;
+  typedef typename SplitterType::Pointer RegionSplitterPointer;
+
+  /** Type use to define number of divisions */
+  typedef StreamingMode CalculationDivisionEnumType;
+
+  /** A special Write() method. It invokes the creating of the 
+    * specific otb::ImageIOFactory.
+    */
   virtual void Write(void);
 
+  /**  Set buffer memory size (in bytes) use to calculate the number of stream divisions */
+  void SetBufferMemorySize(unsigned long );
 
-  virtual void SetFileName(std::string filename)
-  {
-    this->Superclass::SetFileName(filename);
-    this->SetImageIO(NULL);
-  } 
+  /**  Set the buffer number of lines use to calculate the number of stream divisions */
+  void SetBufferNumberOfLinesDivisions(unsigned long);
+
+  /**  Set the number of stream divisions */
+  void SetNumberOfStreamDivisions(unsigned long nb_divisions);
+
+  /** Get the number of stream divisions computed */
+  unsigned long GetNumberOfStreamDivisions(void);
+
+  /**  The number of stream divisions is calculate by using
+   * OTB_STREAM_IMAGE_SIZE_TO_ACTIVATE_STREAMING and
+   * OTB_STREAM_MAX_SIZE_BUFFER_FOR_STREAMING cmake variables.
+   */
+  void SetAutomaticNumberOfStreamDivisions(void);
+
+  /** Set the tiling automatic mode for streaming division */
+//  void SetTilingStreamDivisions(void);
+  /** Choose number of divisions in tiling streaming division */
+//  void SetTilingStreamDivisions(unsigned long);
+
+  /** Return the string to indicate the method use to calculate number of stream divisions. */
+  std::string GetMethodUseToCalculateNumberOfStreamDivisions(void);
+
 protected:
   ImageFileWriter();
   ~ImageFileWriter();
@@ -84,18 +112,27 @@ private:
   ImageFileWriter(const Self&); //purposely not implemented
   void operator=(const Self&);  //purposely not implemented
 
-  bool m_UserSpecifiedIORegion;   //track whether the region is user specified
-  bool m_FactorySpecifiedImageIO; //track whether the factory mechanism set the ImageIO
+  /** This method calculate the number of stream divisions, by using the CalculationDivision type */
+  unsigned long CalculateNumberOfStreamDivisions(void);
 
+  /** Use to define the method used to calculate number of divisions */
+  unsigned long m_BufferMemorySize;
+  unsigned long m_BufferNumberOfLinesDivisions;
+
+  RegionSplitterPointer m_RegionSplitterUseToEstimateNumberOfStreamDivisions;
+
+  /** Use to determine method of calculation number of divisions */
+  CalculationDivisionEnumType m_CalculationDivision;
 
 };
 
-  
 } // end namespace otb
-  
+
+
 #ifndef OTB_MANUAL_INSTANTIATION
 #include "otbImageFileWriter.txx"
 #endif
 
+
 #endif // __otbImageFileWriter_h
-  
+

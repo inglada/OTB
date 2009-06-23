@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkComposeRGBImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007-09-27 11:36:40 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2009-01-14 18:39:05 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -20,17 +20,6 @@
 #include "itkTernaryFunctorImageFilter.h"
 #include "itkRGBPixel.h"
 
-/** \class ComposeRGBImageFilter
- * \brief Implements pixel-wise composition of an RGB pixel from three scalar images.
- *
- * This filter receives three scalar images as input. Each image containing
- * one of the RGB components of a color image. The filter produces as output an
- * RGB image in which the three components have been unified. The Component
- * type is preserved from the PixelType of the input images.
- *
- * \ingroup IntensityImageFilters
- */
-
 namespace itk
 {
   
@@ -44,23 +33,34 @@ public:
   ComposeRGB() {}
   ~ComposeRGB() {}
   bool operator!=( const ComposeRGB & ) const
-  {
+    {
     return false;
-  }
+    }
   bool operator==( const ComposeRGB & other ) const
-  {
+    {
     return !(*this != other);
-  }
+    }
   inline OutputType operator()(  const TInput & R, 
                                  const TInput & G,
                                  const TInput & B)
-  {
+    {
     OutputType rgbPixel;
     rgbPixel.Set( R, G, B);
     return rgbPixel;
-  }
+    }
 }; 
 }
+
+/** \class ComposeRGBImageFilter
+ * \brief Implements pixel-wise composition of an RGB pixel from three scalar images.
+ *
+ * This filter receives three scalar images as input. Each image containing
+ * one of the RGB components of a color image. The filter produces as output an
+ * RGB image in which the three components have been unified. The Component
+ * type is preserved from the PixelType of the input images.
+ *
+ * \ingroup IntensityImageFilters
+ */
 
 template <typename TInputImage, 
           typename TOutputImage= 
@@ -74,13 +74,14 @@ TernaryFunctorImageFilter<TInputImage,TInputImage,
 {
 public:
   /** Standard class typedefs. */
-  typedef ComposeRGBImageFilter  Self;
-  typedef TernaryFunctorImageFilter<TInputImage,TInputImage,
-                                    TInputImage,TOutputImage, 
-                                    Function::ComposeRGB< 
-    ITK_TYPENAME TInputImage::PixelType > 
-  >  Superclass;
-  typedef SmartPointer<Self>   Pointer;
+  typedef ComposeRGBImageFilter     Self;
+  typedef TernaryFunctorImageFilter<
+    TInputImage,TInputImage,
+    TInputImage,TOutputImage, 
+    Function::ComposeRGB< 
+      ITK_TYPENAME TInputImage::PixelType > >
+                                    Superclass;
+  typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
   typedef typename Superclass::OutputImageType OutputImageType;

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -43,15 +43,15 @@ template <class TInputImage, class TOutputImage>
 class ITK_EXPORT LeeImageFilter :  public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** 	Extract input and output image dimension */
-  itkStaticConstMacro(		InputImageDimension,
-  				unsigned int,
-                      		TInputImage::ImageDimension);
-  itkStaticConstMacro(		OutputImageDimension, 
-  				unsigned int,
-                      		TOutputImage::ImageDimension);
+  /**   Extract input and output image dimension */
+  itkStaticConstMacro(    InputImageDimension,
+                          unsigned int,
+                          TInputImage::ImageDimension);
+  itkStaticConstMacro(    OutputImageDimension,
+                          unsigned int,
+                          TOutputImage::ImageDimension);
 
-  
+
   typedef TInputImage InputImageType;
   typedef TOutputImage OutputImageType;
 
@@ -66,7 +66,7 @@ public:
 
   /** typemacro */
   itkTypeMacro(LeeImageFilter, ImageToImageFilter);
- 
+
   typedef typename InputImageType::PixelType InputPixelType;
   typedef typename OutputImageType::PixelType OutputPixelType;
   typedef typename itk::NumericTraits<InputPixelType>::RealType InputRealType;
@@ -79,7 +79,7 @@ public:
 
   /** Get the radius of the neighborhood used in this filter  */
   itkGetConstReferenceMacro(Radius, SizeType);
-  
+
   /** Set the number of look used for computation */
   itkSetMacro(NbLooks, double);
   /** Getthe number of look used for computation */
@@ -101,10 +101,10 @@ protected:
   /** LeeImageFilter can be multithreaded.
    * As such, it provides a definition of ThreadedGenerateData()
    *
-   *	LEE filter: 
-   *	R = E[I] + b(I-E[I]) avec 	b  = C²r / ( C²r + C²v )
-   *					Cv = 1 / sqrt(L)  with L the number of look.
-   *					Cr = sqrt(Var(I)) / E[I] avec Var(I) = E[I²] - E[I]²
+   *  LEE filter:
+   *\f$   R = E[I] + b(I-E[I])\f$ with \f$  b  = C^2r / ( C^2r + C^2v )\f$
+   *          \f$ Cv = 1 / \sqrt(L) \f$ with L the number of look.
+   *          \f$ Cr = \sqrt(Var(I)) / E[I] avec Var(I) = E[I^2] - E[I]^2 \f$
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
@@ -126,5 +126,5 @@ private:
 #include "otbLeeImageFilter.txx"
 #endif
 
-  
+
 #endif

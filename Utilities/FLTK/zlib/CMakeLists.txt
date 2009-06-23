@@ -11,5 +11,9 @@ inflate.c inftrees.c trees.c uncompr.c zutil.c
 )
 
 ADD_LIBRARY(fltk_zlib ${ZLIB_SRCS})
-INSTALL_TARGETS(/lib fltk_zlib)
+INSTALL(TARGETS fltk_zlib
+        RUNTIME DESTINATION ${OTB_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+        LIBRARY DESTINATION ${OTB_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+        ARCHIVE DESTINATION ${OTB_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+
 

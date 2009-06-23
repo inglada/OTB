@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,7 +31,7 @@ namespace otb
 template <class TScalarType>
 InverseLogPolarTransform<TScalarType>
 ::InverseLogPolarTransform()
-  :Superclass(2,4)
+    :Superclass(2,4)
 {
   m_Center[0]=0.0;
   m_Center[1]=0.0;
@@ -77,7 +77,7 @@ InverseLogPolarTransform<TScalarType>
   this->m_Parameters[1]=m_Center[1];
   this->m_Parameters[2]=m_Scale[0];
   this->m_Parameters[3]=m_Scale[1];
-  
+
   return this->m_Parameters;
 }
 
@@ -89,32 +89,32 @@ InverseLogPolarTransform<TScalarType>
 template <class TScalarType>
 typename InverseLogPolarTransform<TScalarType>
 ::OutputPointType
- InverseLogPolarTransform<TScalarType>
+InverseLogPolarTransform<TScalarType>
 ::TransformPoint(const InputPointType &point) const
 {
   OutputPointType result;
   double rho =vcl_sqrt(vcl_pow(point[0]-m_Center[0],2)+vcl_pow(point[1]-m_Center[1],2));
-  if(rho>0)
+  if (rho>0)
+  {
+    result[0]=(1./m_Scale[0])*vcl_asin((point[1]-m_Center[1])/rho);
+    // degree conversion
+    result[0]=result[0]*(180./M_PI);
+    // Deplacing the range to [0,90], [270,360]
+    result[0]= result[0]>0. ? result[0] : result[0]+360.;
+    // Avoiding asin indetermination
+    if ((point[0]-m_Center[0])>=0)
     {
-      result[0]=(1./m_Scale[0])*vcl_asin((point[1]-m_Center[1])/rho);
-      // degree conversion
-      result[0]=result[0]*(180./M_PI);
-      // Deplacing the range to [0,90], [270,360]
-      result[0]= result[0]>0. ? result[0] : result[0]+360.;
-      // Avoiding asin indetermination
-      if((point[0]-m_Center[0])>=0)
-	{
-	  result[0]=result[0]<90. ? result[0]+90. : result[0]-90.;
-	}
-      result[1]=(1./m_Scale[1])*vcl_log(rho);
-      // otbMsgDebugMacro(<<vcl_log(vcl_pow(point[0]-m_Center[0],2)+vcl_pow(point[1]-m_Center[1],2)));
+      result[0]=result[0]<90. ? result[0]+90. : result[0]-90.;
     }
+    result[1]=(1./m_Scale[1])*vcl_log(rho);
+    // otbMsgDebugMacro(<<vcl_log(vcl_pow(point[0]-m_Center[0],2)+vcl_pow(point[1]-m_Center[1],2)));
+  }
   else
-    {
-      // for rho=0, reject the point outside the angular range to avoid nan error
-      result[0]=400.;
-      result[1]=0.;
-    }
+  {
+    // for rho=0, reject the point outside the angular range to avoid nan error
+    result[0]=400.;
+    result[1]=0.;
+  }
   return result;
 }
 /**
@@ -129,35 +129,35 @@ InverseLogPolarTransform<TScalarType>
 ::TransformVector(const InputVectorType &vector) const
 {
   OutputVectorType result;
- double rho =vcl_sqrt(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2));
-  if(rho>0)
+  double rho =vcl_sqrt(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2));
+  if (rho>0)
+  {
+    result[0]=(1/m_Scale[0])*vcl_asin((vector[1]-m_Center[1])/rho);
+    // degree conversion
+    result[0]=result[0]*(180/M_PI);
+    // Deplacing the range to [0,90], [270,360]
+    result[0]= result[0]>0 ? result[0] : result[0]+360;
+    // Avoiding asin indetermination
+    if ((vector[0]-m_Center[0])>=0)
     {
-      result[0]=(1/m_Scale[0])*vcl_asin((vector[1]-m_Center[1])/rho);
-      // degree conversion
-      result[0]=result[0]*(180/M_PI);
-      // Deplacing the range to [0,90], [270,360]
-      result[0]= result[0]>0 ? result[0] : result[0]+360;
-      // Avoiding asin indetermination
-      if((vector[0]-m_Center[0])>=0)
-	{
-	  result[0]=result[0]<90 ? result[0]+90 : result[0]-90;
-	}
-      result[1]=(1/m_Scale[1])*vcl_log(rho);
-      // otbMsgDebugMacro(<<vcl_log(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2)));
+      result[0]=result[0]<90 ? result[0]+90 : result[0]-90;
     }
+    result[1]=(1/m_Scale[1])*vcl_log(rho);
+    // otbMsgDebugMacro(<<vcl_log(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2)));
+  }
   else
-    {
-      // for rho=0, reject the vector outside the angular range to avoid nan error
-      result[0]=400;
-      result[1]=0;
-    }
+  {
+    // for rho=0, reject the vector outside the angular range to avoid nan error
+    result[0]=400;
+    result[1]=0;
+  }
   return result;
 }
 /**
  * Transform a vnl vector representing a vector.
  * \param vector The vector to transform.
  * \return The transformed vector.
- */  
+ */
 template <class TScalarType>
 typename InverseLogPolarTransform<TScalarType>
 ::OutputVnlVectorType
@@ -166,27 +166,27 @@ InverseLogPolarTransform<TScalarType>
 {
   OutputVnlVectorType result;
   double rho =vcl_sqrt(vcl_pow(vector[0],2)+vcl_pow(vector[1],2));
-  if(rho>0)
+  if (rho>0)
+  {
+    result[0]=(1/m_Scale[0])*vcl_asin((vector[1]-m_Center[1])/rho);
+    // degree conversion
+    result[0]=result[0]*(180/M_PI);
+    // Deplacing the range to [0,90], [270,360]
+    result[0]= result[0]>0 ? result[0] : result[0]+360;
+    // Avoiding vcl_asin indetermination
+    if ((vector[0]-m_Center[0])>=0)
     {
-      result[0]=(1/m_Scale[0])*vcl_asin((vector[1]-m_Center[1])/rho);
-      // degree conversion
-      result[0]=result[0]*(180/M_PI);
-      // Deplacing the range to [0,90], [270,360]
-      result[0]= result[0]>0 ? result[0] : result[0]+360;
-      // Avoiding vcl_asin indetermination
-      if((vector[0]-m_Center[0])>=0)
-	{
-	  result[0]=result[0]<90 ? result[0]+90 : result[0]-90;
-	}
-      result[1]=(1/m_Scale[1])*vcl_log(rho);
-      // otbMsgDebugMacro(<<log(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2)));
+      result[0]=result[0]<90 ? result[0]+90 : result[0]-90;
     }
+    result[1]=(1/m_Scale[1])*vcl_log(rho);
+    // otbMsgDebugMacro(<<log(vcl_pow(vector[0]-m_Center[0],2)+vcl_pow(vector[1]-m_Center[1],2)));
+  }
   else
-    {
-      // for rho=0, reject the vector outside the angular range to avoid nan error
-      result[0]=400;
-      result[1]=0;
-    }
+  {
+    // for rho=0, reject the vector outside the angular range to avoid nan error
+    result[0]=400;
+    result[1]=0;
+  }
   return result;
 }
 /**

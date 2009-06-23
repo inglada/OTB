@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -40,18 +40,18 @@
 
 int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
 {
-  if( argc != 19 )
-    {
-      std::cerr << "Missing Parameters " << std::endl;
-      std::cerr << "Usage: " << argv[0];
-      std::cerr << "    inputImage , outputImage,"  << std::endl;
-      std::cerr << "    alphaBetaFileName , solarZenithalAngle , day, month , solarIlluminationFileName,"  << std::endl;
-      std::cerr << "    solarAzimutalAngle , viewingZenithalAngle , viewingAzimutalAngle,"  << std::endl;
-      std::cerr << "    atmosphericPressure , waterVaporAmount , ozoneAmount , aerosolModel , AerosolOptical,"  << std::endl;
-      std::cerr << "    wavelenghtSpectralBandFileName , adjencyEffect6SCorrectionWindowRadius, pixelSpacingInKilometers" << std::endl;
-      std::cerr << std::endl;
-      return 1;
-    }
+  if ( argc != 19 )
+  {
+    std::cerr << "Missing Parameters " << std::endl;
+    std::cerr << "Usage: " << argv[0];
+    std::cerr << "    inputImage , outputImage,"  << std::endl;
+    std::cerr << "    alphaBetaFileName , solarZenithalAngle , day, month , solarIlluminationFileName,"  << std::endl;
+    std::cerr << "    solarAzimutalAngle , viewingZenithalAngle , viewingAzimutalAngle,"  << std::endl;
+    std::cerr << "    atmosphericPressure , waterVaporAmount , ozoneAmount , aerosolModel , AerosolOptical,"  << std::endl;
+    std::cerr << "    wavelenghtSpectralBandFileName , adjencyEffect6SCorrectionWindowRadius, pixelSpacingInKilometers" << std::endl;
+    std::cerr << std::endl;
+    return 1;
+  }
 
   const unsigned int                                    Dimension = 2;
   typedef double                                        PixelType;
@@ -62,32 +62,32 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
 
   ReaderType::Pointer reader  = ReaderType::New();
   reader->SetFileName(argv[1]);
-  
-  reader->GenerateOutputInformation();
-  
+
+  reader->UpdateOutputInformation();
+
   unsigned int nbOfComponent = reader->GetOutput()->GetNumberOfComponentsPerPixel();
 
 
 //-------------------------------
 
-  typedef otb::ImageToLuminanceImageFilter<ImageType,ImageType> 
-                                ImageToLuminanceImageFilterType;
-  typedef ImageToLuminanceImageFilterType::VectorType VectorType; 
+  typedef otb::ImageToLuminanceImageFilter<ImageType,ImageType>
+  ImageToLuminanceImageFilterType;
+  typedef ImageToLuminanceImageFilterType::VectorType VectorType;
 
   VectorType alpha(nbOfComponent);
   VectorType beta(nbOfComponent);
   alpha.Fill(0);
   beta.Fill(0);
-  
+
   std::ifstream fin;
   fin.open(argv[3]);
   double dalpha(0.), dbeta(0.);
-  for( unsigned int i=0 ; i < nbOfComponent ; i++)
+  for ( unsigned int i=0; i < nbOfComponent; i++)
   {
-        fin >> dalpha;
-        fin >> dbeta;
-        alpha[i] = dalpha;
-        beta[i] = dbeta;
+    fin >> dalpha;
+    fin >> dbeta;
+    alpha[i] = dalpha;
+    beta[i] = dbeta;
   }
   fin.close();
 
@@ -98,48 +98,48 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
 
 
 //-------------------------------
-  typedef otb::LuminanceToReflectanceImageFilter<ImageType,ImageType> 
-                                LuminanceToReflectanceImageFilterType;
+  typedef otb::LuminanceToReflectanceImageFilter<ImageType,ImageType>
+  LuminanceToReflectanceImageFilterType;
 
-  typedef LuminanceToReflectanceImageFilterType::VectorType VectorType; 
+  typedef LuminanceToReflectanceImageFilterType::VectorType VectorType;
 
   VectorType solarIllumination(nbOfComponent);
   solarIllumination.Fill(0);
-  
+
   fin.open(argv[7]);
   double dsolarIllumination(0.);
-  for( unsigned int i=0 ; i < nbOfComponent ; i++)
+  for ( unsigned int i=0; i < nbOfComponent; i++)
   {
-        fin >> dsolarIllumination;
-        solarIllumination[i] = dsolarIllumination;
+    fin >> dsolarIllumination;
+    solarIllumination[i] = dsolarIllumination;
   }
   fin.close();
-  
-  
+
+
   LuminanceToReflectanceImageFilterType::Pointer filterLuminanceToReflectance = LuminanceToReflectanceImageFilterType::New();
   const int day(atoi(argv[5]));
   const int month(atoi(argv[6]));
-  
+
   filterLuminanceToReflectance->SetZenithalSolarAngle(static_cast<double>(atof(argv[4])));
   filterLuminanceToReflectance->SetDay(day);
-  filterLuminanceToReflectance->SetMonth(month); 
+  filterLuminanceToReflectance->SetMonth(month);
   filterLuminanceToReflectance->SetSolarIllumination(solarIllumination);
   filterLuminanceToReflectance->SetInput(filterImageToLuminance->GetOutput());
 
 //-------------------------------
-  typedef otb::AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms     
-                                AtmosphericCorrectionParametersTo6SRadiativeTermsType;
-  typedef otb::AtmosphericCorrectionParameters                                  
-                                AtmosphericCorrectionParametersType;
-  typedef otb::AtmosphericRadiativeTerms                                        
-                                AtmosphericRadiativeTermsType;
-  typedef AtmosphericCorrectionParametersType::AerosolModelType                 
-                                AerosolModelType;
+  typedef otb::AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
+  AtmosphericCorrectionParametersTo6SRadiativeTermsType;
+  typedef otb::AtmosphericCorrectionParameters
+  AtmosphericCorrectionParametersType;
+  typedef otb::AtmosphericRadiativeTerms
+  AtmosphericRadiativeTermsType;
+  typedef AtmosphericCorrectionParametersType::AerosolModelType
+  AerosolModelType;
 
-  typedef otb::FilterFunctionValues                                          
-                                FilterFunctionValuesType;
-  typedef FilterFunctionValuesType::ValuesVectorType                         
-                                ValuesVectorType;
+  typedef otb::FilterFunctionValues
+  FilterFunctionValuesType;
+  typedef FilterFunctionValuesType::ValuesVectorType
+  ValuesVectorType;
 
 
   AtmosphericCorrectionParametersType::Pointer dataAtmosphericCorrectionParameters = AtmosphericCorrectionParametersType::New();
@@ -154,33 +154,33 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
   unsigned int nbValuesPerBand(0);
   std::string sString;
   ValuesVectorType valuesVector;
-  
+
   fin.open(argv[16]);
   fin >> nbBands;
-  for(unsigned int i=0 ; i<nbBands ; i++)
+  for (unsigned int i=0; i<nbBands; i++)
   {
-        valuesVector.clear();
-        fin >> sString;
-        fin >> minSpectralValue;
-        fin >> maxSpectralValue;
-        fin >> userStep;
-        fin >> nbValuesPerBand;
-        for( unsigned int j=0 ; j < nbValuesPerBand ; j++)
-        {
-                fin >> value;
-                valuesVector.push_back(value);
-        }
-        FilterFunctionValuesType::Pointer functionValues = FilterFunctionValuesType::New();
-        functionValues->SetFilterFunctionValues(valuesVector);
-        functionValues->SetMinSpectralValue(minSpectralValue);
-        functionValues->SetMaxSpectralValue(maxSpectralValue);
-        functionValues->SetUserStep( userStep );
-        dataAtmosphericCorrectionParameters->SetWavelenghtSpectralBandWithIndex(i, functionValues);
+    valuesVector.clear();
+    fin >> sString;
+    fin >> minSpectralValue;
+    fin >> maxSpectralValue;
+    fin >> userStep;
+    fin >> nbValuesPerBand;
+    for ( unsigned int j=0; j < nbValuesPerBand; j++)
+    {
+      fin >> value;
+      valuesVector.push_back(value);
+    }
+    FilterFunctionValuesType::Pointer functionValues = FilterFunctionValuesType::New();
+    functionValues->SetFilterFunctionValues(valuesVector);
+    functionValues->SetMinSpectralValue(minSpectralValue);
+    functionValues->SetMaxSpectralValue(maxSpectralValue);
+    functionValues->SetUserStep( userStep );
+    dataAtmosphericCorrectionParameters->SetWavelenghtSpectralBandWithIndex(i, functionValues);
   }
 
   fin.close();
 
-  
+
   // Set parameters
   dataAtmosphericCorrectionParameters->SetSolarZenithalAngle(filterLuminanceToReflectance->GetZenithalSolarAngle());
   dataAtmosphericCorrectionParameters->SetSolarAzimutalAngle(static_cast<double>(atof(argv[8])));
@@ -188,7 +188,7 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
   dataAtmosphericCorrectionParameters->SetViewingAzimutalAngle(static_cast<double>(atof(argv[10])));
   dataAtmosphericCorrectionParameters->SetMonth(month);
   dataAtmosphericCorrectionParameters->SetDay(day);
-  dataAtmosphericCorrectionParameters->SetAtmosphericPressure(static_cast<double>(atof(argv[11]))); 
+  dataAtmosphericCorrectionParameters->SetAtmosphericPressure(static_cast<double>(atof(argv[11])));
   dataAtmosphericCorrectionParameters->SetWaterVaporAmount(static_cast<double>(atof(argv[12])));
   dataAtmosphericCorrectionParameters->SetOzoneAmount(static_cast<double>(atof(argv[13])));
   AerosolModelType aerosolModel = static_cast<AerosolModelType>(::atoi(argv[14]));
@@ -203,7 +203,7 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
 
   typedef otb::ReflectanceToSurfaceReflectanceImageFilter<ImageType, ImageType> ReflectanceToSurfaceReflectanceImageFilterType;
   ReflectanceToSurfaceReflectanceImageFilterType::Pointer  filterReflectanceToSurfaceReflectanceImageFilter = ReflectanceToSurfaceReflectanceImageFilterType::New();
-  
+
   filterReflectanceToSurfaceReflectanceImageFilter->SetAtmosphericRadiativeTerms( filterAtmosphericCorrectionParametersTo6SRadiativeTerms->GetOutput() );
   filterReflectanceToSurfaceReflectanceImageFilter->SetInput(filterLuminanceToReflectance->GetOutput());
 
@@ -223,7 +223,7 @@ int otbAtmosphericCorrectionSequencementTest( int argc, char *argv[] )
   writer->SetInput(filterSurfaceAdjencyEffect6SCorrectionSchemeFilter->GetOutput());
   writer->Update();
 
-    
+
   return EXIT_SUCCESS;
 }
 

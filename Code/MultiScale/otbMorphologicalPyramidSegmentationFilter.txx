@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -32,12 +32,12 @@ namespace otb
  */
 template <class TInputImage, class TOutputImage>
 MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
-::MorphologicalPyramidSegmentationFilter() 
+::MorphologicalPyramidSegmentationFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-	m_MinimumObjectSize = 10;
-	m_SeedsQuantile = 0.9;
-	m_ConnectedThresholdQuantile = 0.9;
+  m_MinimumObjectSize = 10;
+  m_SeedsQuantile = 0.9;
+  m_ConnectedThresholdQuantile = 0.9;
 }
 /**
  * Destructor
@@ -45,13 +45,13 @@ MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
 ::~MorphologicalPyramidSegmentationFilter() {}
-  
+
 /**
  * Set the reference image.
  * \param image The reference image which was decomposed by the pyramid.
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
 ::SetReferenceImage(InputImageType * image)
 {
@@ -63,7 +63,7 @@ MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
  * \param imageList The brighter details extracted from the filtering operation.
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
 ::SetBrighterDetails(InputImageListType * imageList)
 {
@@ -75,11 +75,11 @@ MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
  * \param imageList The darker details extracted from the filtering operation.
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
 ::SetDarkerDetails(InputImageListType * imageList)
 {
-this->SetNthInput(2,const_cast<InputImageListType *>(imageList));
+  this->SetNthInput(2,const_cast<InputImageListType *>(imageList));
 }
 /**
  * Get the reference image
@@ -158,43 +158,43 @@ MorphologicalPyramidSegmentationFilter<TInputImage,TOutputImage>
   mrtoms->SetSupFilter(this->GetBrighterDetails());
   mrtoms->SetInfFilter(this->GetDarkerDetails());
   mrtoms->Update();
-  
+
   // Full resolution Input images lists pointers
   InputImageListPointerType brighter = mrtoms->GetSupFilterFullResolution();
   InputImageListPointerType darker = mrtoms->GetInfFilterFullResolution();
 
   // Segmentation filter definition
-  typename InputImageListType::Iterator it; 
+  typename InputImageListType::Iterator it;
   // Segment the supFilter details
-  for(it= brighter->Begin();it!=brighter->End();++it)
-    {
-      typename SegmenterType::Pointer segmenter = SegmenterType::New();
-      segmenter->SetMinimumObjectSize(m_MinimumObjectSize);
-      segmenter->SetSeedsQuantile(m_SeedsQuantile);
-      segmenter->SetConnectedThresholdQuantile(m_ConnectedThresholdQuantile);
-      segmenter->SetOriginalImage(referenceImage);
-      segmenter->SetDetailsImage(it.Get());
-      segmenter->Update();
-      m_NumberOfObjectsVector.push_back(segmenter->GetNumberOfObjects());
-      outputList->PushBack(segmenter->GetOutput());
-    }
-  
-  
+  for (it= brighter->Begin();it!=brighter->End();++it)
+  {
+    typename SegmenterType::Pointer segmenter = SegmenterType::New();
+    segmenter->SetMinimumObjectSize(m_MinimumObjectSize);
+    segmenter->SetSeedsQuantile(m_SeedsQuantile);
+    segmenter->SetConnectedThresholdQuantile(m_ConnectedThresholdQuantile);
+    segmenter->SetOriginalImage(referenceImage);
+    segmenter->SetDetailsImage(it.Get());
+    segmenter->Update();
+    m_NumberOfObjectsVector.push_back(segmenter->GetNumberOfObjects());
+    outputList->PushBack(segmenter->GetOutput());
+  }
+
+
   // Segment the infFilter details
-  for(it= darker->Begin();it!= darker->End();++it)
-    {
-      typename SegmenterType::Pointer segmenter = SegmenterType::New();
-      segmenter->SetMinimumObjectSize(m_MinimumObjectSize);
-      segmenter->SetSeedsQuantile(m_SeedsQuantile);
-      segmenter->SetConnectedThresholdQuantile(m_ConnectedThresholdQuantile);
-      segmenter->SetOriginalImage(referenceImage);
-      segmenter->SetSegmentDarkDetailsBool(true);
-      
-      segmenter->SetDetailsImage(it.Get());
-      segmenter->Update();
-      m_NumberOfObjectsVector.push_back(segmenter->GetNumberOfObjects());
-      outputList->PushBack(segmenter->GetOutput());
-    }
+  for (it= darker->Begin();it!= darker->End();++it)
+  {
+    typename SegmenterType::Pointer segmenter = SegmenterType::New();
+    segmenter->SetMinimumObjectSize(m_MinimumObjectSize);
+    segmenter->SetSeedsQuantile(m_SeedsQuantile);
+    segmenter->SetConnectedThresholdQuantile(m_ConnectedThresholdQuantile);
+    segmenter->SetOriginalImage(referenceImage);
+    segmenter->SetSegmentDarkDetailsBool(true);
+
+    segmenter->SetDetailsImage(it.Get());
+    segmenter->Update();
+    m_NumberOfObjectsVector.push_back(segmenter->GetNumberOfObjects());
+    outputList->PushBack(segmenter->GetOutput());
+  }
 }
 /**
  * PrintSelf method

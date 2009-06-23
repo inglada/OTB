@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWhiteTopHatImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006-08-01 19:16:19 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009-01-08 16:03:55 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,16 @@
 =========================================================================*/
 #ifndef __itkWhiteTopHatImageFilter_txx
 #define __itkWhiteTopHatImageFilter_txx
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_CONSOLIDATED_MORPHOLOGY
+#include "itkOptWhiteTopHatImageFilter.h"
+#else
+
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
@@ -32,6 +42,7 @@ WhiteTopHatImageFilter<TInputImage, TOutputImage, TKernel>
 ::WhiteTopHatImageFilter()
   : m_Kernel()
 {
+  m_SafeBorder = true;
 }
 
 template <class TInputImage, class TOutputImage, class TKernel>
@@ -78,7 +89,8 @@ WhiteTopHatImageFilter<TInputImage, TOutputImage, TKernel>
     open = GrayscaleMorphologicalOpeningImageFilter<TInputImage, TInputImage, TKernel>::New();
 
   open->SetInput( this->GetInput() );
-  open->SetKernel(this->m_Kernel);
+  open->SetKernel( this->GetKernel() );
+  open->SetSafeBorder( m_SafeBorder );
   
   // Need to subtract the opened image from the input
   typename SubtractImageFilter<TInputImage, TInputImage, TOutputImage>::Pointer
@@ -112,7 +124,10 @@ WhiteTopHatImageFilter<TInputImage, TOutputImage, TKernel>
   Superclass::PrintSelf(os, indent);
 
   os << indent << "Kernel: " << m_Kernel << std::endl;
+  os << indent << "SafeBorder: " << m_SafeBorder << std::endl;
 }
 
 }// end namespace itk
+#endif
+
 #endif

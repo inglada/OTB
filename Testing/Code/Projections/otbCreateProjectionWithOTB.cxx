@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,9 +23,9 @@
  *
  * PURPOSE:
  *
- * Application pour projeter une r�gion d'une image en coordonn�es g�ographiques 
- * en utilisant un Interpolator+regionextractor et un Iterator. 
- * 
+ * Application pour projeter une r�gion d'une image en coordonn�es g�ographiques
+ * en utilisant un Interpolator+regionextractor et un Iterator.
+ *
  */
 
 // iostream is used for general output
@@ -59,16 +59,16 @@ int otbCreateProjectionWithOTB( int argc, char* argv[] )
 {
   ossimInit::instance()->initialize(argc, argv);
 
-  if(argc!=2)
-    {
-      std::cout << argv[0] <<" <input filename> " << std::endl;
+  if (argc!=2)
+  {
+    std::cout << argv[0] <<" <input filename> " << std::endl;
 
-      return EXIT_FAILURE;
-    }
-        
+    return EXIT_FAILURE;
+  }
+
   typedef otb::Image<unsigned int, 2>     ImageType;
   typedef otb::ImageFileReader<ImageType>  ReaderType;
-  ReaderType::Pointer	                 reader=ReaderType::New();
+  ReaderType::Pointer                   reader=ReaderType::New();
   reader->SetFileName(argv[1]);
 
   //Read meta data (ossimKeywordlist)
@@ -80,12 +80,12 @@ int otbCreateProjectionWithOTB( int argc, char* argv[] )
   ossimKeywordlist geom;
   otb_image_keywordlist.convertToOSSIMKeywordlist(geom);
 
-  otbGenericMsgDebugMacro(<< "ossim Keywordlist:"<<geom ); 
+  otbGenericMsgDebugMacro(<< "ossim Keywordlist:"<<geom );
 
   /*
     typedef otb::InverseSensorModel<double>  ModelType;
     ModelType::Pointer   model= ModelType::New();
-    otbGenericMsgDebugMacro(<< "Model set geometry " ); 
+    otbGenericMsgDebugMacro(<< "Model set geometry " );
     model->SetImageGeometry(geom_kwl); //Notre mod�le est cr�� � ce niveau.
     if(!model)
     {
@@ -98,19 +98,19 @@ int otbCreateProjectionWithOTB( int argc, char* argv[] )
   ossimProjection * model = NULL;
   otbGenericMsgDebugMacro(<< "Creating projection..." );
   model = ossimProjectionFactoryRegistry::instance()->createProjection(geom);
-  if( model == NULL)
-    {
-      itkGenericExceptionMacro(<<"Invalid Model * == NULL !");
-    }
+  if ( model == NULL)
+  {
+    itkGenericExceptionMacro(<<"Invalid Model * == NULL !");
+  }
 
   otbGenericMsgDebugMacro(<< "Creating RefPtr of projection..." );
   ossimRefPtr<ossimProjection> ptrmodel = model;
-  if( ptrmodel.valid() == false )
-    {
-      itkGenericExceptionMacro(<<"Invalid Model pointer .valid() == false !");
-    }
+  if ( ptrmodel.valid() == false )
+  {
+    itkGenericExceptionMacro(<<"Invalid Model pointer .valid() == false !");
+  }
 
-  
+
   return EXIT_SUCCESS;
 
 }

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,20 +21,23 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbDrawPathListFilterNew);
-REGISTER_TEST(otbDrawPathListFilter);
-REGISTER_TEST(otbDrawPathListFilterWithValue);
-REGISTER_TEST(otbPolyLineParametricPathWithValueNew);
-REGISTER_TEST(otbPolyLineImageIterator);
-REGISTER_TEST(otbDrawPathFilterNew);
-REGISTER_TEST(otbDrawPathFilter);
-REGISTER_TEST(otbPolygonNew);
-REGISTER_TEST(otbPolygon);
-REGISTER_TEST(otbUnaryFunctorNeighborhoodImageFilterNew);
-REGISTER_TEST(otbUnaryFunctorNeighborhoodImageFilter);
+  REGISTER_TEST(otbDrawPathListFilterNew);
+  REGISTER_TEST(otbDrawPathListFilter);
+  REGISTER_TEST(otbDrawPathListFilterWithValue);
+  REGISTER_TEST(otbPolyLineParametricPathWithValueNew);
+  REGISTER_TEST(otbPolyLineImageConstIterator);
+  REGISTER_TEST(otbPolyLineImageIterator);
+  REGISTER_TEST(otbDrawPathFilterNew);
+  REGISTER_TEST(otbDrawPathFilter);
+  REGISTER_TEST(otbPolygonNew);
+  REGISTER_TEST(otbPolygon);
+  REGISTER_TEST(otbUnaryFunctorNeighborhoodImageFilterNew);
+  REGISTER_TEST(otbUnaryFunctorNeighborhoodImageFilter);
+  REGISTER_TEST(otbRectangleNew);
+  REGISTER_TEST(otbRectangle);
 }

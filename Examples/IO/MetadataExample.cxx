@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -63,14 +63,14 @@ int main(int argc, char* argv[])
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
+//  SoftwareGuide: BeginCodeSnippet
 
-  typedef unsigned char  	                        InputPixelType;
-  const   unsigned int        	                        Dimension = 2;
+  typedef unsigned char                            InputPixelType;
+  const   unsigned int                                  Dimension = 2;
 
 
   typedef otb::Image< InputPixelType,  Dimension >      InputImageType;
-        
+
   typedef otb::ImageFileReader< InputImageType >        ReaderType;
 //  SoftwareGuide: EndCodeSnippet
 //  SoftwareGuide: BeginLatex
@@ -79,12 +79,12 @@ int main(int argc, char* argv[])
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
-	
+//  SoftwareGuide: BeginCodeSnippet
+
 
   ReaderType::Pointer reader = ReaderType::New();
   InputImageType::Pointer image = InputImageType::New();
- 
+
   reader->SetFileName( inputFilename  );
   reader->Update();
 
@@ -99,11 +99,11 @@ int main(int argc, char* argv[])
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
-	
+//  SoftwareGuide: BeginCodeSnippet
+
 
   std::ofstream file;
-	
+
   file.open(outputAsciiFilename);
 
 //  SoftwareGuide: EndCodeSnippet
@@ -111,29 +111,29 @@ int main(int argc, char* argv[])
 //
 //  We can now call the different available methods for accessing the
 //  metadata. Useful methods are :
-//	\begin{itemize}
+//  \begin{itemize}
 //      \item \code{GetSpacing}: the sampling step;
 //      \item \code{GetOrigin}: the coordinates of the origin of the image;
 //      \item \code{GetProjectionRef}: the image projection reference;
 //      \item \code{GetGCPProjection}: the projection for the eventual
 //  ground control points;
 //      \item \code{GetGCPCount}: the number of GCPs available;
-//	\end{itemize}	
+//  \end{itemize}
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
-	
-	
+//  SoftwareGuide: BeginCodeSnippet
+
+
   file << "Spacing " << image->GetSpacing() << std::endl;
   file << "Origin " << image->GetOrigin() << std::endl;
-	
+
   file << "Projection REF " << image->GetProjectionRef() << std::endl;
-		 
+
   file << "GCP Projection " << image->GetGCPProjection() << std::endl;
-	
-  unsigned int GCPCount = image->GetGCPCount();	
-  file << "GCP Count " << image->GetGCPCount() << std::endl; 
+
+  unsigned int GCPCount = image->GetGCPCount();
+  file << "GCP Count " << image->GetGCPCount() << std::endl;
 
 //  SoftwareGuide: EndCodeSnippet
 //  SoftwareGuide: BeginLatex
@@ -143,10 +143,10 @@ int main(int argc, char* argv[])
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
-	
-  for(unsigned int GCPnum = 0 ; GCPnum < GCPCount ; GCPnum++ )
-    {
+//  SoftwareGuide: BeginCodeSnippet
+
+  for (unsigned int GCPnum = 0; GCPnum < GCPCount; GCPnum++ )
+  {
     file << "GCP[" << GCPnum << "] Id " << image->GetGCPId(GCPnum) << std::endl;
     file << "GCP[" << GCPnum << "] Info " << image->GetGCPInfo(GCPnum) << std::endl;
     file << "GCP[" << GCPnum << "] Row " << image->GetGCPRow(GCPnum) << std::endl;
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
     file << "GCP[" << GCPnum << "] Y " << image->GetGCPY(GCPnum) << std::endl;
     file << "GCP[" << GCPnum << "] Z " << image->GetGCPZ(GCPnum) << std::endl;
     file << "----------------" << std::endl;
-    }
+  }
 
 //  SoftwareGuide: EndCodeSnippet
 //  SoftwareGuide: BeginLatex
@@ -165,48 +165,48 @@ int main(int argc, char* argv[])
 //
 //  SoftwareGuide: EndLatex
 
-//  SoftwareGuide: BeginCodeSnippet	
-	
+//  SoftwareGuide: BeginCodeSnippet
+
   InputImageType::VectorType tab = image->GetGeoTransform();
 
   file << "Geo Transform " << std::endl;
-  for(unsigned int i = 0 ; i < tab.size() ; i++ )
-    {
+  for (unsigned int i = 0; i < tab.size(); i++ )
+  {
     file << " " <<i<<" -> "<<tab[i]<< std::endl;
-    }
+  }
   tab.clear();
-	
+
   tab = image->GetUpperLeftCorner();
   file << "Corners " << std::endl;
-  for(unsigned int i = 0 ; i < tab.size() ; i++ )
-    {
+  for (unsigned int i = 0; i < tab.size(); i++ )
+  {
     file << " UL[" <<i<<"] -> "<<tab[i]<< std::endl;
-    }
+  }
   tab.clear();
-		
+
   tab = image->GetUpperRightCorner();
-  for(unsigned int i = 0 ; i < tab.size() ; i++ )
-    {
+  for (unsigned int i = 0; i < tab.size(); i++ )
+  {
     file << " UR[" <<i<<"] -> "<<tab[i]<< std::endl;
-    }
+  }
   tab.clear();
-		
+
   tab = image->GetLowerLeftCorner();
-  for(unsigned int i = 0 ; i < tab.size() ; i++ )
-    {
+  for (unsigned int i = 0; i < tab.size(); i++ )
+  {
     file << " LL[" <<i<<"] -> "<<tab[i]<< std::endl;
-    }
+  }
   tab.clear();
-			
+
   tab = image->GetLowerRightCorner();
-  for(unsigned int i = 0 ; i < tab.size() ; i++ )
-    {
+  for (unsigned int i = 0; i < tab.size(); i++ )
+  {
     file << " LR[" <<i<<"] -> "<<tab[i]<< std::endl;
-    }	
+  }
   tab.clear();
-		
+
   file.close();
-	
+
   //  SoftwareGuide: EndCodeSnippet
   return EXIT_SUCCESS;
 }

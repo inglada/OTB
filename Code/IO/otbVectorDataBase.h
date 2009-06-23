@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,12 +36,12 @@ namespace otb
  * classes. VectorDataBase does not store any of the vector data values.
  *
  */
-	
+
 class ITK_EXPORT VectorDataBase : public itk::DataObject
 {
 public:
 
-	/** Standard class typedefs. */
+  /** Standard class typedefs. */
   typedef VectorDataBase                Self;
   typedef itk::DataObject               Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
@@ -52,18 +52,18 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorDataBase, itk::DataObject);
-	
+
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 protected:
-	VectorDataBase();
-	~VectorDataBase();
-	
+  VectorDataBase();
+  ~VectorDataBase();
+
 private:
   VectorDataBase(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-	
-} ;
+
+};
 
 } // end namespace otb
 

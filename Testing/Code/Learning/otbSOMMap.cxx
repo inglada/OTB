@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -44,7 +44,7 @@ int otbSOMMap(int argc, char* argv[])
   somMap->SetRegions(region);
   somMap->SetNumberOfComponentsPerPixel(3);
   somMap->Allocate();
-    
+
   // Filling with null pixels
   PixelType nullPixel;
   nullPixel.SetSize(3);
@@ -57,14 +57,14 @@ int otbSOMMap(int argc, char* argv[])
   winner.Fill(1);
   index.Fill(32);
   somMap->SetPixel(index,winner);
-    
+
   // Test of the GetWinner method
   SOMMapType::IndexType winnerIndex = somMap->GetWinner(winner);
-  if(winnerIndex!=index)
-    {
-      std::cout<<"Bad GetWinner function return."<<std::endl;
-      return EXIT_FAILURE;
-    }
+  if (winnerIndex!=index)
+  {
+    std::cout<<"Bad GetWinner function return."<<std::endl;
+    return EXIT_FAILURE;
+  }
 
 
   return EXIT_SUCCESS;

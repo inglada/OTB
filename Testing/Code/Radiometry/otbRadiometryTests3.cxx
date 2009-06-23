@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,21 +22,22 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbDEMCaracteristicsExtractorNew);
-REGISTER_TEST(otbDEMCaracteristicsExtractor);
-REGISTER_TEST(otbAtmosphericCorrectionParametersNew);
-REGISTER_TEST(otbFilterFunctionValuesTest);
-REGISTER_TEST(otbSIXSTraitsComputeAtmosphericParametersTest);
-REGISTER_TEST(otbAtmosphericRadiativeTermsNew);
-REGISTER_TEST(otbReflectanceToSurfaceReflectanceImageFilterNew);
-REGISTER_TEST(otbReflectanceToSurfaceReflectanceImageFilter);
-REGISTER_TEST(otbSurfaceAdjencyEffect6SCorrectionSchemeFilterNew);
-REGISTER_TEST(otbSurfaceAdjencyEffect6SCorrectionSchemeFilter);
-REGISTER_TEST(otbRomaniaReflectanceToRomaniaSurfaceReflectanceImageFilter);
+  REGISTER_TEST(otbDEMCaracteristicsExtractorNew);
+  REGISTER_TEST(otbDEMCaracteristicsExtractor);
+  REGISTER_TEST(otbAtmosphericCorrectionParametersNew);
+  REGISTER_TEST(otbFilterFunctionValuesTest);
+  REGISTER_TEST(otbSIXSTraitsTest);
+  REGISTER_TEST(otbSIXSTraitsComputeAtmosphericParametersTest);
+  REGISTER_TEST(otbAtmosphericRadiativeTermsNew);
+  REGISTER_TEST(otbReflectanceToSurfaceReflectanceImageFilterNew);
+  REGISTER_TEST(otbReflectanceToSurfaceReflectanceImageFilter);
+  REGISTER_TEST(otbSurfaceAdjencyEffect6SCorrectionSchemeFilterNew);
+  REGISTER_TEST(otbSurfaceAdjencyEffect6SCorrectionSchemeFilter);
+  REGISTER_TEST(otbRomaniaReflectanceToRomaniaSurfaceReflectanceImageFilter);
 }
 

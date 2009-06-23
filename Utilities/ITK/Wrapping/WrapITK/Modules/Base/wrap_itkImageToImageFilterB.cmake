@@ -7,12 +7,19 @@ WRAP_CLASS("itk::ImageToImageFilter" POINTER)
   WRAP_IMAGE_FILTER_COMBINATIONS("${stypes}" "${WRAP_ITK_RGB}")
   WRAP_IMAGE_FILTER_COMBINATIONS("${WRAP_ITK_RGB}" "${stypes}")
  
+  # scalar <-> RGBA
+  UNIQUE(stypes "UL;${WRAP_ITK_SCALAR}")
+  WRAP_IMAGE_FILTER_COMBINATIONS("${stypes}" "${WRAP_ITK_RGBA}")
+  WRAP_IMAGE_FILTER_COMBINATIONS("${WRAP_ITK_RGBA}" "${stypes}")
+ 
   # VectorImage <-> scalar
   UNIQUE(to_types "UC;${WRAP_ITK_SCALAR}")
     FOREACH(d ${WRAP_ITK_DIMS})
       FOREACH(t ${to_types})
-        WRAP_TEMPLATE("${ITKM_VI${t}${d}}${ITKM_I${t}${d}}" "${ITKT_VI${t}${d}},${ITKT_I${t}${d}}")
-        WRAP_TEMPLATE("${ITKM_I${t}${d}}${ITKM_VI${t}${d}}" "${ITKT_I${t}${d}},${ITKT_VI${t}${d}}")
+        FOREACH(t2 ${to_types})
+          WRAP_TEMPLATE("${ITKM_VI${t}${d}}${ITKM_I${t2}${d}}" "${ITKT_VI${t}${d}},${ITKT_I${t2}${d}}")
+          WRAP_TEMPLATE("${ITKM_I${t2}${d}}${ITKM_VI${t}${d}}" "${ITKT_I${t2}${d}},${ITKT_VI${t}${d}}")
+        ENDFOREACH(t2)
       ENDFOREACH(t)
     ENDFOREACH(d)
       

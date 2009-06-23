@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,17 +21,19 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbLineSpatialObjectList);
-REGISTER_TEST(otbExtractROI);
-REGISTER_TEST(otbExtractROI2);
-REGISTER_TEST(otbExtractROINew);
-REGISTER_TEST(otbExtractROI_RGB);
-REGISTER_TEST(otbMultiChannelExtractROI );
-REGISTER_TEST(otbMultiChannelExtractROINew );
-REGISTER_TEST(otbTestMultiExtractMultiUpdate);
+  REGISTER_TEST(otbLineSpatialObjectList);
+  REGISTER_TEST(otbExtractROI);
+  REGISTER_TEST(otbExtractROI2);
+  REGISTER_TEST(otbExtractROINew);
+  REGISTER_TEST(otbExtractROI_RGB);
+  REGISTER_TEST(otbMultiChannelExtractROI );
+  REGISTER_TEST(otbMultiChannelExtractROINew );
+  REGISTER_TEST(otbTestMultiExtractMultiUpdate);
+  REGISTER_TEST(otbVectorDataExtractROINew);
+  REGISTER_TEST(otbVectorDataExtractROI);
 }

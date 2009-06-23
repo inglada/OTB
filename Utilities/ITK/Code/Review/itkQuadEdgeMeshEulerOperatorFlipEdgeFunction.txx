@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorFlipEdgeFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2008-07-08 16:23:34 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2009-02-07 17:19:59 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -61,7 +61,7 @@ PrintSelf( std::ostream& os, Indent indent ) const
     case EXISTING_OPPOSITE_EDGE: 
       os << "EXISTING_OPPOSITE_EDGE" <<std::endl;
       break;
-  }
+    }
 }
 
 template < class TMesh, class TQEType >
@@ -69,6 +69,7 @@ void
 QuadEdgeMeshEulerOperatorFlipEdgeFunction< TMesh, TQEType >::
 CheckStatus( QEType* h )
 {
+#ifndef NDEBUG
   if( h == (QEType*)0 )
     {
     m_EdgeStatus = EDGE_NULL;
@@ -80,6 +81,7 @@ CheckStatus( QEType* h )
     m_EdgeStatus = MESH_NULL;
     return;
     }
+#endif
    
   if( !h->IsInternal( ) )
     {
@@ -130,7 +132,7 @@ Evaluate( QEType* h )
   CheckStatus( h );
 
   switch( m_EdgeStatus )
-  {
+    {
     default:
     case STANDARD_CONFIG:
       return Process( h );
@@ -152,7 +154,7 @@ Evaluate( QEType* h )
     case EXISTING_OPPOSITE_EDGE:
       itkDebugMacro( "The opposite edge already exists." );
       return( (QEType*) 0 );
-  }
+    }
 }
 
 template < class TMesh, class TQEType >

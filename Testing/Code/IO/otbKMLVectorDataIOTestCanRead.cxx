@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,10 +27,10 @@ int otbKMLVectorDataIOTestCanRead(int argc, char* argv[])
   KMLVectorDataIOType::Pointer object = KMLVectorDataIOType::New();
   bool lCanRead = object->CanReadFile(argv[1]);
   if ( lCanRead == false)
-    {
-      std::cerr << "Erreur otb::KMLVectorDataIO : impossible to open the file "<<argv[1]<<"."<<std::endl;
-      return EXIT_FAILURE;
-    }
-  
+  {
+    std::cerr << "Erreur otb::KMLVectorDataIO : impossible to open the file "<<argv[1]<<"."<<std::endl;
+    return EXIT_FAILURE;
+  }
+
   return EXIT_SUCCESS;
 }

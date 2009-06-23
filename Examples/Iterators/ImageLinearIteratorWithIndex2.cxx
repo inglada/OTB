@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -43,14 +43,14 @@ int main( int argc, char *argv[] )
 {
   // Verify the number of parameters on the command line.
   if ( argc < 3 )
-    {
+  {
     std::cerr << "Missing parameters. " << std::endl;
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0]
               << " input4DImageFile output3DImageFile"
               << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 // Software Guide : BeginLatex
 //
@@ -58,7 +58,7 @@ int main( int argc, char *argv[] )
 //
 // Software Guide : EndLatex
 
- 
+
 // Software Guide : BeginCodeSnippet
   typedef unsigned char               PixelType;
   typedef itk::Image< PixelType, 3 >  Image3DType;
@@ -71,15 +71,15 @@ int main( int argc, char *argv[] )
   reader4D->SetFileName( argv[1] );
 
   try
-    {
+  {
     reader4D->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch ( itk::ExceptionObject & excp )
+  {
     std::cerr << "Error writing the image" << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
 
 
@@ -103,20 +103,20 @@ int main( int argc, char *argv[] )
   Spacing3DType     spacing3D;
   Origin3DType      origin3D;
 
-  Image4DType::RegionType region4D = image4D->GetBufferedRegion(); 
+  Image4DType::RegionType region4D = image4D->GetBufferedRegion();
 
   Index4DType       index4D   = region4D.GetIndex();
   Size4DType        size4D    = region4D.GetSize();
   Spacing4DType     spacing4D = image4D->GetSpacing();
   Origin4DType      origin4D  = image4D->GetOrigin();
 
-  for( unsigned int i=0; i < 3; i++)
-    {
+  for ( unsigned int i=0; i < 3; i++)
+  {
     size3D[i]    = size4D[i];
     index3D[i]   = index4D[i];
     spacing3D[i] = spacing4D[i];
     origin3D[i]  = origin4D[i];
-    }
+  }
 
   image3D->SetSpacing( spacing3D );
   image3D->SetOrigin(  origin3D  );
@@ -134,23 +134,23 @@ int main( int argc, char *argv[] )
 
   const unsigned int timeLength = region4D.GetSize()[3];
 
-  typedef itk::ImageLinearConstIteratorWithIndex< 
-                                  Image4DType > IteratorType;
+  typedef itk::ImageLinearConstIteratorWithIndex<
+  Image4DType > IteratorType;
 
   IteratorType it( image4D, region4D );
   it.SetDirection( 3 ); // Walk along time dimension
   it.GoToBegin();
-  while( !it.IsAtEnd() )
-    { 
+  while ( !it.IsAtEnd() )
+  {
     SumType sum = itk::NumericTraits< SumType >::Zero;
     it.GoToBeginOfLine();
     index4D = it.GetIndex();
-    while( !it.IsAtEndOfLine() )
-      {
-       sum += it.Get();
-       ++it;
-      }
-    MeanType mean = static_cast< MeanType >( sum ) / 
+    while ( !it.IsAtEndOfLine() )
+    {
+      sum += it.Get();
+      ++it;
+    }
+    MeanType mean = static_cast< MeanType >( sum ) /
                     static_cast< MeanType >( timeLength );
 
     index3D[0] = index4D[0];
@@ -159,7 +159,7 @@ int main( int argc, char *argv[] )
 
     image3D->SetPixel( index3D, static_cast< PixelType >( mean ) );
     it.NextLine();
-    }
+  }
 
 
 // Software Guide : EndCodeSnippet
@@ -176,7 +176,7 @@ int main( int argc, char *argv[] )
 // in which they are placed in the line, but do not states
 // in what order one line will be visited with respect to
 // other lines.  Here we simply take advantage of knowing
-// the first three components of the 4D iterator index, 
+// the first three components of the 4D iterator index,
 // and use them to place the resulting mean value in the
 // output 3D image.
 //
@@ -185,17 +185,17 @@ int main( int argc, char *argv[] )
   Writer3DType::Pointer writer3D = Writer3DType::New();
   writer3D->SetFileName( argv[2] );
   writer3D->SetInput( image3D );
-  
+
   try
-    {
+  {
     writer3D->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch ( itk::ExceptionObject & excp )
+  {
     std::cerr << "Error writing the image" << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
 }

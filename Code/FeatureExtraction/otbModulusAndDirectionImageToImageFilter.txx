@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -46,8 +46,8 @@ ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutput
 SetInput( const InputImageType *input)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->itk::ProcessObject::SetNthInput(0, 
-                                   const_cast< InputImageType * >( input ) );
+  this->itk::ProcessObject::SetNthInput(0,
+                                        const_cast< InputImageType * >( input ) );
 }
 
 template <class TInputImage, class TInputImageDirection, class TOutputImage >
@@ -56,38 +56,38 @@ ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutput
 SetInputDirection( const InputImageDirectionType *direction)
 {
   // Process object is not const-correct so the const_cast is required here
-  this->itk::ProcessObject::SetNthInput(1, 
-                                   const_cast< InputImageDirectionType * >( direction ) );
+  this->itk::ProcessObject::SetNthInput(1,
+                                        const_cast< InputImageDirectionType * >( direction ) );
 }
 
-/** Return the input image modulus */  
+/** Return the input image modulus */
 template <class TInputImage, class TInputImageDirection, class TOutputImage >
 const typename ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutputImage>::InputImageType *
 ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutputImage>::
 GetInput(void)
 {
   if (this->GetNumberOfInputs() < 1)
-    {
+  {
     return 0;
-    }
-  
+  }
+
   return static_cast<const TInputImage * >
-    (this->itk::ProcessObject::GetInput(0) );
+         (this->itk::ProcessObject::GetInput(0) );
 }
 
-/** Return the intput image direction */  
+/** Return the intput image direction */
 template <class TInputImage, class TInputImageDirection, class TOutputImage >
 const typename ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutputImage>::InputImageDirectionType *
 ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutputImage>::
 GetInputDirection(void)
 {
   if (this->GetNumberOfInputs() < 2)
-    {
+  {
     return 0;
-    }
-  
+  }
+
   return static_cast<const TInputImageDirection * >
-    (this->itk::ProcessObject::GetInput(1) );
+         (this->itk::ProcessObject::GetInput(1) );
 
 }
 
@@ -95,12 +95,12 @@ GetInputDirection(void)
  * Standard "PrintSelf" method
  */
 template <class TInputImage, class TInputImageDirection, class TOutputImage >
-void 
+void
 ModulusAndDirectionImageToImageFilter<TInputImage, TInputImageDirection, TOutputImage>::
 PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf( os, indent );
- 
+
 }
 
 } // end namespace otb

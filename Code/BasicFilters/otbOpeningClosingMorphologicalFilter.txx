@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -24,7 +24,8 @@
 #include "itkGrayscaleMorphologicalClosingImageFilter.h"
 #include "itkProgressAccumulator.h"
 
-namespace otb {
+namespace otb
+{
 /**
  * Constructor
  */
@@ -32,8 +33,8 @@ template <class TInputImage,class TOutputImage, class TKernel>
 OpeningClosingMorphologicalFilter<TInputImage, TOutputImage, TKernel>
 ::OpeningClosingMorphologicalFilter()
 {
-	m_Kernel.SetRadius(1);
-	m_Kernel.CreateStructuringElement();
+  m_Kernel.SetRadius(1);
+  m_Kernel.CreateStructuringElement();
 }
 
 /**
@@ -44,7 +45,7 @@ void
 OpeningClosingMorphologicalFilter<TInputImage, TOutputImage, TKernel>
 ::GenerateData()
 {
-  // Filters Typedefs (this class is actually a composite filter) 
+  // Filters Typedefs (this class is actually a composite filter)
   typedef itk::GrayscaleMorphologicalOpeningImageFilter<InputImageType,OutputImageType, KernelType> OpenFilterType;
   typedef itk::GrayscaleMorphologicalClosingImageFilter<InputImageType,OutputImageType,KernelType> CloseFilterType;
   // Filters initialisation
@@ -58,8 +59,8 @@ OpeningClosingMorphologicalFilter<TInputImage, TOutputImage, TKernel>
   progress->SetMiniPipelineFilter(this);
   progress->RegisterInternalFilter(opening, .5f);
   progress->RegisterInternalFilter(closing, .5f);
-  // Internal Pipeline connexion 
-  closing->SetInput(this->GetInput()); 
+  // Internal Pipeline connexion
+  closing->SetInput(this->GetInput());
   opening->SetInput(closing->GetOutput());
   // Output connexion
   opening->GraftOutput(this->GetOutput());

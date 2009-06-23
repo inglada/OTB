@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,12 +34,12 @@ int otbOrientationPath( int argc, char * argv[] )
   typedef itk::PolyLineParametricPath< Dimension >       PathType;
   typedef otb::OrientationPathFunction<PathType>         FunctionType;
   typedef FunctionType::RealType                         RealType;
-  
+
   PathType::ContinuousIndexType cindex;
   PathType::Pointer pathElt = PathType::New();
 
   Theta *= M_PI/180.;
-	
+
   pathElt->Initialize();
 
   cindex[0]=30;
@@ -55,13 +55,13 @@ int otbOrientationPath( int argc, char * argv[] )
   RealType ResultTheta = function->Evaluate();
   std::cout.precision(10);
   std::cout << "Orientation found : " << ResultTheta <<std::endl;
-  if( vcl_abs(static_cast<double>(ResultTheta-Theta))>=10e-15)
-    {
-      std::cout << "Error in Theta estimation:" <<(ResultTheta-Theta)<<std::endl;
-      return EXIT_FAILURE;
-    }
-	
- 
+  if ( vcl_abs(static_cast<double>(ResultTheta-Theta))>=10e-15)
+  {
+    std::cout << "Error in Theta estimation:" <<(ResultTheta-Theta)<<std::endl;
+    return EXIT_FAILURE;
+  }
+
+
 
   return EXIT_SUCCESS;
 }

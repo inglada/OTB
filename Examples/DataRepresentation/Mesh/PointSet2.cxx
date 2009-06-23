@@ -13,8 +13,8 @@
   for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -30,14 +30,14 @@
 //  example illustrates how to interact with the point container and how to use
 //  point iterators.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 #include "itkPointSet.h"
 
 int main(int, char *[])
 {
-  typedef itk::PointSet< unsigned short, 3 > PointSetType;
+  typedef itk::PointSet< unsigned short, 2 > PointSetType;
 
   //  Software Guide : BeginLatex
   //
@@ -47,7 +47,7 @@ int main(int, char *[])
   //
   //  \index{itk::PointSet!PointsContainer}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef PointSetType::PointsContainer      PointsContainer;
@@ -74,7 +74,7 @@ int main(int, char *[])
   //  \index{PointsContainer!New()}
   //  \index{PointsContainer!Pointer}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
@@ -87,14 +87,16 @@ int main(int, char *[])
   //  Points can now be defined using the \code{PointType} trait from the
   //  PointSet.
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef PointSetType::PointType   PointType;
   PointType p0;
   PointType p1;
-  p0[0] = -1.0; p0[1] = 0.0;  // Point 0 = {-1,0 }
-  p1[0] =  1.0; p1[1] = 0.0;  // Point 1 = { 1,0 }
+  p0[0] = -1.0;
+  p0[1] = 0.0;  // Point 0 = {-1,0 }
+  p1[0] =  1.0;
+  p1[1] = 0.0;  // Point 1 = { 1,0 }
   // Software Guide : EndCodeSnippet
 
 
@@ -109,7 +111,7 @@ int main(int, char *[])
   //  \index{itk::VectorContainer!InsertElement()}
   //  \index{itk::MapContainer!InsertElement()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   unsigned int pointId = 0;
@@ -128,7 +130,7 @@ int main(int, char *[])
   //
   //  \index{itk::PointSet!SetPoints()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   pointSet->SetPoints( points );
@@ -145,11 +147,11 @@ int main(int, char *[])
   //  \index{itk::PointSet!GetPoints()}
   //  \index{PointsContainer!Pointer}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
-  PointsContainer::Pointer  points2 = pointSet->GetPoints();   
+  PointsContainer::Pointer  points2 = pointSet->GetPoints();
   // Software Guide : EndCodeSnippet
 
 
@@ -165,7 +167,7 @@ int main(int, char *[])
   //
   //  \index{PointsContainer!Iterator}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   typedef PointsContainer::Iterator     PointsIterator;
@@ -180,10 +182,10 @@ int main(int, char *[])
   //
   //  \index{PointsContainer!Begin()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  PointsIterator  pointIterator = points->Begin();  
+  PointsIterator  pointIterator = points->Begin();
   // Software Guide : EndCodeSnippet
 
 
@@ -200,16 +202,16 @@ int main(int, char *[])
   //  \index{PointsContainer!End()}
   //  \index{PointsContainer!Iterator}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
   PointsIterator end = points->End();
-  while( pointIterator != end ) 
-    {
+  while ( pointIterator != end )
+  {
     PointType p = pointIterator.Value();   // access the point
     std::cout << p << std::endl;           // print the point
     ++pointIterator;                       // advance to next point
-    }
+  }
   // Software Guide : EndCodeSnippet
 
 
@@ -219,7 +221,7 @@ int main(int, char *[])
   //  not a valid iterator. This is called a past-end iterator in order to
   //  indicate that it is the value resulting from advancing one step after
   //  visiting the last element in the container.
-  // 
+  //
   //  The number of elements stored in a container can be queried with the
   //  \code{Size()} method. In the case of the PointSet, the following two
   //  lines of code are equivalent, both of them returning the number of points
@@ -229,7 +231,7 @@ int main(int, char *[])
   //  \index{itk::PointSet!GetPoints()}
   //  \index{PointsContainer!Size()}
   //
-  //  Software Guide : EndLatex 
+  //  Software Guide : EndLatex
 
 
   // Software Guide : BeginCodeSnippet
@@ -237,7 +239,7 @@ int main(int, char *[])
   std::cout << pointSet->GetPoints()->Size() << std::endl;
   // Software Guide : EndCodeSnippet
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

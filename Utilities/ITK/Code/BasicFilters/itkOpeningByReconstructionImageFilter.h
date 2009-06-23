@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOpeningByReconstructionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006-03-22 16:26:43 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2009-01-28 18:14:36 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,7 +44,7 @@ namespace itk {
  * Soille's book "Morphological Image Analysis: Principles and
  * Applications", Second Edition, Springer, 2003.
  * 
- * \author Gaëtan Lehmann. Biologie du Développement et de la Reproduction, INRA of Jouy-en-Josas, France.
+ * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * \sa GrayscaleMorphologicalOpeningImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
@@ -57,17 +57,17 @@ public:
   /** Standard class typedefs. */
   typedef OpeningByReconstructionImageFilter Self;
   typedef ImageToImageFilter<TInputImage, TOutputImage>
-  Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+                                             Superclass;
+  typedef SmartPointer<Self>                 Pointer;
+  typedef SmartPointer<const Self>           ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage InputImageType;
-  typedef TOutputImage OutputImageType;
+  typedef TInputImage                              InputImageType;
   typedef typename InputImageType::Pointer         InputImagePointer;
   typedef typename InputImageType::ConstPointer    InputImageConstPointer;
   typedef typename InputImageType::RegionType      InputImageRegionType;
   typedef typename InputImageType::PixelType       InputImagePixelType;
+  typedef TOutputImage                             OutputImageType;
   typedef typename OutputImageType::Pointer        OutputImagePointer;
   typedef typename OutputImageType::ConstPointer   OutputImageConstPointer;
   typedef typename OutputImageType::RegionType     OutputImageRegionType;
@@ -128,7 +128,7 @@ protected:
   /** OpeningByReconstructionImageFilter needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
-  void GenerateInputRequestedRegion() ;
+  void GenerateInputRequestedRegion();
 
   /** OpeningByReconstructionImageFilter will produce the entire output. */
   void EnlargeOutputRequestedRegion(DataObject *itkNotUsed(output));
@@ -141,10 +141,10 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   /** kernel or structuring element to use. */
-  KernelType m_Kernel ;
+  KernelType          m_Kernel;
   bool                m_FullyConnected;
   bool                m_PreserveIntensities;
-} ; // end of class
+}; // end of class
 
 } // end namespace itk
   
@@ -153,5 +153,3 @@ private:
 #endif
 
 #endif
-
-

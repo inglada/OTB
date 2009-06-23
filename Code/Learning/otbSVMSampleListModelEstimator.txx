@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,11 +25,11 @@
 
 namespace otb
 {
-template<class TInputSampleList, 
-         class TTrainingSampleList>
-SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
+template<class TInputSampleList,
+class TTrainingSampleList, class TMeasurementFunctor>
+SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList, TMeasurementFunctor>
 ::SVMSampleListModelEstimator(void):  SVMModelEstimator<ITK_TYPENAME TInputSampleList::MeasurementType,
-							ITK_TYPENAME TTrainingSampleList::MeasurementType>()
+    ITK_TYPENAME TTrainingSampleList::MeasurementType>()
 
 {
 
@@ -37,9 +37,9 @@ SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
 }
 
 
-template<class TInputSampleList, 
-         class TTrainingSampleList>
-SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
+template<class TInputSampleList,
+class TTrainingSampleList, class TMeasurementFunctor>
+SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList, TMeasurementFunctor>
 ::~SVMSampleListModelEstimator(void)
 {
 }
@@ -47,16 +47,16 @@ SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
 /*
  * PrintSelf
  */
-template<class TInputSampleList, 
-         class TTrainingSampleList>
+template<class TInputSampleList,
+class TTrainingSampleList, class TMeasurementFunctor>
 void
-SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
+SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList, TMeasurementFunctor>
 ::PrintSelf( std::ostream& os, itk::Indent indent ) const
-{  
+{
   // FIXME : print useful SVM information
 //   os << indent << "                   " << std::endl;
 //   os << indent << "Gaussian Models generated from the training data." << std::endl;
-//   os << indent << "TrainingSampleList: " ;
+//   os << indent << "TrainingSampleList: ";
 //   os << m_TrainingSampleList.GetPointer() << std::endl;
 //   os << indent << "Results printed in the superclass " << std::endl;
 //   os << indent << "                   " << std::endl;
@@ -71,14 +71,14 @@ SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList>
  */
 
 
-template<class TInputSampleList, 
-         class TTrainingSampleList>
+template<class TInputSampleList,
+class TTrainingSampleList, class TMeasurementFunctor>
 void
-SVMSampleListModelEstimator<TInputSampleList,  TTrainingSampleList>
+SVMSampleListModelEstimator<TInputSampleList, TTrainingSampleList, TMeasurementFunctor>
 ::BuildProblem()
 {
 
-    //Do some error checking
+  //Do some error checking
   InputSampleListPointer  inputSampleList = this->GetInputSampleList();
   TrainingSampleListPointer  trainingSampleList = this->GetTrainingSampleList();
 
@@ -88,8 +88,8 @@ SVMSampleListModelEstimator<TInputSampleList,  TTrainingSampleList>
   int trainingSampleListSize = trainingSampleList->Size();
 
   // Check if size of the two inputs are same
-  if( inputSampleListSize != trainingSampleListSize ) throw itk::ExceptionObject(__FILE__, __LINE__,"Input pointset size is not the same as the training pointset size.",ITK_LOCATION); 
-  
+  if ( inputSampleListSize != trainingSampleListSize ) throw itk::ExceptionObject(__FILE__, __LINE__,"Input pointset size is not the same as the training pointset size.",ITK_LOCATION);
+
 
   // Declaration of the iterators on the input and training images
 
@@ -101,22 +101,24 @@ SVMSampleListModelEstimator<TInputSampleList,  TTrainingSampleList>
   TrainingSampleListIteratorType trEnd = trainingSampleList->End();
 
 
-  
+
   // Erase the vector contents
   this->m_Measures.resize(0);
   this->m_Labels.resize(0);
-  
+
 
   otbMsgDebugMacro(  << " Input nb points " << inputSampleListSize );
   otbMsgDebugMacro(  << " Training nb points " << trainingSampleListSize );
-  
 
- //  otbMsgDebugMacro(  << " Before while " );
 
-  while(inIt!=inEnd && trIt!=trEnd)
-    {
+//  otbMsgDebugMacro(  << " Before while " );
 
-    // If label != 0 
+  MeasurementFunctorType mfunctor;
+
+  while (inIt!=inEnd && trIt!=trEnd)
+  {
+
+    // If label != 0
 
     typename TTrainingSampleList::MeasurementType label =
       trIt.GetMeasurementVector()[0];
@@ -128,22 +130,13 @@ SVMSampleListModelEstimator<TInputSampleList,  TTrainingSampleList>
     typename TInputSampleList::MeasurementVectorType value =
       inIt.GetMeasurementVector();
 
-    typename Superclass::MeasurementVectorType v;
-    
-    typename TInputSampleList::MeasurementVectorType::ConstIterator pIt = value.Begin();
-    typename TInputSampleList::MeasurementVectorType::ConstIterator pEnd = value.End();
+ 
 
-    while(pIt!=pEnd)
-      {
-      v.push_back(*pIt);
-      ++pIt;
-      }
-    
-    this->m_Measures.push_back(v);
-    
+    this->m_Measures.push_back(mfunctor(value));
+
     ++inIt;
     ++trIt;
-    }
+  }
 
   // otbMsgDebugMacro(  << " Before prepare data " );
   this->PrepareData();

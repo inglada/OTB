@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiThreader.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-05-26 00:24:36 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2009-02-06 20:53:07 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -54,17 +54,32 @@ extern "C"
   typedef void*(*c_void_cast)(void*);
 }
   
-// Initialize static member that controls global maximum number of threads : 0 => Not initialized.
-int MultiThreader::m_GlobalMaximumNumberOfThreads = 0;
+// Initialize static member that controls global maximum number of threads.
+int MultiThreader::m_GlobalMaximumNumberOfThreads = ITK_MAX_THREADS;
+
+// Initialize static member that controls global default number of threads : 0 => Not initialized.
 int MultiThreader::m_GlobalDefaultNumberOfThreads = 0;
+
 
 void MultiThreader::SetGlobalMaximumNumberOfThreads(int val)
 {
-  if (val == m_GlobalMaximumNumberOfThreads)
-    {
-    return;
-    }
   m_GlobalMaximumNumberOfThreads = val;
+  
+  if( m_GlobalMaximumNumberOfThreads > ITK_MAX_THREADS )
+    {
+    m_GlobalMaximumNumberOfThreads = ITK_MAX_THREADS;
+    }
+
+  if( m_GlobalMaximumNumberOfThreads < 1 )
+    {
+    m_GlobalMaximumNumberOfThreads = 1;
+    }
+
+  // If necessary reset the default to be used from now on.
+  if( m_GlobalDefaultNumberOfThreads > m_GlobalMaximumNumberOfThreads )
+    {
+    m_GlobalDefaultNumberOfThreads = m_GlobalMaximumNumberOfThreads;
+    }
 }
   
 int MultiThreader::GetGlobalMaximumNumberOfThreads()
@@ -74,11 +89,37 @@ int MultiThreader::GetGlobalMaximumNumberOfThreads()
 
 void MultiThreader::SetGlobalDefaultNumberOfThreads(int val)
 {
-  if (val == m_GlobalDefaultNumberOfThreads)
+  m_GlobalDefaultNumberOfThreads = val;
+
+  if( m_GlobalDefaultNumberOfThreads > m_GlobalMaximumNumberOfThreads )
+    {
+    m_GlobalDefaultNumberOfThreads = m_GlobalMaximumNumberOfThreads;
+    }
+
+  if( m_GlobalDefaultNumberOfThreads < 1 )
+    {
+    m_GlobalDefaultNumberOfThreads = 1;
+    }
+}
+
+void MultiThreader::SetNumberOfThreads( int numberOfThreads )
+{
+  if( m_NumberOfThreads == numberOfThreads )
     {
     return;
     }
-  m_GlobalDefaultNumberOfThreads = val;
+
+  m_NumberOfThreads = numberOfThreads;
+
+  if( m_NumberOfThreads > m_GlobalMaximumNumberOfThreads )
+    {
+    m_NumberOfThreads = m_GlobalMaximumNumberOfThreads;
+    }
+
+  if( m_NumberOfThreads < 1 )
+    {
+    m_NumberOfThreads = 1;
+    }
 }
 
 int MultiThreader::GetGlobalDefaultNumberOfThreads()
@@ -96,7 +137,7 @@ int MultiThreader::GetGlobalDefaultNumberOfThreads()
                                   itkGlobalDefaultNumberOfThreadsEnv))
     {
     m_GlobalDefaultNumberOfThreads = 
-      atoi(itkGlobalDefaultNumberOfThreadsEnv.c_str());
+      atoi( itkGlobalDefaultNumberOfThreadsEnv.c_str() );
     }
 
   // otherwise, set number of threads based on system information
@@ -159,10 +200,16 @@ int MultiThreader::GetGlobalDefaultNumberOfThreads()
     m_GlobalDefaultNumberOfThreads = num;
     }
 
-  // limit the number of threads to ITK_MAX_THREADS
-  if (m_GlobalDefaultNumberOfThreads > ITK_MAX_THREADS)
+  // limit the number of threads to m_GlobalMaximumNumberOfThreads
+  if (m_GlobalDefaultNumberOfThreads > m_GlobalMaximumNumberOfThreads )
     {
-    m_GlobalDefaultNumberOfThreads = ITK_MAX_THREADS;
+    m_GlobalDefaultNumberOfThreads = m_GlobalMaximumNumberOfThreads;
+    }
+
+  // verify that the default number of threads is larger than zero 
+  if (m_GlobalDefaultNumberOfThreads < 1 )
+    {
+    m_GlobalDefaultNumberOfThreads = 1;
     }
   
   return m_GlobalDefaultNumberOfThreads;
@@ -272,8 +319,7 @@ void MultiThreader::SingleMethodExecute()
     }
   
   // obey the global maximum number of threads limit
-  if (m_GlobalMaximumNumberOfThreads &&
-      m_NumberOfThreads > m_GlobalMaximumNumberOfThreads)
+  if ( m_NumberOfThreads > m_GlobalMaximumNumberOfThreads )
     {
     m_NumberOfThreads = m_GlobalMaximumNumberOfThreads;
     }
@@ -281,7 +327,7 @@ void MultiThreader::SingleMethodExecute()
   // sproc needs special initialization logic prior to spawning
   // threads
 #ifdef ITK_USE_SPROC
-# define STACK_SIZE 8*1024*1024
+  # define STACK_SIZE 8*1024*1024
   // set up the arena by the parent process ONLY if going to use more
   // than 1 threads
   if (!MultiThreader::m_Initialized && m_NumberOfThreads > 1)
@@ -450,8 +496,7 @@ void MultiThreader::MultipleMethodExecute()
 #endif
   
   // obey the global maximum number of threads limit
-  if (m_GlobalMaximumNumberOfThreads &&
-      m_NumberOfThreads > m_GlobalMaximumNumberOfThreads)
+  if ( m_NumberOfThreads > m_GlobalMaximumNumberOfThreads )
     {
     m_NumberOfThreads = m_GlobalMaximumNumberOfThreads;
     }
@@ -638,29 +683,28 @@ void MultiThreader::MultipleMethodExecute()
 #endif
 }
 
+// FIXME: Doesn't seem to be called anywhere...
 int MultiThreader::SpawnThread( ThreadFunctionType f, void *UserData )
 {
-  int id;
+  int id = 0;
   
 #ifdef ITK_USE_WIN32_THREADS
   DWORD              threadId;
 #endif
   
-  id = 0;
-  
   while ( id < ITK_MAX_THREADS )
     {
     if ( ! m_SpawnedThreadActiveFlagLock[id]  )
       {
-    m_SpawnedThreadActiveFlagLock[id] = MutexLock::New();
+      m_SpawnedThreadActiveFlagLock[id] = MutexLock::New();
       }
     m_SpawnedThreadActiveFlagLock[id]->Lock();
     if (m_SpawnedThreadActiveFlag[id] == 0)
       {
-    // We've got a useable thread id, so grab it
-    m_SpawnedThreadActiveFlag[id] = 1;
-    m_SpawnedThreadActiveFlagLock[id]->Unlock();
-    break;
+      // We've got a useable thread id, so grab it
+      m_SpawnedThreadActiveFlag[id] = 1;
+      m_SpawnedThreadActiveFlagLock[id]->Unlock();
+      break;
       }
     m_SpawnedThreadActiveFlagLock[id]->Unlock();
     
@@ -790,6 +834,8 @@ void MultiThreader::PrintSelf(std::ostream& os, Indent indent) const
   os << indent << "Thread Count: " << m_NumberOfThreads << "\n";
   os << indent << "Global Maximum Number Of Threads: " << 
     m_GlobalMaximumNumberOfThreads << std::endl;
+  os << indent << "Global Default Number Of Threads: " << 
+    m_GlobalDefaultNumberOfThreads << std::endl;
 }
 
 ITK_THREAD_RETURN_TYPE
@@ -805,8 +851,7 @@ MultiThreader
   try
     {
     (*threadInfoStruct->ThreadFunction)(threadInfoStruct);
-    threadInfoStruct->ThreadExitCode
-      = MultiThreader::ThreadInfoStruct::SUCCESS;
+    threadInfoStruct->ThreadExitCode = MultiThreader::ThreadInfoStruct::SUCCESS;
     }
   catch (ProcessAborted &)
     {
@@ -825,8 +870,7 @@ MultiThreader
     }
   catch (...)
     {
-    threadInfoStruct->ThreadExitCode
-      = MultiThreader::ThreadInfoStruct::UNKNOWN;
+    threadInfoStruct->ThreadExitCode = MultiThreader::ThreadInfoStruct::UNKNOWN;
     }
 
   return ITK_THREAD_RETURN_VALUE;
@@ -854,7 +898,7 @@ MultiThreader
     {
     itkExceptionMacro(<< "Unable to join thread.");
     }
-#endif      
+#endif
 
 
 #ifndef ITK_USE_WIN32_THREADS
@@ -867,8 +911,6 @@ MultiThreader
 #endif
     
 }
-
-
 
 ThreadProcessIDType
 MultiThreader
@@ -890,49 +932,49 @@ MultiThreader
   
 #ifdef ITK_USE_SPROC
   // Using sproc() on an SGI
-    pid_t threadHandle = 
-      sproc( this->SingleMethodProxy, PR_SALL, 
-       reinterpret_cast<void *>(threadInfo));
-    if ( threadHandle == -1)
-      {
-      itkExceptionMacro("sproc call failed. Code: " << errno << std::endl);
-      }
-    return threadHandle;
+  pid_t threadHandle = 
+    sproc( this->SingleMethodProxy, PR_SALL, 
+           reinterpret_cast<void *>(threadInfo));
+  if ( threadHandle == -1)
+    {
+    itkExceptionMacro("sproc call failed. Code: " << errno << std::endl);
+    }
+  return threadHandle;
 #endif
 
 
     
 #ifdef ITK_USE_PTHREADS
   // Using POSIX threads
-    pthread_attr_t attr;
-    pthread_t threadHandle;
+  pthread_attr_t attr;
+  pthread_t threadHandle;
 
 #ifdef ITK_HP_PTHREADS
-    pthread_attr_create( &attr );
+  pthread_attr_create( &attr );
 #else  
-    pthread_attr_init(&attr);
+  pthread_attr_init(&attr);
 #if !defined(__CYGWIN__)
-    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+  pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 #endif
 #endif
 
 #ifdef ITK_HP_PTHREADS
-    pthread_create( &threadHandle,
-        attr, reinterpret_cast<c_void_cast>(this->SingleMethodProxy),  
-        reinterpret_cast<void *>(threadInfo));
+  pthread_create( &threadHandle,
+                  attr, reinterpret_cast<c_void_cast>(this->SingleMethodProxy),  
+                  reinterpret_cast<void *>(threadInfo));
 #else
-    int                threadError;
-    threadError =
-      pthread_create( &threadHandle, &attr, reinterpret_cast<c_void_cast>(this->SingleMethodProxy),  
-          reinterpret_cast<void *>(threadInfo));
-    if (threadError != 0)
-      {
-      itkExceptionMacro(<< "Unable to create a thread.  pthread_create() returned "
-                    << threadError);
-      }
+  int                threadError;
+  threadError =
+    pthread_create( &threadHandle, &attr, reinterpret_cast<c_void_cast>(this->SingleMethodProxy),  
+                    reinterpret_cast<void *>(threadInfo));
+  if (threadError != 0)
+    {
+    itkExceptionMacro(<< "Unable to create a thread.  pthread_create() returned "
+                      << threadError);
+    }
 #endif
-    return threadHandle;
-#endif      
+  return threadHandle;
+#endif
 
 
 #ifndef ITK_USE_WIN32_THREADS

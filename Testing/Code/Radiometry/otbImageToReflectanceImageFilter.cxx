@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,14 +34,14 @@ int otbImageToReflectanceImageFilter(int argc, char * argv[])
   int month = 1;
 
   if (argc==17)
-    {
-      flux = static_cast<double>(atof(argv[16]));
-    }
+  {
+    flux = static_cast<double>(atof(argv[16]));
+  }
   else
-    {
-      day = atoi(argv[16]);
-      month = atoi(argv[17]); 
-    }
+  {
+    day = atoi(argv[16]);
+    month = atoi(argv[17]);
+  }
 
   const unsigned int Dimension = 2;
   typedef double PixelType;
@@ -50,13 +50,13 @@ int otbImageToReflectanceImageFilter(int argc, char * argv[])
   typedef otb::ImageFileReader<InputImageType>  ReaderType;
   typedef otb::ImageFileWriter<OutputImageType> WriterType;
   typedef otb::ImageToReflectanceImageFilter<InputImageType,OutputImageType> ImageToReflectanceImageFilterType;
-  typedef ImageToReflectanceImageFilterType::VectorType VectorType; 
+  typedef ImageToReflectanceImageFilterType::VectorType VectorType;
 
   ReaderType::Pointer reader  = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
   reader->SetFileName(inputFileName);
   writer->SetFileName(outputFileName);
-  reader->GenerateOutputInformation();
+  reader->UpdateOutputInformation();
 
   unsigned int nbOfComponent = reader->GetOutput()->GetNumberOfComponentsPerPixel();
 
@@ -68,13 +68,13 @@ int otbImageToReflectanceImageFilter(int argc, char * argv[])
   solarIllumination.Fill(0);
 
   for (unsigned int i=0; i<nbOfComponent; i++)
-    {
-      alpha[i] = static_cast<double>(atof(argv[i+4]));
-      beta[i] = static_cast<double>(atof(argv[i+8]));
-      solarIllumination[i] = static_cast<double>(atof(argv[i+12]));
-    }
-    
-      
+  {
+    alpha[i] = static_cast<double>(atof(argv[i+4]));
+    beta[i] = static_cast<double>(atof(argv[i+8]));
+    solarIllumination[i] = static_cast<double>(atof(argv[i+12]));
+  }
+
+
   // Instantiating object
   ImageToReflectanceImageFilterType::Pointer filter = ImageToReflectanceImageFilterType::New();
 
@@ -84,14 +84,14 @@ int otbImageToReflectanceImageFilter(int argc, char * argv[])
   filter->SetSolarIllumination(solarIllumination);
 
   if (argc==17)
-    {
-      filter->SetFluxNormalizationCoefficient(flux);
-    }
+  {
+    filter->SetFluxNormalizationCoefficient(flux);
+  }
   else
-    {
-      filter->SetDay(day);
-      filter->SetMonth(month); 
-    }
+  {
+    filter->SetDay(day);
+    filter->SetMonth(month);
+  }
 
   filter->SetInput(reader->GetOutput());
   writer->SetInput(filter->GetOutput());

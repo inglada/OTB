@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,7 +36,7 @@
 // techniques that will use the classification as a prior and add spatial
 // information to it in order to produce a better segmentation.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 
 #include "itkKdTree.h"
@@ -55,12 +55,12 @@
 int main( int argc, char * argv [] )
 {
 
-  if( argc < 2 )
-    {
+  if ( argc < 2 )
+  {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage :  " << argv[0] << "  inputImageFileName " << std::endl;
     return -1;
-    }
+  }
 
 
   typedef unsigned char       PixelType;
@@ -75,20 +75,20 @@ int main( int argc, char * argv [] )
   reader->SetFileName( argv[1] );
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch ( itk::ExceptionObject & excp )
+  {
     std::cerr << "Problem encoutered while reading image file : " << argv[1] << std::endl;
     std::cerr << excp << std::endl;
     return -1;
-    }
+  }
 
 
 
   // Software Guide : BeginCodeSnippet
-  
+
   // Create a List from the scalar image
   typedef itk::Statistics::ScalarImageToListAdaptor< ImageType >   AdaptorType;
 
@@ -103,9 +103,9 @@ int main( int argc, char * argv [] )
 
 
   // Create the K-d tree structure
-  typedef itk::Statistics::WeightedCentroidKdTreeGenerator< 
-                                                      AdaptorType > 
-                                                              TreeGeneratorType;
+  typedef itk::Statistics::WeightedCentroidKdTreeGenerator<
+  AdaptorType >
+  TreeGeneratorType;
 
   TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
 
@@ -123,12 +123,12 @@ int main( int argc, char * argv [] )
   const unsigned int numberOfClasses = 4;
 
   EstimatorType::ParametersType initialMeans( numberOfClasses );
-  initialMeans[0] = 25.0;   
-  initialMeans[1] = 125.0;  
-  initialMeans[2] = 250.0;  
+  initialMeans[0] = 25.0;
+  initialMeans[1] = 125.0;
+  initialMeans[2] = 250.0;
 
   estimator->SetParameters( initialMeans );
-  
+
   estimator->SetKdTree( treeGenerator->GetOutput() );
   estimator->SetMaximumIteration( 200 );
   estimator->SetCentroidPositionChangesThreshold(0.0);
@@ -136,18 +136,18 @@ int main( int argc, char * argv [] )
 
   EstimatorType::ParametersType estimatedMeans = estimator->GetParameters();
 
-  for ( unsigned int i = 0 ; i < numberOfClasses ; ++i )
-    {
+  for ( unsigned int i = 0; i < numberOfClasses; ++i )
+  {
     std::cout << "cluster[" << i << "] " << std::endl;
     std::cout << "    estimated mean : " << estimatedMeans[i] << std::endl;
-    }
+  }
 
 // Software Guide : EndCodeSnippet
 
 
 
   return EXIT_SUCCESS;
-  
+
 }
 
 

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -59,7 +59,7 @@ int otbVectorizationPathListFilter(int argc, char * argv[])
   filter->SetInputDirection(dirReader->GetOutput());
   filter->SetAmplitudeThreshold(thresh);
   filter->Update();
-      
+
   PathListType::Pointer pathList = filter->GetOutput();
   PathListIteratorType pathListIt = pathList->Begin();
 
@@ -67,23 +67,23 @@ int otbVectorizationPathListFilter(int argc, char * argv[])
   file.open(outfname);
   unsigned int counter = 0;
 
-  while(pathListIt!=pathList->End())
+  while (pathListIt!=pathList->End())
+  {
+    file<<"Path "<<counter<<": ";
+    for (VertexIteratorType vIt = pathListIt.Get()->GetVertexList()->Begin();
+         vIt!=pathListIt.Get()->GetVertexList()->End();
+         ++vIt)
     {
-      file<<"Path "<<counter<<": ";
-      for(VertexIteratorType vIt = pathListIt.Get()->GetVertexList()->Begin();
-	  vIt!=pathListIt.Get()->GetVertexList()->End();
-	  ++vIt)
-	{
-	  if(vIt!=pathListIt.Get()->GetVertexList()->Begin())
-	    {
-	      file<<", ";
-	    }
-	  file<<vIt.Value();
-	}
-      file<<std::endl;
-      ++pathListIt;
-      ++counter;
+      if (vIt!=pathListIt.Get()->GetVertexList()->Begin())
+      {
+        file<<", ";
+      }
+      file<<vIt.Value();
     }
+    file<<std::endl;
+    ++pathListIt;
+    ++counter;
+  }
   file.close();
 
   OutputImageType::Pointer output = OutputImageType::New();
@@ -95,12 +95,12 @@ int otbVectorizationPathListFilter(int argc, char * argv[])
   drawer->SetInput(output);
   drawer->SetInputPath(filter->GetOutput());
   drawer->SetPathValue(0);
-      
+
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(outImagefname);
   writer->SetInput(drawer->GetOutput());
   writer->Update();
-  
+
 
   return EXIT_SUCCESS;
 }

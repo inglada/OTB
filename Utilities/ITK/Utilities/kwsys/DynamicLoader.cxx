@@ -336,10 +336,13 @@ const char* DynamicLoader::LastError()
 
 // ---------------------------------------------------------------
 // 4. Implementation for BeOS
-#ifdef __BEOS__
+#if defined __BEOS__
+
 #include <string.h> // for strerror()
+
 #include <be/kernel/image.h>
 #include <be/support/Errors.h>
+
 #define DYNAMICLOADER_DEFINED 1
 
 namespace KWSYS_NAMESPACE

@@ -9,9 +9,9 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
-  
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,86 +22,56 @@
 #include "itkRandomImageSource.h"
 #include "otbChangeLabelImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "otbImageFileWriter.h"
+#include "otbImageFileReader.h"
 
-int otbChangeLabelImageFilterTest(int argc, char * argv[])
+int otbChangeLabelImageFilter(int argc, char * argv[])
 {
-  const unsigned int ImageDimension = 3;
- 
-  typedef otb::Image<unsigned short, ImageDimension>                   InputImageType;
-  typedef otb::VectorImage<unsigned char, ImageDimension>              OutputImageType;
-  typedef InputImageType::PixelType                                    InputPixelType; 
+  const unsigned int ImageDimension = 2;
+  const char * inputFilename(argv[1]);
+  const char * outFilename(argv[2]);
+  typedef unsigned short PixelType;
+  typedef otb::Image<PixelType, ImageDimension>                   InputImageType;
+  typedef otb::VectorImage<PixelType, ImageDimension>             OutputImageType;
+  typedef InputImageType::PixelType                                    InputPixelType;
   typedef OutputImageType::PixelType                                   OutputPixelType;
   typedef itk::ImageRegionIteratorWithIndex<InputImageType>            InputIteratorType;
   typedef itk::ImageRegionIteratorWithIndex<OutputImageType>           OutputIteratorType;
   typedef itk::RandomImageSource<InputImageType>                       SourceType;
   typedef otb::ChangeLabelImageFilter<InputImageType, OutputImageType> FilterType;
+  typedef otb::ImageFileWriter<OutputImageType> WriterType;
+  typedef otb::ImageFileReader<InputImageType> ReaderType;
 
   SourceType::Pointer source = SourceType::New();
   FilterType::Pointer filter = FilterType::New();
   InputImageType::Pointer  vectImage  = InputImageType::New();
-  
-  unsigned long sizeArray[ImageDimension] = { 3,3,3 };
 
-  InputPixelType upper = 10;
-  source->SetMin( itk::NumericTraits<InputPixelType>::Zero );
-  source->SetMax( upper );
-  source->SetSize( sizeArray );
-  source->SetNumberOfThreads(1);
+  WriterType::Pointer writer = WriterType::New();
+  ReaderType::Pointer reader = ReaderType::New();
 
-  filter->SetNumberOfComponentsPerPixel(5);
 
-  // Eliminate most labels
+  reader->SetFileName( inputFilename  );
+  writer->SetFileName( outFilename );
+  InputPixelType lower = static_cast<PixelType>(atoi(argv[3]));
+  InputPixelType upper = static_cast<PixelType>(atoi(argv[4]));
+
+  filter->SetNumberOfComponentsPerPixel(3);
   OutputPixelType background;
   background.SetSize( filter->GetNumberOfComponentsPerPixel() );
-  background.Fill(1);
-  InputPixelType maxRemainingLabel = 2;
-  for (InputPixelType i = maxRemainingLabel; i <= upper; i++) 
-    {
-      filter->SetChange( i, background );
-    }
+  background[0] = itk::NumericTraits<PixelType>::max();
+  background[1] = itk::NumericTraits<PixelType>::max();
+  background[2] = 0;
 
-  filter->Print( std::cout );
-  filter->SetInput( source->GetOutput() ); 
 
-  OutputImageType::Pointer outputImage = filter->GetOutput();
-  
-  filter->Update();
-  filter->SetFunctor(filter->GetFunctor());
-  
-  // Create an iterator for going through the image output
-  InputIteratorType  it( source->GetOutput(), source->GetOutput()->GetRequestedRegion() ); 
-  OutputIteratorType ot(outputImage, outputImage->GetRequestedRegion());
-  
-  bool pass = true;
- 
-  //  Check the content of the result image
-  std::cout << "Verification of the output " << std::endl;
-
-  ot.GoToBegin();
-  it.GoToBegin();
-  while( !ot.IsAtEnd() ) 
+  filter->SetChange( 0,0 );
+  for (InputPixelType i = lower; i <= upper; i++)
   {
-    const InputPixelType  input  = it.Get();
-    const OutputPixelType output = ot.Get();
-    std::cout <<  (double) input<<": ";
-    for(unsigned int j=0; j<filter->GetNumberOfComponentsPerPixel(); j++)
-      {
-	std::cout<< " " << (double)output[j]; 
-	if( (double)output[j] > (double)maxRemainingLabel )
-	  {
-	    pass = false;
-	  }
-      }
-    std::cout<<std::endl;
- 
-    if ( !pass )
-      {
-	return EXIT_FAILURE;
-      }
-    
-    ++ot;
-    ++it;
+    filter->SetChange( i, background );
   }
+
+  filter->SetInput( reader->GetOutput() );
+  writer->SetInput(filter->GetOutput());
+  writer->Update();
 
   return EXIT_SUCCESS;
 }

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,32 +33,32 @@ int otbMRFEnergyGaussian(int argc, char * argv[])
   typedef otb::MRFEnergyGaussian< ImageType, LabelType> MRFEnergyGaussianType;
   typedef MRFEnergyGaussianType::InputImagePixelType    InputImagePixelType;
   typedef MRFEnergyGaussianType::LabelledImagePixelType LabelledImagePixelType;
- 
+
   MRFEnergyGaussianType::Pointer object    = MRFEnergyGaussianType::New();
 
   InputImagePixelType    inPix = 10;
   LabelledImagePixelType inLab = 5;
 
-  if( object->GetSingleValue(inPix, inLab) != 25 )
-    {
-      return EXIT_FAILURE;
-    }
+  if ( object->GetSingleValue(inPix, inLab) != 25 )
+  {
+    return EXIT_FAILURE;
+  }
 
   inPix = 5;
   inLab = 10;
-  if( object->GetSingleValue(inPix, inLab) != 25 )
-    {
-      return EXIT_FAILURE;
-    }
+  if ( object->GetSingleValue(inPix, inLab) != 25 )
+  {
+    return EXIT_FAILURE;
+  }
 
   inPix = 0;
   inLab = 0;
-  if( object->GetSingleValue(inPix, inLab) != 0 )
-    {
-      return EXIT_FAILURE;
-    }
-  
-  
+  if ( object->GetSingleValue(inPix, inLab) != 0 )
+  {
+    return EXIT_FAILURE;
+  }
+
+
   return EXIT_SUCCESS;
 }
 

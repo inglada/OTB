@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -34,7 +34,7 @@ namespace otb
  * computed. If the smoothing filter is a morphological filter, this
  * is no longer true, as the filter is not linear. However, by keeping
  * the details possibly lost in the down-sampling operation, such a
- * decomposition can be used. 
+ * decomposition can be used.
  *
  * The MorphologicalPyramidAnalysisFilter provide such a
  * decomposition. It's computation process is an iterative analyse
@@ -48,7 +48,7 @@ namespace otb
  */
 template <class TInputImage, class TOutputImage, class TMorphoFilter>
 class ITK_EXPORT MorphologicalPyramidAnalysisFilter
-  : public ImageToImageListFilter<TInputImage,TOutputImage>
+      : public ImageToImageListFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard typedefs */
@@ -71,12 +71,12 @@ public:
   typedef typename OutputImageListType::Pointer        OutputImageListPointerType;
   typedef typename Superclass::OutputImagePointerType  OutputImagePointerType;
   /** Input related typedefs */
-  typedef typename Superclass::InputImageType          InputImageType;          
+  typedef typename Superclass::InputImageType          InputImageType;
   typedef typename Superclass::InputImageRegionType    InputImageRegionType;
   typedef typename InputImageType::Pointer             InputImagePointerType;
   typedef typename InputImageType::ConstPointer        InputImageConstPointerType;
-  typedef typename InputImageType::SizeType            SizeType;                 
-  typedef typename InputImageType::ValueType           ValueType;  
+  typedef typename InputImageType::SizeType            SizeType;
+  typedef typename InputImageType::ValueType           ValueType;
   typedef typename InputImageType::PixelType           PixelType;
   typedef typename InputImageType::SpacingType         SpacingType;
   /** Accessors */
@@ -109,19 +109,19 @@ public:
    * \return The brighter details extracted from the resampling operation.
    */
   OutputImageListType * GetInfDeci(void);
-  
-protected:  
+
+protected:
   /** Constructor */
   MorphologicalPyramidAnalysisFilter();
   /** Destructor */
   ~MorphologicalPyramidAnalysisFilter();
-  virtual void GenerateOutputInformation(){}; // does nothing
+  virtual void GenerateOutputInformation() {}; // does nothing
   /** Main computation method */
   virtual void GenerateData();
   /** Printself method */
-  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;  
+  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
- private:
+private:
   /** Number of levels of the algorithm */
   int m_NumberOfLevels;
   /** Subsampling scale used */

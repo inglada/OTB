@@ -10,10 +10,10 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
-  
+
 =========================================================================*/
 
 // this file defines the otbCommonTest for the test driver
@@ -22,17 +22,15 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 
 void RegisterTests()
 {
-REGISTER_TEST(otbImageTest);
-REGISTER_TEST(otbVectorImageTest);
-REGISTER_TEST(otbStreamingImageFileWriterTest);
-REGISTER_TEST(otbStreamingImageFilterTest);
-REGISTER_TEST(otbVectorImageFileReaderWriterTest);
-REGISTER_TEST(otbStreamingShortImageFileWriterTest);
-REGISTER_TEST(otbStreamingImageFileWriterWithFilterTest);
+  REGISTER_TEST(otbImageTest);
+  REGISTER_TEST(otbVectorImageTest);
+  REGISTER_TEST(otbStreamingImageFilterTest);
+  REGISTER_TEST(otbVectorImageFileReaderWriterTest);
+  REGISTER_TEST(otbStreamingShortImageFileWriterTest);
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiResolutionPDEDeformableRegistration.h,v $
   Language:  C++
-  Date:      $Date: 2008-07-05 00:22:25 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2009-01-26 21:45:51 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,8 +51,13 @@ namespace itk
  *
  * The input fixed and moving images are set via methods SetFixedImage
  * and SetMovingImage respectively. An initial deformation field maybe set via
- * SetInitialDeformationField or SetInput. If no initial field is set
- * a zero field is used as the initial condition.
+ * SetInitialDeformationField if is matches the characteristics of the coarsest
+ * pyramid level. If no such assumption can be made (e.g. the deformation field
+ * has the same characteristics as the input images), an initial deformation
+ * field can still be set via SetArbitraryInitialDeformationField or
+ * SetInput. The filter will then take care of mathching the coarsest level
+ * characteristics. If no initial field is set a zero field is used as the
+ * initial condition.
  *
  * MultiResolutionPyramidImageFilters are used to downsample the fixed
  * and moving images. A VectorExpandImageFilter is used to upsample
@@ -81,9 +86,9 @@ public:
   /** Standard class typedefs */
   typedef MultiResolutionPDEDeformableRegistration Self;
   typedef ImageToImageFilter<TDeformationField, TDeformationField>
-  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+                                                   Superclass;
+  typedef SmartPointer<Self>                       Pointer;
+  typedef SmartPointer<const Self>                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -93,17 +98,17 @@ public:
                 ImageToImageFilter );
 
   /** Fixed image type. */
-  typedef TFixedImage FixedImageType;
-  typedef typename FixedImageType::Pointer FixedImagePointer;
+  typedef TFixedImage                           FixedImageType;
+  typedef typename FixedImageType::Pointer      FixedImagePointer;
   typedef typename FixedImageType::ConstPointer FixedImageConstPointer;
 
   /** Moving image type. */
-  typedef TMovingImage MovingImageType;
-  typedef typename MovingImageType::Pointer MovingImagePointer;
+  typedef TMovingImage                           MovingImageType;
+  typedef typename MovingImageType::Pointer      MovingImagePointer;
   typedef typename MovingImageType::ConstPointer MovingImageConstPointer;
 
   /** Deformation field image type. */
-  typedef TDeformationField DeformationFieldType;
+  typedef TDeformationField                      DeformationFieldType;
   typedef typename DeformationFieldType::Pointer DeformationFieldPointer;
 
   /** ImageDimension. */
@@ -114,8 +119,8 @@ public:
   typedef Image<TRealType,itkGetStaticConstMacro(ImageDimension)> FloatImageType;
 
   /** The internal registration type. */
-  typedef PDEDeformableRegistrationFilter<
-    FloatImageType, FloatImageType, DeformationFieldType > RegistrationType;
+  typedef PDEDeformableRegistrationFilter<FloatImageType, FloatImageType, DeformationFieldType >
+                                             RegistrationType;
   typedef typename RegistrationType::Pointer RegistrationPointer;
 
   /** The default registration type. */
@@ -123,18 +128,18 @@ public:
     FloatImageType, FloatImageType, DeformationFieldType > DefaultRegistrationType;
 
   /** The fixed multi-resolution image pyramid type. */
-  typedef MultiResolutionPyramidImageFilter<
-    FixedImageType, FloatImageType > FixedImagePyramidType;
+  typedef MultiResolutionPyramidImageFilter<FixedImageType, FloatImageType >
+                                                  FixedImagePyramidType;
   typedef typename FixedImagePyramidType::Pointer FixedImagePyramidPointer;
 
   /** The moving multi-resolution image pyramid type. */
-  typedef MultiResolutionPyramidImageFilter<
-    MovingImageType, FloatImageType > MovingImagePyramidType;
+  typedef MultiResolutionPyramidImageFilter<MovingImageType, FloatImageType >
+                                                   MovingImagePyramidType;
   typedef typename MovingImagePyramidType::Pointer MovingImagePyramidPointer;
    
   /** The deformation field expander type. */
-  typedef VectorResampleImageFilter<
-    DeformationFieldType, DeformationFieldType > FieldExpanderType;
+  typedef VectorResampleImageFilter<DeformationFieldType, DeformationFieldType >
+                                               FieldExpanderType;
   typedef typename FieldExpanderType::Pointer  FieldExpanderPointer;
 
   /** Set the fixed image. */
@@ -149,12 +154,20 @@ public:
   /** Get the moving image. */
   const MovingImageType * GetMovingImage(void) const;
 
-  /** Set initial deformation field. */
+  /** Set initial deformation field to be used as is (no smoothing, no
+   *  subsampling at the coarsest level of the pyramid. */
   virtual void SetInitialDeformationField( DeformationFieldType * ptr )
-  {
+    {
     this->m_InitialDeformationField=ptr;
-    // itkExceptionMacro( << "This feature not implemented yet"  );
-  }
+    }
+
+  /** Set initial deformation field. No assumption is made on the
+   *  input. It will therefore be smoothed and resampled to match the
+   *  images characteristics at the coarsest level of the pyramid. */
+  virtual void SetArbitraryInitialDeformationField( DeformationFieldType * ptr )
+    {
+    this->SetInput( ptr ); 
+    }
 
   /** Get output deformation field. */
   const DeformationFieldType * GetDeformationField(void)
@@ -197,6 +210,12 @@ public:
 
   /** Set number of iterations per multi-resolution levels. */
   itkSetVectorMacro( NumberOfIterations, unsigned int, m_NumberOfLevels );
+
+  /** Set the moving image pyramid. */
+  itkSetObjectMacro( FieldExpander, FieldExpanderType );
+
+  /** Get the moving image pyramid. */
+  itkGetObjectMacro( FieldExpander, FieldExpanderType );
 
   /** Get number of iterations per multi-resolution levels. */
   virtual const unsigned int * GetNumberOfIterations() const

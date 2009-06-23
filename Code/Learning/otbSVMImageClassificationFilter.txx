@@ -10,15 +10,14 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #ifndef __otbSVMImageClassificationFilter_txx
 #define __otbSVMImageClassificationFilter_txx
 
-#include "itkProgressReporter.h"
 #include "otbSVMImageClassificationFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
@@ -51,10 +50,10 @@ const typename SVMImageClassificationFilter<TInputImage,TOutputImage,VMaxSampleD
 SVMImageClassificationFilter<TInputImage,TOutputImage,VMaxSampleDimension,TMaskImage>
 ::GetInputMask()
 {
-  if(this->GetNumberOfInputs()<2)
-    {
-      return 0;
-    }
+  if (this->GetNumberOfInputs()<2)
+  {
+    return 0;
+  }
   return  static_cast<const MaskImageType *>(this->itk::ProcessObject::GetInput(1));
 }
 
@@ -63,10 +62,10 @@ void
 SVMImageClassificationFilter<TInputImage,TOutputImage,VMaxSampleDimension,TMaskImage>
 ::BeforeThreadedGenerateData()
 {
-  if(!m_Model)
-    {
-      itkGenericExceptionMacro(<<"No model for classification");
-    }
+  if (!m_Model)
+  {
+    itkGenericExceptionMacro(<<"No model for classification");
+  }
 }
 
 template <class TInputImage, class TOutputImage, unsigned int VMaxSampleDimension, class TMaskImage>
@@ -74,9 +73,6 @@ void
 SVMImageClassificationFilter<TInputImage,TOutputImage,VMaxSampleDimension,TMaskImage>
 ::ThreadedGenerateData(const OutputImageRegionType &outputRegionForThread, int threadId)
 {
-  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
-  
-
   InputImageConstPointerType inputPtr     = this->GetInput();
   MaskImageConstPointerType inputMaskPtr  = this->GetInputMask();
   OutputImagePointerType     outputPtr    = this->GetOutput();
@@ -84,47 +80,83 @@ SVMImageClassificationFilter<TInputImage,TOutputImage,VMaxSampleDimension,TMaskI
   typedef itk::ImageRegionConstIterator<InputImageType> InputIteratorType;
   typedef itk::ImageRegionConstIterator<MaskImageType> MaskIteratorType;
   typedef itk::ImageRegionIterator<OutputImageType> OutputIteratorType;
-  
-  SVMFunctorType svmFunctor;
-  svmFunctor.SetNumberOfComponentsPerSample(inputPtr->GetNumberOfComponentsPerPixel());
-  svmFunctor.SetModel(m_Model->GetModel());
-  svmFunctor.AllocateProblem();
-  
-  
+
+  ListSamplePointerType listSample = ListSampleType::New();
+
   InputIteratorType inIt(inputPtr,outputRegionForThread);
-  inIt.GoToBegin();
 
   MaskIteratorType maskIt;
-  if(inputMaskPtr)
-    {
-      maskIt = MaskIteratorType(inputMaskPtr,outputRegionForThread);
-      maskIt.GoToBegin();
-    }
-    
-   OutputIteratorType outIt(outputPtr,outputRegionForThread);
-   outIt.GoToBegin();
+  if (inputMaskPtr)
+  {
+    maskIt = MaskIteratorType(inputMaskPtr,outputRegionForThread);
+    maskIt.GoToBegin();
+  }
+
+  unsigned int sampleSize = std::min(inputPtr->GetNumberOfComponentsPerPixel(),
+                                     VMaxSampleDimension);
 
   bool validPoint = true;
 
-  while(!outIt.IsAtEnd() && !inIt.IsAtEnd())
+  for (inIt.GoToBegin();!inIt.IsAtEnd();++inIt)
+  {
+    if (inputMaskPtr)
     {
-      if(inputMaskPtr)
-	{
-	  validPoint = maskIt.Get()>0;
-	  ++maskIt;
-	}
-      if(validPoint)
-	{
-	  outIt.Set(svmFunctor(inIt.Get()));
-	}
-      else
-	{
-	  outIt.Set(m_DefaultLabel);
-	}
-      progress.CompletedPixel();
-      ++inIt;
-      ++outIt;
+      validPoint = maskIt.Get()>0;
+      ++maskIt;
     }
+    if (validPoint)
+    {
+      MeasurementVectorType sample;
+      sample.Fill(itk::NumericTraits<ValueType>::ZeroValue());
+      for (unsigned int i=0;i<sampleSize;++i)
+      {
+        sample[i]=inIt.Get()[i];
+      }
+      listSample->PushBack(sample);
+    }
+  }
+  ClassifierPointerType classifier =ClassifierType::New();
+  classifier->SetModel(m_Model);
+  classifier->SetNumberOfClasses(m_Model->GetNumberOfClasses());
+  classifier->SetSample(listSample);
+  classifier->Update();
+
+  typename ClassifierType::OutputType::Pointer membershipSample = classifier->GetOutput();
+  typename ClassifierType::OutputType::ConstIterator sampleIter = membershipSample->Begin();
+  typename ClassifierType::OutputType::ConstIterator sampleLast = membershipSample->End();
+
+  OutputIteratorType outIt(outputPtr,outputRegionForThread);
+
+  outIt.GoToBegin();
+
+  while (!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
+  {
+    outIt.Set(m_DefaultLabel);
+    ++outIt;
+  }
+
+  outIt.GoToBegin();
+
+  if (inputMaskPtr)
+  {
+    maskIt.GoToBegin();
+  }
+  validPoint = true;
+
+  while (!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
+  {
+    if (inputMaskPtr)
+    {
+      validPoint = maskIt.Get()>0;
+      ++maskIt;
+    }
+    if (validPoint)
+    {
+      outIt.Set(sampleIter.GetClassLabel());
+      ++sampleIter;
+    }
+    ++outIt;
+  }
 }
 /**
  * PrintSelf Method

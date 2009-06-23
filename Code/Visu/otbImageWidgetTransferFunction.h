@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,22 +25,26 @@ PURPOSE.  See the above copyright notices for more information.
 namespace otb
 {
 /** \class ImageWidgetTransferFunction
- *  \brief Base class for visualisation transfer functions.
+ *  \brief <b>DEPRECATED</b>: Base class for visualisation transfer functions.
+ *
+ *  \deprecated use the new Visualization framework instead.
+ * \sa StandardImageViewer
+ *
  */
 template <class TPixel>
 class ITK_EXPORT ImageWidgetTransferFunction
-  : public itk::Object
+      : public itk::Object
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageWidgetTransferFunction      Self;
   typedef itk::Object                       Superclass;
   typedef itk::SmartPointer<Self>           Pointer;
   typedef itk::SmartPointer<const Self>     ConstPointer;
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageWidgetTransferFunction,Object);
-  
+
   /** Template parameters typedefs */
   typedef TPixel PixelType;
 
@@ -56,24 +60,27 @@ class ITK_EXPORT ImageWidgetTransferFunction
    * \param value the value to map
    * \return the screen printable value
    */
-  virtual unsigned char Map(PixelType value){return 0;};
+  virtual unsigned char Map(PixelType value)
+  {
+    return 0;
+  };
 
 protected:
   /** Constructor */
   ImageWidgetTransferFunction()
-    {
-      m_LowerBound = 0;
-      m_UpperBound = 255;
-    }
+  {
+    m_LowerBound = 0;
+    m_UpperBound = 255;
+  }
   /** Destructor */
   virtual ~ImageWidgetTransferFunction() {}
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const
-    {
-      Superclass::PrintSelf(os,indent);
-      os<<indent<<"Lower bound: "<<m_LowerBound<<std::endl;
-      os<<indent<<"Upper bound: "<<m_UpperBound<<std::endl;
-    }
+  {
+    Superclass::PrintSelf(os,indent);
+    os<<indent<<"Lower bound: "<<m_LowerBound<<std::endl;
+    os<<indent<<"Upper bound: "<<m_UpperBound<<std::endl;
+  }
 
 private:
   ImageWidgetTransferFunction(const Self&); //purposely not implemented
@@ -90,45 +97,45 @@ private:
  */
 template <class TPixel>
 class ITK_EXPORT ImageWidgetAffineTransferFunction
-  : public ImageWidgetTransferFunction<TPixel>
+      : public ImageWidgetTransferFunction<TPixel>
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageWidgetAffineTransferFunction   Self;
   typedef ImageWidgetTransferFunction<TPixel> Superclass;
   typedef itk::SmartPointer<Self>              Pointer;
   typedef itk::SmartPointer<const Self>        ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageWidgetAffineTransferFunction,ImageWidgetTransferFunction);
-  
+
   /** Template parameters typedefs */
   typedef TPixel PixelType;
 
   virtual unsigned char Map(PixelType value)
+  {
+    if (value<this->GetLowerBound())
     {
-      if(value<this->GetLowerBound())
-	{
-	  return 0;
-	}
-      else if(value>this->GetUpperBound())
-	{
-	  return 255;
-	}
-      else
-	{
-	  return static_cast<unsigned char>(vcl_floor(255.*(value-this->GetLowerBound())/(this->GetUpperBound()-this->GetLowerBound())+0.5));
-	}
-
+      return 0;
     }
- protected:
+    else if (value>this->GetUpperBound())
+    {
+      return 255;
+    }
+    else
+    {
+      return static_cast<unsigned char>(vcl_floor(255.*(value-this->GetLowerBound())/(this->GetUpperBound()-this->GetLowerBound())+0.5));
+    }
+
+  }
+protected:
   /** Constructor and  destructor */
-  ImageWidgetAffineTransferFunction(){}
-  ~ImageWidgetAffineTransferFunction(){}
- private:
+  ImageWidgetAffineTransferFunction() {}
+  ~ImageWidgetAffineTransferFunction() {}
+private:
   ImageWidgetAffineTransferFunction(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 };
@@ -139,47 +146,47 @@ class ITK_EXPORT ImageWidgetAffineTransferFunction
  */
 template <class TPixel>
 class ITK_EXPORT ImageWidgetSquareRootTransferFunction
-  : public ImageWidgetTransferFunction<TPixel>
+      : public ImageWidgetTransferFunction<TPixel>
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageWidgetSquareRootTransferFunction Self;
   typedef ImageWidgetTransferFunction<TPixel>   Superclass;
   typedef itk::SmartPointer<Self>                Pointer;
   typedef itk::SmartPointer<const Self>          ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageWidgetSquareRootTransferFunction,ImageWidgetTransferFunction);
-  
+
   /** Template parameters typedefs */
   typedef TPixel PixelType;
 
   virtual unsigned char Map(PixelType value)
+  {
+    if (value<this->GetLowerBound())
     {
-      if(value<this->GetLowerBound())
-	{
-	  return 0;
-	}
-      else if(value>this->GetUpperBound())
-	{
-	  return 255;
-	}
-      else
-	{
-	  double b = vcl_sqrt(static_cast<double>(this->GetLowerBound()));
-	  double a = 255. /(vcl_sqrt(static_cast<double>(this->GetUpperBound()))-b);
-	  return static_cast<unsigned char>(vcl_floor(a * (vcl_sqrt(static_cast<double>(value))-b)+0.5));
-	}
-
+      return 0;
     }
- protected:
+    else if (value>this->GetUpperBound())
+    {
+      return 255;
+    }
+    else
+    {
+      double b = vcl_sqrt(static_cast<double>(this->GetLowerBound()));
+      double a = 255. /(vcl_sqrt(static_cast<double>(this->GetUpperBound()))-b);
+      return static_cast<unsigned char>(vcl_floor(a * (vcl_sqrt(static_cast<double>(value))-b)+0.5));
+    }
+
+  }
+protected:
   /** Constructor and  destructor */
-  ImageWidgetSquareRootTransferFunction(){}
-  ~ImageWidgetSquareRootTransferFunction(){}
- private:
+  ImageWidgetSquareRootTransferFunction() {}
+  ~ImageWidgetSquareRootTransferFunction() {}
+private:
   ImageWidgetSquareRootTransferFunction(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 };
@@ -190,47 +197,47 @@ class ITK_EXPORT ImageWidgetSquareRootTransferFunction
  */
 template <class TPixel>
 class ITK_EXPORT ImageWidgetLogTransferFunction
-  : public ImageWidgetTransferFunction<TPixel>
+      : public ImageWidgetTransferFunction<TPixel>
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageWidgetLogTransferFunction      Self;
   typedef ImageWidgetTransferFunction<TPixel> Superclass;
   typedef itk::SmartPointer<Self>              Pointer;
   typedef itk::SmartPointer<const Self>        ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageWidgetLogTransferFunction,ImageWidgetTransferFunction);
-  
+
   /** Template parameters typedefs */
   typedef TPixel PixelType;
 
   virtual unsigned char Map(PixelType value)
+  {
+    if (value<this->GetLowerBound())
     {
-      if(value<this->GetLowerBound())
-	{
-	  return 0;
-	}
-      else if(value>this->GetUpperBound())
-	{
-	  return 255;
-	}
-      else
-	{
-	  double b = vcl_log(1.+static_cast<double>(this->GetLowerBound()));
-	  double a = 255. /(vcl_log(1.+static_cast<double>(this->GetUpperBound()))-b);
-	  return static_cast<unsigned char>(vcl_floor(a * (vcl_log(1.+static_cast<double>(value))-b)+0.5));
-	}
-
+      return 0;
     }
- protected:
+    else if (value>this->GetUpperBound())
+    {
+      return 255;
+    }
+    else
+    {
+      double b = vcl_log(1.+static_cast<double>(this->GetLowerBound()));
+      double a = 255. /(vcl_log(1.+static_cast<double>(this->GetUpperBound()))-b);
+      return static_cast<unsigned char>(vcl_floor(a * (vcl_log(1.+static_cast<double>(value))-b)+0.5));
+    }
+
+  }
+protected:
   /** Constructor and  destructor */
-  ImageWidgetLogTransferFunction(){}
-  ~ImageWidgetLogTransferFunction(){}
- private:
+  ImageWidgetLogTransferFunction() {}
+  ~ImageWidgetLogTransferFunction() {}
+private:
   ImageWidgetLogTransferFunction(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 };
@@ -240,48 +247,48 @@ class ITK_EXPORT ImageWidgetLogTransferFunction
  */
 template <class TPixel>
 class ITK_EXPORT ImageWidgetSquareTransferFunction
-  : public ImageWidgetTransferFunction<TPixel>
+      : public ImageWidgetTransferFunction<TPixel>
 {
- public:
+public:
   /** Standard typedefs */
   typedef ImageWidgetSquareTransferFunction      Self;
   typedef ImageWidgetTransferFunction<TPixel> Superclass;
   typedef itk::SmartPointer<Self>              Pointer;
   typedef itk::SmartPointer<const Self>        ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ImageWidgetSquareTransferFunction,ImageWidgetTransferFunction);
-  
+
   /** Template parameters typedefs */
   typedef TPixel PixelType;
 
 
   virtual unsigned char Map(PixelType value)
+  {
+    if (value<this->GetLowerBound())
     {
-      if(value<this->GetLowerBound())
-	{
-	  return 0;
-	}
-      else if(value>this->GetUpperBound())
-	{
-	  return 255;
-	}
-      else
-	{
-	  double b = vcl_pow(static_cast<double>(this->GetLowerBound()),2);
-	  double a = 255. /(vcl_pow(static_cast<double>(this->GetUpperBound()),2)-b);
-	  return static_cast<unsigned char>(vcl_floor(a * (vcl_pow(static_cast<double>(value),2)-b)+0.5));
-	}
-
+      return 0;
     }
- protected:
+    else if (value>this->GetUpperBound())
+    {
+      return 255;
+    }
+    else
+    {
+      double b = vcl_pow(static_cast<double>(this->GetLowerBound()),2);
+      double a = 255. /(vcl_pow(static_cast<double>(this->GetUpperBound()),2)-b);
+      return static_cast<unsigned char>(vcl_floor(a * (vcl_pow(static_cast<double>(value),2)-b)+0.5));
+    }
+
+  }
+protected:
   /** Constructor and  destructor */
-  ImageWidgetSquareTransferFunction(){}
-  ~ImageWidgetSquareTransferFunction(){}
- private:
+  ImageWidgetSquareTransferFunction() {}
+  ~ImageWidgetSquareTransferFunction() {}
+private:
   ImageWidgetSquareTransferFunction(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 };

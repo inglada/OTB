@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -37,7 +37,7 @@ UnaryFunctorNeighborhoodImageFilter<TInputImage,TOutputImage,TFunction>
 ::UnaryFunctorNeighborhoodImageFilter()
 {
   this->SetNumberOfRequiredInputs( 1 );
-  m_Radius = 1;
+  m_Radius.Fill(1);
 }
 template <class TInputImage, class TOutputImage, class TFunction  >
 void
@@ -46,32 +46,34 @@ UnaryFunctorNeighborhoodImageFilter<TInputImage,TOutputImage,TFunction>
 {
   // call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
-  
+
   // get pointers to the input and output
   typename Superclass::InputImagePointer  inputPtr =
     const_cast< TInputImage * >( this->GetInput());
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
-  
+
   if ( !inputPtr || !outputPtr )
-    {
+  {
     return;
-    }
+  }
   // get a copy of the input requested region (should equal the output
   // requested region)
   typename TInputImage::RegionType inputRequestedRegion;
   inputRequestedRegion = inputPtr->GetRequestedRegion();
-  
+
   // pad the input requested region by the operator radius
   inputRequestedRegion.PadByRadius( m_Radius );
 
+
+
   // crop the input requested region at the input's largest possible region
   if ( inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion()) )
-    {
+  {
     inputPtr->SetRequestedRegion( inputRequestedRegion );
     return;
-    }
+  }
   else
-    {
+  {
     // Couldn't crop the region (requested region is outside the largest
     // possible region).  Throw an exception.
 
@@ -82,12 +84,12 @@ UnaryFunctorNeighborhoodImageFilter<TInputImage,TOutputImage,TFunction>
     itk::InvalidRequestedRegionError e(__FILE__, __LINE__);
     itk::OStringStream msg;
     msg << this->GetNameOfClass()
-        << "::GenerateInputRequestedRegion()";
+    << "::GenerateInputRequestedRegion()";
     e.SetLocation(msg.str().c_str());
     e.SetDescription("Requested region is (at least partially) outside the largest possible region.");
     e.SetDataObject(inputPtr);
     throw e;
-    }
+  }
 }
 
 /**
@@ -97,20 +99,23 @@ template <class TInputImage, class TOutputImage, class TFunction >
 void
 UnaryFunctorNeighborhoodImageFilter<TInputImage, TOutputImage, TFunction>
 ::ThreadedGenerateData( const OutputImageRegionType &outputRegionForThread, int threadId)
-{ 
+{
   itk::ZeroFluxNeumannBoundaryCondition<TInputImage> nbc;
 
 // We use dynamic_cast since inputs are stored as DataObjects.  The
   // ImageToImageFilter::GetInput(int) always returns a pointer to a
   // TInputImage so it cannot be used for the second input.
   InputImagePointer inputPtr
-	  = dynamic_cast<const TInputImage*>(ProcessObjectType::GetInput(0));
+  = dynamic_cast<const TInputImage*>(ProcessObjectType::GetInput(0));
   OutputImagePointer outputPtr = this->GetOutput(0);
 
   RadiusType r;
-  r.Fill(m_Radius);
+
+  r[0]=m_Radius[0];
+  r[1]=m_Radius[1];
+
   NeighborhoodIteratorType neighInputIt;
-    
+
   itk::ImageRegionIterator<TOutputImage> outputIt;
 
 
@@ -124,27 +129,27 @@ UnaryFunctorNeighborhoodImageFilter<TInputImage, TOutputImage, TFunction>
 
   // support progress methods/callbacks
   itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
-  
+
   // Process each of the boundary faces.  These are N-d regions which border
   // the edge of the buffer.
   for (fit=faceList.begin(); fit != faceList.end(); ++fit)
-    { 
+  {
     neighInputIt = itk::ConstNeighborhoodIterator<TInputImage>(r, inputPtr, *fit);
-      
+
     outputIt = itk::ImageRegionIterator<TOutputImage>(outputPtr, *fit);
     neighInputIt.OverrideBoundaryCondition(&nbc);
     neighInputIt.GoToBegin();
 
     while ( ! outputIt.IsAtEnd() )
-      {
+    {
 
       outputIt.Set( m_Functor( neighInputIt) );
 
       ++neighInputIt;
       ++outputIt;
       progress.CompletedPixel();
-      }
-    }  
+    }
+  }
 }
 
 } // end namespace otb

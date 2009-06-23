@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,7 +27,7 @@
 int otbImageViewerWithMultiBandFilter( int argc, char * argv[] )
 {
   char * filename = argv[1];
-      
+
   // Parse command line parameters
   typedef double PixelType;
   typedef otb::ImageViewer<PixelType>  ImageViewerType;
@@ -35,7 +35,7 @@ int otbImageViewerWithMultiBandFilter( int argc, char * argv[] )
   typedef ImageViewerType::SingleImageType ImageType;
   typedef itk::SobelEdgeDetectionImageFilter<ImageType,ImageType> FilterType;
   typedef otb::PerBandVectorImageFilter<VectorImageType,VectorImageType,FilterType>
-    PerBandFilterType;
+  PerBandFilterType;
   typedef otb::ImageFileReader<VectorImageType> ReaderType;
 
   // instantiation
@@ -56,8 +56,8 @@ int otbImageViewerWithMultiBandFilter( int argc, char * argv[] )
 
   // build the app
   viewer->Show();
-  Fl::check();     
- 
+  Fl::check();
+
   return EXIT_SUCCESS;
 }
 

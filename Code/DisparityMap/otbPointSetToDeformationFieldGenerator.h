@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -23,35 +23,35 @@ PURPOSE.  See the above copyright notices for more information.
 namespace otb
 {
 namespace Functor
-  {
-    /** \class DistanceComparisonFunctor
-     *  \brief This functor is used in nearest neighborhood sorting.
-     *  \ingroup DisparityMap
-     */
-    class DistanceComparisonFunctor
-      {
-      public:
-	DistanceComparisonFunctor(){};
-	~DistanceComparisonFunctor(){};
-	typedef std::vector<double> DistanceVectorType;
-	
-	void SetDistanceVector(DistanceVectorType &vec)
-	  {
-	    m_DistanceVector = vec;
-	  }
-	DistanceVectorType GetDistanceVector(void)
-	  {
-	    return m_DistanceVector;
-	  }
-	inline bool operator()(const unsigned int a1, const unsigned int a2)
-	  {
-	    return m_DistanceVector[a1]<m_DistanceVector[a2];
-	  }
+{
+/** \class DistanceComparisonFunctor
+ *  \brief This functor is used in nearest neighborhood sorting.
+ *  \ingroup DisparityMap
+ */
+class DistanceComparisonFunctor
+{
+public:
+  DistanceComparisonFunctor() {};
+  ~DistanceComparisonFunctor() {};
+  typedef std::vector<double> DistanceVectorType;
 
-      private:
-	DistanceVectorType m_DistanceVector;
-	  };
+  void SetDistanceVector(DistanceVectorType &vec)
+  {
+    m_DistanceVector = vec;
   }
+  DistanceVectorType GetDistanceVector(void)
+  {
+    return m_DistanceVector;
+  }
+  inline bool operator()(const unsigned int a1, const unsigned int a2)
+  {
+    return m_DistanceVector[a1]<m_DistanceVector[a2];
+  }
+
+private:
+  DistanceVectorType m_DistanceVector;
+};
+}
 /** \class PointSetToDeformationFieldGenerator
  *  \brief Base class for filters generating a deformation field from a point set enriched with deformation and local transform information.
  *  The output of the filters deriving from this base class can be passed to the itk::WarpImageFilter for image resampling.
@@ -61,21 +61,21 @@ namespace Functor
  */
 template <class TPointSet, class TDeformationField>
 class ITK_EXPORT PointSetToDeformationFieldGenerator
-  : public itk::ImageSource<TDeformationField>
+      : public itk::ImageSource<TDeformationField>
 {
- public:
+public:
   /** Standard typedefs */
   typedef PointSetToDeformationFieldGenerator Self;
   typedef itk::ImageSource<TDeformationField> Superclass;
   typedef itk::SmartPointer<Self>             Pointer;
   typedef itk::SmartPointer<const Self>       ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(PointSetToDeformationFieldGenerator, ImageSource);
-  
+
   /** Template parameters typedefs */
   typedef TPointSet PointSetType;
   typedef typename PointSetType::Pointer PointSetPointerType;
@@ -101,26 +101,26 @@ class ITK_EXPORT PointSetToDeformationFieldGenerator
    * Get the pointset containing the disparity.
    * \return The pointset containing the disparity.
    */
-   const TPointSet * GetPointSet(void);
-  
+  const TPointSet * GetPointSet(void);
 
-   itkSetMacro(MetricThreshold,double);
-   itkGetMacro(MetricThreshold,double);
-   itkSetMacro(DefaultValue,ValueType);
-   itkGetMacro(DefaultValue,ValueType);
-   itkSetMacro(OutputSize,SizeType);
-   itkGetConstReferenceMacro(OutputSize,SizeType);
-   itkSetMacro(OutputSpacing,SpacingType);
-   itkGetConstReferenceMacro(OutputSpacing,SpacingType);
-   itkSetMacro(OutputOrigin,PointType);
-   itkGetConstReferenceMacro(OutputOrigin,PointType);
- 
+
+  itkSetMacro(MetricThreshold,double);
+  itkGetMacro(MetricThreshold,double);
+  itkSetMacro(DefaultValue,ValueType);
+  itkGetMacro(DefaultValue,ValueType);
+  itkSetMacro(OutputSize,SizeType);
+  itkGetConstReferenceMacro(OutputSize,SizeType);
+  itkSetMacro(OutputSpacing,SpacingType);
+  itkGetConstReferenceMacro(OutputSpacing,SpacingType);
+  itkSetMacro(OutputOrigin,PointType);
+  itkGetConstReferenceMacro(OutputOrigin,PointType);
+
 protected:
   /** Constructor */
   PointSetToDeformationFieldGenerator();
   /** Destructor */
   virtual ~PointSetToDeformationFieldGenerator() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
   /** Generate output information */
   virtual void GenerateOutputInformation(void);
@@ -128,7 +128,7 @@ protected:
    * Generate the n nearest valid point in point set, where a valid point has a sufficient metric value.
    *  \param index The index of the pixel to compute.
    *  \param n The number of nearest point to seek.
-   *  \return A vector containing the index of the nearest point from nearest to most far. 
+   *  \return A vector containing the index of the nearest point from nearest to most far.
    */
   IndexVectorType GenerateNearestValidPointsPointSet(IndexType index, unsigned int n = 1);
 
@@ -138,7 +138,7 @@ protected:
 private:
   PointSetToDeformationFieldGenerator(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-  
+
   /**
    * The threshold of metric value.
    */

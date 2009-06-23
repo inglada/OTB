@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOptResampleImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2008-04-15 21:36:00 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-11-06 15:25:08 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -101,26 +101,27 @@ public:
                       TInputImage::ImageDimension);
 
 
-  /** 
+  /**
    *  Transform typedef.
    */
-  typedef Transform<TInterpolatorPrecisionType,
+  typedef double CoordRepType;
+  typedef Transform<CoordRepType,
                     itkGetStaticConstMacro(ImageDimension),
                     itkGetStaticConstMacro(ImageDimension)>       TransformType;
   typedef typename TransformType::ConstPointer             TransformPointerType;
 
   /** Interpolator typedef. */
   typedef InterpolateImageFunction<InputImageType,
-                        TInterpolatorPrecisionType>     InterpolatorType;
+                      CoordRepType>     InterpolatorType;
   typedef typename InterpolatorType::Pointer            InterpolatorPointerType;
 
   typedef LinearInterpolateImageFunction<InputImageType,
-                TInterpolatorPrecisionType>   LinearInterpolatorType;
+                      CoordRepType>   LinearInterpolatorType;
   typedef typename LinearInterpolatorType::Pointer
                                               LinearInterpolatorPointerType;
 
   typedef BSplineInterpolateImageFunction<InputImageType,
-                TInterpolatorPrecisionType>   BSplineInterpolatorType;
+                      CoordRepType>   BSplineInterpolatorType;
   typedef typename BSplineInterpolatorType::Pointer
                                               BSplineInterpolatorPointerType;
 
@@ -181,7 +182,7 @@ public:
   itkSetMacro(DefaultPixelValue,PixelType);
 
   /** Get the pixel value when a transformed pixel is outside of the image */
-  itkGetMacro(DefaultPixelValue,PixelType);
+  itkGetConstReferenceMacro(DefaultPixelValue,PixelType);
 
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);

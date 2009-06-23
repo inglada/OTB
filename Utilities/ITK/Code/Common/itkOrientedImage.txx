@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOrientedImage.txx,v $
   Language:  C++
-  Date:      $Date: 2005-04-11 14:51:13 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009-02-19 19:41:22 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,23 +17,38 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkOrientedImage_txx
-#define _itkOrientedImage_txx
+#ifndef __itkOrientedImage_txx
+#define __itkOrientedImage_txx
 #include "itkOrientedImage.h"
 
 namespace itk
 {
 
 /**
- *
+ * Constructor
  */
 template<class TPixel, unsigned int VImageDimension>
 OrientedImage<TPixel, VImageDimension>
 ::OrientedImage()
 {
-  m_IndexToPhysicalPoint.SetIdentity();
-  m_PhysicalPointToIndex.SetIdentity();
 }
+
+
+/** Version of index to point matrix computation that bypasses the
+ * implementation in the itk::Image, and invokes the default method in the
+ * itk::ImageBase class.
+ */
+template<class TPixel, unsigned int VImageDimension>
+void
+OrientedImage<TPixel, VImageDimension>
+::ComputeIndexToPhysicalPointMatrices()
+{
+  // Use the default implementation of ImageBase, that always take 
+  // direction into account. In this way we bypass the option of 
+  // ignoring direction that is available in the itk::Image.
+  this->ImageBase<VImageDimension>::ComputeIndexToPhysicalPointMatrices();
+}
+
 } // end namespace itk
 
 #endif

@@ -5,17 +5,17 @@ SET(FUSION_EXAMPLES ${CXX_TEST_PATH}/otbFusionExamplesTests)
 
 
 ADD_EXECUTABLE(BayesianFusionImageFilter BayesianFusionImageFilter.cxx )
-TARGET_LINK_LIBRARIES(BayesianFusionImageFilter OTBFusion OTBCommon OTBIO ITKNumerics ITKIO)
+TARGET_LINK_LIBRARIES(BayesianFusionImageFilter OTBFusion OTBCommon OTBIO ITKNumerics)
 
 ADD_EXECUTABLE(PanSharpeningExample PanSharpeningExample.cxx )
-TARGET_LINK_LIBRARIES(PanSharpeningExample OTBFusion OTBCommon OTBIO ITKNumerics ITKIO)
+TARGET_LINK_LIBRARIES(PanSharpeningExample OTBFusion OTBCommon OTBIO ITKNumerics)
 
 
 IF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 
 SET(BASELINE ${OTB_DATA_ROOT}/Baseline/Examples/Fusion)
 
-SET(INPUTDATA ${OTB_SOURCE_DIR}/Examples/Data)
+SET(INPUTDATA ${OTB_DATA_ROOT}/Examples)
 SET(TEMP ${OTB_BINARY_DIR}/Testing/Temporary)
 
 SET(EXE_TESTS ${CXX_TEST_PATH}/otbFusionExamplesTests)
@@ -23,7 +23,7 @@ SET(EXE_TESTS ${CXX_TEST_PATH}/otbFusionExamplesTests)
 SET(TOL 0.0)
 SET(EPSILON 0.00000001)
 
-ADD_TEST(BayesianFusionImageFilterTest ${EXE_TESTS}
+ADD_TEST(fuTeBayesianFusionImageFilterTest ${EXE_TESTS}
 	--compare-image ${EPSILON}
 	${BASELINE}/ImageBayesianFusion.tif
 	${TEMP}/ImageBayesianFusion.tif
@@ -39,20 +39,20 @@ ADD_TEST(BayesianFusionImageFilterTest ${EXE_TESTS}
 	0.9999
 )
 
-ADD_TEST(PanSharpeningExampleTest ${EXE_TESTS} 
+ADD_TEST(fuTePanSharpeningExampleTest ${EXE_TESTS}
     --compare-image ${EPSILON}  ${BASELINE}/PanSharpeningExampleTest.tif
                            ${TEMP}/PanSharpeningExampleTest.tif
         PanSharpeningExampleTest
 	${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
-	${INPUTDATA}/QB_Toulouse_Ortho_XS.tif 
+	${INPUTDATA}/QB_Toulouse_Ortho_XS.tif
 	${TEMP}/PanSharpeningExampleTest.tif
 	${TEMP}/PanSharpeningExampleTest1.png
 	${TEMP}/PanSharpeningExampleTest2.png
 	${TEMP}/PanSharpeningExampleTest3.png
 )
 
-
+INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 ADD_EXECUTABLE(otbFusionExamplesTests otbFusionExamplesTests.cxx)
-TARGET_LINK_LIBRARIES(otbFusionExamplesTests gdal ITKIO ITKAlgorithms ITKStatistics ITKNumerics ITKCommon OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBFusion)
+TARGET_LINK_LIBRARIES(otbFusionExamplesTests  ITKAlgorithms ITKStatistics ITKNumerics OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBFusion OTBTesting)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

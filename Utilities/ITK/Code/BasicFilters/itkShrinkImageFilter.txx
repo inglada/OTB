@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShrinkImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006-03-19 04:36:56 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-12-17 19:58:02 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,11 +17,12 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkShrinkImageFilter_txx
-#define _itkShrinkImageFilter_txx
+#ifndef __itkShrinkImageFilter_txx
+#define __itkShrinkImageFilter_txx
 
 #include "itkShrinkImageFilter.h"
 #include "itkImageRegionIterator.h"
+#include "itkContinuousIndex.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 
@@ -126,7 +127,6 @@ ShrinkImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        int threadId)
 {
-  
   itkDebugMacro(<<"Actually executing");
   
   // Get the input and output pointers
@@ -135,33 +135,28 @@ ShrinkImageFilter<TInputImage,TOutputImage>
   
   // Define/declare an iterator that will walk the output region for this
   // thread.
-  typedef
-    ImageRegionIterator<TOutputImage> OutputIterator;
+  typedef ImageRegionIterator<TOutputImage> OutputIterator;
   
   OutputIterator outIt(outputPtr, outputRegionForThread);
   
   // Define a few indices that will be used to translate from an input pixel
   // to an output pixel
   typename TOutputImage::IndexType outputIndex;
-  typename TInputImage::IndexType inputIndex;
-  typename TOutputImage::SizeType factorSize;
-  
-  for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
-    {
-    factorSize[i] = m_ShrinkFactors[i];
-    }
+  typename TInputImage::IndexType  inputIndex;
   
   // support progress methods/callbacks
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
     
   // walk the output region, and sample the input image
+  typename TOutputImage::PointType outputPoint;
   while ( !outIt.IsAtEnd() ) 
     {
-    // determine the index of the output pixel
+    // determine the index and physical location of the output pixel
     outputIndex = outIt.GetIndex();
+    outputPtr->TransformIndexToPhysicalPoint(outputIndex, outputPoint);
     
-    // determine the input pixel location associated with this output pixel
-    inputIndex = outputIndex * factorSize;
+    // determine the input pixel index associated with this output pixel
+    inputPtr->TransformPhysicalPointToIndex(outputPoint, inputIndex);
     
     // copy the input pixel to the output
     outIt.Set( inputPtr->GetPixel(inputIndex) );
@@ -170,8 +165,6 @@ ShrinkImageFilter<TInputImage,TOutputImage>
     progress.CompletedPixel();
     }
 }
-
-
 
 /** 
  *
@@ -220,19 +213,6 @@ ShrinkImageFilter<TInputImage,TOutputImage>
   inputPtr->SetRequestedRegion( inputRequestedRegion );
 }
 
-template <class TInputImage, class TOutputImage>
-void 
-ShrinkImageFilter<TInputImage,TOutputImage>
-::EnlargeOutputRequestedRegion(DataObject *output)
-{
-  // call the superclass' implementation of this method
-  Superclass::EnlargeOutputRequestedRegion(output);
-  
-  // generate everything in the region of interest
-  output->SetRequestedRegionToLargestPossibleRegion();
-}
-
-
 /** 
  *
  */
@@ -263,7 +243,7 @@ ShrinkImageFilter<TInputImage,TOutputImage>
   const typename TInputImage::IndexType&  inputStartIndex
     = inputPtr->GetLargestPossibleRegion().GetIndex();
 
-  typename TOutputImage::SpacingType outputSpacing;
+  typename TOutputImage::SpacingType  outputSpacing;
   typename TOutputImage::SizeType     outputSize;
   typename TOutputImage::IndexType    outputStartIndex;
   
@@ -283,7 +263,25 @@ ShrinkImageFilter<TInputImage,TOutputImage>
     }
   
   outputPtr->SetSpacing( outputSpacing );
+
+  // The physical center's of the input and output should be the same
+  ContinuousIndex<double, TOutputImage::ImageDimension> inputCenterIndex;
+  ContinuousIndex<double, TOutputImage::ImageDimension> outputCenterIndex;
+  for (i = 0; i < TOutputImage::ImageDimension; i++)
+    {
+    inputCenterIndex[i] = (inputSize[i] - 1) / 2.0;
+    outputCenterIndex[i] = (outputSize[i] - 1) / 2.0;
+    }
+
+  typename TOutputImage::PointType inputCenterPoint;
+  typename TOutputImage::PointType outputCenterPoint;
+  inputPtr->TransformContinuousIndexToPhysicalPoint(inputCenterIndex, inputCenterPoint);
+  outputPtr->TransformContinuousIndexToPhysicalPoint(outputCenterIndex, outputCenterPoint);
   
+  typename TOutputImage::PointType outputOrigin = outputPtr->GetOrigin();
+  outputOrigin = outputOrigin + (inputCenterPoint - outputCenterPoint);
+  outputPtr->SetOrigin(outputOrigin);
+
   typename TOutputImage::RegionType outputLargestPossibleRegion;
   outputLargestPossibleRegion.SetSize( outputSize );
   outputLargestPossibleRegion.SetIndex( outputStartIndex );

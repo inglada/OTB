@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -42,17 +42,17 @@ int otbOpeningClosingMorphologicalFilter(int argc, char * argv[])
 
   typedef itk::BinaryBallStructuringElement<InputPixelType,Dimension> StructuringElementType;
   typedef otb::OpeningClosingMorphologicalFilter<InputImageType,OutputImageType,
-    StructuringElementType> OpeningClosingFilterType;
+  StructuringElementType> OpeningClosingFilterType;
 
   // Reading input image
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(inputFilename);
-           
+
   // Creating Kernel
   StructuringElementType structElt;
   structElt.SetRadius(Radius);
   structElt.CreateStructuringElement();
- 
+
   // Instantiating the opening closing filter
   OpeningClosingFilterType::Pointer openingClosing = OpeningClosingFilterType::New();
   openingClosing->SetInput(reader->GetOutput());
@@ -63,7 +63,7 @@ int otbOpeningClosingMorphologicalFilter(int argc, char * argv[])
   writer->SetFileName(outputFilename);
   writer->SetInput(openingClosing->GetOutput());
   writer->Update();
-  
+
 
   return EXIT_SUCCESS;
 }

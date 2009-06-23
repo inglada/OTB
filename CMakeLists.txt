@@ -35,6 +35,10 @@ IF(WIN32)
     ENDIF(NOT CYGWIN)
   ENDIF(NOT BORLAND)
 ENDIF(WIN32)
+# __CYGWIN__ must be define for ossim (ex: ossimCommon.h, isnan definition, .. )
+#IF(CYGWIN)
+#  ADD_DEFINITIONS(-D__CYGWIN__)
+#ENDIF(CYGWIN)
 
 # If CMake is the version we're expecting, don't show the
 # CMAKE_BACKWARDS_COMPATIBILITY option. If the version is higher than the
@@ -51,13 +55,13 @@ ADD_DEFINITIONS(
 	-D_LARGEFILE_SOURCE
 	-D_FILE_OFFSET_BITS=64
 	-D_LARGEFILE64_SOURCE
-	-D_LARGE_FILES 
+	-D_LARGE_FILES
 	)
 
 #-----------------------------------------------------------------------------
 # OTB version number.  An even minor number corresponds to releases.
-SET(OTB_VERSION_MAJOR "2")
-SET(OTB_VERSION_MINOR "6")
+SET(OTB_VERSION_MAJOR "3")
+SET(OTB_VERSION_MINOR "0")
 SET(OTB_VERSION_PATCH "0")
 
 
@@ -66,7 +70,7 @@ SET(OTB_VERSION_PATCH "0")
 SET(OTB_VERSION_STRING "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}")
 
 
-# => Comment for OTB 2.6.0
+# => Comment for OTB 3.0.0
 OPTION(BUILD_TESTING "Build testing." OFF)
 
 #-----------------------------------------------------------------------------
@@ -80,6 +84,16 @@ OPTION(BUILD_SHARED_LIBS "Build OTB with shared libraries." ON)
 ENDIF(WIN32)
 SET(OTB_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
+IF(NOT OTB_NO_LIBRARY_VERSION)
+  # This setting of SOVERSION assumes that any API change
+  # will increment either the minor or major version number of OTB.
+  SET(OTB_LIBRARY_PROPERTIES
+      VERSION   "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}"
+      SOVERSION "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}"
+     )
+ENDIF(NOT OTB_NO_LIBRARY_VERSION)
+
+
 #-----------------------------------------------------------------------------
 
 # Case for release 2.2.1
@@ -88,6 +102,9 @@ OPTION(OTB_USE_JPEG2000 "Use to support jpeg2000 image file format." ON)
 
 #-----------------------------------------------------------------------------
 
+# Use the liblas library (do not link on solaris)
+OPTION(OTB_USE_LIBLAS "Use liblas library to support Lidar data format." ON)
+MARK_AS_ADVANCED(OTB_USE_LIBLAS)
 
 # FIND EXTERNAL LIBRAIRIES USE
 
@@ -139,6 +156,10 @@ IF(OTB_USE_EXTERNAL_ITK)
         MESSAGE(FATAL_ERROR
                   "Cannot build OTB project without ITK.  Please set ITK_DIR or set OTB_USE_EXTERNAL_ITK OFF to use INTERNAL ITK set on OTB/Utilities repository.")
   ENDIF(ITK_FOUND)
+ELSE(OTB_USE_EXTERNAL_ITK)
+# Required to have proper itk headers at first run
+SET(ITK_SOURCE_DIR ${OTB_SOURCE_DIR}/Utilities/ITK)
+SET(ITK_BINARY_DIR ${OTB_BINARY_DIR}/Utilities/ITK)
 ENDIF(OTB_USE_EXTERNAL_ITK)
 
 
@@ -164,7 +185,7 @@ IF( OTB_USE_JPEG2000 )
   ENDIF(CYGWIN)
 
 ENDIF( OTB_USE_JPEG2000 )
-# Check jpeg2000 support 
+# Check jpeg2000 support
 IF(OTB_COMPILE_JPEG2000)
   ADD_DEFINITIONS(-DOTB_COMPILE_JPEG2000 -DUSE_OPJ_DEPRECATED)
   IF(NOT BUILD_SHARED_LIBS)
@@ -175,13 +196,13 @@ ENDIF(OTB_COMPILE_JPEG2000)
 #-----------------------------------------------------------------------------
 # Option for OpenThreads (necessary because used by the new version of OSSIM library
 # Find OpenThread library
-IF(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake") 
+IF(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake")
         FIND_PACKAGE(OpenThreads)
-ELSE(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake") 
+ELSE(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake")
         INCLUDE(${OTB_SOURCE_DIR}/FindOpenThreads.cmake)
-ENDIF(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake") 
+ENDIF(EXISTS "${CMAKE_ROOT}/Modules/FindOpenThreads.cmake")
 
-SET(OTB_USE_EXTERNAL_OPENTHREADS 1)
+SET(OTB_USE_EXTERNAL_OPENTHREADS 1 CACHE INTERNAL "")
 IF(OPENTHREADS_FOUND)
         INCLUDE_DIRECTORIES(${OPENTHREADS_INCLUDE_DIR})
         LINK_DIRECTORIES( ${OPENTHREADS_LIBRARY} )
@@ -213,7 +234,7 @@ IF(OTB_USE_VISU_GUI)
         # OpenGL Library
         #-------------------------------
         FIND_PACKAGE(OpenGL)
-        
+
         IF( NOT OPENGL_FOUND )
                 MESSAGE(FATAL_ERROR "Impossible to find OpenGL on your system.\nCannot build OTB Visu module without OpenGL library.\nInstall OpenGL on your system OR set OTB_USE_VISU to OFF to disable OTB Visu module generation !")
 	ENDIF( NOT OPENGL_FOUND )
@@ -224,19 +245,25 @@ IF(OTB_USE_VISU_GUI)
         IF(OPENGL_INCLUDE_DIR)
                 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
         ENDIF(OPENGL_INCLUDE_DIR)
-        
+
+	#-------------------------------
+        # Display images using textures using video card acceleration
+        #-------------------------------
+	OPTION(OTB_GL_USE_ACCEL "Use video card acceleration." ON)
+	MARK_AS_ADVANCED(OTB_GL_USE_ACCEL)
+
         #-------------------------------
         # FLTK Library
         #-------------------------------
 
-        # Option for internal/external FLTK 
+        # Option for internal/external FLTK
         OPTION(OTB_USE_EXTERNAL_FLTK "Use an outside build of FLTK." ON)
         MARK_AS_ADVANCED(OTB_USE_EXTERNAL_FLTK)
         # Add an option to use or not use FLTK (http://www.fltk.org)
         IF(OTB_USE_EXTERNAL_FLTK)
 
                 FIND_PACKAGE(FLTK)
-                # Mingw Option doesn't exist in the FindFLTK.cmake default configuration file in CMake installationj directory. 
+                # Mingw Option doesn't exist in the FindFLTK.cmake default configuration file in CMake installationj directory.
                 # Copy  FLTK_PLATFORM_DEPENDENT_LIBS from FLTK CmakeList.txt
                 IF(MINGW)
                     ADD_DEFINITIONS(-DWIN32)
@@ -246,7 +273,7 @@ IF(OTB_USE_VISU_GUI)
 		        SET( FLTK_INCLUDE_DIR /usr/include )
                 FIND_PACKAGE(FLTK)
 	        ENDIF(NOT FLTK_INCLUDE_DIR)
-                
+
                 IF(FLTK_FOUND)
 		        INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIRS})
 		        LINK_DIRECTORIES(${FLTK_LIBRARY_DIRS})
@@ -258,12 +285,13 @@ IF(OTB_USE_VISU_GUI)
         ELSE(OTB_USE_EXTERNAL_FLTK)
 
                 SET( FLTK_PLATFORM_DEPENDENT_LIBS "")
-                IF(EXISTS "${OTB_BINARY_DIR}/Utilities/FLTK/FLTKConfig.cmake") 
+                IF(EXISTS "${OTB_BINARY_DIR}/Utilities/FLTK/FLTKConfig.cmake")
                         INCLUDE(${OTB_BINARY_DIR}/Utilities/FLTK/FLTKConfig.cmake)
-                ENDIF(EXISTS "${OTB_BINARY_DIR}/Utilities/FLTK/FLTKConfig.cmake") 
+                ENDIF(EXISTS "${OTB_BINARY_DIR}/Utilities/FLTK/FLTKConfig.cmake")
                 #----------------------------------------------------------------
                 # RESUME Alls VISU GUI libraries use by OTB in a single VARIABLE
                 SET(OTB_VISU_GUI_LIBRARIES "${FLTK_LIBRARIES};${OPENGL_LIBRARIES} ")
+                SET(FLTK_FLUID_EXECUTABLE ${FLUID_COMMAND})
 
         ENDIF(OTB_USE_EXTERNAL_FLTK)
 
@@ -290,7 +318,7 @@ IF(OTB_USE_CURL)
                         "Cannot find CURL library. Please set CURL_LIBRARY or SET OTB_USE_CURL OFF.")
         ENDIF (NOT CURL_LIBRARY)
 
-        # Add compiler option 
+        # Add compiler option
         ADD_DEFINITIONS(-DOTB_USE_CURL)
 
         INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
@@ -298,29 +326,305 @@ IF(OTB_USE_CURL)
 ENDIF(OTB_USE_CURL)
 
 #-------------------------------
+# Mapnik Library
+#-------------------------------
+OPTION(OTB_USE_MAPNIK "Use mapnik library (EXPERIMENTAL)." OFF)
+MARK_AS_ADVANCED(OTB_USE_MAPNIK)
+IF(OTB_USE_MAPNIK)
+
+        FIND_PATH(MAPNIK_INCLUDE_DIR mapnik/map.hpp PATHS)
+        MARK_AS_ADVANCED(MAPNIK_INCLUDE_DIR)
+        IF (NOT MAPNIK_INCLUDE_DIR)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find MAPNIK include directory. Please set MAPNIK_INCLUDE_DIR or SET OTB_USE_MAPNIK OFF.")
+        ENDIF (NOT MAPNIK_INCLUDE_DIR)
+
+        FIND_PATH(FREETYPE2_INCLUDE_DIR freetype/freetype.h PATHS /usr/include/freetype2)
+        MARK_AS_ADVANCED(FREETYPE2_INCLUDE_DIR)
+        IF (NOT FREETYPE2_INCLUDE_DIR)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find FREETYPE2 include directory. Please set  or SET OTB_USE_MAPNIK OFF.")
+        ENDIF (NOT FREETYPE2_INCLUDE_DIR)
+
+        FIND_LIBRARY(MAPNIK_LIBRARY mapnik )
+        MARK_AS_ADVANCED(MAPNIK_LIBRARY)
+        IF (NOT MAPNIK_LIBRARY)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find MAPNIK library. Please set MAPNIK_LIBRARY or SET OTB_USE_MAPNIK OFF.")
+        ENDIF (NOT MAPNIK_LIBRARY)
+
+# Add compiler option
+        ADD_DEFINITIONS(-DOTB_USE_MAPNIK)
+
+        INCLUDE_DIRECTORIES(${MAPNIK_INCLUDE_DIR})
+
+ENDIF(OTB_USE_MAPNIK)
+
+#-------------------------------
+# Pqxx Library
+#-------------------------------
+OPTION(OTB_USE_PQXX "Use pqxx library (EXPERIMENTAL)." OFF)
+MARK_AS_ADVANCED(OTB_USE_PQXX)
+IF(OTB_USE_PQXX)
+
+        FIND_PATH(PQXX_INCLUDE_DIR pqxx/pqxx PATHS)
+        MARK_AS_ADVANCED(PQXX_INCLUDE_DIR)
+        IF (NOT PQXX_INCLUDE_DIR)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find PQXX include directory. Please set PQXX_INCLUDE_DIR or SET OTB_USE_PQXX OFF.")
+        ENDIF (NOT PQXX_INCLUDE_DIR)
+
+
+        FIND_LIBRARY(PQXX_LIBRARY pqxx )
+        MARK_AS_ADVANCED(PQXX_LIBRARY)
+        IF (NOT PQXX_LIBRARY)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find PQXX library. Please set PQXX_LIBRARY or SET OTB_USE_PQXX OFF.")
+        ENDIF (NOT PQXX_LIBRARY)
+
+        FIND_LIBRARY(PQ_LIBRARY pq )
+        MARK_AS_ADVANCED(PQ_LIBRARY)
+        IF (NOT PQ_LIBRARY)
+                MESSAGE(FATAL_ERROR
+                        "Cannot find PQ library. Please set PQ_LIBRARY or SET OTB_USE_PQXX OFF.")
+        ENDIF (NOT PQ_LIBRARY)
+
+	
+# Add compiler option
+        ADD_DEFINITIONS(-DOTB_USE_PQXX)
+
+        INCLUDE_DIRECTORIES(${PQXX_INCLUDE_DIR})
+
+ENDIF(OTB_USE_PQXX)
+
+
+#-------------------------------
+# Boost Library
+#-------------------------------
+
+# Option for internal/external BOOST
+OPTION(OTB_USE_EXTERNAL_BOOST "Use an outside build of Boost." OFF)
+MARK_AS_ADVANCED(OTB_USE_EXTERNAL_BOOST)
+
+IF(OTB_USE_EXTERNAL_BOOST)
+  FIND_PACKAGE(Boost)
+  INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+ENDIF(OTB_USE_EXTERNAL_BOOST)
+
+#-------------------------------
 # GDAL Library
 #-------------------------------
 
-#FIND_LIBRARY(GDAL_LIBRARY_DIRS gdal PATHS $ENV{GDAL_LIBRARY_DIRS} ) 
-
-FIND_PATH(GDAL_LIBRARY_DIRS gdal PATHS $ENV{GDAL_LIBRARY_DIRS} )
 FIND_PATH(GDAL_INCLUDE_DIRS gdal.h $ENV{GDAL_INCLUDE_DIRS} /usr/include/gdal)
-IF (NOT GDAL_LIBRARY_DIRS)
-MESSAGE(FATAL_ERROR
-         "Cannot find GDAL library directory. Please set GDAL_LIBRARY_DIRS.")
-ENDIF (NOT GDAL_LIBRARY_DIRS)
+
 IF (NOT GDAL_INCLUDE_DIRS)
 MESSAGE(FATAL_ERROR
          "Cannot find GDAL include directory. Please set GDAL_INCLUDE_DIRS.")
 ENDIF (NOT GDAL_INCLUDE_DIRS)
 
 INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIRS})
-LINK_DIRECTORIES( ${GDAL_LIBRARY_DIRS} )
+
+FIND_LIBRARY(GDAL_LIBRARY NAMES gdal gdal1.6.0 gdal1.5.0 gdal1.4.0 gdal1.3.2 PATHS /usr/lib/gdal)
+
+IF (NOT GDAL_LIBRARY)
+MESSAGE(FATAL_ERROR
+         "Cannot find GDAL library. Please set GDAL_LIBRARY.")
+ENDIF (NOT GDAL_LIBRARY)
+MESSAGE(STATUS "GDAL library found: ${GDAL_LIBRARY}")
+
+# Find geotiff headers
+FIND_PATH(GEOTIFF_INCLUDE_DIRS geotiff.h $ENV{GDAL_INCLUDE_DIRS} ${GDAL_INCLUDE_DIRS} /usr/include/geotiff)
+IF (NOT GEOTIFF_INCLUDE_DIRS)
+MESSAGE(FATAL_ERROR
+         "Cannot find geotiff headers. Please set GEOTIFF_INCLUDE_DIRS.")
+ENDIF (NOT GEOTIFF_INCLUDE_DIRS)
+INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIRS})
+
+# Find tiff headers
+FIND_PATH(TIFF_INCLUDE_DIRS tiffio.h $ENV{GDAL_INCLUDE_DIRS} ${GDAL_INCLUDE_DIRS} /usr/include)
+IF (NOT TIFF_INCLUDE_DIRS)
+MESSAGE(FATAL_ERROR
+         "Cannot find libtiff headers. Please set TIFF_INCLUDE_DIRS.")
+ENDIF (NOT TIFF_INCLUDE_DIRS)
+INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
+
+# Find jpeg headers
+FIND_PATH(JPEG_INCLUDE_DIRS jpeglib.h $ENV{GDAL_INCLUDE_DIRS} ${GDAL_INCLUDE_DIRS} /usr/include)
+IF (NOT JPEG_INCLUDE_DIRS)
+MESSAGE(FATAL_ERROR
+         "Cannot find jpeg headers. Please set JPEG_INCLUDE_DIRS.")
+ENDIF (NOT JPEG_INCLUDE_DIRS)
+INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIRS})
+
+# Find ogr headers
+FIND_PATH(OGR_INCLUDE_DIRS ogrsf_frmts.h  $ENV{GDAL_INCLUDE_DIRS} ${GDAL_INCLUDE_DIRS} /usr/include)
+IF (NOT OGR_INCLUDE_DIRS)
+MESSAGE(FATAL_ERROR
+         "Cannot find ogr headers. Please set OGR_INCLUDE_DIRS.")
+ENDIF (NOT OGR_INCLUDE_DIRS)
+INCLUDE_DIRECTORIES(${OGR_INCLUDE_DIRS})
+
+# Check if ${GDAL_LIBRARY} has tiff library
+TRY_COMPILE(GDAL_HAS_TIFF
+${CMAKE_CURRENT_BINARY_DIR}/CMake
+${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestGDALHasTiff.cxx
+CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:PATH=${TIFF_INCLUDE_DIRS};${GDAL_INCLUDE_DIRS}" "-DLINK_LIBRARIES:STRING=${GDAL_LIBRARY}"
+OUTPUT_VARIABLE OUTPUT)
+IF(GDAL_HAS_TIFF)
+MESSAGE(STATUS "Testing if GDAL has tiff    -- yes")
+SET(TIFF_LIBRARY ${GDAL_LIBRARY})
+ELSE(GDAL_HAS_TIFF)
+MESSAGE(STATUS "Testing if GDAL has tiff    -- no")
+FIND_LIBRARY(TIFF_LIBRARY tiff PATHS)
+IF (NOT TIFF_LIBRARY)
+MESSAGE(FATAL_ERROR
+         "Cannot find tiff library. Please set TIFF_LIBRARY.")
+ENDIF (NOT TIFF_LIBRARY)
+ENDIF(GDAL_HAS_TIFF)
+
+# Check if ${GDAL_LIBRARY} has geotiff library
+TRY_COMPILE(GDAL_HAS_GEOTIFF
+${CMAKE_CURRENT_BINARY_DIR}/CMake
+${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestGDALHasGeoTiff.cxx
+CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:PATH=${GEOTIFF_INCLUDE_DIRS};${GDAL_INCLUDE_DIRS}" "-DLINK_LIBRARIES:STRING=${GDAL_LIBRARY}"
+OUTPUT_VARIABLE OUTPUT)
+IF(GDAL_HAS_GEOTIFF)
+MESSAGE(STATUS "Testing if GDAL has geotiff -- yes")
+SET(GEOTIFF_LIBRARY ${GDAL_LIBRARY})
+ELSE(GDAL_HAS_GEOTIFF)
+MESSAGE(STATUS "Testing if GDAL has geotiff -- no")
+FIND_LIBRARY(GEOTIFF_LIBRARY geotiff PATHS)
+IF (NOT GEOTIFF_LIBRARY)
+MESSAGE(FATAL_ERROR
+         "Cannot find geotiff library. Please set GEOTIFF_LIBRARY.")
+ENDIF (NOT GEOTIFF_LIBRARY)
+ENDIF(GDAL_HAS_GEOTIFF)
+
+# Check if ${GDAL_LIBRARY} has jpeg library
+TRY_COMPILE(GDAL_HAS_JPEG
+${CMAKE_CURRENT_BINARY_DIR}/CMake
+${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestGDALHasJpeg.cxx
+CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:PATH=${JPEG_INCLUDE_DIRS};${GDAL_INCLUDE_DIRS}" "-DLINK_LIBRARIES:STRING=${GDAL_LIBRARY}"
+OUTPUT_VARIABLE OUTPUT)
+IF(GDAL_HAS_JPEG)
+MESSAGE(STATUS "Testing if GDAL has jpeg    -- yes")
+SET(JPEG_LIBRARY ${GDAL_LIBRARY})
+ELSE(GDAL_HAS_JPEG)
+MESSAGE(STATUS "Testing if GDAL has jpeg    -- no")
+FIND_LIBRARY(JPEG_LIBRARY jpeg PATHS)
+IF (NOT JPEG_LIBRARY)
+MESSAGE(FATAL_ERROR
+         "Cannot find jpeg library. Please set JPEG_LIBRARY.")
+ENDIF (NOT JPEG_LIBRARY)
+ENDIF(GDAL_HAS_JPEG)
+
+# Check if ${GDAL_LIBRARY} has jpeg library
+TRY_COMPILE(GDAL_HAS_OGR
+${CMAKE_CURRENT_BINARY_DIR}/CMake
+${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestGDALHasOGR.cxx
+CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:PATH=${OGR_INCLUDE_DIRS};${GDAL_INCLUDE_DIRS}" "-DLINK_LIBRARIES:STRING=${GDAL_LIBRARY}"
+OUTPUT_VARIABLE OUTPUT)
+IF(GDAL_HAS_OGR)
+MESSAGE(STATUS "Testing if GDAL has OGR     -- yes")
+SET(OGR_LIBRARY ${GDAL_LIBRARY})
+ELSE(GDAL_HAS_OGR)
+MESSAGE(STATUS "Testing if GDAL has OGR     -- no")
+MESSAGE(FATAL_ERROR "OGR MESSAGE: ${OUTPUT}")
+FIND_LIBRARY(OGR_LIBRARY ogr PATHS)
+IF (NOT OGR_LIBRARY)
+MESSAGE(FATAL_ERROR
+         "Cannot find jpeg library. Please set OGR_LIBRARY.")
+ENDIF (NOT OGR_LIBRARY)
+ENDIF(GDAL_HAS_OGR)
 
 
 #-------------------------------
 # End connections whith external libraries
 #-------------------------------
+
+#-----------------------------------------------------------------------------
+# Installation vars.
+# OTB_INSTALL_BIN_DIR          - binary dir (executables)
+# OTB_INSTALL_LIB_DIR          - library dir (libs)
+# OTB_INSTALL_DATA_DIR         - share dir (say, examples, data, etc)
+# OTB_INSTALL_INCLUDE_DIR      - include dir (headers)
+# OTB_INSTALL_PACKAGE_DIR      - package/export configuration files
+# OTB_INSTALL_NO_DEVELOPMENT   - do not install development files
+# OTB_INSTALL_NO_RUNTIME       - do not install runtime files
+# OTB_INSTALL_NO_DOCUMENTATION - do not install documentation files
+
+IF(NOT OTB_INSTALL_BIN_DIR)
+  SET(OTB_INSTALL_BIN_DIR "/bin")
+ENDIF(NOT OTB_INSTALL_BIN_DIR)
+
+IF(NOT OTB_INSTALL_LIB_DIR)
+  SET(OTB_INSTALL_LIB_DIR "/lib/otb")
+ENDIF(NOT OTB_INSTALL_LIB_DIR)
+
+IF(NOT OTB_INSTALL_DATA_DIR)
+  SET(OTB_INSTALL_DATA_DIR "/share/otb")
+ENDIF(NOT OTB_INSTALL_DATA_DIR)
+
+IF(NOT OTB_INSTALL_INCLUDE_DIR)
+  SET(OTB_INSTALL_INCLUDE_DIR "/include/otb")
+ENDIF(NOT OTB_INSTALL_INCLUDE_DIR)
+
+IF(NOT OTB_INSTALL_PACKAGE_DIR)
+  SET(OTB_INSTALL_PACKAGE_DIR ${OTB_INSTALL_LIB_DIR}
+    CACHE INTERNAL "")
+ENDIF(NOT OTB_INSTALL_PACKAGE_DIR)
+
+IF(NOT OTB_INSTALL_NO_DEVELOPMENT)
+  SET(OTB_INSTALL_NO_DEVELOPMENT 0)
+ENDIF(NOT OTB_INSTALL_NO_DEVELOPMENT)
+
+IF(NOT OTB_INSTALL_NO_RUNTIME)
+  SET(OTB_INSTALL_NO_RUNTIME 0)
+ENDIF(NOT OTB_INSTALL_NO_RUNTIME)
+
+IF(NOT OTB_INSTALL_NO_DOCUMENTATION)
+  SET(OTB_INSTALL_NO_DOCUMENTATION 0)
+ENDIF(NOT OTB_INSTALL_NO_DOCUMENTATION)
+
+SET(OTB_INSTALL_NO_LIBRARIES)
+IF(OTB_BUILD_SHARED_LIBS)
+  IF(OTB_INSTALL_NO_RUNTIME AND OTB_INSTALL_NO_DEVELOPMENT)
+    SET(OTB_INSTALL_NO_LIBRARIES 1)
+  ENDIF(OTB_INSTALL_NO_RUNTIME AND OTB_INSTALL_NO_DEVELOPMENT)
+ELSE(OTB_BUILD_SHARED_LIBS)
+  IF(OTB_INSTALL_NO_DEVELOPMENT)
+    SET(OTB_INSTALL_NO_LIBRARIES 1)
+  ENDIF(OTB_INSTALL_NO_DEVELOPMENT)
+ENDIF(OTB_BUILD_SHARED_LIBS)
+
+# Because INSTALL_* commands require a leading / and because INSTALL (cmake 2.4
+# and newer) requires no leading / to install under INSTALL_PREFIX, we
+# are stripping the leading /. In the future, there should be no leading
+# / in any install directory variables
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_LIB_DIR_CM24 "${OTB_INSTALL_LIB_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_BIN_DIR_CM24 "${OTB_INSTALL_BIN_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_INCLUDE_DIR_CM24 "${OTB_INSTALL_INCLUDE_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_PACKAGE_DIR_CM24 "${OTB_INSTALL_PACKAGE_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_DOXYGEN_DIR_CM24 "${OTB_INSTALL_DOXYGEN_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_TCL_DIR_CM24 "${OTB_INSTALL_TCL_DIR}")
+STRING(REGEX REPLACE "^/" "" OTB_INSTALL_JAVA_DIR_CM24 "${OTB_INSTALL_JAVA_DIR}")
+
+# Make sure the user does not try to install on top of the build tree.
+IF(WIN32 OR APPLE OR UNIX)
+  STRING(TOLOWER "${CMAKE_INSTALL_PREFIX}" _PREFIX)
+  STRING(TOLOWER "${OTB_BINARY_DIR}" _BUILD)
+ELSE(WIN32 OR APPLE OR UNIX)
+  SET(_PREFIX "${CMAKE_INSTALL_PREFIX}")
+  SET(_BUILD "${OTB_BINARY_DIR}")
+ENDIF(WIN32 OR APPLE OR UNIX)
+IF("${_PREFIX}" STREQUAL "${_BUILD}")
+  MESSAGE(FATAL_ERROR
+    "The current CMAKE_INSTALL_PREFIX points at the build tree:\n"
+    "  ${CMAKE_INSTALL_PREFIX}\n"
+    "This is not supported."
+    )
+ENDIF("${_PREFIX}" STREQUAL "${_BUILD}")
+
 
 # The fluid-generated fltk sources have many warnings.  This macro
 # will disable warnings for the generated files on some compilers.
@@ -369,7 +673,7 @@ ENDIF(APPLE AND NOT FLTK_USE_X)
 
 
 INCLUDE_DIRECTORIES (
-  ${OTB_BINARY_DIR} 
+  ${OTB_BINARY_DIR}
   ${OTB_SOURCE_DIR}
 )
 
@@ -386,8 +690,8 @@ INCLUDE (${CMAKE_ROOT}/Modules/CMakeBackwardCompatibilityCXX.cmake)
 # MESSAGE(FATAL_ERROR ...) commands are invoked.
 INCLUDE(${CMAKE_ROOT}/Modules/Dart.cmake)
 MARK_AS_ADVANCED(TCL_TCLSH DART_ROOT)
+ENABLE_TESTING()
 IF(BUILD_TESTING)
-  ENABLE_TESTING()
   SET(BUILDNAME "${BUILDNAME}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 ENDIF(BUILD_TESTING)
@@ -397,9 +701,9 @@ ENDIF(BUILD_TESTING)
 # Output directories.
 
 
-IF(NOT LIBRARY_OUTPUT_PATH)
-   SET (LIBRARY_OUTPUT_PATH ${OTB_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
-ENDIF(NOT LIBRARY_OUTPUT_PATH)
+#       IF(NOT LIBRARY_OUTPUT_PATH)
+SET (LIBRARY_OUTPUT_PATH ${OTB_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
+#       ENDIF(NOT LIBRARY_OUTPUT_PATH)
 IF(NOT EXECUTABLE_OUTPUT_PATH)
    SET (EXECUTABLE_OUTPUT_PATH ${OTB_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all executables.")
 ENDIF(NOT EXECUTABLE_OUTPUT_PATH)
@@ -407,7 +711,7 @@ ENDIF(NOT EXECUTABLE_OUTPUT_PATH)
 IF(NOT OTB_NO_LIBRARY_VERSION)
    # This setting of SOVERSION assumes that any API change
    # will increment either the minor or major version number of OTB.
-   SET(OTB_LIBRARY_PROPERTIES 
+   SET(OTB_LIBRARY_PROPERTIES
        VERSION   "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}"
        SOVERSION "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}")
 ENDIF(NOT OTB_NO_LIBRARY_VERSION)
@@ -430,9 +734,9 @@ LINK_DIRECTORIES(.)
 # Option for display all developpment message !!!
 OPTION(OTB_SHOW_ALL_MSG_DEBUG "OTB developers : Show all messages (debug, dev, etc...) use only for otb developers." OFF)
 MARK_AS_ADVANCED(OTB_SHOW_ALL_MSG_DEBUG)
-IF( OTB_SHOW_ALL_MSG_DEBUG )
- ADD_DEFINITIONS(-DOTB_ACTIVE_MSG_DEV_MACRO)
-ENDIF( OTB_SHOW_ALL_MSG_DEBUG )
+# IF( OTB_SHOW_ALL_MSG_DEBUG )
+#  ADD_DEFINITIONS(-DOTB_SHOW_ALL_MSG_DEBUG)
+# ENDIF( OTB_SHOW_ALL_MSG_DEBUG )
 
 #-----------------------------------------------------------------------------
 # Advanced option to avoid recompiling utilities at each cmake reconfiguration
@@ -486,32 +790,32 @@ ENDIF(OTB_USE_VISU_GUI)
 # Use OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES to LINK Utilities Algo libraries into your executable
 # Use OTB_ALLS_UTILITIES_DEPENDENT_LIBRARIES to LINK Utilities Algo libraries into your executable
 # => Create OTB_IO_UTILITIES_DEPENDENT_LIBRARIES
-
-SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES "gdal;dxf;tinyXML;otbgeotiff;otbxtiff;otbossim" )
-
-IF(NOT OTB_USE_EXTERNAL_OPENTHREADS)
-        SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};${OPENTHREADS_LIBRARY}")
-ENDIF(NOT OTB_USE_EXTERNAL_OPENTHREADS)
-
-# Add EXPAT library
-IF( OTB_USE_EXTERNAL_EXPAT )
-        SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};expat")
-ELSE( OTB_USE_EXTERNAL_EXPAT  )
-        SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};otbexpat")
-ENDIF( OTB_USE_EXTERNAL_EXPAT )
-
-# Add Open Jpeg library
-IF( OTB_COMPILE_JPEG2000 )
-     SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};otbopenjpeg") 
-ENDIF( OTB_COMPILE_JPEG2000 )
-
-# => Create OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES
-SET(OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES "otb6S;otbgalib;InsightJournal;otbsvm")
-
-
-# => Create OTB_ALLS_UTILITIES_DEPENDENT_LIBRARIES
-SET(OTB_ALLS_UTILITIES_DEPENDENT_LIBRARIES "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES} ${OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES}")
-
+# # #
+# # # SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES "${GDAL_LIBRARY};dxf;tinyXML;otbliblas;otbossim;otbossimplugins" )
+# # #
+# # # IF(NOT OTB_USE_EXTERNAL_OPENTHREADS)
+# # #         SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};${OPENTHREADS_LIBRARY}")
+# # # ENDIF(NOT OTB_USE_EXTERNAL_OPENTHREADS)
+# # #
+# # # # Add EXPAT library
+# # # IF( OTB_USE_EXTERNAL_EXPAT )
+# # #         SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};expat")
+# # # ELSE( OTB_USE_EXTERNAL_EXPAT  )
+# # #         SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES  "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};otbexpat")
+# # # ENDIF( OTB_USE_EXTERNAL_EXPAT )
+# # #
+# # # # Add Open Jpeg library
+# # # IF( OTB_COMPILE_JPEG2000 )
+# # #      SET(OTB_IO_UTILITIES_DEPENDENT_LIBRARIES "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES};otbopenjpeg")
+# # # ENDIF( OTB_COMPILE_JPEG2000 )
+# # #
+# # # # => Create OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES
+# # # SET(OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES "otb6S;otbgalib;InsightJournal;otbsvm")
+# # #
+# # #
+# # # # => Create OTB_ALLS_UTILITIES_DEPENDENT_LIBRARIES
+# # # SET(OTB_ALLS_UTILITIES_DEPENDENT_LIBRARIES "${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES} ${OTB_ALGO_UTILITIES_DEPENDENT_LIBRARIES}")
+# # #
 
 #-----------------------------------------------------------------------------
 OPTION(BUILD_EXAMPLES "Build the Examples directory." OFF)
@@ -585,7 +889,7 @@ ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 #-----------------------------------------------------------------------------
 # Configure files with settings for use by the build.
-CONFIGURE_FILE(${OTB_SOURCE_DIR}/otbConfigure.h.in 
+CONFIGURE_FILE(${OTB_SOURCE_DIR}/otbConfigure.h.in
                ${OTB_BINARY_DIR}/otbConfigure.h)
 
 #-----------------------------------------------------------------------------
@@ -606,13 +910,13 @@ INCLUDE_DIRECTORIES(
 
 #-----------------------------------------------------------------------------
 # Uninstall cmake use to uninstall OTB.
-CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
+#    CONFIGURE_FILE(
+#      "${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in"
+#      "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+#      IMMEDIATE @ONLY)
 
-ADD_CUSTOM_TARGET(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+#    ADD_CUSTOM_TARGET(uninstall
+#      "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 #-----------------------------------------------------------------------------
 # Help other projects use OTB.
@@ -621,10 +925,21 @@ ADD_CUSTOM_TARGET(uninstall
 CONFIGURE_FILE(${OTB_SOURCE_DIR}/UseOTB.cmake.in
                ${OTB_BINARY_DIR}/UseOTB.cmake COPYONLY IMMEDIATE)
 
+
 # Save the compiler settings so another project can import them.
 INCLUDE(${CMAKE_ROOT}/Modules/CMakeExportBuildSettings.cmake)
 CMAKE_EXPORT_BUILD_SETTINGS(${OTB_BINARY_DIR}/OTBBuildSettings.cmake)
-INSTALL_FILES(/lib/otb .cmake OTBBuildSettings)
+#INSTALL_FILES(/lib/otb .cmake OTBBuildSettings)
+
+IF(NOT OTB_INSTALL_NO_DEVELOPMENT)
+  INSTALL(FILES
+    ${OTB_BINARY_DIR}/OTBBuildSettings.cmake
+    ${OTB_BINARY_DIR}/OTBLibraryDepends.cmake
+    ${OTB_BINARY_DIR}/UseOTB.cmake
+    DESTINATION ${OTB_INSTALL_PACKAGE_DIR_CM24}
+    COMPONENT Development
+    )
+ENDIF(NOT OTB_INSTALL_NO_DEVELOPMENT)
 
 # Save library dependencies.
 EXPORT_LIBRARY_DEPENDENCIES(${OTB_BINARY_DIR}/OTBLibraryDepends.cmake)
@@ -632,9 +947,15 @@ EXPORT_LIBRARY_DEPENDENCIES(${OTB_BINARY_DIR}/OTBLibraryDepends.cmake)
 # Create the OTBConfig.cmake file containing the OTB configuration.
 INCLUDE (${OTB_SOURCE_DIR}/otbGenerateOTBConfig.cmake)
 
-# Install some files.
-INSTALL_FILES(/include/otb .h otbConfigure)
-INSTALL_FILES(/lib/otb .cmake UseOTB OTBLibraryDepends OTBConfig )
+IF(NOT OTB_INSTALL_NO_DEVELOPMENT)
+  INSTALL(FILES ${OTB_BINARY_DIR}/otbConfigure.h
+    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}
+    COMPONENT Development)
+ENDIF(NOT OTB_INSTALL_NO_DEVELOPMENT)
+
+
+#INSTALL_FILES(/include/otb .h otbConfigure)
+#INSTALL_FILES(/lib/otb .cmake UseOTB OTBLibraryDepends OTBConfig )
 
 #-----------------------------------------------------------------------------
 # Add compiler flags OTB needs to work on this platform.  This must be
@@ -645,3 +966,61 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OTB_REQUIRED_CXX_FLAGS}")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OTB_REQUIRED_LINK_FLAGS}")
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OTB_REQUIRED_LINK_FLAGS}")
 SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OTB_REQUIRED_LINK_FLAGS}")
+
+#-----------------------------------------------------------------------------
+# Set up CPack support, to be able to distribute OTB binary packages. It will
+# be particulary useful to distributed prebuilt OTB.
+#
+
+OPTION(OTB_USE_CPACK "Generate installer using CPack" OFF)
+MARK_AS_ADVANCED(OTB_USE_CPACK)
+
+IF(OTB_USE_CPACK)
+
+INCLUDE(InstallRequiredSystemLibraries)
+
+SET(CPACK_PACKAGE_NAME "OTB" CACHE STRING "Package name")
+MARK_AS_ADVANCED(CPACK_PACKAGE_NAME)
+
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Orfeo Toolbox")
+MARK_AS_ADVANCED(CPACK_PACKAGE_DESCRIPTION_SUMMARY)
+
+SET(CPACK_PACKAGE_VERSION  "${OTB_VERSION_STRING}")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${OTB_VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${OTB_VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${OTB_VERSION_PATCH}")
+
+SET(CPACK_PACKAGE_CONTACT "contact@orfeo-toolbox.org" CACHE STRING  "Orfeo toolbox contact email")
+
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Description.txt")
+
+#Debian specific
+SET(DEBIAN_PACKAGE_MAINTAINER  "debian@orfeo-toolbox.org" CACHE STRING  "Debian package maintainer email")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libgdal1-1.5.0 (>= 1.5.1-0), libfltk1.1 (>= 1.1.7-3), libcurl3 (>=7.15.5-1etch1), libfftw3-3 (>=3.1.2-3.1)" CACHE STRING "Debian package dependance" )
+SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64" CACHE STRING "arch")
+MARK_AS_ADVANCED(CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
+SET(CPACK_DEBIAN_PACKAGE_NAME "libotb" CACHE STRING "Debian package name")
+
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "OrfeoToolbox-${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}")
+
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright/OTBCopyright.txt")
+
+FILE(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_RPM_PACKAGE_DESCRIPTION)
+FILE(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_DEBIAN_PACKAGE_DESCRIPTION)
+
+IF(WIN32 AND NOT UNIX AND NOT CYGWIN)
+#Find gdal dll files, localized in the GDAL_LIBRARY directory
+GET_FILENAME_COMPONENT(GDAL_LIB_DIR "${GDAL_LIBRARY}" PATH )
+SET(GDAL_LIB_DIR "${GDAL_LIB_DIR}/" )
+INSTALL(DIRECTORY ${GDAL_LIB_DIR}
+        DESTINATION                 bin
+        FILES_MATCHING  PATTERN     "*.dll" )
+INSTALL(DIRECTORY ${GDAL_LIB_DIR}
+        DESTINATION                 lib
+        FILES_MATCHING  PATTERN     "*.lib" )
+ENDIF(WIN32 AND NOT UNIX AND NOT CYGWIN)
+
+INCLUDE(CPack)
+
+ENDIF(OTB_USE_CPACK)
+

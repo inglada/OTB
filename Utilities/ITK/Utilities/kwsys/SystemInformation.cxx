@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: SystemInformation.cxx,v $
   Language:  C++
-  Date:      $Date: 2008-06-02 03:40:30 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2009-02-12 15:08:15 $
+  Version:   $Revision: 1.38 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -13,6 +13,10 @@
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
      PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
+#ifdef _WIN32
+# include <winsock.h> // WSADATA, include before sys/types.h
+#endif
+
 #include "kwsysPrivate.h"
 #include KWSYS_HEADER(FundamentalType.h)
 #include KWSYS_HEADER(stl/string)
@@ -56,6 +60,10 @@
 #elif __hpux
 # include <sys/param.h>
 # include <sys/pstat.h>
+#endif
+
+#ifdef __HAIKU__
+#include <OS.h>
 #endif
 
 #include <memory.h>
@@ -237,6 +245,9 @@ protected:
   bool QuerySolarisInfo();
   kwsys_stl::string ParseValueFromKStat(const char* arguments);
   kwsys_stl::string RunProcess(kwsys_stl::vector<const char*> args);
+
+  //For Haiku OS
+  bool QueryHaikuInfo();
 
   // Evaluate the memory information.
   int QueryMemory();
@@ -531,6 +542,8 @@ void SystemInformationImplementation::RunCPUCheck()
   this->ParseSysCtl();
 #elif defined (__SVR4) && defined (__sun)
   this->QuerySolarisInfo();
+#elif defined(__HAIKU__)
+  this->QueryHaikuInfo();
 #else
   this->RetreiveInformationFromCpuInfoFile();
 #endif
@@ -547,6 +560,8 @@ void SystemInformationImplementation::RunMemoryCheck()
   this->ParseSysCtl();
 #elif defined (__SVR4) && defined (__sun)
   this->QuerySolarisInfo();
+#elif defined(__HAIKU__)
+  this->QueryHaikuInfo();
 #else
   this->QueryMemory();
 #endif
@@ -2147,14 +2162,14 @@ int SystemInformationImplementation::RetreiveInformationFromCpuInfoFile()
   FILE *fd = fopen("/proc/cpuinfo", "r" );
   if ( !fd ) 
     {
-    kwsys_ios::cout << "Problem opening /proc/cpuinfo" << kwsys_stl::endl;
+    kwsys_ios::cout << "Problem opening /proc/cpuinfo" << kwsys_ios::endl;
     return 0;
     }
   
   size_t fileSize = 0;
   while(!feof(fd))
     {
-    buffer += fgetc(fd);
+    buffer += static_cast<unsigned char>(fgetc(fd));
     fileSize++;
     }
   fclose( fd );
@@ -2279,7 +2294,7 @@ int SystemInformationImplementation::QueryMemory()
   int errorFlag = uname(&unameInfo);
   if( errorFlag!=0 )
     {
-    kwsys_ios::cout << "Problem calling uname(): " << strerror(errno) << kwsys_stl::endl;
+    kwsys_ios::cout << "Problem calling uname(): " << strerror(errno) << kwsys_ios::endl;
     return 0;
     }
  
@@ -2303,7 +2318,7 @@ int SystemInformationImplementation::QueryMemory()
   FILE *fd = fopen("/proc/meminfo", "r" );
   if ( !fd ) 
     {
-    kwsys_ios::cout << "Problem opening /proc/meminfo" << kwsys_stl::endl;
+    kwsys_ios::cout << "Problem opening /proc/meminfo" << kwsys_ios::endl;
     return 0;
     }
   
@@ -2496,7 +2511,7 @@ unsigned char SystemInformationImplementation::LogicalCPUPerPhysicalCPU(void)
 #if USE_ASM_INSTRUCTIONS
   if (!this->IsHyperThreadingSupported()) 
     {
-    return (unsigned char) 1;  // HT not supported
+    return static_cast<unsigned char>(1);  // HT not supported
     }
   __asm
     {
@@ -2505,7 +2520,7 @@ unsigned char SystemInformationImplementation::LogicalCPUPerPhysicalCPU(void)
     mov Regebx, ebx
     }
 #endif
-  return (unsigned char) ((Regebx & NUM_LOGICAL_BITS) >> 16);
+  return static_cast<unsigned char> ((Regebx & NUM_LOGICAL_BITS) >> 16);
 }
 
 /** Works only for windows */
@@ -2561,7 +2576,7 @@ unsigned char SystemInformationImplementation::GetAPICId()
 #if USE_ASM_INSTRUCTIONS
   if (!this->IsHyperThreadingSupported()) 
     {
-    return (unsigned char) -1;  // HT not supported
+    return static_cast<unsigned char>(-1);  // HT not supported
     } // Logical processor = 1
   __asm
     {
@@ -2570,7 +2585,7 @@ unsigned char SystemInformationImplementation::GetAPICId()
     mov Regebx, ebx
     }
 #endif
-  return (unsigned char) ((Regebx & INITIAL_APIC_ID_BITS) >> 24);
+  return static_cast<unsigned char>((Regebx & INITIAL_APIC_ID_BITS) >> 24);
 }
 
 /** Count the number of CPUs. Works only on windows. */
@@ -2723,7 +2738,7 @@ bool SystemInformationImplementation::ParseSysCtl()
     this->NumberOfLogicalCPU /= this->NumberOfPhysicalCPU;
     }
 
-  this->CPUSpeedInMHz = atoi(this->ExtractValueFromSysCtl("hw.cpufrequency:").c_str()); 
+  this->CPUSpeedInMHz = static_cast<float>(atoi(this->ExtractValueFromSysCtl("hw.cpufrequency:").c_str())); 
   this->CPUSpeedInMHz /= 1000000;
 
   // Chip family
@@ -2810,7 +2825,7 @@ kwsys_stl::string SystemInformationImplementation::RunProcess(kwsys_stl::vector<
       {
       // Should not get here.
       kwsys_ios::cerr << "Unexpected ending state after running " << args[0]
-                << kwsys_stl::endl;
+                << kwsys_ios::endl;
       } break;
     }
   kwsysProcess_Delete(gp);
@@ -2893,7 +2908,7 @@ kwsys_stl::string SystemInformationImplementation::ParseValueFromKStat(const cha
 bool SystemInformationImplementation::QuerySolarisInfo()
 {
   // Parse values
-  this->NumberOfPhysicalCPU = atoi(this->ParseValueFromKStat("-n systethis->misc -s ncpus").c_str());
+  this->NumberOfPhysicalCPU = atoi(this->ParseValueFromKStat("-n syste_misc -s ncpus").c_str());
   this->NumberOfLogicalCPU = this->NumberOfPhysicalCPU;
   
   if(this->NumberOfPhysicalCPU!=0)
@@ -2901,7 +2916,7 @@ bool SystemInformationImplementation::QuerySolarisInfo()
     this->NumberOfLogicalCPU /= this->NumberOfPhysicalCPU;
     }
 
-  this->CPUSpeedInMHz = atoi(this->ParseValueFromKStat("-s clock_MHz").c_str());
+  this->CPUSpeedInMHz = static_cast<float>(atoi(this->ParseValueFromKStat("-s clock_MHz").c_str()));
 
   // Chip family
   this->ChipID.Family = 0; 
@@ -2930,6 +2945,75 @@ bool SystemInformationImplementation::QuerySolarisInfo()
   this->AvailablePhysicalMemory = 0;
   this->AvailableVirtualMemory = 0;
 
+  return true;
+}
+
+/** Querying for system information from Haiku OS */
+bool SystemInformationImplementation::QueryHaikuInfo()
+{
+#if defined(__HAIKU__)
+
+  system_info info;
+  get_system_info(&info);
+  
+  this->NumberOfPhysicalCPU = info.cpu_count;
+  this->CPUSpeedInMHz = info.cpu_clock_speed / 1000000.0F;
+
+  // Physical Memory
+  this->TotalPhysicalMemory = (info.max_pages * B_PAGE_SIZE) / (1024 * 1024) ;
+  this->AvailablePhysicalMemory = this->TotalPhysicalMemory - 
+    ((info.used_pages * B_PAGE_SIZE) / (1024 * 1024));
+
+  
+  // NOTE: get_system_info_etc is currently a private call so just set to 0
+  // until it becomes public
+  this->TotalVirtualMemory = 0;
+  this->AvailableVirtualMemory = 0;
+
+  // Retrieve cpuid_info union for cpu 0
+  cpuid_info cpu_info;
+  get_cpuid(&cpu_info, 0, 0);
+
+  // Chip Vendor
+  // Use a temporary buffer so that we can add NULL termination to the string
+  char vbuf[13];
+  strncpy(vbuf, cpu_info.eax_0.vendor_id, 12);
+  vbuf[12] = '\0';
+  strcpy(this->ChipID.Vendor,vbuf);
+
+  this->FindManufacturer();
+
+  // Retrieve cpuid_info union for cpu 0 this time using a register value of 1
+  get_cpuid(&cpu_info, 1, 0);
+
+  this->NumberOfLogicalCPU = cpu_info.eax_1.logical_cpus;
+
+  // Chip type
+  this->ChipID.Type = cpu_info.eax_1.type;
+
+  // Chip family
+  this->ChipID.Family = cpu_info.eax_1.family; 
+  
+  // Chip Model
+  this->ChipID.Model = cpu_info.eax_1.model;
+
+  // Chip Revision
+  this->ChipID.Revision = cpu_info.eax_1.stepping;
+
+  // Chip Extended Family
+  this->ChipID.ExtendedFamily = cpu_info.eax_1.extended_family;
+
+  // Chip Extended Model
+  this->ChipID.ExtendedModel = cpu_info.eax_1.extended_model;
+
+  // Get ChipID.ProcessorName from other information already gathered
+  this->RetrieveClassicalCPUIdentity();
+
+  // Cache size
+  this->Features.L1CacheSize = 0;
+  this->Features.L2CacheSize = 0;
+
+#endif
   return true;
 }
 
@@ -2980,15 +3064,22 @@ bool SystemInformationImplementation::QueryOSInformation()
         {
         if (osvi.wProductType == VER_NT_WORKSTATION) 
           {
+          if (osvi.dwMajorVersion == 6) 
+            {
+            this->OSRelease = "Vista";
+            }
 // VER_SUITE_PERSONAL may not be defined
 #ifdef VER_SUITE_PERSONAL
-          if (osvi.wSuiteMask & VER_SUITE_PERSONAL)
+          else
             {
-            this->OSRelease += " Personal";
-            }
-          else 
-            {
-            this->OSRelease += " Professional";
+            if (osvi.wSuiteMask & VER_SUITE_PERSONAL)
+              {
+              this->OSRelease += " Personal";
+              }
+            else 
+              {
+              this->OSRelease += " Professional";
+              }
             }
 #endif
           } 
@@ -3015,7 +3106,7 @@ bool SystemInformationImplementation::QueryOSInformation()
             }
           }
 
-        sprintf (operatingSystem, "%s(Build %ld)", osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
+        sprintf (operatingSystem, "%s (Build %ld)", osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
         this->OSVersion = operatingSystem; 
         }
       else 
@@ -3095,7 +3186,7 @@ bool SystemInformationImplementation::QueryOSInformation()
       else 
         { 
         // Windows 2000 and everything else.
-        sprintf (operatingSystem,"%s(Build %ld)", osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
+        sprintf (operatingSystem,"%s (Build %ld)", osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
         this->OSVersion = operatingSystem;
         }
       break;

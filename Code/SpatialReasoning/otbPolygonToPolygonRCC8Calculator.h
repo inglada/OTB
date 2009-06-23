@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,7 +28,7 @@ namespace otb
  * \class PolygonToPolygonRCC8Calculator
  * \brief This class compute the RCC8 relation between the regions from two segmentation images.
  *
- * The RCC8 system comes from qualitative spatial reasoning. 
+ * The RCC8 system comes from qualitative spatial reasoning.
  * It is a set of pairwise disjoint exhaustive relation between two closed region of space.
  * There are 8 possible relations :
  * DC: Disconnected
@@ -41,11 +41,11 @@ namespace otb
  * EQ: Equivalence
  *
  * The goal of this class is to determine which of these 8 relations link the two inputs regions represented
- * by the closed input path. Since this class will further be used iteratively on a possibly large set 
+ * by the closed input path. Since this class will further be used iteratively on a possibly large set
  * of regiosn, it is optimised : the decision is managed by a decision tree.
  */
-template <class TInputPolygon>            
-  class ITK_EXPORT PolygonToPolygonRCC8Calculator : public itk::Object
+template <class TInputPolygon>
+class ITK_EXPORT PolygonToPolygonRCC8Calculator : public itk::Object
 {
 public:
   /** Standard class typedefs. */
@@ -63,6 +63,7 @@ public:
   typedef typename PolygonType::ConstPointer PolygonConstPointerType;
   typedef typename PolygonType::VertexListType    VertexListType;
   typedef typename PolygonType::ContinuousIndexType ContinuousIndexType;
+  typedef typename PolygonType::RegionType::ImageRegionType RegionType;
   typedef typename VertexListType::ConstIterator VertexListConstIteratorType;
   typedef std::vector<bool> BoolVectorType;
 
@@ -80,25 +81,26 @@ public:
   itkSetMacro(Level3APrioriKnowledge,bool);
   itkGetMacro(Level1APrioriKnowledge,bool);
   itkGetMacro(Level3APrioriKnowledge,bool);
- 
+
   itkSetObjectMacro(Polygon1,PolygonType);
   itkSetObjectMacro(Polygon2,PolygonType);
   itkGetObjectMacro(Polygon1,PolygonType);
   itkGetObjectMacro(Polygon2,PolygonType);
-  
+
   /** Main computation method */
   void Compute(void);
-  
+
   virtual bool ComputeRelation(bool edgeEdgeBool, bool interExterBool, bool exterInterBool);
 
   virtual bool ComputeInterExter(PolygonPointerType path1,PolygonPointerType path2);
 
   virtual bool ComputeEdgeEdge(PolygonPointerType path1, PolygonPointerType path2);
-  
+
   virtual bool ComputeInterInter(PolygonPointerType path1, PolygonPointerType path2);
 
-  
-  protected:
+  virtual bool RegionsIntersectionIsNull(const RegionType& region1, const RegionType& region2);
+
+protected:
   /** Constructor */
   PolygonToPolygonRCC8Calculator();
   /** Destructor */
@@ -106,7 +108,7 @@ public:
   /** PrintSelf method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
- private:
+private:
   /** The RCC8 relation value */
   RCC8ValueType m_Value;
   /**  Decision tree Level 1 A priori knowledge */
@@ -127,4 +129,4 @@ public:
 #include "otbPolygonToPolygonRCC8Calculator.txx"
 #endif
 
-#endif 
+#endif

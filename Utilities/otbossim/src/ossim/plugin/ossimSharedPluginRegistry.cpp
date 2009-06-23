@@ -6,8 +6,9 @@
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimSharedPluginRegistry.cpp 13070 2008-06-23 20:56:50Z dburken $
+// $Id: ossimSharedPluginRegistry.cpp 14046 2009-03-03 02:23:38Z gpotts $
 #include <algorithm>
+#include <iterator>
 #include <ossim/plugin/ossimSharedPluginRegistry.h>
 #include <ossim/base/ossimConstants.h>
 #include <ossim/base/ossimTrace.h>
@@ -15,26 +16,25 @@
 #include <ossim/base/ossimKeywordlist.h>
 #include <ossim/plugin/ossimSharedObjectBridge.h>
 
-ossimSharedPluginRegistry* ossimSharedPluginRegistry::theInstance = NULL;
+//ossimSharedPluginRegistry* ossimSharedPluginRegistry::theInstance = NULL;
 //ossimPluginBridgeStructure ossimSharedPluginRegistry::thePluginBridgeFactoryPointers;
 
 static ossimTrace traceDebug("ossimSharedPluginRegistry:debug");
 
+ossimSharedPluginRegistry::ossimSharedPluginRegistry()
+{
+}
+
 ossimSharedPluginRegistry::~ossimSharedPluginRegistry()
 {
    theLibraryList.clear();
-
-   theInstance = NULL;
 }
 
 ossimSharedPluginRegistry* ossimSharedPluginRegistry::instance()
 {
-   if(!theInstance)
-   {
-      theInstance = new ossimSharedPluginRegistry;
-   }
+   static ossimSharedPluginRegistry sharedInstance;
 
-   return theInstance;
+   return &sharedInstance;//theInstance;
 }
 
 bool ossimSharedPluginRegistry::registerPlugin(const ossimFilename& filename, bool insertFrontFlag)
@@ -129,7 +129,7 @@ ossimPluginLibrary* ossimSharedPluginRegistry::getPlugin(const ossimFilename& fi
 
    for(idx = 0; idx < theLibraryList.size();++idx)
    {
-      if(filename == ossimFilename(theLibraryList[idx]->getName()).file())
+      if(fileOnly == ossimFilename(theLibraryList[idx]->getName()).file())
       {
          return theLibraryList[idx].get();
       }
@@ -186,6 +186,7 @@ ossim_uint32 ossimSharedPluginRegistry::getNumberOfPlugins()const
 bool ossimSharedPluginRegistry::isLoaded(const ossimFilename& filename) const
    
 {
+   ossimFilename fileOnly = filename.file();
    bool result = false;
    ossim_uint32 count = getNumberOfPlugins();
    for (ossim_uint32 i = 0; i < count; ++i)
@@ -193,7 +194,7 @@ bool ossimSharedPluginRegistry::isLoaded(const ossimFilename& filename) const
       const ossimPluginLibrary* pi = getPlugin(i);
       if (pi)
       {
-         if (filename == pi->getName())
+         if (fileOnly == ossimFilename(pi->getName()).file())
          {
             result = true;
             break;
@@ -201,4 +202,28 @@ bool ossimSharedPluginRegistry::isLoaded(const ossimFilename& filename) const
       }
    }
    return result;
+}
+
+void ossimSharedPluginRegistry::printAllPluginInformation(std::ostream& out)
+{
+   ossim_uint32 count = getNumberOfPlugins();
+   ossim_uint32 idx = 0;
+   
+   for(idx = 0; idx < count; ++idx)
+   {
+      std::vector<ossimString> classNames;
+      const ossimPluginLibrary* pi = getPlugin(idx);
+      if(pi)
+      {
+         pi->getClassNames(classNames);
+         out << "Plugin: " << pi->getName() << std::endl;
+         out << "DESCRIPTION: \n";
+         out << pi->getDescription() << "\n";
+         out << "CLASSES SUPPORTED\n     ";
+         std::copy(classNames.begin(),
+                   classNames.end(),
+                   std::ostream_iterator<ossimString>(out, "\n     "));
+         out << "\n";
+      }
+   }
 }

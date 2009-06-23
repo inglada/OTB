@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,16 +31,16 @@ int otbMIRegistrationFilterNew(int argc, char* argv[])
   typedef otb::Image<PixelType,ImageDimension>         MovingImageType;
   typedef otb::Image<PixelType,ImageDimension>         FixedImageType;
   typedef otb::Image<DeformationPixelType,
-                               ImageDimension>         DeformationFieldType;
+  ImageDimension>         DeformationFieldType;
 
   //Create the filter
-  typedef otb::MIRegistrationFilter< FixedImageType, 
-                                       MovingImageType,
-                                       DeformationFieldType >
-                                           RegistrationFilterType;
+  typedef otb::MIRegistrationFilter< FixedImageType,
+  MovingImageType,
+  DeformationFieldType >
+  RegistrationFilterType;
 
   // Instantiation
   RegistrationFilterType::Pointer registrator = RegistrationFilterType::New();
-  
- return EXIT_SUCCESS;
+
+  return EXIT_SUCCESS;
 }

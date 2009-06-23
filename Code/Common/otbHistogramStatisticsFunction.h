@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,10 +27,10 @@ namespace otb
 
 /** \class HistogramStatisticsFunction
  * \brief Computes parameters for a histogram.
- * 
- * You plug in the target histogram using SetInputHistogram method and 
+ *
+ * You plug in the target histogram using SetInputHistogram method and
  * get the entropy value from the histogram by calling the method GetEntropy
- * or the GenerateData method. 
+ * or the GenerateData method.
  *
  * \ingroup Function
  */
@@ -52,37 +52,37 @@ public:
 
   /**Standard Macros */
   itkTypeMacro(HistogramStatisticsFunction, HistogramAlgorithmsBase);
-  itkNewMacro(Self) ;
-                                                                                                                                      
+  itkNewMacro(Self);
+
   /** Typedef for the output type */
   typedef std::vector<TOutput> OutputType;
-                                                                                                                                      
+
   /** Returns the entropy value */
   OutputType GetEntropy();
 
   /** Returns the mean value from histogram*/
   OutputType GetMean();
-  
+
   /** Returns the covariance value from histogram*/
   OutputType GetCovariance();
 
   /** Stores the histogram pointer */
-  void SetInputHistogram( const TInputHistogram * histogram ) 
+  void SetInputHistogram( const TInputHistogram * histogram )
   {
-      if ( m_InputHistogram != histogram )
-      {
-        m_InputHistogram = histogram ;
-        this->Modified() ;
-	m_IsModified = true; 
-      }
+    if ( m_InputHistogram != histogram )
+    {
+      m_InputHistogram = histogram;
+      this->Modified();
+      m_IsModified = true;
+    }
   }
 
 protected:
 
-  HistogramStatisticsFunction() ;
+  HistogramStatisticsFunction();
   virtual ~HistogramStatisticsFunction() {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
-                                                                                                                                      
+
   /** Calculates the thresholds and save them */
   void GenerateData();
 
@@ -91,22 +91,22 @@ protected:
 
   /** Calculate mean value */
   void CalculateMean();
-                         
+
   /** Calculate covariance value */
   void CalculateCovariance();
 
 private:
 
-  OutputType m_entropy ;
-  OutputType m_mean ;
-  OutputType m_covariance ;
+  OutputType m_entropy;
+  OutputType m_mean;
+  OutputType m_covariance;
   bool m_IsModified;
-  
+
   /** Target histogram data pointer */
-  typename TInputHistogram::ConstPointer m_InputHistogram ;
-  
-} ; // end of class
-                                                                                                                                      
+  typename TInputHistogram::ConstPointer m_InputHistogram;
+
+}; // end of class
+
 } // end of namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION

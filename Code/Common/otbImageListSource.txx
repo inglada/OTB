@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -41,10 +41,10 @@ typename ImageListSource<TOutputImage>::OutputImageListType *
 ImageListSource<TOutputImage>
 ::GetOutput(void)
 {
-  if(this->GetNumberOfOutputs()<1)
-    {
+  if (this->GetNumberOfOutputs()<1)
+  {
     return 0;
-    }
+  }
   return static_cast<OutputImageListType *> (this->ProcessObject::GetOutput(0));
 }
 /**

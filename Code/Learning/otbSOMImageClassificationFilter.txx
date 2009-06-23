@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -50,10 +50,10 @@ const typename SOMImageClassificationFilter<TInputImage,TOutputImage,TSOMMap,TMa
 SOMImageClassificationFilter<TInputImage,TOutputImage,TSOMMap,TMaskImage>
 ::GetInputMask()
 {
-  if(this->GetNumberOfInputs()<2)
-    {
-      return 0;
-    }
+  if (this->GetNumberOfInputs()<2)
+  {
+    return 0;
+  }
   return  static_cast<const MaskImageType *>(this->itk::ProcessObject::GetInput(1));
 }
 
@@ -62,10 +62,10 @@ void
 SOMImageClassificationFilter<TInputImage,TOutputImage,TSOMMap,TMaskImage>
 ::BeforeThreadedGenerateData()
 {
-  if(!m_Map)
-    {
-      itkGenericExceptionMacro(<<"No model for classification");
-    }
+  if (!m_Map)
+  {
+    itkGenericExceptionMacro(<<"No model for classification");
+  }
 }
 
 template <class TInputImage, class TOutputImage, class TSOMMap, class TMaskImage>
@@ -80,82 +80,82 @@ SOMImageClassificationFilter<TInputImage,TOutputImage,TSOMMap,TMaskImage>
   typedef itk::ImageRegionConstIterator<InputImageType> InputIteratorType;
   typedef itk::ImageRegionConstIterator<MaskImageType> MaskIteratorType;
   typedef itk::ImageRegionIterator<OutputImageType> OutputIteratorType;
-  
+
   ListSamplePointerType listSample = ListSampleType::New();
-  
+
   InputIteratorType inIt(inputPtr,outputRegionForThread);
 
   MaskIteratorType maskIt;
-  if(inputMaskPtr)
-    {
-      maskIt = MaskIteratorType(inputMaskPtr,outputRegionForThread);
-      maskIt.GoToBegin();
-    }
+  if (inputMaskPtr)
+  {
+    maskIt = MaskIteratorType(inputMaskPtr,outputRegionForThread);
+    maskIt.GoToBegin();
+  }
   unsigned int maxDimension = m_Map->GetNumberOfComponentsPerPixel();
   unsigned int sampleSize = std::min(inputPtr->GetNumberOfComponentsPerPixel(),
-				     maxDimension);
+                                     maxDimension);
   bool validPoint = true;
 
-  for(inIt.GoToBegin();!inIt.IsAtEnd();++inIt)
+  for (inIt.GoToBegin();!inIt.IsAtEnd();++inIt)
+  {
+    if (inputMaskPtr)
     {
-      if(inputMaskPtr)
-	{
-	  validPoint = maskIt.Get()>0;
-	  ++maskIt;
-	}
-      if(validPoint)
-	{
-	  SampleType sample;
-	  sample.SetSize(sampleSize);
-	  sample.Fill(itk::NumericTraits<ValueType>::ZeroValue());
-	  for(unsigned int i=0;i<sampleSize;i++)
-	    {
-	      sample[i]=inIt.Get()[i];
-	    }
-	  listSample->PushBack(sample);
-	}
+      validPoint = maskIt.Get()>0;
+      ++maskIt;
     }
+    if (validPoint)
+    {
+      SampleType sample;
+      sample.SetSize(sampleSize);
+      sample.Fill(itk::NumericTraits<ValueType>::ZeroValue());
+      for (unsigned int i=0;i<sampleSize;++i)
+      {
+        sample[i]=inIt.Get()[i];
+      }
+      listSample->PushBack(sample);
+    }
+  }
   ClassifierPointerType classifier =ClassifierType::New();
   classifier->SetMap(m_Map);
   classifier->SetSample(listSample);
   classifier->Update();
-  
+
   typename ClassifierType::OutputType::Pointer membershipSample = classifier->GetOutput();
   typename ClassifierType::OutputType::ConstIterator sampleIter = membershipSample->Begin();
   typename ClassifierType::OutputType::ConstIterator sampleLast = membershipSample->End();
-  
+
   OutputIteratorType outIt(outputPtr,outputRegionForThread);
-  
-  outIt.GoToBegin();
-
-  while(!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
-    {
-      outIt.Set(m_DefaultLabel);
-       ++outIt;
-    }
 
   outIt.GoToBegin();
 
-   if(inputMaskPtr)
-    {
-      maskIt.GoToBegin();
-    }
-   validPoint = true;
+  while (!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
+  {
+    outIt.Set(m_DefaultLabel);
+    ++outIt;
+  }
 
-   while(!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
-     {
-       if(inputMaskPtr)
-	 {
-	   validPoint = maskIt.Get()>0;
-	   ++maskIt;
-	 }
-       if(validPoint)
-	 {
-	   outIt.Set(sampleIter.GetClassLabel());
-	   ++sampleIter;
-	 }
-       ++outIt;
-     }
+  outIt.GoToBegin();
+
+  if (inputMaskPtr)
+  {
+    maskIt.GoToBegin();
+  }
+  validPoint = true;
+
+  while (!outIt.IsAtEnd()&&(sampleIter!=sampleLast))
+  {
+    if (inputMaskPtr)
+    {
+      validPoint = maskIt.Get()>0;
+      ++maskIt;
+    }
+    if (validPoint)
+    {
+      outIt.Set(sampleIter.GetClassLabel());
+      ++sampleIter;
+    }
+    ++outIt;
+  }
 }
 /**
  * PrintSelf Method

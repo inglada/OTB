@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,20 +22,20 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbImportGeoInformationImageFilterNew);
-REGISTER_TEST(otbImportGeoInformationImageFilter);
-REGISTER_TEST(otbImportGeoInformationImageFilterWithKeywordList);
-REGISTER_TEST(otbSpectralAngleDistanceImageFilterNew);
-REGISTER_TEST(otbSpectralAngleDistanceImageFilter);
-REGISTER_TEST(otbVectorRescaleIntensityImageFilterNew);
-REGISTER_TEST(otbVectorRescaleIntensityImageFilter);
-REGISTER_TEST(otbVectorImageToImageListFilterNew);
-REGISTER_TEST(otbVectorImageToImageListFilter);
-REGISTER_TEST(otbImageListToVectorImageFilterNew);
-REGISTER_TEST(otbImageListToVectorImageFilter);
+  REGISTER_TEST(otbImportGeoInformationImageFilterNew);
+  REGISTER_TEST(otbImportGeoInformationImageFilter);
+  REGISTER_TEST(otbImportGeoInformationImageFilterWithKeywordList);
+  REGISTER_TEST(otbSpectralAngleDistanceImageFilterNew);
+  REGISTER_TEST(otbSpectralAngleDistanceImageFilter);
+  REGISTER_TEST(otbVectorRescaleIntensityImageFilterNew);
+  REGISTER_TEST(otbVectorRescaleIntensityImageFilter);
+  REGISTER_TEST(otbVectorImageToImageListFilterNew);
+  REGISTER_TEST(otbVectorImageToImageListFilter);
+  REGISTER_TEST(otbImageListToVectorImageFilterNew);
+  REGISTER_TEST(otbImageListToVectorImageFilter);
 }

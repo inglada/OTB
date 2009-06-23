@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -20,13 +20,13 @@
 /**
  * otbMath.h defines standard math macros, constants, and other
  * parameters.
- * All mathematics constans, functions (used in the OTB code) are the vcl version (vcl..., M_PI, ). 
+ * All mathematics constans, functions (used in the OTB code) are the vcl version (vcl..., M_PI, ).
  */
-  
+
 #ifndef __otbMath_h
 #define __otbMath_h
 
-// For Windows MSVC, defines these macros. 
+// For Windows MSVC, defines these macros.
 #ifdef _USE_MATH_DEFINES
 #define _MATH_DEFINES_DEFINED
 #endif
@@ -121,6 +121,12 @@
 #define M_SQRT1_2l     0.7071067811865475244008443621048490L  /* 1/sqrt(2) */
 #endif
 
+#endif
+
+/** Define short operation macro */
+
+#ifndef M_SQUARE
+#define M_SQUARE(x) ((x)*(x))
 #endif
 
 #endif //end of __otbMath_h

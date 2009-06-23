@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -32,11 +32,11 @@ PURPOSE.  See the above copyright notices for more information.
 // \doxygen{itk}{ConnectedThresholdImageFilter}. The seeds are
 // extracted from the image using the
 // \doxygen{otb}{ImageToPointSetFilter}. The thresolds are set by
-// using quantiles computed with the HistogramGenerator.  
+// using quantiles computed with the HistogramGenerator.
 //
-// The first step required to use this filter is to include its header file. 
+// The first step required to use this filter is to include its header file.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
 #include "otbMorphologicalPyramidSegmenter.h"
@@ -53,37 +53,37 @@ PURPOSE.  See the above copyright notices for more information.
 int main(int argc, char * argv[])
 {
 
-      const char* inputFilename = argv[1];
-      const char* originalFilename = argv[2];
-      const char* outputFilename1 = argv[3];
-      const bool segmentDark = atoi(argv[4]);
-      const float seedsQuantile = atof(argv[5]);
-      const float segmentationQuantile = atof(argv[6]);
-      const unsigned int minObjectSize = atoi(argv[7]);
+  const char* inputFilename = argv[1];
+  const char* originalFilename = argv[2];
+  const char* outputFilename1 = argv[3];
+  const bool segmentDark = atoi(argv[4]);
+  const float seedsQuantile = atof(argv[5]);
+  const float segmentationQuantile = atof(argv[6]);
+  const unsigned int minObjectSize = atoi(argv[7]);
 
 // Software Guide : BeginLatex
 //
 // As usual, we start by defining the types needed for the pixels, the
 // images, the image reader and the image writer. Note that, for this
 // example, an RGB image will be created to store the results of the
-// segmentation. 
+// segmentation.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-      
-      const unsigned int Dimension = 2;
-      typedef double InputPixelType;
-      typedef unsigned short LabelPixelType;
-      typedef itk::RGBPixel<unsigned char>   RGBPixelType;
+
+  const unsigned int Dimension = 2;
+  typedef double InputPixelType;
+  typedef unsigned short LabelPixelType;
+  typedef itk::RGBPixel<unsigned char>   RGBPixelType;
 
 
-      typedef otb::Image<InputPixelType,Dimension> InputImageType;
-      typedef otb::Image<LabelPixelType,Dimension> LabelImageType;
-      typedef otb::Image<RGBPixelType, 2>    RGBImageType;
+  typedef otb::Image<InputPixelType,Dimension> InputImageType;
+  typedef otb::Image<LabelPixelType,Dimension> LabelImageType;
+  typedef otb::Image<RGBPixelType, 2>    RGBImageType;
 
-      typedef otb::ImageFileReader<InputImageType> ReaderType;
-      typedef otb::ImageFileWriter<RGBImageType> WriterType;
+  typedef otb::ImageFileReader<InputImageType> ReaderType;
+  typedef otb::ImageFileWriter<RGBImageType> WriterType;
 
 // Software Guide : EndCodeSnippet
 
@@ -92,13 +92,13 @@ int main(int argc, char * argv[])
 // We define now the segmenter. Please pay attention to the fact that
 // this class belongs to the \code{morphologicalPyramid} namespace.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-      
-      typedef otb::MorphologicalPyramid::Segmenter<InputImageType,
-                                                      LabelImageType>
-	                                                SegmenterType;
+
+  typedef otb::MorphologicalPyramid::Segmenter<InputImageType,
+  LabelImageType>
+  SegmenterType;
 
 // Software Guide : EndCodeSnippet
 
@@ -110,13 +110,13 @@ int main(int argc, char * argv[])
 // segmented regions which are sharper than what would have been
 // obtained with the detail image only.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet      
-      ReaderType::Pointer reader = ReaderType::New();
-      reader->SetFileName(inputFilename);
-      ReaderType::Pointer reader2 = ReaderType::New();
-      reader2->SetFileName(originalFilename);
+// Software Guide : BeginCodeSnippet
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName(inputFilename);
+  ReaderType::Pointer reader2 = ReaderType::New();
+  reader2->SetFileName(originalFilename);
 // Software Guide : EndCodeSnippet
 
 // Software Guide : BeginLatex
@@ -130,24 +130,24 @@ int main(int argc, char * argv[])
 // for the region growing segmentation; and finally, we set the
 // minimum size for a segmented region to be kept in the final result.
 //
-// Software Guide : EndLatex 
+// Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet      
+// Software Guide : BeginCodeSnippet
 
-      SegmenterType::Pointer segmenter = SegmenterType::New();
-      segmenter->SetDetailsImage(reader->GetOutput());
-      segmenter->SetOriginalImage(reader2->GetOutput());
-      segmenter->SetSegmentDarkDetailsBool(segmentDark);
-      segmenter->SetSeedsQuantile(seedsQuantile);
-      segmenter->SetConnectedThresholdQuantile(segmentationQuantile);
-      segmenter->SetMinimumObjectSize(minObjectSize);
+  SegmenterType::Pointer segmenter = SegmenterType::New();
+  segmenter->SetDetailsImage(reader->GetOutput());
+  segmenter->SetOriginalImage(reader2->GetOutput());
+  segmenter->SetSegmentDarkDetailsBool(segmentDark);
+  segmenter->SetSeedsQuantile(seedsQuantile);
+  segmenter->SetConnectedThresholdQuantile(segmentationQuantile);
+  segmenter->SetMinimumObjectSize(minObjectSize);
 // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
   //
   // The output of the segmenter is an image of integer
   // labels, where a label denotes membership of a pixel in a particular
   // segmented region. This value is usually coded using 16 bits.
-  // This format is not practical for visualization, so 
+  // This format is not practical for visualization, so
   // for the purposes of this example, we will convert it to RGB pixels.  RGB
   // images have the advantage that they can be saved as a simple png file
   // and viewed using any standard image viewer software.  The
@@ -161,12 +161,12 @@ int main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   typedef itk::Functor::ScalarToRGBPixelFunctor<LabelPixelType>
-                                                         ColorMapFunctorType;
+  ColorMapFunctorType;
   typedef itk::UnaryFunctorImageFilter<LabelImageType,
-                      RGBImageType, ColorMapFunctorType> ColorMapFilterType;
+  RGBImageType, ColorMapFunctorType> ColorMapFilterType;
   ColorMapFilterType::Pointer colormapper = ColorMapFilterType::New();
   // Software Guide : EndCodeSnippet
-  
+
   // Software Guide : BeginLatex
   //
   // We can now plug the final segment of the pipeline by using the
@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
 
-  
+
   colormapper->SetInput(segmenter->GetOutput());
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(colormapper->GetOutput());
@@ -184,12 +184,12 @@ int main(int argc, char * argv[])
   writer->Update();
 
   // Software Guide : EndCodeSnippet
-  
+
   // Software Guide : BeginLatex
   //
 // Figure \ref{fig:PYR_SEGDET} shows the results of the segmentation
 // of the image of bright details obtained with the morphological
-// pyramid analysis. 
+// pyramid analysis.
 // \begin{figure}
 // \center
 // \includegraphics[width=0.30\textwidth]{ROI_IKO_PAN_LesHalles.eps}
@@ -199,11 +199,11 @@ int main(int argc, char * argv[])
 // segmentation. From left to right: original image, image of bright
 // details and result of the sementation.}
 // \label{fig:PYR_SEGDET}
-// \end{figure}  
+// \end{figure}
   //
   // Software Guide : EndLatex
 
 
 
-      return EXIT_SUCCESS;
-    }
+  return EXIT_SUCCESS;
+}

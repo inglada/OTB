@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataWriter.h,v $
   Language:  C++
-  Date:      $Date: 2008-07-14 19:30:49 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2009-01-08 00:20:04 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,14 +52,15 @@ public:
 
   /** Hold on to the type information specified by the template parameters.
    */
-  typedef TInputMesh                          InputMeshType;
-  typedef typename InputMeshType::PixelType   PixelType;
-  typedef typename InputMeshType::PointType   PointType;
-  typedef typename InputMeshType::CellType    CellType;
+  typedef TInputMesh                              InputMeshType;
+  typedef typename InputMeshType::PixelType       PixelType;
+  typedef typename InputMeshType::PointType       PointType;
+  typedef typename InputMeshType::CellType        CellType;
+  typedef typename InputMeshType::PointIdentifier PointIdentifier;
 
   /** Some convenient typedefs. */
-  typedef typename InputMeshType::Pointer     InputMeshPointer;
-  typedef typename InputMeshType::CellTraits  CellTraits;
+  typedef typename InputMeshType::ConstPointer  InputMeshPointer;
+  typedef typename InputMeshType::CellTraits    CellTraits;
 
   /** Define the triangular cell types which form the surface  */
   typedef CellInterface<PixelType, CellTraits> CellInterfaceType;
@@ -74,7 +75,7 @@ public:
   typedef typename CellType::PointIdIterator         PointIdIterator;
 
   /** Set the Input */
-  void SetInput(InputMeshType * input);
+  void SetInput(const InputMeshType * input);
 
   /** Set/Get the name of the file where data are written. */
   itkSetStringMacro(FileName);
@@ -86,8 +87,8 @@ protected:
 
   virtual void GenerateData();
 
-  std::string m_FileName;
-  InputMeshPointer m_Input;
+  std::string         m_FileName;
+  InputMeshPointer    m_Input;
 
   void PrintSelf(std::ostream& os, Indent indent) const;
 

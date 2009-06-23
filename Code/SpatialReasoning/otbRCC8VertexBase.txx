@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -52,17 +52,17 @@ RCC8VertexBase<TPath>
   m_Path = PathType::New();
   m_Path->Initialize();
 
-  for(unsigned int i = 0;i<nbPoints;++i)
-    {
-      ContinuousIndexType newPoint;
-      oss<<"P"<<i<<"x";
-      newPoint[0]=atof(attributes[oss.str()].c_str());
-      oss.str("");
-      oss<<"P"<<i<<"y";
-      newPoint[1]=atof(attributes[oss.str()].c_str());      
-      oss.str("");
-      m_Path->AddVertex(newPoint);
-    }
+  for (unsigned int i = 0;i<nbPoints;++i)
+  {
+    ContinuousIndexType newPoint;
+    oss<<"P"<<i<<"x";
+    newPoint[0]=atof(attributes[oss.str()].c_str());
+    oss.str("");
+    oss<<"P"<<i<<"y";
+    newPoint[1]=atof(attributes[oss.str()].c_str());
+    oss.str("");
+    m_Path->AddVertex(newPoint);
+  }
 }
 /**
  * Get an attributes vector representing the VertexBase attributes.
@@ -72,7 +72,7 @@ template <class TPath>
 typename RCC8VertexBase<TPath>::AttributesMapType
 RCC8VertexBase<TPath>
 ::GetAttributesMap(void)
-{  
+{
   itk::OStringStream oss;
   AttributesMapType results;
   oss<<m_SegmentationLevel;
@@ -88,22 +88,22 @@ RCC8VertexBase<TPath>
   typename PathType::VertexListType::ConstIterator it;
   unsigned int index = 0;
 
-  for(it=m_Path->GetVertexList()->Begin();it!=m_Path->GetVertexList()->End();++it,++index)
-    {
-      ContinuousIndexType point = it.Value();
-      oss<<"P"<<index<<"x";
-      std::string key = oss.str();
-      oss.str("");
-      oss<<point[0];
-      results[key]=oss.str();
-      oss.str("");
-      oss<<"P"<<index<<"y";
-      key = oss.str();
-      oss.str("");
-      oss<<point[1];
-      results[key]=oss.str();
-      oss.str("");
-    } 
+  for (it=m_Path->GetVertexList()->Begin();it!=m_Path->GetVertexList()->End();++it,++index)
+  {
+    ContinuousIndexType point = it.Value();
+    oss<<"P"<<index<<"x";
+    std::string key = oss.str();
+    oss.str("");
+    oss<<point[0];
+    results[key]=oss.str();
+    oss.str("");
+    oss<<"P"<<index<<"y";
+    key = oss.str();
+    oss.str("");
+    oss<<point[1];
+    results[key]=oss.str();
+    oss.str("");
+  }
   return results;
 }
 /**
@@ -113,10 +113,10 @@ template <class TPath>
 void
 RCC8VertexBase<TPath>
 ::PrintSelf( std::ostream& os,itk::Indent indent ) const
-  {
-    Superclass::PrintSelf(os,indent);
-    os<<indent<<"SegmentationLevel: "<<m_SegmentationLevel<<std::endl;
-    os<<indent<<"SegmentationType: "<<m_SegmentationType<<std::endl;
-  }
+{
+  Superclass::PrintSelf(os,indent);
+  os<<indent<<"SegmentationLevel: "<<m_SegmentationLevel<<std::endl;
+  os<<indent<<"SegmentationType: "<<m_SegmentationType<<std::endl;
+}
 } // end namespace otb
 #endif

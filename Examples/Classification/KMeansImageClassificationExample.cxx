@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet  
+// Software Guide : BeginCodeSnippet
   const unsigned int     Dimension = 2;
   typedef double         PixelType;
   typedef unsigned short LabeledPixelType;
@@ -61,8 +61,8 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet    
-  
+// Software Guide : BeginCodeSnippet
+
   typedef otb::VectorImage<PixelType,Dimension> ImageType;
   typedef otb::Image<LabeledPixelType,Dimension> LabeledImageType;
 
@@ -74,9 +74,9 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet      
+// Software Guide : BeginCodeSnippet
   typedef otb::KMeansImageClassificationFilter<ImageType,LabeledImageType>
-                                                     ClassificationFilterType;
+  ClassificationFilterType;
   typedef ClassificationFilterType::KMeansParametersType KMeansParametersType;
 
 // Software Guide : EndCodeSnippet
@@ -88,8 +88,8 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet        
-  
+// Software Guide : BeginCodeSnippet
+
   typedef otb::ImageFileReader<ImageType> ReaderType;
   typedef otb::StreamingImageFileWriter<LabeledImageType> WriterType;
 
@@ -104,8 +104,8 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet          
- 
+// Software Guide : BeginCodeSnippet
+
 
   ClassificationFilterType::Pointer filter = ClassificationFilterType::New();
 
@@ -122,28 +122,28 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet          
-  
+// Software Guide : BeginCodeSnippet
+
   const unsigned int sampleSize = ClassificationFilterType::MaxSampleDimension;
   const unsigned int parameterSize = nbClasses * sampleSize;
-   KMeansParametersType parameters;
+  KMeansParametersType parameters;
 
-   parameters.SetSize(parameterSize);
-   parameters.Fill(0);
+  parameters.SetSize(parameterSize);
+  parameters.Fill(0);
 
-   for(unsigned int i = 0; i<nbClasses;++i)
-     {
-       for(unsigned int j = 0; j <
-	     reader->GetOutput()->GetNumberOfComponentsPerPixel();++j)
-	 {
-	   parameters[i*sampleSize+j]=
-	     atof(argv[4+i*
-		       reader->GetOutput()->GetNumberOfComponentsPerPixel()
-		       +j]);
-	 }
-     }
-     
-   std::cout<<"Parameters: "<<parameters<<std::endl;
+  for (unsigned int i = 0; i<nbClasses;++i)
+  {
+    for (unsigned int j = 0; j <
+         reader->GetOutput()->GetNumberOfComponentsPerPixel();++j)
+    {
+      parameters[i*sampleSize+j]=
+        atof(argv[4+i*
+                  reader->GetOutput()->GetNumberOfComponentsPerPixel()
+                  +j]);
+    }
+  }
+
+  std::cout<<"Parameters: "<<parameters<<std::endl;
 
 // Software Guide : EndCodeSnippet
 // Software Guide : BeginLatex
@@ -153,11 +153,11 @@ int main(int argc, char * argv[])
 //
 // Software Guide : EndLatex
 
-// Software Guide : BeginCodeSnippet          
-   
+// Software Guide : BeginCodeSnippet
+
   filter->SetCentroids(parameters);
   filter->SetInput(reader->GetOutput());
-  
+
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(outfname);

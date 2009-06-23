@@ -1,13 +1,15 @@
 //*******************************************************************
 //
-// License:  See top level LICENSE.txt file.
+//  License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfFileHeaderV2_0.h 12959 2008-06-02 17:16:09Z gpotts $
+// $Id: ossimNitfFileHeaderV2_0.h 14241 2009-04-07 19:59:23Z dburken $
 #ifndef ossimNitfFileHeaderV2_0_HEADER
 #define ossimNitfFileHeaderV2_0_HEADER
 
@@ -22,12 +24,14 @@ class ossimNitfImageInfoRecordV2_0
 {
 public:
    friend std::ostream& operator <<(std::ostream& out,
-                               const ossimNitfImageInfoRecordV2_0 &data);
+                                    const ossimNitfImageInfoRecordV2_0 &data);
 
    ossim_int32 getHeaderLength()const;
    ossim_int32 getImageLength()const;
    ossim_int32 getTotalLength()const;
-   
+   void setSubheaderLength(ossim_uint32 length);
+   void setImageLength(ossim_uint32 length);
+
    /*!
     * Is a 6 byte numeric 0-999999
     */
@@ -153,7 +157,14 @@ public:
    virtual void parseStream(std::istream &in);
    
    virtual void writeStream(std::ostream &out);
-   virtual std::ostream& print(std::ostream& out)const;
+   
+   /**
+    * @brief print method that outputs a key/value type format adding prefix
+    * to keys.
+    */
+   virtual std::ostream& print(std::ostream& out,
+                               const std::string& prefix=std::string()) const;
+   
    virtual bool isEncrypted()const;
    virtual ossim_int32 getNumberOfImages()const;
    virtual ossim_int32 getNumberOfLabels()const;
@@ -169,6 +180,9 @@ public:
    virtual const char* getVersion()const;
 
    virtual ossimDrect getImageRect()const;
+  
+   virtual void addImageInfoRecord(const ossimNitfImageInfoRecordV2_0& recordInfo);
+   virtual void replaceImageInfoRecord(ossim_uint32 i, const ossimNitfImageInfoRecordV2_0& recordInfo);
 
    virtual ossimNitfImageHeader*  getNewImageHeader(ossim_int32 imageNumber,
                                                     std::istream& in)const;
@@ -210,6 +224,8 @@ public:
    void setSecurityDowngrade(const ossimString& securityDowngrade);
    void setDowngradingEvent(const ossimString& downgradeEvent);
 
+   virtual void setFileLength(ossim_uint64 fileLength);
+   virtual void setHeaderLength(ossim_uint64 headerLength);
    /**
     * Properties of a NITF 2.0 Header file. See MIL-STD-2500A for details.
     *
@@ -263,8 +279,17 @@ private:
    };
 
    void clearFields();
+   /**
+    * Sets the number of image records in the NITF 2.0 File Header.
+    *
+    * @param num
+    *        The number of image records for the entire NITF 2.0 file.
+    *
+    * @throw std::out_of_range
+    */
+   void setNumberOfImageInfoRecords(ossim_uint64 num);
    
-   /*!
+  /*!
     * This method will be used to setup information about the file.
     * Example: NITF files have display levels where the lowest number is the
     * back most image and the highes number is the front most image.  We
@@ -443,7 +468,7 @@ private:
     * indicates that the file length was not
     * available.
     */
-   char theNitfFileLength[13];
+   char theFileLength[13];
 
    /**
     * HL:
@@ -455,7 +480,7 @@ private:
     * 999999 indicates that the length of the
     * header was not available upon creation.
     */
-   char theNitfHeaderLength[7];
+   char theHeaderLength[7];
 
    /**
     * NUMI:

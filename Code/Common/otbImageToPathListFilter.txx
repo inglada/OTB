@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -46,26 +46,26 @@ ImageToPathListFilter<TInputImage,TOutputPath>
 {
   // We have 1 input:  an image
 
-	// Process object is not const-correct so the const_cast is required here
-	this->ProcessObjectType::SetNthInput(0,const_cast< InputImageType * >( image ) );
+  // Process object is not const-correct so the const_cast is required here
+  this->ProcessObjectType::SetNthInput(0,const_cast< InputImageType * >( image ) );
 }
 
 template <class TInputImage, class TOutputPath>
 const typename ImageToPathListFilter<TInputImage,TOutputPath>::InputImageType *
 ImageToPathListFilter<TInputImage,TOutputPath>
-::GetInput(void) 
+::GetInput(void)
 {
-  
-	
-	if (this->GetNumberOfInputs() < 1)
-    {
+
+
+  if (this->GetNumberOfInputs() < 1)
+  {
     return 0;
-    }
-  
+  }
+
   return static_cast<const TInputImage * >
-	  (this->ProcessObjectType::GetInput(0) );
+         (this->ProcessObjectType::GetInput(0) );
 }
-  
+
 /**
  *
  */

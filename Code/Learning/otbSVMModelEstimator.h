@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -26,34 +26,34 @@ namespace otb
 
 /** \class SVMModelEstimator
  * \brief Class for SVM model estimation from images used for classification.
- * 
  *
- * The basic functionality of the SVMModelEstimator framework base class is to    
- * generate the models used in SVM classification. It requires input 
+ *
+ * The basic functionality of the SVMModelEstimator framework base class is to
+ * generate the models used in SVM classification. It requires input
  * images and a training image to be provided by the user.
  * This object supports data handling of multiband images. The object
- * accepts the input image in vector format only, where each pixel is a 
+ * accepts the input image in vector format only, where each pixel is a
  * vector and each element of the vector corresponds to an entry from
- * 1 particular band of a multiband dataset. A single band image is treated 
+ * 1 particular band of a multiband dataset. A single band image is treated
  * as a vector image with a single element for every vector. The classified
- * image is treated as a single band scalar image. 
+ * image is treated as a single band scalar image.
  *
- * EstimateModels() is a pure virtual function making this an abstract class. 
- * The template parameter is the type of a membership function the 
+ * EstimateModels() is a pure virtual function making this an abstract class.
+ * The template parameter is the type of a membership function the
  * ModelEstimator populates.
  *
  * A membership function represents a specific knowledge about
  * a class. In other words, it should tell us how "likely" is that a
- * measurement vector (pattern) belong to the class. 
+ * measurement vector (pattern) belong to the class.
  *
- * As the method name indicates, you can have more than one membership 
- * function. One for each classes. The order you put the membership 
+ * As the method name indicates, you can have more than one membership
+ * function. One for each classes. The order you put the membership
  * calculator becomes the class label for the class that is represented
- * by the membership calculator. 
+ * by the membership calculator.
  *
 
  *
- * \ingroup ClassificationFilters 
+ * \ingroup ClassificationFilters
  */
 template <class InputPixelType, class LabelPixelType>
 class ITK_EXPORT SVMModelEstimator : public itk::LightProcessObject
@@ -70,14 +70,14 @@ public:
   itkNewMacro(Self);
 
 
-    /** Set the number of classes. */
+  /** Set the number of classes. */
   itkSetMacro(NumberOfClasses, unsigned int);
 
   /** Get the number of classes. */
   itkGetConstReferenceMacro(NumberOfClasses, unsigned int);
 
   /** Type definitions for the SVM Model. */
-  typedef std::vector< InputPixelType > MeasurementVectorType ;
+  typedef std::vector< InputPixelType > MeasurementVectorType;
   typedef SVMModel< InputPixelType, LabelPixelType >   SVMModelType;
   typedef typename SVMModelType::Pointer     SVMModelPointer;
 
@@ -88,13 +88,46 @@ public:
   /** Set the model */
   itkGetMacro(Model, SVMModelPointer);
 
+  /** Get the cross validation accuracy measures */
+  itkGetMacro(InitialCrossValidationAccuracy,double);
+  itkGetMacro(FinalCrossValidationAccuracy,double);
+
+  /** Activate/Deactivate parameters optimization */
+  itkSetMacro(ParametersOptimization,bool);
+  itkGetMacro(ParametersOptimization,bool);
+  itkBooleanMacro(ParametersOptimization);
+
+  /** Set/Get the number of steps for the coarse optimization */
+  itkSetMacro(CoarseOptimizationNumberOfSteps,unsigned int);
+  itkGetMacro(CoarseOptimizationNumberOfSteps,unsigned int);
+
+  /** Set/Get the number of steps for the fine optimization */
+  itkSetMacro(FineOptimizationNumberOfSteps,unsigned int);
+  itkGetMacro(FineOptimizationNumberOfSteps,unsigned int);
+
+  /** Set/Get the number of cross validation folders */
+  itkSetMacro(NumberOfCrossValidationFolders,unsigned int);
+  itkGetMacro(NumberOfCrossValidationFolders,unsigned int);
+
   /** Set/Get the Measures */
-  void SetMeasures( TrainingMeasuresType measures ){ m_Measures = measures; };
-  TrainingMeasuresType GetMeasures() { return m_Measures ;};
+  void SetMeasures( TrainingMeasuresType measures )
+  {
+    m_Measures = measures;
+  };
+  TrainingMeasuresType GetMeasures()
+  {
+    return m_Measures;
+  };
 
   /** Set/Get the Labels */
-  void SetLabels( TrainingLabelsType labels ){ m_Labels = labels; };
-  TrainingLabelsType GetLabels(){ return m_Labels; };
+  void SetLabels( TrainingLabelsType labels )
+  {
+    m_Labels = labels;
+  };
+  TrainingLabelsType GetLabels()
+  {
+    return m_Labels;
+  };
 
   /** Get the number of classes. */
   itkGetConstReferenceMacro(Model, SVMModelPointer);
@@ -102,7 +135,7 @@ public:
   /** Save the estimated model */
   void SaveModel(const char* model_file_name);
 
-  /** Set the SVM type to C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR */
+  /** Set the SVM type to ONE_CLASS, C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR */
   void SetSVMType(int svmtype)
   {
     m_Model->SetSVMType(svmtype);
@@ -114,20 +147,20 @@ public:
   {
     return m_Model->GetSVMType();
   }
-  
+
   /** Set the kernel type to LINEAR, POLY, RBF, SIGMOID
-	linear: u'*v
-	polynomial: (gamma*u'*v + coef0)^degree
-	radial basis function: exp(-gamma*|u-v|^2)
-	sigmoid: tanh(gamma*u'*v + coef0)*/
+  linear: u'*v
+  polynomial: (gamma*u'*v + coef0)^degree
+  radial basis function: exp(-gamma*|u-v|^2)
+  sigmoid: tanh(gamma*u'*v + coef0)*/
   void SetKernelType(int kerneltype)
   {
     m_Model->SetKernelType(kerneltype);
     this->Modified();
   }
 
- /** Get the kernel type */
- int GetKernelType(void)
+  /** Get the kernel type */
+  int GetKernelType(void)
   {
     return m_Model->GetKernelType();
   }
@@ -152,7 +185,7 @@ public:
     m_Model->SetKernelGamma(gamma);
     this->Modified();
   }
- /** Get the gamma parameter for poly/rbf/sigmoid kernels */
+  /** Get the gamma parameter for poly/rbf/sigmoid kernels */
   double GetKernelGamma(void)
   {
     return m_Model->GetKernelGamma();
@@ -180,10 +213,10 @@ public:
 
   /** Set the Nu parameter for the training */
   double GetNu(void)
-    {
-      return m_Model->GetNu();
-    }
-  
+  {
+    return m_Model->GetNu();
+  }
+
   /** Set the cache size in MB for the training */
   void SetCacheSize(int cSize)
   {
@@ -204,7 +237,7 @@ public:
     this->Modified();
   }
 
-/** Get the C parameter for the training for C_SVC, EPSILON_SVR and NU_SVR */
+  /** Get the C parameter for the training for C_SVC, EPSILON_SVR and NU_SVR */
   double GetC(void)
   {
     return m_Model->GetC();
@@ -217,7 +250,7 @@ public:
     this->Modified();
   }
 
-/** Get the tolerance for the stopping criterion for the training*/
+  /** Get the tolerance for the stopping criterion for the training*/
   double GetEpsilon(void)
   {
     return m_Model->GetEpsilon();
@@ -232,7 +265,7 @@ public:
     this->Modified();
   }
 
-  
+
   /* Get the value of p for EPSILON_SVR */
   double GetP(void)
   {
@@ -267,11 +300,11 @@ public:
   }
 
   void Update();
-  
+
   /** Get/Set methods for generic kernel functor */
   virtual GenericKernelFunctorBase * GetKernelFunctor(void)const
   {
-        return m_Model->GetKernelFunctor();
+    return m_Model->GetKernelFunctor();
   }
   virtual void SetKernelFunctor(GenericKernelFunctorBase* pGenericKernelFunctor)
   {
@@ -281,22 +314,23 @@ public:
 
   virtual void  PrepareData();
 
-protected: 
+protected:
   SVMModelEstimator();
   ~SVMModelEstimator();
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
   /** Starts the modelling process */
-  void GenerateData() ;
+  void GenerateData();
 
   unsigned int         m_NumberOfClasses;
   TrainingMeasuresType m_Measures;
   TrainingLabelsType   m_Labels;
 
-  /** A function that generates the 
+  /** A function that generates the
    * model based on the training input data
    * Achieves the goal of training the classifier. */
   virtual void EstimateModels();
+  virtual void CrossValidate();
   virtual void BuildProblem()
   {
   }
@@ -306,10 +340,27 @@ protected:
 
   bool m_Done;
 
-
 private:
   SVMModelEstimator(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
+
+  // Initial cross validation accuracy
+  double m_InitialCrossValidationAccuracy;
+
+  // Final cross validationa accuracy
+  double m_FinalCrossValidationAccuracy;
+
+  // Do parameters optimization, default : false
+  bool m_ParametersOptimization;
+
+  // Number of steps for the coarse search
+  unsigned int m_CoarseOptimizationNumberOfSteps;
+  
+  // Number of steps for the fine search
+  unsigned int m_FineOptimizationNumberOfSteps;
+
+  // Number of cross validation folders
+  unsigned int m_NumberOfCrossValidationFolders;
 
 }; // class SVMModelEstimator
 

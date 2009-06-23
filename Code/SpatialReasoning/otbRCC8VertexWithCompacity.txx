@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -51,7 +51,7 @@ template <class TPath,class TPrecision>
 typename RCC8VertexWithCompacity<TPath,TPrecision>::AttributesMapType
 RCC8VertexWithCompacity<TPath,TPrecision>
 ::GetAttributesMap(void)
-{  
+{
   std::stringstream oss;
   AttributesMapType results;
   results=this->Superclass::GetAttributesMap();
@@ -67,9 +67,9 @@ template <class TPath,class TPrecision>
 void
 RCC8VertexWithCompacity<TPath,TPrecision>
 ::PrintSelf( std::ostream& os,itk::Indent indent ) const
-  {
-    Superclass::PrintSelf(os,indent);
-    os<<indent<<"Compacity: "<<m_Compacity<<std::endl;
-  }
+{
+  Superclass::PrintSelf(os,indent);
+  os<<indent<<"Compacity: "<<m_Compacity<<std::endl;
+}
 } // end namespace otb
 #endif

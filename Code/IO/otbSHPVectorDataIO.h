@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -33,9 +33,9 @@ namespace otb
  * \brief ImageIO object for reading (not writing) SHP format vector data
  *
  */
-template <class TData> class ITK_EXPORT SHPVectorDataIO 
-  : public VectorDataIOBase<TData>
-  {
+template <class TData> class ITK_EXPORT SHPVectorDataIO
+      : public VectorDataIOBase<TData>
+{
 public:
 
   /** Standard class typedefs. */
@@ -52,10 +52,12 @@ public:
 
   /** Byte order typedef */
   typedef typename Superclass::ByteOrder  ByteOrder;
-  
+
   /** Data typedef */
   typedef TData VectorDataType;
   typedef typename VectorDataType::DataTreeType  DataTreeType;
+  typedef typename DataTreeType::TreeNodeType    InternalTreeNodeType;
+  typedef typename InternalTreeNodeType::ChildrenListType        ChildrenListType;
   typedef typename DataTreeType::Pointer         DataTreePointerType;
   typedef typename DataTreeType::ConstPointer    DataTreeConstPointerType;
   typedef typename VectorDataType::DataNodeType  DataNodeType;
@@ -71,6 +73,10 @@ public:
   typedef typename PolygonListType::Pointer      PolygonListPointerType;
   typedef typename VectorDataType::Pointer       VectorDataPointerType;
   typedef typename VectorDataType::ConstPointer  VectorDataConstPointerType;
+  typedef typename Superclass::SpacingType       SpacingType;
+  typedef typename Superclass::PointType         OriginType;
+
+  /** */
 
 
   /*-------- This part of the interface deals with reading data. ------ */
@@ -78,13 +84,16 @@ public:
   /** Determine the file type. Returns true if this VectorDataIO can read the
    * file specified. */
   virtual bool CanReadFile(const char*);
-  
-  /** Determine the file type. Returns true if the VectorDataIO can stream read the specified file */
-  virtual bool CanStreamRead(){  return false; };
 
-/*   /\** Set the spacing and dimention information for the set filename. *\/ */
-/*   virtual void ReadVectorDataInformation(); */
- 
+  /** Determine the file type. Returns true if the VectorDataIO can stream read the specified file */
+  virtual bool CanStreamRead()
+  {
+    return false;
+  };
+
+  /*   /\** Set the spacing and dimention information for the set filename. *\/ */
+  /*   virtual void ReadVectorDataInformation(); */
+
   /** Reads the data from disk into the memory buffer provided. */
   virtual void Read(VectorDataPointerType data);
 
@@ -95,16 +104,19 @@ public:
   virtual bool CanWriteFile(const char*);
 
   /** Determine the file type. Returns true if the ImageIO can stream write the specified file */
-  virtual bool CanStreamWrite() { return false; };
+  virtual bool CanStreamWrite()
+  {
+    return false;
+  };
 
-/*   /\** Writes the spacing and dimentions of the image. */
-/*    * Assumes SetFileName has been called with a valid file name. *\/ */
-/*   virtual void WriteVectorDataInformation(); */
+  /*   /\** Writes the spacing and dimentions of the image. */
+  /*    * Assumes SetFileName has been called with a valid file name. *\/ */
+  /*   virtual void WriteVectorDataInformation(); */
 
   /** Writes the data to disk from the memory buffer provided. Make sure
    * that the IORegion has been set properly. */
   virtual void Write(VectorDataConstPointerType data);
-  
+
 protected:
   /** Construtor.*/
   SHPVectorDataIO();
@@ -115,23 +127,27 @@ protected:
 
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
-  
+
   /** Conversion tools */
 
-  static DataNodePointerType ConvertGeometryToPointNode(const OGRGeometry * ogrGeometry);
+  DataNodePointerType ConvertGeometryToPointNode(const OGRGeometry * ogrGeometry) const;
 
-  static DataNodePointerType  ConvertGeometryToLineNode(const OGRGeometry * ogrGeometry);
+  DataNodePointerType ConvertGeometryToLineNode(const OGRGeometry * ogrGeometry) const;
 
-  static DataNodePointerType ConvertGeometryToPolygonNode(const OGRGeometry * ogrGeometry);
+  DataNodePointerType ConvertGeometryToPolygonNode(const OGRGeometry * ogrGeometry) const;
 
   /** end conversion tools */
+
+  void ProcessNodeWrite(InternalTreeNodeType * source, OGRGeometryCollection * ogrCollection, OGRLayer * ogrCurrentLayer, OGRSpatialReference * oSRS);
 
 private:
   SHPVectorDataIO(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
   OGRDataSource * m_DataSource;
-  
+
+  unsigned int m_Kept;
+
   /** Is this necessary ? */
 
   /** Internal method to read header informations */

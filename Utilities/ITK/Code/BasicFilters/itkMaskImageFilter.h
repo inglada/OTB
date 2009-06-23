@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaskImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007-09-27 11:36:40 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2009-02-15 17:01:18 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,7 +39,7 @@ namespace itk
  *        if pixel_from_mask_image != 0 
  *             pixel_output_image = pixel_input_image
  *        else
- *             pixel_output_image = 0
+ *             pixel_output_image = outside_value
  *
  * The pixel from the input 1 is cast to the pixel type of the output image.
  *
@@ -58,19 +58,19 @@ class MaskInput
 public:
   typedef typename NumericTraits< TInput >::AccumulateType AccumulatorType;
 
-  MaskInput(): m_OutsideValue(NumericTraits< TOutput >::ZeroValue()) {};
+  MaskInput() {};
   ~MaskInput() {};
   bool operator!=( const MaskInput & ) const
-  {
+    {
     return false;
-  }
+    }
   bool operator==( const MaskInput & other ) const
-  {
+    {
     return !(*this != other);
-  }
+    }
 
   inline TOutput operator()( const TInput & A, const TMask & B)
-  {
+    {
     if (B != NumericTraits< TMask >::ZeroValue() ) 
       {
       return static_cast<TOutput>( A );
@@ -79,7 +79,7 @@ public:
       {
       return m_OutsideValue;
       }
-  }
+    }
 
   /** Method to explicitly set the outside value of the mask */
   void SetOutsideValue( const TOutput &outsideValue )
@@ -111,19 +111,19 @@ BinaryFunctorImageFilter<TInputImage,TMaskImage,TOutputImage,
 {
 public:
   /** Standard class typedefs. */
-  typedef MaskImageFilter  Self;
+  typedef MaskImageFilter           Self;
   typedef BinaryFunctorImageFilter<TInputImage,TMaskImage,TOutputImage, 
                                    Functor::MaskInput< 
     typename TInputImage::PixelType, 
     typename TMaskImage::PixelType,
     typename TOutputImage::PixelType>   
-  >  Superclass;
-  typedef SmartPointer<Self>   Pointer;
+  >                                 Superclass;
+  typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
- 
+
   /** Runtime information support. */
   itkTypeMacro(MaskImageFilter, 
                BinaryFunctorImageFilter);

@@ -21,7 +21,7 @@ TARGET_LINK_LIBRARIES(SmarterFilteringPipeline OTBCommon OTBIO)
 
 IF(OTB_USE_VISU_GUI)
   ADD_EXECUTABLE(SimpleViewer SimpleViewer.cxx )
-  TARGET_LINK_LIBRARIES(SimpleViewer OTBCommon OTBIO OTBGui OTBVisu ${OTB_VISU_GUI_LIBRARIES})
+  TARGET_LINK_LIBRARIES(SimpleViewer OTBCommon OTBIO OTBGui OTBVisualization ${OTB_VISU_GUI_LIBRARIES})
 ENDIF(OTB_USE_VISU_GUI)
 
 ADD_EXECUTABLE(OrthoFusion OrthoFusion.cxx )
@@ -31,7 +31,7 @@ IF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 
 SET(BASELINE ${OTB_DATA_ROOT}/Baseline/Examples/Tutorials)
 
-SET(INPUTDATA ${OTB_SOURCE_DIR}/Examples/Data)
+SET(INPUTDATA ${OTB_DATA_ROOT}/Examples)
 #Remote sensing images (large images )
 IF(OTB_DATA_USE_LARGEINPUT)
   SET(INPUTLARGEDATA ${OTB_DATA_LARGEINPUT_ROOT} )
@@ -43,31 +43,31 @@ SET(EXE_TESTS ${CXX_TEST_PATH}/otbTutorialsExamplesTests)
 
 SET(TOL 0.0)
 
-ADD_TEST( TutorialsPipelineTest ${EXE_TESTS}
+ADD_TEST( trTeTutorialsPipelineTest ${EXE_TESTS}
         --compare-image ${TOL}          ${BASELINE}/TutorialsPipelineOutput.png
                                         ${TEMP}/TutorialsPipelineOutput.png
         TutorialsPipelineTest
         ${INPUTDATA}/QB_Suburb.png
         ${TEMP}/TutorialsPipelineOutput.png
         )
-        
-ADD_TEST( TutorialsFilteringPipelineTest ${EXE_TESTS}
+
+ADD_TEST( trTeTutorialsFilteringPipelineTest ${EXE_TESTS}
         --compare-image ${TOL}          ${BASELINE}/TutorialsFilteringPipelineOutput.png
                                         ${TEMP}/TutorialsFilteringPipelineOutput.png
         TutorialsFilteringPipelineTest
         ${INPUTDATA}/QB_Suburb.png
         ${TEMP}/TutorialsFilteringPipelineOutput.png
         )
-        
-ADD_TEST( TutorialsScalingPipelineTest ${EXE_TESTS}
+
+ADD_TEST( trTeTutorialsScalingPipelineTest ${EXE_TESTS}
         --compare-image ${TOL}          ${BASELINE}/TutorialsScalingPipelineOutput.png
                                         ${TEMP}/TutorialsScalingPipelineOutput.png
         TutorialsScalingPipelineTest
         ${INPUTDATA}/QB_Suburb.png
         ${TEMP}/TutorialsScalingPipelineOutput.png
         )
-        
-ADD_TEST( TutorialsMultispectralTest ${EXE_TESTS}
+
+ADD_TEST( trTeTutorialsMultispectralTest ${EXE_TESTS}
         --compare-n-images ${TOL} 2      ${BASELINE}/MultispectralOutput1.tif
                                         ${TEMP}/MultispectralOutput1.tif
                                         ${BASELINE}/MultispectralOutput2.tif
@@ -76,21 +76,22 @@ ADD_TEST( TutorialsMultispectralTest ${EXE_TESTS}
         ${INPUTDATA}/qb_RoadExtract.tif
         ${TEMP}/MultispectralOutput1.tif
         ${TEMP}/MultispectralOutput2.tif
-        )        
-        
+        )
 
-ADD_TEST( TutorialsSmarterFilteringPipelineTest ${EXE_TESTS}
+
+ADD_TEST( trTeTutorialsSmarterFilteringPipelineTest ${EXE_TESTS}
         --compare-image ${TOL}          ${BASELINE}/TutorialsSmarterFilteringPipelineOutput.png
                                         ${TEMP}/TutorialsSmarterFilteringPipelineOutput.png
         TutorialsSmarterFilteringPipelineTest
         -in ${INPUTDATA}/QB_Suburb.png
         -out ${TEMP}/TutorialsSmarterFilteringPipelineOutput.png
-        -d 1.5 
-        -i 2 
+        -d 1.5
+        -i 2
         -a 0.1
         )
 
-ADD_TEST( TutorialsOrthoFusionTest ${EXE_TESTS}
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST( trTeTutorialsOrthoFusionTest ${EXE_TESTS}
         --compare-image ${TOL}          ${BASELINE}/TutorialsOrthoFusionOutput.tif
                                         ${TEMP}/TutorialsOrthoFusionOutput.tif
         TutorialsOrthoFusionTest
@@ -99,17 +100,17 @@ ADD_TEST( TutorialsOrthoFusionTest ${EXE_TESTS}
         ${TEMP}/TutorialsOrthoFusionOutput.tif
         31
         N
-        375000 
-	4828100 
-	500 
-	500 
-	0.6 
+        375000
+	4828100
+	500
+	500
+	0.6
 	-0.6
         )
+ENDIF(OTB_DATA_USE_LARGEINPUT)
 
-
-
+INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 ADD_EXECUTABLE(otbTutorialsExamplesTests otbTutorialsExamplesTests.cxx)
-TARGET_LINK_LIBRARIES(otbTutorialsExamplesTests gdal ITKIO ITKAlgorithms ITKStatistics ITKNumerics ITKCommon OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBFusion ${OTB_IO_UTILITIES_DEPENDENT_LIBRARIES})
+TARGET_LINK_LIBRARIES(otbTutorialsExamplesTests  ITKAlgorithms ITKStatistics ITKNumerics OTBBasicFilters OTBCommon OTBDisparityMap OTBIO OTBSpatialReasoning OTBChangeDetection OTBFeatureExtraction  OTBLearning  OTBMultiScale OTBFusion OTBTesting)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -40,11 +40,11 @@ namespace otb
  * applications, one should provide a patch for this class including
  * the new functionnalities, for consistency reason.
  */
-template <class TVertex>  
+template <class TVertex>
 class ITK_EXPORT RCC8Graph  :
-    public itk::DataObject
+      public itk::DataObject
 {
-  public:
+public:
   /** Standard class typedefs. */
   typedef RCC8Graph                              Self;
   typedef itk::DataObject                        Superclass;
@@ -64,7 +64,7 @@ class ITK_EXPORT RCC8Graph  :
   /** Typedef for the boost graph representation */
   typedef boost::adjacency_list
   <boost::vecS,boost::vecS,boost::bidirectionalS,
-   VertexPointerType,EdgePointerType> InternalGraphType;
+  VertexPointerType,EdgePointerType> InternalGraphType;
   /** Edges and vertices descriptors typedefs (boost objects)*/
   typedef typename InternalGraphType::vertex_descriptor  VertexDescriptorType;
   typedef typename InternalGraphType::edge_descriptor    EdgeDescriptorType;
@@ -72,12 +72,15 @@ class ITK_EXPORT RCC8Graph  :
   /** Getters and Setters for the number of vertices */
   itkSetMacro(NumberOfVertices,unsigned int);
   itkGetConstReferenceMacro(NumberOfVertices,unsigned int);
-  
+
   /**
    *  Return the internal boost graph object.
    *  \return The internal boost graph object
    */
-  InternalGraphType * GetGraph(void){return &m_Graph;};
+  InternalGraphType * GetGraph(void)
+  {
+    return &m_Graph;
+  };
   /**
    * Since the number of vertices is mandatory to instantiate the
    * internal boost representation, the build method has to be called
@@ -98,7 +101,7 @@ class ITK_EXPORT RCC8Graph  :
   VertexPointerType GetVertex(unsigned int index);
   /**
    * Add an edge in the graph.
-   * \param index1 The index of the source vertex. 
+   * \param index1 The index of the source vertex.
    * \param index2 The index of the target vertex.
    * \param r The RCC8 value.
    */
@@ -113,17 +116,19 @@ protected:
   /** Constructor */
   RCC8Graph();
   /** Destructor */
-    ~RCC8Graph(){};
-    /** PrintSelf method */
-    void PrintSelf(std::ostream& os, itk::Indent indent) const;
-    /**
-     * Initialize a range of vertex.
-     * \param num The index of the last vertices to intialize.
-     */
-    void Initialize( unsigned int num);
-    
+  ~RCC8Graph() {};
+  /** PrintSelf method */
+  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  /**
+   * Initialize a range of vertex.
+   * \param num The index of the last vertices to intialize.
+   */
+  void Initialize( unsigned int num);
+
+
+
 private:
-  
+
   /** Defines the number of vertices (ie total number of segmentation regions)*/
   unsigned int m_NumberOfVertices;
   /** Internal representation using the boost graph library */

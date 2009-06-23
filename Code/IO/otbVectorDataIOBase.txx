@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,10 +28,11 @@ namespace otb
 template <class TData>
 VectorDataIOBase<TData>
 ::VectorDataIOBase() :
-  m_ByteOrder(OrderNotApplicable)
+    m_ByteOrder(OrderNotApplicable)
 {
   Reset(false);
 }
+
 
 template <class TData>
 void
@@ -54,22 +55,22 @@ VectorDataIOBase<TData>
 ::GetByteOrderAsString(ByteOrder t) const
 {
   std::string s;
-  switch(t)
-    {
-    case BigEndian:
-      return s = "BigEndian";
-    case LittleEndian:
-      return s = "LittleEndian";
-    case OrderNotApplicable:
-    default:
-      return s = "OrderNotApplicable";
-    }
+  switch (t)
+  {
+  case BigEndian:
+    return s = "BigEndian";
+  case LittleEndian:
+    return s = "LittleEndian";
+  case OrderNotApplicable:
+  default:
+    return s = "OrderNotApplicable";
+  }
   return s="OrderNotApplicable";
 }
 
 
 template <class TData>
-void 
+void
 VectorDataIOBase<TData>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {

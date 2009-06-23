@@ -131,7 +131,12 @@ public:
 #define _chdir chdir
 #endif
 
-#if defined(__BEOS__) && !defined(__ZETA__)
+#if defined(__HAIKU__)
+#include <os/kernel/OS.h>
+#include <os/storage/Path.h>
+#endif
+
+#if defined(__BEOS__) && !defined(__ZETA__) && !defined(__HAIKU__)
 #include <be/kernel/OS.h>
 #include <be/storage/Path.h>
 
@@ -200,6 +205,10 @@ inline void Realpath(const char *path, kwsys_stl::string & resolved_path)
     resolved_path = fullpath;
     KWSYS_NAMESPACE::SystemTools::ConvertToUnixSlashes(resolved_path);
     }
+  else
+    {
+    resolved_path = path;
+    }
 }
 #else
 #include <sys/types.h>
@@ -232,8 +241,16 @@ inline void Realpath(const char *path, kwsys_stl::string & resolved_path)
 {
   char resolved_name[KWSYS_SYSTEMTOOLS_MAXPATH];
 
-  realpath(path, resolved_name);
-  resolved_path = resolved_name;
+  char *ret = realpath(path, resolved_name);
+  if(ret)
+    {
+    resolved_path = ret;
+    }
+  else
+    {
+    // if path resolution fails, return what was passed in
+    resolved_path = path;
+    }
 }
 #endif
 
@@ -1606,7 +1623,8 @@ kwsys_stl::string SystemTools::ConvertToWindowsOutputPath(const char* path)
 }
 
 bool SystemTools::CopyFileIfDifferent(const char* source,
-                                      const char* destination)
+                                      const char* destination,
+                                      bool copyPermissions)
 {
   // special check for a destination that is a directory
   // FilesDiffer does not handle file to directory compare
@@ -1619,7 +1637,8 @@ bool SystemTools::CopyFileIfDifferent(const char* source,
     new_destination += SystemTools::GetFilenameName(source_name);
     if(SystemTools::FilesDiffer(source, new_destination.c_str()))
       {
-      return SystemTools::CopyFileAlways(source, destination);
+      return SystemTools::CopyFileAlways(source, destination,
+                                         copyPermissions);
       }
     else
       {
@@ -1632,7 +1651,7 @@ bool SystemTools::CopyFileIfDifferent(const char* source,
   // are different
   if(SystemTools::FilesDiffer(source, destination))
     {
-    return SystemTools::CopyFileAlways(source, destination);
+    return SystemTools::CopyFileAlways(source, destination, copyPermissions);
     }
   // at this point the files must be the same so return true
   return true;
@@ -1713,10 +1732,12 @@ bool SystemTools::FilesDiffer(const char* source,
 }
 
 
+//----------------------------------------------------------------------------
 /**
  * Copy a file named by "source" to the file named by "destination".
  */
-bool SystemTools::CopyFileAlways(const char* source, const char* destination)
+bool SystemTools::CopyFileAlways(const char* source, const char* destination,
+                                 bool copyPermissions)
 {
   // If files are the same do not copy
   if ( SystemTools::SameFile(source, destination) )
@@ -1819,7 +1840,7 @@ bool SystemTools::CopyFileAlways(const char* source, const char* destination)
     {
    return false;
     }
-  if ( perms )
+  if ( copyPermissions && perms )
     {
     if ( !SystemTools::SetPermissions(destination, perm) )
       {
@@ -1831,15 +1852,15 @@ bool SystemTools::CopyFileAlways(const char* source, const char* destination)
 
 //----------------------------------------------------------------------------
 bool SystemTools::CopyAFile(const char* source, const char* destination,
-                            bool always)
+                            bool always, bool copyPermissions)
 {
   if(always)
     {
-    return SystemTools::CopyFileAlways(source, destination);
+    return SystemTools::CopyFileAlways(source, destination, copyPermissions);
     }
   else
     {
-    return SystemTools::CopyFileIfDifferent(source, destination);
+    return SystemTools::CopyFileIfDifferent(source, destination, copyPermissions);
     }
 }
 
@@ -1848,7 +1869,7 @@ bool SystemTools::CopyAFile(const char* source, const char* destination,
  * "destination".
  */
 bool SystemTools::CopyADirectory(const char* source, const char* destination,
-                                 bool always)
+                                 bool always, bool copyPermissions)
 {
   Directory dir;
   dir.Load(source);
@@ -1872,14 +1893,16 @@ bool SystemTools::CopyADirectory(const char* source, const char* destination,
         fullDestPath += dir.GetFile(static_cast<unsigned long>(fileNum));
         if (!SystemTools::CopyADirectory(fullPath.c_str(),
                                          fullDestPath.c_str(),
-                                         always))
+                                         always,
+                                         copyPermissions))
           {
           return false;
           }
         }
       else
         {
-        if(!SystemTools::CopyAFile(fullPath.c_str(), destination, always))
+        if(!SystemTools::CopyAFile(fullPath.c_str(), destination, always,
+                                   copyPermissions))
           {
           return false;
           }
@@ -3035,6 +3058,11 @@ kwsys_stl::string SystemTools::GetActualCaseForPath(const char* p)
     {
     return p;
     }
+  // Use original path if conversion back to a long path failed.
+  if(longPath == shortPath)
+    {
+    longPath = p;
+    }
   // make sure drive letter is always upper case
   if(longPath.size() > 1 && longPath[1] == ':')
     {
@@ -3382,7 +3410,7 @@ kwsys_stl::string SystemTools::GetFilenameExtension(const kwsys_stl::string& fil
 
 /**
  * Return file extension of a full filename (dot included).
- * Warning: this is the shortest extension (for example: .tar.gz)
+ * Warning: this is the shortest extension (for example: .gz of .tar.gz)
  */
 kwsys_stl::string SystemTools::GetFilenameLastExtension(const kwsys_stl::string& filename)
 {
@@ -4165,6 +4193,22 @@ kwsys_stl::string SystemTools::GetOperatingSystemNameAndVersion()
       
       // Test for the specific product family.
 
+      if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0)
+        {
+#if (_MSC_VER >= 1300) 
+        if (osvi.wProductType == VER_NT_WORKSTATION)
+          {
+          res += "Microsoft Windows Vista";
+          }
+        else
+          {
+          res += "Microsoft Windows Server 2008 family";
+          }
+#else
+        res += "Microsoft Windows Vista or Windows Server 2008";
+#endif
+        }
+
       if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2)
         {
         res += "Microsoft Windows Server 2003 family";
@@ -4198,13 +4242,16 @@ kwsys_stl::string SystemTools::GetOperatingSystemNameAndVersion()
             {
             res += " Workstation 4.0";
             }
-          else if (osvi.wSuiteMask & VER_SUITE_PERSONAL)
+          else if (osvi.dwMajorVersion == 5)
             {
-            res += " Home Edition";
-            }
-          else
-            {
-            res += " Professional";
+            if (osvi.wSuiteMask & VER_SUITE_PERSONAL)
+              {
+              res += " Home Edition";
+              }
+            else
+              {
+              res += " Professional";
+              }
             }
           }
             
@@ -4248,7 +4295,7 @@ kwsys_stl::string SystemTools::GetOperatingSystemNameAndVersion()
               }
             }
 
-          else  // Windows NT 4.0 
+          else if (osvi.dwMajorVersion <= 4)  // Windows NT 4.0 
             {
             if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE)
               {

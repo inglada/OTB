@@ -13,8 +13,8 @@
   for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -37,6 +37,7 @@ VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
 ::VectorRescaleIntensityImageFilter()
 {
   m_ClampThreshold = 0.01;
+  m_AutomaticInputMinMaxComputation = true;
 }
 
 /**
@@ -49,79 +50,76 @@ VectorRescaleIntensityImageFilter<TInputImage,TOutputImage>
 {
   this->Superclass::GenerateOutputInformation();
   this->GetOutput()->SetNumberOfComponentsPerPixel(
-      this->GetInput()->GetNumberOfComponentsPerPixel() );
+    this->GetInput()->GetNumberOfComponentsPerPixel() );
 }
 /**
  * Generate input requested region.
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 VectorRescaleIntensityImageFilter<TInputImage,TOutputImage>
 ::GenerateInputRequestedRegion(void)
-      {
-	if(this->GetInput())
-	  {
-	    typename TInputImage::Pointer input = const_cast<TInputImage *>(this->GetInput());
-	    typename TInputImage::RegionType inputRegion;
-	    this->CallCopyOutputRegionToInputRegion(inputRegion,this->GetOutput()->GetRequestedRegion());
-	    input->SetRequestedRegion(inputRegion);
-	  }
-      }
+{
+  if (this->GetInput())
+  {
+    typename TInputImage::Pointer input = const_cast<TInputImage *>(this->GetInput());
+    typename TInputImage::RegionType inputRegion;
+    this->CallCopyOutputRegionToInputRegion(inputRegion,this->GetOutput()->GetRequestedRegion());
+    input->SetRequestedRegion(inputRegion);
+  }
+}
 /**
  * Process to execute before entering the multithreaded section.
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  typedef  typename Superclass::InputImageType      InputImageType;
-  typedef  typename Superclass::InputImagePointer   InputImagePointer;
+  if (m_AutomaticInputMinMaxComputation)
+  {
 
-  // Get the input
-  InputImagePointer inputImage =   this->GetInput();
+    typedef  typename Superclass::InputImageType      InputImageType;
+    typedef  typename Superclass::InputImagePointer   InputImagePointer;
 
-  typedef itk::ImageRegionConstIterator< InputImageType >  InputIterator;
-  typedef itk::Vector<typename InputImageType::InternalPixelType,1> MeasurementVectorType;
-  typedef itk::Statistics::ListSample<MeasurementVectorType> ListSampleType;
-  typedef float HistogramMeasurementType;
-  typedef itk::Statistics::ListSampleToHistogramGenerator<ListSampleType,HistogramMeasurementType,
+    // Get the input
+    InputImagePointer inputImage =   this->GetInput();
+
+    typedef itk::ImageRegionConstIterator< InputImageType >  InputIterator;
+    typedef itk::Vector<typename InputImageType::InternalPixelType,1> MeasurementVectorType;
+    typedef itk::Statistics::ListSample<MeasurementVectorType> ListSampleType;
+    typedef float HistogramMeasurementType;
+    typedef itk::Statistics::ListSampleToHistogramGenerator<ListSampleType,HistogramMeasurementType,
     itk::Statistics::DenseFrequencyContainer,1> HistogramGeneratorType;
 
-  typedef ObjectList<ListSampleType> ListSampleListType;
+    typedef ObjectList<ListSampleType> ListSampleListType;
 
+    m_InputMinimum.SetSize(inputImage->GetNumberOfComponentsPerPixel());
+    m_InputMaximum.SetSize(inputImage->GetNumberOfComponentsPerPixel());
+    typename ListSampleListType::Pointer sl =  ListSampleListType::New();
 
-    InputPixelType maximum;
-  InputPixelType minimum;
-  minimum.SetSize(inputImage->GetNumberOfComponentsPerPixel());
-  maximum.SetSize(inputImage->GetNumberOfComponentsPerPixel());
-  typename ListSampleListType::Pointer sl =  ListSampleListType::New();
-  
-  sl->Reserve(inputImage->GetNumberOfComponentsPerPixel());
+    sl->Reserve(inputImage->GetNumberOfComponentsPerPixel());
 
-  for(unsigned int i = 0;i<maximum.GetSize();++i)
+    for (unsigned int i = 0;i<m_InputMaximum.GetSize();++i)
     {
       sl->PushBack(ListSampleType::New());
     }
 
-  
+    InputIterator it( inputImage, inputImage->GetBufferedRegion() );
 
+    it.GoToBegin();
 
-  InputIterator it( inputImage, inputImage->GetBufferedRegion() );
-
-  it.GoToBegin();
-  
-  while( !it.IsAtEnd() )
+    while ( !it.IsAtEnd() )
     {
-       InputPixelType pixel = it.Get();
-      for(unsigned int i = 0;i<maximum.GetSize();++i)
-	{
-	  sl->GetNthElement(i)->PushBack(pixel[i]);
-	}
+      InputPixelType pixel = it.Get();
+      for (unsigned int i = 0;i<m_InputMaximum.GetSize();++i)
+      {
+        sl->GetNthElement(i)->PushBack(pixel[i]);
+      }
       ++it;
     }
 
-  for(unsigned int i = 0;i<maximum.GetSize();++i)
+    for (unsigned int i = 0;i<m_InputMaximum.GetSize();++i)
     {
       typename HistogramGeneratorType::Pointer generator = HistogramGeneratorType::New();
       generator->SetListSample(sl->GetNthElement(i));
@@ -129,13 +127,14 @@ VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
       size.Fill(static_cast<unsigned int>(vcl_ceil(1/m_ClampThreshold)*10));
       generator->SetNumberOfBins(size);
       generator->Update();
-      minimum[i]=static_cast<typename InputImageType::InternalPixelType>(generator->GetOutput()->Quantile(0,m_ClampThreshold));
-      maximum[i]=static_cast<typename InputImageType::InternalPixelType>(generator->GetOutput()->Quantile(0,1-m_ClampThreshold));
+      m_InputMinimum[i]=static_cast<typename InputImageType::InternalPixelType>(generator->GetOutput()->Quantile(0,m_ClampThreshold));
+      m_InputMaximum[i]=static_cast<typename InputImageType::InternalPixelType>(generator->GetOutput()->Quantile(0,1-m_ClampThreshold));
     }
+  }
 
   // set up the functor values
-  this->GetFunctor().SetInputMinimum( minimum );
-  this->GetFunctor().SetInputMaximum ( maximum );
+  this->GetFunctor().SetInputMinimum( m_InputMinimum  );
+  this->GetFunctor().SetInputMaximum( m_InputMaximum  );
   this->GetFunctor().SetOutputMaximum(m_OutputMaximum );
   this->GetFunctor().SetOutputMinimum(m_OutputMinimum );
 }
@@ -144,11 +143,13 @@ VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
  * Printself method
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
+  os<<indent<<"Automatic min/max computation: "<<m_AutomaticInputMinMaxComputation<<std::endl;
+  os<<indent<<"Clamp threshold: "<<m_ClampThreshold<<std::endl;
 }
 } // end namespace otb
 #endif

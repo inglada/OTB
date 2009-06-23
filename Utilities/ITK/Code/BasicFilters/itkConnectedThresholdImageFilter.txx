@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConnectedThresholdImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006-06-28 17:06:15 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2009-02-17 11:02:28 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,13 +14,17 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkConnectedThresholdImageFilter_txx_
-#define __itkConnectedThresholdImageFilter_txx_
+#ifndef __itkConnectedThresholdImageFilter_txx
+#define __itkConnectedThresholdImageFilter_txx
 
 #include "itkConnectedThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFunction.h"
 #include "itkFloodFilledImageFunctionConditionalIterator.h"
 #include "itkProgressReporter.h"
+
+#ifdef ITK_USE_REVIEW
+#include "itkShapedFloodFilledImageFunctionConditionalIterator.h"
+#endif
 
 namespace itk
 {
@@ -35,6 +39,7 @@ ConnectedThresholdImageFilter<TInputImage, TOutputImage>
   m_Lower = NumericTraits<InputImagePixelType>::NonpositiveMin();
   m_Upper = NumericTraits<InputImagePixelType>::max();
   m_ReplaceValue = NumericTraits<OutputImagePixelType>::One;
+  this->m_Connectivity = FaceConnectivity;
 
   typename InputPixelObjectType::Pointer lower = InputPixelObjectType::New();
   lower->Set( NumericTraits< InputImagePixelType >::NonpositiveMin() );
@@ -43,7 +48,6 @@ ConnectedThresholdImageFilter<TInputImage, TOutputImage>
   typename InputPixelObjectType::Pointer upper = InputPixelObjectType::New();
   upper->Set( NumericTraits< InputImagePixelType >::max() );
   this->ProcessObject::SetNthInput( 2, upper );
-
 }
 
 /**
@@ -64,6 +68,7 @@ ConnectedThresholdImageFilter<TInputImage, TOutputImage>
   os << indent << "ReplaceValue: "
      << static_cast<typename NumericTraits<OutputImagePixelType>::PrintType>(m_ReplaceValue)
      << std::endl;
+  os << indent << "Connectivity: " << m_Connectivity << std::endl;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -217,8 +222,6 @@ ConnectedThresholdImageFilter<TInputImage, TOutputImage>
   return lower->Get();
 }
 
-
-
 template <class TInputImage, class TOutputImage>
 typename ConnectedThresholdImageFilter<TInputImage, TOutputImage>::InputImagePixelType
 ConnectedThresholdImageFilter<TInputImage, TOutputImage>
@@ -229,8 +232,6 @@ ConnectedThresholdImageFilter<TInputImage, TOutputImage>
 
   return upper->Get();
 }
-
-
 
 template <class TInputImage, class TOutputImage>
 void 
@@ -253,7 +254,6 @@ ConnectedThresholdImageFilter<TInputImage,TOutputImage>
   outputImage->FillBuffer ( NumericTraits<OutputImagePixelType>::Zero );
   
   typedef BinaryThresholdImageFunction<InputImageType, double> FunctionType;
-  typedef FloodFilledImageFunctionConditionalIterator<OutputImageType, FunctionType> IteratorType;
 
   typename FunctionType::Pointer function = FunctionType::New();
   function->SetInputImage ( inputImage );
@@ -261,15 +261,42 @@ ConnectedThresholdImageFilter<TInputImage,TOutputImage>
 
   ProgressReporter progress(this, 0, region.GetNumberOfPixels());
 
-  IteratorType it ( outputImage, function, m_SeedList );
-  it.GoToBegin();
-
-  while( !it.IsAtEnd())
+  if (this->m_Connectivity == FaceConnectivity)
     {
-    it.Set(m_ReplaceValue);
-    ++it;
-    progress.CompletedPixel();  // potential exception thrown here
+    typedef FloodFilledImageFunctionConditionalIterator<OutputImageType, FunctionType> IteratorType;
+    IteratorType it ( outputImage, function, m_SeedList );
+    it.GoToBegin();
+
+    while( !it.IsAtEnd())
+      {
+      it.Set(m_ReplaceValue);
+      ++it;
+      progress.CompletedPixel();  // potential exception thrown here
+      }
     }
+  
+#ifdef ITK_USE_REVIEW
+  else if (this->m_Connectivity == FullConnectivity)
+    {
+    // use the fully connected iterator here. The fully connected iterator 
+    // below is a superset of the above. However, it is reported to be 20%
+    // slower. Hence we use this "if" block to use the old iterator when
+    // we don't need full connectivity.
+
+    typedef ShapedFloodFilledImageFunctionConditionalIterator<OutputImageType, FunctionType> IteratorType;
+    IteratorType it ( outputImage, function, m_SeedList );
+    it.FullyConnectedOn();
+    it.GoToBegin();
+
+    while( !it.IsAtEnd())
+      {
+      it.Set(m_ReplaceValue);
+      ++it;
+      progress.CompletedPixel();  // potential exception thrown here
+      }
+    }
+#endif
+
 }
 
 

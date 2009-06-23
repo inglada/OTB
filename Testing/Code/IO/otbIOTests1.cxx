@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,18 +22,19 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 
 void RegisterTests()
 {
-REGISTER_TEST(otbImageFileReaderERS);
-REGISTER_TEST(otbLUMImageIOTestCanRead);
-REGISTER_TEST(otbLUMImageIOTestCanWrite);
-REGISTER_TEST(otbMWImageIOTestCanRead);
-REGISTER_TEST(otbMWImageIOTestCanWrite); 
-REGISTER_TEST(otbImageFileReaderTest);
-REGISTER_TEST(otbImageFileReaderTestFloat); 
-REGISTER_TEST(otbShortImageIOTest);
+  REGISTER_TEST(otbImageFileReaderERS);
+  REGISTER_TEST(otbLUMImageIOTestCanRead);
+  REGISTER_TEST(otbLUMImageIOTestCanWrite);
+  REGISTER_TEST(otbMWImageIOTestCanRead);
+  REGISTER_TEST(otbMWImageIOTestCanWrite);
+  REGISTER_TEST(otbImageFileReaderTest);
+  REGISTER_TEST(otbImageFileReaderTestFloat);
+  REGISTER_TEST(otbShortImageIOTest);
+  REGISTER_TEST(otbImageIOFactoryNew);
 }

@@ -33,12 +33,12 @@ WriterWatcherBase
 
 WriterWatcherBase
 ::WriterWatcherBase(itk::ProcessObject* process,
-		    const char *comment)
+                    const char *comment)
 {
   // Initialize state
   m_Process = process;
   m_Comment = comment;
-  
+
   // Create a series of commands
   m_StartWriterCommand = CommandType::New();
   m_EndWriterCommand = CommandType::New();
@@ -46,56 +46,56 @@ WriterWatcherBase
   m_StartFilterCommand = CommandType::New();
   m_EndFilterCommand = CommandType::New();
   m_ProgressFilterCommand = CommandType::New();
-    
+
   // Assign the callbacks
   m_StartFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::StartFilter);
+      &WriterWatcherBase::StartFilter);
   m_EndFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::EndFilter);
+                                          &WriterWatcherBase::EndFilter);
   m_ProgressFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::ShowFilterProgress);
+      &WriterWatcherBase::ShowFilterProgress);
   m_StartWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::StartWriter);
+      &WriterWatcherBase::StartWriter);
   m_EndWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::EndWriter);
+                                          &WriterWatcherBase::EndWriter);
   m_ProgressWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::ShowWriterProgress);
-  
+      &WriterWatcherBase::ShowWriterProgress);
+
   // Add the commands as observers
   m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(),
-				      m_StartWriterCommand);
-  
+                     m_StartWriterCommand);
+
   m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(),
-				    m_EndWriterCommand);
-  
+                                          m_EndWriterCommand);
+
   m_ProgressWriterTag = m_Process->AddObserver(itk::ProgressEvent(),
-					 m_ProgressWriterCommand);
+                        m_ProgressWriterCommand);
 
   // Try to get the filter that is wired to m_Process.
-  if(m_Process->GetInputs()[0]->GetSource())
-    {
-      m_SourceProcess = m_Process->GetInputs()[0]->GetSource();
-      
-      // Add the commands as observers
-      m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(),
-						m_StartFilterCommand);
-  
-      m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(),
-					      m_EndFilterCommand);
-      
-      m_ProgressFilterTag = m_SourceProcess->AddObserver(itk::ProgressEvent(),
-						   m_ProgressFilterCommand);
-    }
+  if (m_Process->GetInputs()[0]->GetSource())
+  {
+    m_SourceProcess = m_Process->GetInputs()[0]->GetSource();
+
+    // Add the commands as observers
+    m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(),
+                       m_StartFilterCommand);
+
+    m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(),
+                     m_EndFilterCommand);
+
+    m_ProgressFilterTag = m_SourceProcess->AddObserver(itk::ProgressEvent(),
+                          m_ProgressFilterCommand);
+  }
 }
 
 WriterWatcherBase
 ::WriterWatcherBase(itk::ProcessObject* process, itk::ProcessObject * source,
-		    const char *comment)
+                    const char *comment)
 {
   // Initialize state
   m_Process = process;
   m_Comment = comment;
-  
+
   // Create a series of commands
   m_StartWriterCommand = CommandType::New();
   m_EndWriterCommand = CommandType::New();
@@ -103,43 +103,42 @@ WriterWatcherBase
   m_StartFilterCommand = CommandType::New();
   m_EndFilterCommand = CommandType::New();
   m_ProgressFilterCommand = CommandType::New();
-    
+
   // Assign the callbacks
   m_StartFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::StartFilter);
+      &WriterWatcherBase::StartFilter);
   m_EndFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::EndFilter);
+                                          &WriterWatcherBase::EndFilter);
   m_ProgressFilterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::ShowFilterProgress);
+      &WriterWatcherBase::ShowFilterProgress);
   m_StartWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::StartWriter);
+      &WriterWatcherBase::StartWriter);
   m_EndWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::EndWriter);
+                                          &WriterWatcherBase::EndWriter);
   m_ProgressWriterCommand->SetCallbackFunction(this,
-                                        &WriterWatcherBase::ShowWriterProgress);
-  
+      &WriterWatcherBase::ShowWriterProgress);
+
   // Add the commands as observers
   m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(),
-				      m_StartWriterCommand);
-  
+                     m_StartWriterCommand);
+
   m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(),
-				    m_EndWriterCommand);
-  
+                                          m_EndWriterCommand);
+
   m_ProgressWriterTag = m_Process->AddObserver(itk::ProgressEvent(),
-					 m_ProgressWriterCommand);
+                        m_ProgressWriterCommand);
 
   m_SourceProcess = source;
-  m_SourceProcess = m_Process->GetInputs()[0]->GetSource();
-  
+
   // Add the commands as observers
   m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(),
-						  m_StartFilterCommand);
-  
+                     m_StartFilterCommand);
+
   m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(),
-						m_EndFilterCommand);
-  
+                   m_EndFilterCommand);
+
   m_ProgressFilterTag = m_SourceProcess->AddObserver(itk::ProgressEvent(),
-						     m_ProgressFilterCommand);
+                        m_ProgressFilterCommand);
 }
 
 
@@ -148,91 +147,91 @@ WriterWatcherBase
 {
   // Remove any observers we have on the old process object
   if (m_Process)
+  {
+    if (m_StartWriterCommand)
     {
-      if (m_StartWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_StartWriterTag);
-	}
-      if (m_EndWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_EndWriterTag);
-	}
-      if (m_ProgressWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_ProgressWriterTag);
-	}
+      m_Process->RemoveObserver(m_StartWriterTag);
     }
-   if (m_SourceProcess)
+    if (m_EndWriterCommand)
     {
-      if (m_StartFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_StartFilterTag);
-	}
-      if (m_EndFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_EndFilterTag);
-	}
-      if (m_ProgressFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
-	}
+      m_Process->RemoveObserver(m_EndWriterTag);
     }
-  
+    if (m_ProgressWriterCommand)
+    {
+      m_Process->RemoveObserver(m_ProgressWriterTag);
+    }
+  }
+  if (m_SourceProcess)
+  {
+    if (m_StartFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_StartFilterTag);
+    }
+    if (m_EndFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_EndFilterTag);
+    }
+    if (m_ProgressFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
+    }
+  }
+
   // Initialize state
   m_TimeProbe = watch.m_TimeProbe;
   m_Process = watch.m_Process;
   m_SourceProcess = watch.m_SourceProcess;
   m_Comment = watch.m_Comment;
-  
+
   m_StartFilterTag = 0;
   m_EndFilterTag = 0;
   m_ProgressFilterTag = 0;
   m_StartWriterTag = 0;
   m_EndWriterTag = 0;
   m_ProgressWriterTag = 0;
-  
+
   // Create a series of commands
   if (m_Process)
-    {
-      m_StartWriterCommand = CommandType::New();
-      m_EndWriterCommand = CommandType::New();
-      m_ProgressWriterCommand = CommandType::New();
-      
-      // Assign the callbacks
-      m_StartWriterCommand->SetCallbackFunction(this,
-						&WriterWatcherBase::StartWriter);
-      m_EndWriterCommand->SetCallbackFunction(this,
-					      &WriterWatcherBase::EndWriter);
-      m_ProgressWriterCommand->SetCallbackFunction(this,
-						   &WriterWatcherBase::ShowWriterProgress);
-      
-      // Add the commands as observers
-      m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(), m_StartWriterCommand);
-      m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(), m_EndWriterCommand);
-      m_ProgressWriterTag
-	= m_Process->AddObserver(itk::ProgressEvent(), m_ProgressWriterCommand);
-    }
+  {
+    m_StartWriterCommand = CommandType::New();
+    m_EndWriterCommand = CommandType::New();
+    m_ProgressWriterCommand = CommandType::New();
+
+    // Assign the callbacks
+    m_StartWriterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::StartWriter);
+    m_EndWriterCommand->SetCallbackFunction(this,
+                                            &WriterWatcherBase::EndWriter);
+    m_ProgressWriterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::ShowWriterProgress);
+
+    // Add the commands as observers
+    m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(), m_StartWriterCommand);
+    m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(), m_EndWriterCommand);
+    m_ProgressWriterTag
+    = m_Process->AddObserver(itk::ProgressEvent(), m_ProgressWriterCommand);
+  }
 
   if (m_SourceProcess)
-    {
-      m_StartFilterCommand = CommandType::New();
-      m_EndFilterCommand = CommandType::New();
-      m_ProgressFilterCommand = CommandType::New();
-      
-      // Assign the callbacks
-      m_StartFilterCommand->SetCallbackFunction(this,
-						&WriterWatcherBase::StartFilter);
-      m_EndFilterCommand->SetCallbackFunction(this,
-					      &WriterWatcherBase::EndFilter);
-      m_ProgressFilterCommand->SetCallbackFunction(this,
-						   &WriterWatcherBase::ShowFilterProgress);
-      
-      // Add the commands as observers
-      m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(), m_StartFilterCommand);
-      m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(), m_EndFilterCommand);
-      m_ProgressFilterTag
-	= m_SourceProcess->AddObserver(itk::ProgressEvent(), m_ProgressFilterCommand);
-    }
+  {
+    m_StartFilterCommand = CommandType::New();
+    m_EndFilterCommand = CommandType::New();
+    m_ProgressFilterCommand = CommandType::New();
+
+    // Assign the callbacks
+    m_StartFilterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::StartFilter);
+    m_EndFilterCommand->SetCallbackFunction(this,
+                                            &WriterWatcherBase::EndFilter);
+    m_ProgressFilterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::ShowFilterProgress);
+
+    // Add the commands as observers
+    m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(), m_StartFilterCommand);
+    m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(), m_EndFilterCommand);
+    m_ProgressFilterTag
+    = m_SourceProcess->AddObserver(itk::ProgressEvent(), m_ProgressFilterCommand);
+  }
 }
 
 void
@@ -241,90 +240,90 @@ WriterWatcherBase
 {
 // Remove any observers we have on the old process object
   if (m_Process)
+  {
+    if (m_StartWriterCommand)
     {
-      if (m_StartWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_StartWriterTag);
-	}
-      if (m_EndWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_EndWriterTag);
-	}
-      if (m_ProgressWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_ProgressWriterTag);
-	}
+      m_Process->RemoveObserver(m_StartWriterTag);
     }
-   if (m_SourceProcess)
+    if (m_EndWriterCommand)
     {
-      if (m_StartFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_StartFilterTag);
-	}
-      if (m_EndFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_EndFilterTag);
-	}
-      if (m_ProgressFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
-	}
+      m_Process->RemoveObserver(m_EndWriterTag);
     }
-  
+    if (m_ProgressWriterCommand)
+    {
+      m_Process->RemoveObserver(m_ProgressWriterTag);
+    }
+  }
+  if (m_SourceProcess)
+  {
+    if (m_StartFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_StartFilterTag);
+    }
+    if (m_EndFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_EndFilterTag);
+    }
+    if (m_ProgressFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
+    }
+  }
+
   // Initialize state
   m_TimeProbe = watch.m_TimeProbe;
   m_Process = watch.m_Process;
   m_SourceProcess = watch.m_SourceProcess;
   m_Comment = watch.m_Comment;
-  
+
   m_StartFilterTag = 0;
   m_EndFilterTag = 0;
   m_ProgressFilterTag = 0;
   m_StartWriterTag = 0;
   m_EndWriterTag = 0;
   m_ProgressWriterTag = 0;
-  
+
   // Create a series of commands
   if (m_Process)
-    {
-      m_StartWriterCommand = CommandType::New();
-      m_EndWriterCommand = CommandType::New();
-      m_ProgressWriterCommand = CommandType::New();
-      
-      // Assign the callbacks
-      m_StartWriterCommand->SetCallbackFunction(this,
-						&WriterWatcherBase::StartWriter);
-      m_EndWriterCommand->SetCallbackFunction(this,
-					      &WriterWatcherBase::EndWriter);
-      m_ProgressWriterCommand->SetCallbackFunction(this,
-						   &WriterWatcherBase::ShowWriterProgress);
-      
-      // Add the commands as observers
-      m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(), m_StartWriterCommand);
-      m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(), m_EndWriterCommand);
-      m_ProgressWriterTag
-	= m_Process->AddObserver(itk::ProgressEvent(), m_ProgressWriterCommand);
-    }
+  {
+    m_StartWriterCommand = CommandType::New();
+    m_EndWriterCommand = CommandType::New();
+    m_ProgressWriterCommand = CommandType::New();
+
+    // Assign the callbacks
+    m_StartWriterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::StartWriter);
+    m_EndWriterCommand->SetCallbackFunction(this,
+                                            &WriterWatcherBase::EndWriter);
+    m_ProgressWriterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::ShowWriterProgress);
+
+    // Add the commands as observers
+    m_StartWriterTag = m_Process->AddObserver(itk::StartEvent(), m_StartWriterCommand);
+    m_EndWriterTag = m_Process->AddObserver(itk::EndEvent(), m_EndWriterCommand);
+    m_ProgressWriterTag
+    = m_Process->AddObserver(itk::ProgressEvent(), m_ProgressWriterCommand);
+  }
   if (m_SourceProcess)
-    {
-      m_StartFilterCommand = CommandType::New();
-      m_EndFilterCommand = CommandType::New();
-      m_ProgressFilterCommand = CommandType::New();
-      
-      // Assign the callbacks
-      m_StartFilterCommand->SetCallbackFunction(this,
-						&WriterWatcherBase::StartFilter);
-      m_EndFilterCommand->SetCallbackFunction(this,
-					      &WriterWatcherBase::EndFilter);
-      m_ProgressFilterCommand->SetCallbackFunction(this,
-						   &WriterWatcherBase::ShowFilterProgress);
-      
-      // Add the commands as observers
-      m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(), m_StartFilterCommand);
-      m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(), m_EndFilterCommand);
-      m_ProgressFilterTag
-	= m_SourceProcess->AddObserver(itk::ProgressEvent(), m_ProgressFilterCommand);
-    }
+  {
+    m_StartFilterCommand = CommandType::New();
+    m_EndFilterCommand = CommandType::New();
+    m_ProgressFilterCommand = CommandType::New();
+
+    // Assign the callbacks
+    m_StartFilterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::StartFilter);
+    m_EndFilterCommand->SetCallbackFunction(this,
+                                            &WriterWatcherBase::EndFilter);
+    m_ProgressFilterCommand->SetCallbackFunction(this,
+        &WriterWatcherBase::ShowFilterProgress);
+
+    // Add the commands as observers
+    m_StartFilterTag = m_SourceProcess->AddObserver(itk::StartEvent(), m_StartFilterCommand);
+    m_EndFilterTag = m_SourceProcess->AddObserver(itk::EndEvent(), m_EndFilterCommand);
+    m_ProgressFilterTag
+    = m_SourceProcess->AddObserver(itk::ProgressEvent(), m_ProgressFilterCommand);
+  }
 }
 
 WriterWatcherBase
@@ -332,35 +331,35 @@ WriterWatcherBase
 {
   // Remove any observers we have on the old process object
   if (m_Process)
+  {
+    if (m_StartWriterCommand)
     {
-      if (m_StartWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_StartWriterTag);
-	}
-      if (m_EndWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_EndWriterTag);
-	}
-      if (m_ProgressWriterCommand)
-	{
-	  m_Process->RemoveObserver(m_ProgressWriterTag);
-	}
+      m_Process->RemoveObserver(m_StartWriterTag);
     }
-   if (m_SourceProcess)
+    if (m_EndWriterCommand)
     {
-      if (m_StartFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_StartFilterTag);
-	}
-      if (m_EndFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_EndFilterTag);
-	}
-      if (m_ProgressFilterCommand)
-	{
-	  m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
-	}
+      m_Process->RemoveObserver(m_EndWriterTag);
     }
+    if (m_ProgressWriterCommand)
+    {
+      m_Process->RemoveObserver(m_ProgressWriterTag);
+    }
+  }
+  if (m_SourceProcess)
+  {
+    if (m_StartFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_StartFilterTag);
+    }
+    if (m_EndFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_EndFilterTag);
+    }
+    if (m_ProgressFilterCommand)
+    {
+      m_SourceProcess->RemoveObserver(m_ProgressFilterTag);
+    }
+  }
 }
 
 } // end namespace otb

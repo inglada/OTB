@@ -9,11 +9,11 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
-  Copyright (c) GET / ENST Bretagne. All rights reserved. 
+  Copyright (c) GET / ENST Bretagne. All rights reserved.
   See GETCopyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,45 +25,46 @@
 namespace otb
 {
 
+/** \class MixturePolyRBFKernelFunctor
+ * \brief Mixture of kernels.
+ *
+ * Performs the mixture of kind: \f$ \mu k_1(x,y) + (1-\mu) k_2(x,y) \f$
+ * with \f$ k_1(x,y)=\left( \gamma_1 x\cdot y + c_0 \right) ^d \f$ a
+ * polynomial kernel and
+ * \f$ k_2(x,y) = \exp\left( - \gamma_2 \| x-y\-^2 \right) \f$ an RBF one.
+ *
+ * Variable to be instanciated (through \code SetValue \endcode) are:
+ * Mixture (def=0.5), GammaPoly (def=1.0), CoefPoly (def=1.0),
+ * DegreePoly (def=2), GammaRBF (def=1.0)
+ */
+
 class MixturePolyRBFKernelFunctor
-		: public GenericKernelFunctorBase
+      : public GenericKernelFunctorBase
 {
 public:
-	/** Mixture of kernels.
-	 * Performs the mixture of kind: $\mu k_1(x,y) + (1-\mu) k_2(x,y)$
-	 * with $k_1(x,y)=\left( \gamma_1 x\cdot y + c_0 \right) ^d$ a 
-	 * polynomial kernel and 
-	 * $k_2(x,y) = \exp\left( - \gamma_2 \| x-y\-^2 \right)$ an RBF one. 
-	 *
-	 * Variable to be instanciated (through \code SetValue \endcode) are:
-	 * Mixture (def=0.5), GammaPoly (def=1.0), CoefPoly (def=1.0),
-	 * DegreePoly (def=2), GammaRBF (def=1.0) */
-	double operator() ( const svm_node * x, const svm_node * y,
-						const svm_parameter & param ) const;
+  double operator() ( const svm_node * x, const svm_node * y,
+                      const svm_parameter & param ) const;
 
-	MixturePolyRBFKernelFunctor ();
-	virtual ~MixturePolyRBFKernelFunctor () { }
+  MixturePolyRBFKernelFunctor ();
+  virtual ~MixturePolyRBFKernelFunctor () { }
 
-	/** Specific implementation of \code Update \endcode to split m_MapParameters
-	 * into specific variables to speed up kernel evaluations */
-	void Update ();
+  /** Specific implementation of \code Update \endcode to split m_MapParameters
+   * into specific variables to speed up kernel evaluations */
+  void Update ();
 
 protected:
-	double m_Mixture;
-	double m_GammaPoly;
-	double m_CoefPoly;
-	int m_DegreePoly;
-	double m_GammaRBF;
+  double m_Mixture;
+  double m_GammaPoly;
+  double m_CoefPoly;
+  int m_DegreePoly;
+  double m_GammaRBF;
 
 private:
-	inline double powi ( double base, int times ) const;
+  inline double powi ( double base, int times ) const;
 };
 
 } // end of namespace otb
 
-#ifndef OTB_MANUAL_INSTANTIATION
-#include "otbMixturePolyRBFKernelFunctor.txx"
-#endif
 
 #endif
 

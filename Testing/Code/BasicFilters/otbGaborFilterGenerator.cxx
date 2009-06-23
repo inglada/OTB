@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,11 +22,11 @@
 
 int otbGaborFilterGenerator(int argc, char * argv[])
 {
-  if(argc!=10)
-    {
-      std::cerr<<"Usage: "<<argv[0]<<"outfname xradius yradius a b theta u0 v0 phi"<<std::endl;
-      return EXIT_FAILURE;
-    }
+  if (argc!=10)
+  {
+    std::cerr<<"Usage: "<<argv[0]<<"outfname xradius yradius a b theta u0 v0 phi"<<std::endl;
+    return EXIT_FAILURE;
+  }
 
   const char * outfname = argv[1];
   const unsigned int xradius = atoi(argv[2]);
@@ -59,7 +59,7 @@ int otbGaborFilterGenerator(int argc, char * argv[])
   gabor->SetV0(v0);
   gabor->SetPhi(phi);
   ArrayType filter = gabor->GetFilter();
-  
+
   // Writing filter mask to an image
   ImageType::Pointer image = ImageType::New();
   ImageType::RegionType region;
@@ -78,11 +78,11 @@ int otbGaborFilterGenerator(int argc, char * argv[])
   itk::ImageRegionIterator<ImageType> it(image,region);
   unsigned int k = 0;
 
-  for(it.GoToBegin();!it.IsAtEnd();++it,++k)
-    {
-      it.Set(filter[k]);
-    }
-  
+  for (it.GoToBegin();!it.IsAtEnd();++it,++k)
+  {
+    it.Set(filter[k]);
+  }
+
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(outfname);
   writer->SetInput(image);

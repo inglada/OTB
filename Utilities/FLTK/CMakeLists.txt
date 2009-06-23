@@ -14,7 +14,7 @@ SET(FLTK_VERSION_PATCH "9")
 SET(FLTK_VERSION "${FLTK_VERSION_MAJOR}.${FLTK_VERSION_MINOR}")
 SET(FLTK_VERSION_FULL "${FLTK_VERSION}.${FLTK_VERSION_PATCH}")
 
-SET(FLTK_LIBRARIES "fltk_images;fltk;fltk_gl;fltk_forms")
+SET(FLTK_LIBRARIES "fltk_images;fltk;fltk_gl;fltk_forms" CACHE INTERNAL "Variable used by OTB to link against FLTK")
 
 # Executables and libraries should just go to bin
 #OTB Modifications
@@ -411,7 +411,10 @@ CONFIGURE_FILE("${FLTK_SOURCE_DIR}/fltk-config.in"
 
 # OTB Modifications
 #INSTALL_FILES(/include/FL FILES ${FLTK_HEADER_FILES})
-INSTALL_FILES(/include/otb/Utilities/FLTK/FL FILES ${FLTK_HEADER_FILES})
+#INSTALL_FILES(/include/otb/Utilities/FLTK/FL FILES ${FLTK_HEADER_FILES})
+INSTALL(FILES ${FLTK_HEADER_FILES}
+    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/FLTK/FL
+    COMPONENT Development)
 
 #INSTALL_FILES(/lib/FLTK-${FLTK_VERSION} FILES "${FLTK_SOURCE_DIR}/CMake/FLTKUse.cmake")
 #INSTALL_FILES(/lib/FLTK-${FLTK_VERSION} FILES "${FLTK_BINARY_DIR}/FLTKBuildSettings.cmake")

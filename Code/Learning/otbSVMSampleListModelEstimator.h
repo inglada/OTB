@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,15 +25,72 @@
 
 namespace otb
 {
+namespace Functor
+{
+/** \class VectorToMeasurementVectorFunctor
+*   \brief Helper class to convert itk::Vector and itk::FixedArray samples to internal
+*   training vector type.
+*   \sa Vector
+*   \sa FixedArray
+*/
+template <class TVector>
+class VectorToMeasurementVectorFunctor
+{
+public:
+  typedef TVector             VectorType;
+  typedef std::vector<typename VectorType::ValueType> MeasurementVectorType;
+
+  inline MeasurementVectorType operator()(const VectorType & value) const
+  {
+    MeasurementVectorType output;
+
+    typename VectorType::ConstIterator pIt =  value.Begin();
+    typename VectorType::ConstIterator pEnd = value.End();
+
+    while (pIt!=pEnd)
+    {
+      output.push_back(*pIt);
+      ++pIt;
+    }
+    return output;
+  }
+};
+
+/** \class VariableLengthVectorToMeasurementVectorFunctor
+*   \brief Helper class to convert itk::VariableLengthVector samples to internal
+*   training vector type.
+*   \sa VariableLengthVector
+*/
+template <class TVector>
+class VariableLengthVectorToMeasurementVectorFunctor
+{
+public:
+  typedef TVector             VectorType;
+  typedef std::vector<typename VectorType::ValueType> MeasurementVectorType;
+
+  inline MeasurementVectorType operator()(const VectorType & value) const
+  {
+    MeasurementVectorType output;
+    
+    for(unsigned int i = 0; i < value.GetNumberOfElements(); ++i)
+      {
+      output.push_back(value.GetElement(i));
+      }
+   
+    return output;
+  }
+};
+
+}
 
 /** \class SVMSampleListModelEstimator
 
  * \brief Class for SVM model
  * estimation from SampleLists used for classification.
- * 
+ *
  *
  * The basic functionality of the SVMSampleListModelEstimator is to
- * generate the models used in SVM classification. It 
+ * generate the models used in SVM classification. It
  * requires one input poinset and a training pointset to be provided by the
  * user.  This object supports data handling of multiband data. The
  * object accepts the input image in vector format only, where each
@@ -45,19 +102,19 @@ namespace otb
  *
  * EstimateModels() uses the libsvm library for SVM learning.
  *
- * \ingroup ClassificationFilters 
+ * \ingroup ClassificationFilters
  */
-template <class TInputSampleList, 
-          class TTrainingSampleList>
-class ITK_EXPORT SVMSampleListModelEstimator: 
-    public SVMModelEstimator<typename TInputSampleList::MeasurementType, typename TTrainingSampleList::MeasurementType>
+template <class TInputSampleList,
+class TTrainingSampleList, class TMeasurementFunctor = Functor::VectorToMeasurementVectorFunctor<typename TInputSampleList::MeasurementVectorType > >
+class ITK_EXPORT SVMSampleListModelEstimator:
+      public SVMModelEstimator<typename TInputSampleList::MeasurementType, typename TTrainingSampleList::MeasurementType>
 {
 public:
   /** Standard class typedefs. */
   typedef SVMSampleListModelEstimator   Self;
   typedef SVMModelEstimator<typename TInputSampleList::MeasurementType,
-			    typename TTrainingSampleList::MeasurementType>
-                            Superclass;
+  typename TTrainingSampleList::MeasurementType>
+  Superclass;
 
   typedef itk::SmartPointer<Self>  Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
@@ -69,14 +126,14 @@ public:
   itkTypeMacro(SVMSampleListModelEstimator, SVMModelEstimator);
 
   /** Type definition for the input image. */
-    /** Type definitions for the training image. */
+  /** Type definitions for the training image. */
   typedef typename TInputSampleList::Pointer   InputSampleListPointer;
- 
+
   /** Type definitions for the training image. */
   typedef typename TTrainingSampleList::Pointer TrainingSampleListPointer;
-    
+
   /** Type definition for the vector associated with
-   * input image pixel type. */     
+   * input image pixel type. */
   typedef typename TInputSampleList::ValueType InputSampleListValueType;
 
   /** Type definitions for the vector holding
@@ -89,9 +146,12 @@ public:
   typedef typename
   TTrainingSampleList::ConstIterator TrainingSampleListIteratorType;
 
+  /** Measurement functor typedef */
+  typedef TMeasurementFunctor MeasurementFunctorType;
+
   /** Set the input image. */
   itkSetObjectMacro(InputSampleList,TInputSampleList);
-  
+
   /** Get the input image. */
   itkGetObjectMacro(InputSampleList,TInputSampleList);
 
@@ -104,7 +164,7 @@ public:
 
 
 
-protected: 
+protected:
   SVMSampleListModelEstimator();
   ~SVMSampleListModelEstimator();
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;

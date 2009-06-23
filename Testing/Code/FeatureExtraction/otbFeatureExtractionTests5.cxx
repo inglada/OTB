@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,17 +22,19 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbHarrisToPointSet);
-REGISTER_TEST(otbPixelSuppressionByDirectionNew);
-REGISTER_TEST(otbPixelSuppressionByDirection);
-REGISTER_TEST(otbFillGapsFilterNew);
-REGISTER_TEST(otbLocalHoughNew);
-REGISTER_TEST(otbLocalHough);
-REGISTER_TEST(otbLocalHoughDraw);
-REGISTER_TEST(otbModulusAndDirectionImageFiltersNew);
+  REGISTER_TEST(otbHarrisToPointSet);
+  REGISTER_TEST(otbPixelSuppressionByDirectionNew);
+  REGISTER_TEST(otbPixelSuppressionByDirection);
+  REGISTER_TEST(otbFillGapsFilterNew);
+  REGISTER_TEST(otbFillGapsFilter);
+  REGISTER_TEST(otbLocalHoughNew);
+  REGISTER_TEST(otbLocalHough);
+  REGISTER_TEST(otbLocalHoughDraw);
+  REGISTER_TEST(otbModulusAndDirectionImageFiltersNew);
+  REGISTER_TEST(otbHoughTransform2DLinesImageTest);
 }

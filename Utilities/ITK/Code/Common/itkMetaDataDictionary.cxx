@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDataDictionary.cxx,v $
   Language:  C++
-  Date:      $Date: 2006-04-04 18:25:20 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2009-02-05 22:04:14 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,7 +56,7 @@ MetaDataDictionary
       it != m_Dictionary->end();
       it++)
     {
-    os << (*it).first <<  "  " ;
+    os << (*it).first <<  "  ";
     (*it).second->Print(os);
     }
 }
@@ -80,7 +80,7 @@ MetaDataDictionary
 
 bool
 MetaDataDictionary
-::HasKey(const std::string &key)
+::HasKey(const std::string &key) const
 {
   return m_Dictionary->find(key) != m_Dictionary->end();
 }
@@ -132,8 +132,6 @@ MetaDataDictionary
   return m_Dictionary->end();
 }
 
-
-
 MetaDataDictionary::Iterator
 MetaDataDictionary
 ::Find( const std::string & key)
@@ -148,10 +146,4 @@ MetaDataDictionary
 {
   return m_Dictionary->find(key);
 }
-
-
-
-
-
-}; // namespace
-
+} // namespace

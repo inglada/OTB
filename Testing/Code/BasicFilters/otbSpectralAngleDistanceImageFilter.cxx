@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -36,25 +36,25 @@ int otbSpectralAngleDistanceImageFilter(int argc, char * argv[])
   DistanceFilterType::Pointer filter = DistanceFilterType::New();
   ReaderType::Pointer reader = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
-      
+
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
-      
+
   InputImageType::PixelType refPixel;
-      
+
   reader->UpdateOutputInformation();
   refPixel.SetSize(reader->GetOutput()->GetNumberOfComponentsPerPixel());
-  for(unsigned int i = 0; i<reader->GetOutput()->GetNumberOfComponentsPerPixel();++i)
-    {
-      refPixel[i]=atoi(argv[3+i]);
-    }
+  for (unsigned int i = 0; i<reader->GetOutput()->GetNumberOfComponentsPerPixel();++i)
+  {
+    refPixel[i]=atoi(argv[3+i]);
+  }
   filter->SetInput(reader->GetOutput());
   filter->SetReferencePixel(refPixel);
 
   writer->SetInput(filter->GetOutput());
 
   writer->Update();
-  
+
 
 
   return EXIT_SUCCESS;

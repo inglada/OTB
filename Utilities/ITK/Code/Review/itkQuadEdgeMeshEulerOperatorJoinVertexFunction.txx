@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorJoinVertexFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2008-07-06 22:23:57 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2009-02-16 20:22:11 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,18 +39,20 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction< TMesh, TQEType >::
 PrintSelf( std::ostream& os, Indent indent ) const
 {
   Superclass::PrintSelf( os, indent );
+
   os << indent << "m_OldPointID: " << m_OldPointID <<std::endl;
   os << indent << "m_EdgeStatus: ";
+
   switch( m_EdgeStatus )
-  {
+    {
     default:
     case STANDARD_CONFIG:
       os << "STANDARD_CONFIG" <<std::endl;
       break;
-    case QUADEDGE_ISOLATED: 
+    case QUADEDGE_ISOLATED:
       os << "QUADEDGE_ISOLATED" <<std::endl;
       break;
-    case FACE_ISOLATED: 
+    case FACE_ISOLATED:
       os << "FACE_ISOLATED" <<std::endl;
       break;
     case EDGE_NULL:
@@ -65,19 +67,19 @@ PrintSelf( std::ostream& os, Indent indent ) const
     case TOO_MANY_COMMON_VERTICES:
       os << "TOO_MANY_COMMON_VERTICES" <<std::endl;
       break;
-    case TETRAEDRON_CONFIG:
-      os << "TETRAEDRON_CONFIG" <<std::endl;
+    case TETRAHEDRON_CONFIG:
+      os << "TETRAHEDRON_CONFIG" <<std::endl;
       break;
     case SAMOSA_CONFIG:
       os << "SAMOSA_CONFIG" <<std::endl;
       break;
-    case EYE_CONFIG: 
+    case EYE_CONFIG:
       os << "EYE_CONFIG" <<std::endl;
       break;
     case EDGE_JOINING_DIFFERENT_BORDERS:
       os << "EDGE_JOINING_DIFFERENT_BORDERS" <<std::endl;
       break;
-  }
+    }
 }
 
 //--------------------------------------------------------------------------
@@ -87,22 +89,23 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction< TMesh, TQEType >::
 Evaluate( QEType* e )
 {
   std::stack< QEType* > edges_to_be_deleted;
+
   m_EdgeStatus = CheckStatus( e, edges_to_be_deleted );
 
   switch( m_EdgeStatus )
-  {
+    {
     default:
     case STANDARD_CONFIG:
       return Process( e );
 
     // ******************************************************************
     // Isolated quad edge
-    case QUADEDGE_ISOLATED: 
+    case QUADEDGE_ISOLATED:
       return ProcessIsolatedQuadEdge( e );
 
     // ******************************************************************
     // Isolated face
-    case FACE_ISOLATED: 
+    case FACE_ISOLATED:
       return ProcessIsolatedFace( e, edges_to_be_deleted );
 
     // ******************************************************************
@@ -114,16 +117,16 @@ Evaluate( QEType* e )
     case EDGE_ISOLATED:
     // more than 2 common vertices in 0-ring of org and dest respectively
     case TOO_MANY_COMMON_VERTICES:
-    // Tetraedron case
-    case TETRAEDRON_CONFIG:
+    // Tetrahedron case
+    case TETRAHEDRON_CONFIG:
     // Samosa case
     case SAMOSA_CONFIG:
     // Eye case
-    case EYE_CONFIG: 
+    case EYE_CONFIG:
       return( (QEType*) 0 );
     case EDGE_JOINING_DIFFERENT_BORDERS:
       return( (QEType*) 0 );
-  }
+    }
 }
 
 
@@ -166,7 +169,7 @@ Process( QEType* e )
   //
   this->m_Mesh->LightWeightDeleteEdge( e );
   this->m_OldPointID = this->m_Mesh->Splice( leftZip, riteZip );
- 
+
   //
   //                            |      /       __Y  //
   //                            |     /     __/  |  //
@@ -179,11 +182,11 @@ Process( QEType* e )
   //                    __/  /   |   \  riteZip  |  //
   //                 __/    /    |    \       \__|  //
   //                /      /     |     \         Y  //
-  // 
+  //
   // When the Lnext and/or the Rnext ring of the argument edge was originaly
   // the one[s] of a triangle, the above edge deletion created the odd
   // situation of having two different edges adjacent to the same two
-  // vertices (which is quite a bad thing). This is was is depicted on 
+  // vertices (which is quite a bad thing). This is was is depicted on
   // the above ascii-graph, the original left face was a triangle and
   // the resulting situation has two different edges adjacent to the
   // two vertices X and a. In order to clean up things, we can call the
@@ -231,12 +234,12 @@ Process( QEType* e )
       this->m_Mesh->AddFace( riteZip );
       }
     }
-  
+
   OutputType result = this->m_Mesh->FindEdge( NewOrg, NewDest );
   if( !result)
     {
     result = this->m_Mesh->FindEdge( NewDest )->GetSym( );
-    } 
+    }
   return( result );
 }
 
@@ -256,7 +259,7 @@ ProcessIsolatedQuadEdge( QEType* e )
     {
     this->m_Mesh->AddFace( rebuildEdge );
     }
-      
+
   // this case has no symetric case in SPlitVertex
   // i.e. it is impossible to reconstruct such a pathological
   // case using SplitVertex. Thus the return value is
@@ -270,7 +273,7 @@ ProcessIsolatedQuadEdge( QEType* e )
 template< class TMesh, class TQEType >
 TQEType*
 QuadEdgeMeshEulerOperatorJoinVertexFunction< TMesh, TQEType >::
-ProcessIsolatedFace( QEType* e, std::stack< QEType* > EdgesToBeDeleted )
+ProcessIsolatedFace( QEType* e, std::stack< QEType* >& EdgesToBeDeleted )
 {
   PointIdentifier org = e->GetOrigin();
   PointIdentifier dest = e->GetDestination();
@@ -314,7 +317,7 @@ IsFaceIsolated( QEType* e,
 
   oToBeDeleted.push( e_it );
   e_it = e_it->GetLnext();
-    
+
   do
     {
     oToBeDeleted.push( e_it );
@@ -393,10 +396,10 @@ CheckStatus( QEType* e, std::stack< TQEType* >& oToBeDeleted )
 
   if( number_common_vertices == 2 )
     {
-    if( IsTetraedron( e ) )
+    if( IsTetrahedron( e ) )
       {
-      itkDebugMacro( "It forms a tetraedron." );
-      return TETRAEDRON_CONFIG;
+      itkDebugMacro( "It forms a tetrahedron." );
+      return TETRAHEDRON_CONFIG;
       }
     }
 
@@ -440,7 +443,7 @@ CheckStatus( QEType* e, std::stack< TQEType* >& oToBeDeleted )
 template < class TMesh, class TQEType >
 bool
 QuadEdgeMeshEulerOperatorJoinVertexFunction< TMesh, TQEType >::
-IsTetraedron( QEType* e )
+IsTetrahedron( QEType* e )
 {
   if( e->GetOrder() == 3 )
     {
@@ -453,18 +456,18 @@ IsTetraedron( QEType* e )
           {
           bool left_triangle = e->IsLnextOfTriangle( );
           bool right_triangle = e_sym->IsLnextOfTriangle( );
-  
+
           if( left_triangle && right_triangle )
             {
-              CellIdentifier id_left_right_triangle;
-              if( e->GetLprev()->IsRightSet() )
-                {
-                id_left_right_triangle = e->GetLprev()->GetRight();
-                }
-              else
-                {
-                return false;
-                }
+            CellIdentifier id_left_right_triangle;
+            if( e->GetLprev()->IsRightSet() )
+              {
+              id_left_right_triangle = e->GetLprev()->GetRight();
+              }
+            else
+              {
+              return false;
+              }
 
             CellIdentifier id_left_left_triangle;
             if( e->GetLnext()->IsRightSet() )
@@ -547,21 +550,21 @@ CommonVertexNeighboor( QEType* e )
 
   PointIdentifier id;
   do
-  {
+    {
     id = e_it->GetDestination();
     dir_list.push_back( id );
     e_it = e_it->GetOnext();
-  } while( e_it != qe );
+    } while( e_it != qe );
 
   qe = qe->GetSym();
   e_it = qe;
 
   do
-  {
+    {
     id = e_it->GetDestination();
     sym_list.push_back( id );
     e_it = e_it->GetOnext();
-  } while( e_it != qe );
+    } while( e_it != qe );
 
   dir_list.sort();
   sym_list.sort();
@@ -572,6 +575,7 @@ CommonVertexNeighboor( QEType* e )
 
   return intersection_list.size();
 }
+
 //--------------------------------------------------------------------------
 template < class TMesh, class TQEType >
 bool
@@ -581,7 +585,7 @@ IsEdgeLinkingTwoDifferentBorders( QEType* e )
   QEType* t = e;
   QEType* e_it = t;
   bool org_border;
-    
+
   do
     {
     org_border = e_it->IsAtBorder();
@@ -601,11 +605,15 @@ IsEdgeLinkingTwoDifferentBorders( QEType* e )
       dest_border = e_it->IsAtBorder();
       e_it = e_it->GetOnext();
       } while( ( e_it != t ) && ( !dest_border ) );
-      
+
     if( !dest_border )
+      {
       return false;
+      }
     else
+      {
       return true;
+      }
     }
 }
 

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,17 +22,18 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbProjectionBaseNew);
-REGISTER_TEST(otbMapProjectionsNew);
-REGISTER_TEST(otbSensorModelsNew);
-REGISTER_TEST(otbCreateProjectionWithOSSIM);
-REGISTER_TEST(otbCreateProjectionWithOTB);
-REGISTER_TEST(otbCreateInverseForwardSensorModel);
-//REGISTER_TEST(otbRegionProjection);
-REGISTER_TEST(otbRegionProjectionResampler);
+  REGISTER_TEST(otbProjectionBaseNew);
+  REGISTER_TEST(otbMapProjectionsNew);
+  REGISTER_TEST(otbMapProjection);
+  REGISTER_TEST(otbSensorModelsNew);
+  REGISTER_TEST(otbCreateProjectionWithOSSIM);
+  REGISTER_TEST(otbCreateProjectionWithOTB);
+  REGISTER_TEST(otbCreateInverseForwardSensorModel);
+  REGISTER_TEST(otbRegionProjectionResampler);
+  REGISTER_TEST(otbSensorModel);
 }

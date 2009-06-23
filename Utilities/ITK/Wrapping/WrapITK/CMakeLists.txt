@@ -10,16 +10,6 @@ INCLUDE(IJMacros.txt)
 
 ENABLE_TESTING()
 
-# work around cmake problem (bug ?) on some solaris systems
-IF(SUNOS_STDCXX_FIX)
-  IF(CMAKE_COMPILER_IS_GNUCXX)
-    IF(CMAKE_COMPILER_IS_GNUCC)
-      SET(CMAKE_CXX_CREATE_SHARED_LIBRARY
-          "<CMAKE_C_COMPILER> <CMAKE_SHARED_LIBRARY_CXX_FLAGS> <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS>  <CMAKE_SHARED_LIBRARY_SONAME_CXX_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
-    ENDIF(CMAKE_COMPILER_IS_GNUCC)
-  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-ENDIF(SUNOS_STDCXX_FIX)
-
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
@@ -63,6 +53,9 @@ OPTION(WRAP_covariant_vector_double "Wrap covariant vector double type" OFF)
 
 OPTION(WRAP_rgb_unsigned_char "Wrap RGB< unsigned char > type" OFF)
 OPTION(WRAP_rgb_unsigned_short "Wrap RGB< unsigned short > type" ON)
+
+OPTION(WRAP_rgba_unsigned_char "Wrap RGBA< unsigned char > type" OFF)
+OPTION(WRAP_rgba_unsigned_short "Wrap RGBA< unsigned short > type" ON)
 
 OPTION(WRAP_complex_float "Wrap complex<float> type" ON)
 OPTION(WRAP_complex_double "Wrap complex<double> type" OFF)

@@ -116,6 +116,7 @@
 //
 
 #include <cstring>
+#include <cstdio>
 #include <ossim/base/ossimRegExp.h>
 
 // ossimRegExp -- Copies the given regular expression.

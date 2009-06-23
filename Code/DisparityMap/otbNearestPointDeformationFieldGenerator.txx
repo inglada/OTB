@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -38,22 +38,22 @@ NearestPointDeformationFieldGenerator<TPointSet, TDeformationField>
 
   typedef itk::ImageRegionIteratorWithIndex<DeformationFieldType> IteratorType;
   IteratorType it(outputPtr,outputPtr->GetRequestedRegion());
-  
-  for(it.GoToBegin();!it.IsAtEnd();++it)
+
+  for (it.GoToBegin();!it.IsAtEnd();++it)
+  {
+    IndexVectorType indexVector = this->GenerateNearestValidPointsPointSet(it.GetIndex(),1);
+    PixelType p(2);
+    if (indexVector.size()>=1)
     {
-       IndexVectorType indexVector = this->GenerateNearestValidPointsPointSet(it.GetIndex(),1);
-       PixelType p(2);
-       if(indexVector.size()>=1)
- 	{
- 	  p[0] = static_cast<ValueType>(this->GetPointSet()->GetPointData()->GetElement(indexVector[0])[1]);
- 	  p[1] = static_cast<ValueType>(this->GetPointSet()->GetPointData()->GetElement(indexVector[0])[2]);
- 	}
-       else
- 	{
-	  p=defaultValue;
- 	}
-      it.Set(p);
+      p[0] = static_cast<ValueType>(this->GetPointSet()->GetPointData()->GetElement(indexVector[0])[1]);
+      p[1] = static_cast<ValueType>(this->GetPointSet()->GetPointData()->GetElement(indexVector[0])[2]);
     }
+    else
+    {
+      p=defaultValue;
+    }
+    it.Set(p);
+  }
 }
 /**
  * PrintSelf Method

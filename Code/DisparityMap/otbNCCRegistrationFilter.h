@@ -10,25 +10,25 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
-#ifndef __otbNCCRegistrationFilter_h_
-#define __otbNCCRegistrationFilter_h_
+#ifndef __otbNCCRegistrationFilter_h
+#define __otbNCCRegistrationFilter_h
 
 #include "itkPDEDeformableRegistrationFilter.h"
-#include "itkNCCRegistrationFunction.h"
+#include "otbNCCRegistrationFunction.h"
 
-namespace otb {
+namespace otb
+{
 
 /** \class NCCRegistrationFilter
  * \brief Deformably register two images using the PDEs and NCC.
  *
- * NCCRegistrationFilter implements the ####### 
- * register two images by computing the deformation field which will map a 
+ * NCCRegistrationFilter implements the #######
+ * register two images by computing the deformation field which will map a
  * moving image onto a fixed image.
  *
  * A deformation field is represented as a image whose pixel type is some
@@ -55,24 +55,24 @@ namespace otb {
  *
  * \warning This filter assumes that the fixed image type, moving image type
  * and deformation field type all have the same number of dimensions.
- * 
- * \sa NCCRegistrationFunction 
+ *
+ * \sa NCCRegistrationFunction
  * \ingroup DeformableImageRegistration MultiThreaded
  *
  * \example  DisparityMap/NCCRegistrationFilterExample.cxx
- * 
- * 
+ *
+ *
  */
 template<class TFixedImage, class TMovingImage, class TDeformationField>
-class ITK_EXPORT NCCRegistrationFilter : 
-    public itk::PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
-                                            TDeformationField>
+class ITK_EXPORT NCCRegistrationFilter :
+      public itk::PDEDeformableRegistrationFilter< TFixedImage, TMovingImage,
+      TDeformationField>
 {
 public:
   /** Standard class typedefs. */
   typedef NCCRegistrationFilter    Self;
   typedef itk::PDEDeformableRegistrationFilter<
-    TFixedImage, TMovingImage,TDeformationField>    Superclass;
+  TFixedImage, TMovingImage,TDeformationField>    Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -80,7 +80,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( NCCRegistrationFilter, 
+  itkTypeMacro( NCCRegistrationFilter,
                 itk::PDEDeformableRegistrationFilter );
 
   /** Inherit types from superclass. */
@@ -93,11 +93,11 @@ public:
   /** MovingImage image type. */
   typedef typename Superclass::MovingImageType    MovingImageType;
   typedef typename Superclass::MovingImagePointer  MovingImagePointer;
-  
+
   /** Deformation field type. */
-  typedef typename Superclass::DeformationFieldType 
+  typedef typename Superclass::DeformationFieldType
   DeformationFieldType;
-  typedef typename Superclass::DeformationFieldPointer  
+  typedef typename Superclass::DeformationFieldPointer
   DeformationFieldPointer;
 
   /** FiniteDifferenceFunction type. */
@@ -105,15 +105,15 @@ public:
   FiniteDifferenceFunctionType;
 
   /** NCCRegistrationFilterFunction type. */
-  typedef itk::NCCRegistrationFunction<FixedImageType,MovingImageType,
-                                     DeformationFieldType>  NCCRegistrationFunctionType;
+  typedef NCCRegistrationFunction<FixedImageType,MovingImageType,
+  DeformationFieldType>  NCCRegistrationFunctionType;
 
   typedef typename NCCRegistrationFunctionType::RadiusType RadiusType;
-  
+
   /** Get the metric value. The metric value is computed over the the
    * overlapping region between the two images.  This is value is only
    * available for the previous iteration and NOT the current
-   * iteration. 
+   * iteration.
    *\return metric
    **/
   virtual double GetMetric() const;
@@ -123,13 +123,13 @@ public:
    * \param radius
    */
   virtual void SetNCCRadius(RadiusType radius);
-  
+
   /**
    * Get the radius.
    * \return radius.
    **/
   virtual RadiusType GetNCCRadius() const;
-  
+
 protected:
   NCCRegistrationFilter();
   ~NCCRegistrationFilter() {}
@@ -140,8 +140,8 @@ protected:
 
   /** Apply update. */
   virtual void ApplyUpdate(TimeStepType dt);
-  
-  
+
+
   /** Update the Input requested region. */
   virtual void GenerateInputRequestedRegion();
 

@@ -52,7 +52,7 @@ static ossimTrace traceDebug = ossimTrace("ossimSensorModelFactory:debug");
 //#include <ossim/projection/ossimCosmoSkymedModel.h>
 #include <ossim/projection/ossimRadarSat2Model.h>
 #include <ossim/projection/ossimErsSarModel.h>
-#include <ossim/projection/ossimTileMapModel.h> 
+#include <ossim/projection/ossimTileMapModel.h>
 
 //***
 // ADD_MODEL: List names of all sensor models produced by this factory:
@@ -71,7 +71,7 @@ ossimSensorModelFactory* ossimSensorModelFactory::theInstance = 0;
 
 //*****************************************************************************
 //  STATIC METHOD: ossimSensorModelFactory::instance()
-//  
+//
 //*****************************************************************************
 ossimSensorModelFactory*  ossimSensorModelFactory::instance()
 {
@@ -118,13 +118,13 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimKeywordlis
          }
       }
    }
-                  
+
    return result;
 }
 
 //*****************************************************************************
-//  METHOD: 
-//  
+//  METHOD:
+//
 //*****************************************************************************
 ossimProjection*
 ossimSensorModelFactory::createProjection(const ossimString &name) const
@@ -156,7 +156,7 @@ ossimSensorModelFactory::createProjection(const ossimString &name) const
    {
       return new ossimQuickbirdRpcModel;
    }
-   
+
    if(name == STATIC_TYPE_NAME(ossimIkonosRpcModel))
    {
      return new ossimIkonosRpcModel;
@@ -243,7 +243,7 @@ ossimSensorModelFactory::createObject(const ossimKeywordlist& kwl,
 {
    return createProjection(kwl, prefix);
 }
-   
+
 //*****************************************************************************
 //  METHOD
 //*****************************************************************************
@@ -274,7 +274,7 @@ ossimSensorModelFactory::getTypeNameList(std::vector<ossimString>& typeList)
    // ADD_MODEL: Please leave this comment for the next programmer. Add above.
    //***
    //typeList.push_back(ossimString(MY_NEW_MODEL));
-   
+
 }
 
 ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& filename,
@@ -285,20 +285,21 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
 
    ossimFilename geomFile = filename;
    geomFile = geomFile.setExtension("geom");
-   
+
    if(geomFile.exists()&&
       kwl.addFile(filename.c_str()))
    {
       ossimFilename coarseGrid;
-      
+
       const char* type = kwl.find(ossimKeywordNames::TYPE_KW);
       if(type)
       {
-         if(ossimString(type) == ossimString(STATIC_TYPE_NAME(ossimCoarseGridModel)))
+//          if(ossimString(type) == ossimString(STATIC_TYPE_NAME(ossimCoarseGridModel)))
+         if(ossimString(type) == STATIC_TYPE_NAME(ossimCoarseGridModel))
          {
             findCoarseGrid(coarseGrid,
                            filename);
-            
+
             if(coarseGrid.exists() &&(coarseGrid != ""))
             {
                kwl.add("grid_file_name",
@@ -343,7 +344,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
    {
       ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSensorModelFactory::createProjection: Testing ossimCoarsGridModel" << std::endl;
    }
-   
+
    ifstream input(geomFile.c_str());
    char ecgTest[4];
    input.read((char*)ecgTest, 3);
@@ -360,7 +361,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
                   true);
       return createProjection(kwlTemp);
    }
-   
+
    if(traceDebug())
    {
       ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSensorModelFactory::createProjection: testing ossimRpcModel" << std::endl;
@@ -377,7 +378,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
          << "testing ossimQuickbirdRpcModel"
          << std::endl;
    }
-   
+
    ossimQuickbirdRpcModel* qbModel = new ossimQuickbirdRpcModel;
    if(qbModel->parseFile(filename))
    {
@@ -434,12 +435,12 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
      }
      delete model;
      model = 0;
-     
+
      if(traceDebug())
      {
         ossimNotify(ossimNotifyLevel_DEBUG) << "DEBUG ossimSensorModelFactory::createProjection: testing ossimIkinosRpcModel" << std::endl;
      }
-     
+
      model = new ossimNitfMapModel(filename); // filename = NITF_file
      if(!model->getErrorStatus())
      {
@@ -458,7 +459,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
    }
 
    ossimFilename spot5Test = geomFile;
-    if(!spot5Test.exists())
+   if(!spot5Test.exists())
    {
       spot5Test = geomFile.path();
       spot5Test = spot5Test.dirCat(ossimFilename("METADATA.DIM"));
@@ -467,7 +468,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
          spot5Test = geomFile.path();
          spot5Test = spot5Test.dirCat(ossimFilename("metadata.dim"));
       }
-   }  
+   }
 
    if(spot5Test.exists())
    {
@@ -488,7 +489,7 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
          meta = 0;
       }
    }
-   
+
    model = new ossimCoarseGridModel(geomFile);
    if(model)
    {
@@ -501,20 +502,20 @@ ossimProjection* ossimSensorModelFactory::createProjection(const ossimFilename& 
 }
 
 bool ossimSensorModelFactory::isTileMap(const ossimFilename& filename)const
-{ 
+{
   ossimFilename temp(filename);
-  temp.downcase(); 
+  temp.downcase();
   if(temp.ext()=="otb")
-    {std::cout << "TileMap format "<<std::endl;
+  {
     return true;
-    }
+  }
   return false;
 }
 
 bool ossimSensorModelFactory::isNitf(const ossimFilename& filename)const
 {
    std::ifstream in(filename.c_str(), ios::in|ios::binary);
-   
+
    if(in)
    {
       char nitfFile[4];
@@ -550,13 +551,13 @@ void ossimSensorModelFactory::findCoarseGrid(ossimFilename& result,
    result = geomFile;
    result.setFile(result.fileNoExtension()+"_ocg");
    result.setExtension("dat");
-   
+
    if(!result.exists())
    {
       result = geomFile;
       result.setExtension("dat");
    }
-   
+
    // let's find a .dat file in the current directory
    //
    if(!result.exists())
@@ -583,7 +584,7 @@ void ossimSensorModelFactory::findCoarseGrid(ossimFilename& result,
                      result = file;
                   }
                }
-               
+
             }
          }while((directoryList.getNext(file))&&(result == ""));
       }

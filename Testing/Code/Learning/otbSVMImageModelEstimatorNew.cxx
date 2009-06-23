@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -32,20 +32,20 @@
 int otbSVMImageModelEstimatorNew( int argc, char* argv[] )
 {
   typedef double                               InputPixelType;
-  const   unsigned int        	                    Dimension = 2;
-  
+  const   unsigned int                              Dimension = 2;
+
   typedef otb::VectorImage< InputPixelType,  Dimension >        InputImageType;
-  
+
   typedef otb::Image< InputPixelType,  Dimension >     TrainingImageType;
-  
+
   typedef std::vector<double>   VectorType;
-  
+
   typedef otb::SVMImageModelEstimator< InputImageType,
-    TrainingImageType >   EstimatorType;
-  
-  
+  TrainingImageType >   EstimatorType;
+
+
   EstimatorType::Pointer svmModel = EstimatorType::New();
-  
+
 
   return EXIT_SUCCESS;
 }

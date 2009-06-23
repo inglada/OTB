@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -27,23 +27,23 @@ int otbLineSpatialObjectList( int argc, char * argv[] )
   typedef LineSpatialObjectListType::LineType                             LineSpatialObjecType;
   typedef LineSpatialObjectListType::LineType::PointListType              PointListType;
   typedef LineSpatialObjectListType::const_iterator                       LineSpatialObjectListConstIterator;
-  
+
   LineSpatialObjectListType::Pointer listLines = LineSpatialObjectListType::New();
-  for( int i = 0 ; i < 10 ; i++ )
-    {
-      LineSpatialObjecType::Pointer lLine = LineSpatialObjecType::New();
-      listLines->push_back( lLine );
-    }
-  
+  for ( int i = 0; i < 10; i++ )
+  {
+    LineSpatialObjecType::Pointer lLine = LineSpatialObjecType::New();
+    listLines->push_back( lLine );
+  }
+
   LineSpatialObjectListConstIterator lIter;
   lIter = listLines->begin();
-  while( lIter != listLines->end() )
-    {
-      LineSpatialObjecType::Pointer lLine = (*lIter);
-      PointListType lPoints = lLine->GetPoints();
-      lIter++;
-    }
-  
+  while ( lIter != listLines->end() )
+  {
+    LineSpatialObjecType::Pointer lLine = (*lIter);
+    PointListType lPoints = lLine->GetPoints();
+    lIter++;
+  }
+
 
   return EXIT_SUCCESS;
 }

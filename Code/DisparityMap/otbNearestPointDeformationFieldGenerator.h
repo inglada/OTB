@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,26 +25,26 @@ namespace otb
 /** \class NearestPointDeformationFieldGenerator
  *  \brief This class implements the simplest way to deformation field generation using a point set.
  *  In each pixel location, the deformation is considered to be the deformation of the nearest seed point in the point set.
- * 
+ *
  * \ingroup DisparityMap
  */
 template <class TPointSet, class TDeformationField>
 class ITK_EXPORT NearestPointDeformationFieldGenerator
-  : public PointSetToDeformationFieldGenerator<TPointSet, TDeformationField>
+      : public PointSetToDeformationFieldGenerator<TPointSet, TDeformationField>
 {
- public:
+public:
   /** Standard typedefs */
   typedef NearestPointDeformationFieldGenerator Self;
   typedef PointSetToDeformationFieldGenerator<TPointSet,TDeformationField> Superclass;
   typedef itk::SmartPointer<Self>        Pointer;
   typedef itk::SmartPointer<const Self>  ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(NearestPointDeformationFieldGenerator,PointSetToDeformationFieldGenerator);
-  
+
   /** Template parameters typedefs */
   typedef typename Superclass::PointSetType PointSetType;
   typedef typename Superclass::PointSetPointerType PointSetPointerType;
@@ -60,7 +60,7 @@ protected:
   NearestPointDeformationFieldGenerator() {};
   /** Destructor */
   virtual ~NearestPointDeformationFieldGenerator() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
   /** Main computation method */
   virtual void GenerateData();

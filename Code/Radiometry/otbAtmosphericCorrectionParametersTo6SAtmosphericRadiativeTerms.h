@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,26 +25,29 @@ PURPOSE.  See the above copyright notices for more information.
 
 namespace otb
 {
-  /**
-   * \class AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
-   * \brief This class computes the atmospheric radiative terms with 6S.
-   * \ingroup DataSources
-   */
+/**
+ * \class AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
+ * \brief This class computes the atmospheric radiative terms with 6S.
+ *
+ *
+ * \ingroup DataSources
+ * \ingroup Radiometry
+ */
 class ITK_EXPORT AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
-  : public itk::ProcessObject
+      : public itk::ProcessObject
 {
- public:
+public:
   /** Standard typedefs */
   typedef AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms Self;
   typedef itk::ProcessObject Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
- 
+
 
   /** Runtime information */
   itkTypeMacro(AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms,itk::ProcessObject);
- /** Creation througth the object factory */
+  /** Creation througth the object factory */
   itkNewMacro(Self);
   /** Template parameters typedefs */
   typedef AtmosphericCorrectionParameters AtmosphericCorrectionParametersType;
@@ -70,7 +73,7 @@ class ITK_EXPORT AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
   /** Generate the output.*/
   virtual void GenerateData();
 
- protected:
+protected:
   /** Constructor */
   AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms();
   /** Destructor */
@@ -80,7 +83,7 @@ class ITK_EXPORT AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms
 
 private:
   AtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(const Self&);//purposely not implemented
-  void operator=(const Self&); //purposely not implemented 
+  void operator=(const Self&); //purposely not implemented
 
 };
 

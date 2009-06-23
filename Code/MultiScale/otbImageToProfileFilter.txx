@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -35,8 +35,8 @@ ImageToProfileFilter<TInputImage,TOutputImage,TFilter,TParameter>
   m_OutputIndex = 0;
   m_Filter= FilterType::New();
 }
-/** 
- * GenerateOutputInformation method 
+/**
+ * GenerateOutputInformation method
  */
 template <class TInputImage, class TOutputImage, class TFilter, class TParameter>
 void
@@ -46,33 +46,33 @@ ImageToProfileFilter<TInputImage,TOutputImage,TFilter,TParameter>
   // Retrieving input/output pointers
   InputImagePointerType inputPtr = this->GetInput();
   OutputImageListPointerType outputPtr = this->GetOutput();
-  if(outputPtr)
+  if (outputPtr)
+  {
+    if (outputPtr->Size()!=m_ProfileSize)
     {
-      if(outputPtr->Size()!=m_ProfileSize)
-	{
-	  // in this case, clear the list
-	  outputPtr->Clear();
-	  for(unsigned int i = 0;i<m_ProfileSize;++i)
-	    {
-	      //Create the output image
-	      outputPtr->PushBack(OutputImageType::New());
-	    }
-	}
-      // For each output image
-      typename OutputImageListType::Iterator outputListIt = outputPtr->Begin();
-      m_Filter->SetInput(inputPtr);
-      m_Filter->UpdateOutputInformation();
-      while(outputListIt!=outputPtr->End())
-	{
-	  //Set the image information
-	  outputListIt.Get()->CopyInformation(m_Filter->GetOutput(m_OutputIndex));
-	  outputListIt.Get()->SetLargestPossibleRegion(m_Filter->GetOutput(m_OutputIndex)->GetLargestPossibleRegion());
-	  ++outputListIt;
-	}
+      // in this case, clear the list
+      outputPtr->Clear();
+      for (unsigned int i = 0;i<m_ProfileSize;++i)
+      {
+        //Create the output image
+        outputPtr->PushBack(OutputImageType::New());
+      }
     }
+    // For each output image
+    typename OutputImageListType::Iterator outputListIt = outputPtr->Begin();
+    m_Filter->SetInput(inputPtr);
+    m_Filter->UpdateOutputInformation();
+    while (outputListIt!=outputPtr->End())
+    {
+      //Set the image information
+      outputListIt.Get()->CopyInformation(m_Filter->GetOutput(m_OutputIndex));
+      outputListIt.Get()->SetLargestPossibleRegion(m_Filter->GetOutput(m_OutputIndex)->GetLargestPossibleRegion());
+      ++outputListIt;
+    }
+  }
 }
-/** 
- * Generate input requested region 
+/**
+ * Generate input requested region
  */
 template <class TInputImage, class TOutputImage, class TFilter, class TParameter>
 void
@@ -82,42 +82,42 @@ ImageToProfileFilter<TInputImage,TOutputImage,TFilter,TParameter>
   // Retrieving input/output pointers
   InputImagePointerType inputPtr = this->GetInput();
   OutputImageListPointerType outputPtr = this->GetOutput();
-  
+
   // For each output image
   typename OutputImageListType::Iterator outputListIt = outputPtr->Begin();
-  
+
   m_Filter->SetInput(inputPtr);
 
   // Use the filter to generate input requested region
-  while(outputListIt!=outputPtr->End())
-    {  
-      m_Filter->GetOutput(m_OutputIndex)->SetRequestedRegion(outputListIt.Get()->GetRequestedRegion());
-      m_Filter->PropagateRequestedRegion(outputListIt.Get());
-      ++outputListIt;
-    }
+  while (outputListIt!=outputPtr->End())
+  {
+    m_Filter->GetOutput(m_OutputIndex)->SetRequestedRegion(outputListIt.Get()->GetRequestedRegion());
+    m_Filter->PropagateRequestedRegion(outputListIt.Get());
+    ++outputListIt;
+  }
 }
-/** 
- * GenerateData method 
+/**
+ * GenerateData method
  */
 template <class TInputImage, class TOutputImage, class TFilter, class TParameter>
 void
 ImageToProfileFilter<TInputImage,TOutputImage,TFilter,TParameter>
 ::GenerateData(void)
 {
- // Retrieving input/output pointers
+// Retrieving input/output pointers
   InputImagePointerType inputPtr = this->GetInput();
   OutputImageListPointerType outputPtr = this->GetOutput();
   m_Filter->SetInput(inputPtr);
 
-  for(unsigned int i = 0;i<m_ProfileSize;++i)
-    {
-      ParameterType profileParameter = m_InitialValue + static_cast<ParameterType>(i)*m_Step;
-      this->SetProfileParameter(profileParameter);
-      m_Filter->GetOutput(m_OutputIndex)->SetRequestedRegion(outputPtr->GetNthElement(i)->GetRequestedRegion());
-      m_Filter->Update();
-      outputPtr->SetNthElement(i,static_cast<OutputImageType *>(m_Filter->GetOutput(m_OutputIndex)));
-      outputPtr->GetNthElement(i)->DisconnectPipeline();
-    }
+  for (unsigned int i = 0;i<m_ProfileSize;++i)
+  {
+    ParameterType profileParameter = m_InitialValue + static_cast<ParameterType>(i)*m_Step;
+    this->SetProfileParameter(profileParameter);
+    m_Filter->GetOutput(m_OutputIndex)->SetRequestedRegion(outputPtr->GetNthElement(i)->GetRequestedRegion());
+    m_Filter->Update();
+    outputPtr->SetNthElement(i,static_cast<OutputImageType *>(m_Filter->GetOutput(m_OutputIndex)));
+    outputPtr->GetNthElement(i)->DisconnectPipeline();
+  }
 }
 
 /**
@@ -134,8 +134,8 @@ ImageToProfileFilter<TInputImage,TOutputImage,TFilter,TParameter>
   os<<indent<<"ProfileSize: " <<m_ProfileSize             <<std::endl;
   os<<indent<<"InitialValue: "<<m_InitialValue            <<std::endl;
   os<<indent<<"Step: "        <<m_Step                    <<std::endl;
-  
-  
+
+
 }
 } // End namespace otb
 #endif

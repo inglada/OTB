@@ -1,11 +1,13 @@
 //*******************************************************************
 //
-// License:  See top level LICENSE.txt file.
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
 //
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimImageData.cpp 12038 2007-11-13 20:38:43Z gpotts $
+// $Id: ossimImageData.cpp 14529 2009-05-16 23:55:18Z dburken $
 
 #include <iterator>
 
@@ -4350,6 +4352,7 @@ ossimImageData::unloadTileToBilTemplate(T,  // dummy template arg...
             d += buf_width;
          }
       }
+      delete [] nulls;
    }
 }
 
@@ -4435,7 +4438,7 @@ template <class T> void ossimImageData::nullTileAlphaTemplate(T,
    }
    else
    {
-      float normalizer = 1.0/255.0;
+      ossim_float64 normalizer = 1.0/255.0;
       // Copy the data.
       for (band=0; band<num_bands; band++)
       {

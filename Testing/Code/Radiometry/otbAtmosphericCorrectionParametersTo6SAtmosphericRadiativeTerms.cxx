@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -47,7 +47,7 @@ int otbAtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(int argc, ch
   RadiativeTermsType::Pointer                         radiative      = RadiativeTermsType::New();
 
   ValueType val = 0.0025;
-  
+
   //for(unsigned int i=0; i<wavelenghFiles.size(); i++)
   //{
   //functionValues = FilterFunctionValuesType::New();
@@ -88,14 +88,14 @@ int otbAtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(int argc, ch
   aerosolModel = static_cast<AerosolModelType>(aer);
   fin >> aerosolOptical;//taer55;
   fin >> minSpectralValue;//wlinf;
-  fin >> maxSpectralValue;//wlsup; 
-  
+  fin >> maxSpectralValue;//wlsup;
+
   //fin.open(wavelenghFiles[i]);
-  while (!fin.eof() && fin.good())
-    {
-      fin >> value;
-      vect.push_back(value);
-    }
+  while (fin.good())
+  {
+    fin >> value;
+    vect.push_back(value);
+  }
 
   fin.close();
   functionValues->SetFilterFunctionValues(vect);
@@ -106,7 +106,7 @@ int otbAtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(int argc, ch
   //}
 
   //aerosolModel = static_cast<AerosolModelType>(::atoi(argv[16]));
-  
+
   // Set parameters
   param->SetSolarZenithalAngle(static_cast<double>(solarZenithalAngle));
   param->SetSolarAzimutalAngle(static_cast<double>(solarAzimutalAngle));
@@ -114,7 +114,7 @@ int otbAtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(int argc, ch
   param->SetViewingAzimutalAngle(static_cast<double>(viewingAzimutalAngle));
   param->SetMonth(month);
   param->SetDay(day);
-  param->SetAtmosphericPressure(static_cast<double>(atmosphericPressure)); 
+  param->SetAtmosphericPressure(static_cast<double>(atmosphericPressure));
   param->SetWaterVaporAmount(static_cast<double>(waterVaporAmount));
   param->SetOzoneAmount(static_cast<double>(ozoneAmount));
   param->SetAerosolModel(aerosolModel);
@@ -157,15 +157,15 @@ int otbAtmosphericCorrectionParametersTo6SAtmosphericRadiativeTerms(int argc, ch
   fout <<" ---------------------------------------------------------"<<std::endl;
   fout<<"Input wavelenght band values ["<<functionValues->GetFilterFunctionValues().size()<<"]:"<<std::endl;
   for (unsigned int i=0; i<functionValues->GetFilterFunctionValues().size(); i++)
-    {
-      fout<< "    "<<functionValues->GetFilterFunctionValues()[i] <<std::endl;
-    }
+  {
+    fout<< "    "<<functionValues->GetFilterFunctionValues()[i] <<std::endl;
+  }
   fout <<" ---------------------------------------------------------"<<std::endl;
   fout<<"Output wavelenght band values 6S ["<<functionValues->GetFilterFunctionValues6S().size()<<"]:"<<std::endl;
   for (unsigned int i=0; i<functionValues->GetFilterFunctionValues6S().size(); i++)
-    {
-      fout<< "            "<<functionValues->GetFilterFunctionValues6S()[i] <<std::endl;
-    } 
+  {
+    fout<< "            "<<functionValues->GetFilterFunctionValues6S()[i] <<std::endl;
+  }
   fout<<std::endl;
   fout.close();
   return EXIT_SUCCESS;

@@ -10,13 +10,13 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbProfileDerivativeMultiScaleToCharacteristicsFilter_h
-#define __otbProfileDerivativeMultiScaleToCharacteristicsFilter_h
+#ifndef __otbProfileDerivativeToMultiScaleCharacteristicsFilter_h
+#define __otbProfileDerivativeToMultiScaleCharacteristicsFilter_h
 
 #include "otbImageListToImageFilter.h"
 
@@ -24,35 +24,35 @@ namespace otb
 {
 /** \class ProfileDerivativeToMultiScaleCharacteristicsFilter
  *  \brief This filter extracts the maximum derivative value of the input profile.
- *  
+ *
  *  This filter extracts the maximum derivative value of the input profile as well
  *  as the parameter (called characteristic) for which this maxima occurs.
- * 
+ *
  *  The maxima can be retrieved by the GetOutput() image, while the characteristics
  *  can be retreived by the GetOutputCharacteristics().
  *
- *  Please note that this characteristics can be scaled using the InitialValue and Step 
+ *  Please note that this characteristics can be scaled using the InitialValue and Step
  *  parameter corresponding to the input profile.
  *
  * \sa ProfileToProfileDerivativeImageFilter
  */
 template <class TInputImage, class TOutputImage, class TLabeledImage>
 class ITK_EXPORT ProfileDerivativeToMultiScaleCharacteristicsFilter
-  : public ImageListToImageFilter<TInputImage, TOutputImage> 
+      : public ImageListToImageFilter<TInputImage, TOutputImage>
 {
- public:
+public:
   /** Standard typedefs */
   typedef ProfileDerivativeToMultiScaleCharacteristicsFilter  Self;
   typedef ImageListToImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
-  
+
   /** Type macro */
   itkNewMacro(Self);
-  
+
   /** Creation through object factory macro */
   itkTypeMacro(ProfileDerivativeToMultiScaleCharacteristicsFilter,ImageToImageListFilter);
-  
+
   /** Template parameters typedefs */
   typedef TInputImage InputImageType;
   typedef TOutputImage OutputImageType;
@@ -80,11 +80,11 @@ class ITK_EXPORT ProfileDerivativeToMultiScaleCharacteristicsFilter
   itkGetMacro(Step,LabeledPixelType);
 
 
- protected:
+protected:
   /** Main computation method */
   virtual void GenerateData(void);
 
-  /** GenerateOutputInformation 
+  /** GenerateOutputInformation
    * Set the number of bands of the output.
    * Copy informations from the first image of the list if existing.
    **/
@@ -100,7 +100,7 @@ class ITK_EXPORT ProfileDerivativeToMultiScaleCharacteristicsFilter
   ProfileDerivativeToMultiScaleCharacteristicsFilter();
   /** Destructor */
   virtual ~ProfileDerivativeToMultiScaleCharacteristicsFilter() {};
- /**PrintSelf method */
+  /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:

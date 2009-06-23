@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -19,7 +19,6 @@ PURPOSE.  See the above copyright notices for more information.
 #define __otbRCC8GraphSource_h
 
 #include "itkProcessObject.h"
-#include "otbImageList.h"
 
 namespace otb
 {
@@ -29,7 +28,7 @@ namespace otb
  */
 template <class TOutputGraph>
 class ITK_EXPORT RCC8GraphSource
-  : public itk::ProcessObject
+      : public itk::ProcessObject
 {
 public:
   /** Standard typedefs */
@@ -43,10 +42,10 @@ public:
   itkTypeMacro(RCC8GraphSource,itk::ProcessObject);
   /** Data object pointer type */
   typedef itk::DataObject::Pointer DataObjectPointer;
-  /** Template parameter typedef*/ 
+  /** Template parameter typedef*/
   typedef TOutputGraph                               OutputGraphType;
   typedef typename OutputGraphType::Pointer          OutputGraphPointerType;
-   /** Overiding of the GetOutput() method */
+  /** Overiding of the GetOutput() method */
   virtual OutputGraphType * GetOutput(void);
 
 protected:
@@ -59,7 +58,7 @@ protected:
 
 private:
   RCC8GraphSource(const Self&);//purposely not implemented
-  void operator=(const Self&); //purposely not implemented 
+  void operator=(const Self&); //purposely not implemented
 };
 } // End namespace otb
 

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,17 +22,17 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbMRFOptimizerMetropolisNew);
-REGISTER_TEST(otbMRFOptimizerMetropolis);
-REGISTER_TEST(otbMRFSamplerMAPNew);
-REGISTER_TEST(otbMRFSamplerMAP);
-REGISTER_TEST(otbMRFSamplerRandomNew);
-REGISTER_TEST(otbMRFSamplerRandom);
-REGISTER_TEST(otbMRFSamplerRandomMAPNew);
-REGISTER_TEST(otbMRFSamplerRandomMAP);
+  REGISTER_TEST(otbMRFOptimizerMetropolisNew);
+  REGISTER_TEST(otbMRFOptimizerMetropolis);
+  REGISTER_TEST(otbMRFSamplerMAPNew);
+  REGISTER_TEST(otbMRFSamplerMAP);
+  REGISTER_TEST(otbMRFSamplerRandomNew);
+  REGISTER_TEST(otbMRFSamplerRandom);
+  REGISTER_TEST(otbMRFSamplerRandomMAPNew);
+  REGISTER_TEST(otbMRFSamplerRandomMAP);
 }

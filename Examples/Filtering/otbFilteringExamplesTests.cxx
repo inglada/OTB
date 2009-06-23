@@ -25,22 +25,21 @@
 
 void RegisterTests()
 {
-REGISTER_TEST(MathematicalMorphologyBinaryFiltersTest);
-REGISTER_TEST(DanielssonDistanceMapImageFilterTest);
-REGISTER_TEST(MeanImageFilterTest);
-REGISTER_TEST(ThresholdImageFilterTest);
-REGISTER_TEST(GradientMagnitudeRecursiveGaussianImageFilterTest);
-REGISTER_TEST(GradientAnisotropicDiffusionImageFilterTest);
-REGISTER_TEST(GradientMagnitudeImageFilterTest);
-REGISTER_TEST(MathematicalMorphologyGrayscaleFiltersTest);
-REGISTER_TEST(LaplacianRecursiveGaussianImageFilter1Test);
-REGISTER_TEST(LaplacianRecursiveGaussianImageFilter2Test);
-REGISTER_TEST(CannyEdgeDetectionImageFilterTest);
-REGISTER_TEST(DiscreteGaussianImageFilterTest);
-REGISTER_TEST(MedianImageFilterTest);
-REGISTER_TEST(BinaryThresholdImageFilterTest);
-REGISTER_TEST(DerivativeImageFilterTest);
-REGISTER_TEST(RationalQuotientResampleImageFilterTest);
+  REGISTER_TEST(MathematicalMorphologyBinaryFiltersTest);
+  REGISTER_TEST(DanielssonDistanceMapImageFilterTest);
+  REGISTER_TEST(MeanImageFilterTest);
+  REGISTER_TEST(ThresholdImageFilterTest);
+  REGISTER_TEST(GradientMagnitudeRecursiveGaussianImageFilterTest);
+  REGISTER_TEST(GradientAnisotropicDiffusionImageFilterTest);
+  REGISTER_TEST(GradientMagnitudeImageFilterTest);
+  REGISTER_TEST(MathematicalMorphologyGrayscaleFiltersTest);
+  REGISTER_TEST(LaplacianRecursiveGaussianImageFilter1Test);
+  REGISTER_TEST(LaplacianRecursiveGaussianImageFilter2Test);
+  REGISTER_TEST(CannyEdgeDetectionImageFilterTest);
+  REGISTER_TEST(DiscreteGaussianImageFilterTest);
+  REGISTER_TEST(MedianImageFilterTest);
+  REGISTER_TEST(BinaryThresholdImageFilterTest);
+  REGISTER_TEST(DerivativeImageFilterTest);
 }
 
 #undef main
@@ -102,8 +101,4 @@ REGISTER_TEST(RationalQuotientResampleImageFilterTest);
 #undef main
 #define main DerivativeImageFilterTest
 #include "DerivativeImageFilter.cxx"
-
-#undef main
-#define main RationalQuotientResampleImageFilterTest
-#include "RationalQuotientResampleImageFilter.cxx"
 

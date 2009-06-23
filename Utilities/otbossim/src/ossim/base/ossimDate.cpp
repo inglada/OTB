@@ -1,6 +1,18 @@
+//----------------------------------------------------------------------------
+//
+// License:  LGPL
+// 
+// See LICENSE.txt file in the top level directory for more details.
+//
+// Author: Garrett Potts
+// 
+//----------------------------------------------------------------------------
+// $Id: ossimDate.cpp 14478 2009-05-08 18:24:22Z dburken $
+
 #include <ossim/base/ossimDate.h>
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 std::ostream& operator<< (std::ostream& out, const ossimDate& src)
 {
@@ -45,7 +57,7 @@ int operator>=  (ossimLocalTm const & t1, ossimLocalTm const & t2)
 char ossimLocalTm::timech = ':';
 char ossimLocalTm::datech = '/';
 
-int ossimLocalTm::datefmt = ossimLocalTm::ossimLocalTmFormatIntlShort;
+int ossimLocalTm::datefmt = ossimLocalTm::ossimLocalTmFormatFull;
 int ossimLocalTm::timefmt = ossimLocalTm::ossimTimeFormatInternational;
 
 
@@ -202,6 +214,8 @@ std::ostream& ossimLocalTm::print(std::ostream & os,
     return os << pTmp.str();
 }
 
+
+
 std::ostream& ossimLocalTm::printDate (std::ostream & os, int fmt) const
 {
     std::ostringstream pTmp;
@@ -240,6 +254,34 @@ std::ostream& ossimLocalTm::printDate (std::ostream & os, int fmt) const
 
     return os << pTmp.str();
 }
+
+std::ostream& ossimLocalTm::dump(std::ostream& os) const
+{
+   // Capture the original flags.
+   std::ios_base::fmtflags f = os.flags();
+
+   os << setiosflags(ios::fixed) << setprecision(8) << setiosflags(ios::left);
+
+   os << "fr_sec:   " << setw(12) << theFractionalSecond
+      << "fractional second\n"
+      << "tm_sec:   " << setw(12) << tm_sec
+      << "seconds [0-60] (1 leap second)\n"
+      << "tm_min:   " << setw(12) << tm_min   << "minutes [0-59]\n"
+      << "tm_hour:  " << setw(12) << tm_hour  << "hours [0-23]\n"
+      << "tm_mday:  " << setw(12) << tm_mday  << "day [1-31]\n"
+      << "tm_mon:   " << setw(12) << tm_mon   << "month [0-11]\n"
+      << "tm_year:  " << setw(12) << tm_year  << "year - 1900\n"
+      << "tm_wday:  " << setw(12) << tm_wday  << "day of week [0-6]\n"
+      << "tm_yday:  " << setw(12) << tm_yday  << "days in year[0-365]\n"
+      << "tm_isdst: " << setw(12) << tm_isdst << "DST.[-1/0/1]\n"
+      << std::endl;
+
+   // Reset flags.
+   os.setf(f);
+   
+   return os;
+}
+
 void ossimLocalTm::tSfx (std::ostream & os, int fmt, char ch) const
 {
     if (fmt & ossimTimeFormatSepAbbrev)
@@ -506,6 +548,12 @@ ossimLocalTm& ossimLocalTm::setSec(int s)
    return *this;
 }
 
+ossimLocalTm& ossimLocalTm::setFloatSec(double s)
+{
+   tm_sec = (int)s;
+   return setFractionalSecond(s-tm_sec);
+}
+
 ossimLocalTm& ossimLocalTm::setFractionalSecond(double fractionalSecond)
 {
    theFractionalSecond = fractionalSecond;
@@ -574,6 +622,282 @@ void ossimLocalTm::setTimeNoAdjustmentGivenEpoc(time_t ticks)
 void ossimLocalTm::setTimeGivenEpoc(time_t ticks)
 {
    *this = *localtime(&ticks);
+}
+
+
+static bool readIntegerFromString(ossim_int32& result,
+                                 const std::string& input,
+                                 std::string::size_type& currentPos,
+                                 int digits)
+{
+   ossimString number;
+   while((digits>0)&&
+         (currentPos < input.size()))
+   {
+      if(isdigit(input[currentPos]))
+      {
+         number += input[currentPos];
+         ++currentPos;
+         --digits;
+      }
+      else
+      {
+         return false;
+      }
+   }
+   result = number.toInt32();
+   return (digits <= 0);
+}
+
+static bool readTimeZoneOffset(ossim_int32& result,
+                               const std::string& input,
+                               std::string::size_type& currentPos)
+{
+   bool returnValue = false;
+   result = 0;
+   if(input[currentPos] == '+'||
+      input[currentPos] == '-')
+   {
+      returnValue = true;
+      ossim_int32 signMult = ((input[0] == '+')?1:-1);
+      ossim_int32 zoneMin = 0;
+      ossim_int32 zoneHour = 0;
+      ++currentPos;
+      if(readIntegerFromString(zoneHour,
+                               input,
+                               currentPos,
+                               2))
+      {
+         if(!isdigit(input[currentPos]))
+         {
+            ++currentPos; // skip :
+         }
+         if(readIntegerFromString(zoneMin,
+                                  input,
+                                  currentPos,
+                                  2))
+         {
+            result = signMult*(zoneMin*60 + zoneHour*3600);
+         }
+      }
+   }
+   
+   return returnValue;
+}
+
+bool ossimLocalTm::setIso8601(const std::string& timeString, bool shiftToGmtOffsetZero)
+{
+   ossimDate now;
+   std::string::size_type pos = 0;
+   ossim_int32 year  = 0;
+   ossim_int32 month = 0;
+   ossim_int32 day   = 0;
+   ossim_int32 timeZoneOffset = 0;
+   
+   if(timeString[0] != 'T') // make sure it's not time only
+   {
+      // look for year
+      //
+      if(readIntegerFromString(year,
+                               timeString,
+                               pos,
+                               4))
+      {
+         // retrieved the year portion
+         // now check for separator not digit
+         //
+         
+         // we at least have a year
+         // now check for others
+         setYear(year);
+         if(!isdigit(timeString[pos]))
+         {
+            // skip separator
+            ++pos;
+         }
+         if(readIntegerFromString(month,
+                                  timeString,
+                                  pos,
+                                  2))
+         
+         {
+            setMonth(month);
+            if(!isdigit(timeString[pos]))
+            {
+               // skip separator
+               ++pos;
+            }
+            if(readIntegerFromString(day,
+                                     timeString,
+                                     pos,
+                                     2))
+            {
+               setDay(day);
+            }
+         }
+      }
+      else
+      {
+         return false;
+      }
+   }
+   else // set year month day to current
+   {
+      setYear(now.getYear());
+      setMonth(now.getMonth());
+      setDay(now.getDay());
+   }
+   // check to see if we need to read time portion
+   if(timeString[pos] == 'T')
+   {
+      ++pos; // skip T character
+      ossim_int32 hours=0, minutes=0;
+      
+      if(readIntegerFromString(hours,
+                               timeString,
+                               pos,
+                               2))
+      {
+         setHour(hours);
+         
+         // now check for separator
+         if(!isdigit(timeString[pos]))
+         {
+            ++pos; // skip separator if present
+         }
+         if(readIntegerFromString(minutes,
+                                  timeString,
+                                  pos,
+                                  2))
+         {
+            setMin(minutes);
+            // now check for time zone if only a hour minute time
+            //
+            if(timeString[pos] == 'Z')
+            {
+               // no adjustment needed
+            }
+            else if(!readTimeZoneOffset(timeZoneOffset,
+                                       timeString,
+                                       pos))
+            {
+               double fractionalSeconds = 0.0;
+               if(!isdigit(timeString[pos]))
+               {
+                  ++pos;
+               }
+               std::string::size_type endPos = timeString.find_first_not_of("0123456789.", pos);
+               if(endPos == std::string::npos)
+               {
+                  fractionalSeconds = ossimString(timeString.begin()+pos,
+                                                  timeString.end()).toDouble();
+               }
+               else
+               {
+                  fractionalSeconds = ossimString(timeString.begin()+pos,
+                                                  timeString.begin()+endPos).toDouble();
+               }
+               setFloatSec(fractionalSeconds);
+               pos = endPos;
+               if(pos == std::string::npos)
+               {
+                  // we will not be too strict so if at the end then just return we got enough
+                  return true;
+               }
+               if(timeString[pos] == 'Z')
+               {
+                  // no adjustment needed
+               }
+               else
+               {
+                  readTimeZoneOffset(timeZoneOffset,
+                                          timeString,
+                                     pos);
+               }
+            }
+         }
+      }
+      else
+      {
+         // need at least hours 
+         return false;
+      }
+   }
+   else if(isdigit(timeString[pos]))
+   {
+      ossim_int32 hours=0, minutes=0;
+      
+      if(readIntegerFromString(hours,
+                               timeString,
+                               pos,
+                               2))
+      {
+         setHour(hours);
+         
+         // now check for separator
+         if(!isdigit(timeString[pos]))
+         {
+            ++pos; // skip separator if present
+         }
+         if(readIntegerFromString(minutes,
+                                  timeString,
+                                  pos,
+                                  2))
+         {
+            setMin(minutes);
+            
+            if(!readTimeZoneOffset(timeZoneOffset,
+                                  timeString,
+                                  pos))
+            {
+               double fractionalSeconds = 0.0;
+               if(!isdigit(timeString[pos]))
+               {
+                  ++pos;
+               }
+               std::string::size_type endPos = timeString.find_first_not_of("0123456789.", pos);
+               if(endPos == std::string::npos)
+               {
+                  fractionalSeconds = ossimString(timeString.begin()+pos,
+                                                  timeString.end()).toDouble();
+               }
+               else
+               {
+                  fractionalSeconds = ossimString(timeString.begin()+pos,
+                                                  timeString.begin()+endPos).toDouble();
+               }
+               setFloatSec(fractionalSeconds);
+               pos = endPos;
+               if(pos == std::string::npos)
+               {
+                  // we will not be too strict so if at the end then just return we got enough
+                  return true;
+               }
+               if(timeString[pos] == 'Z')
+               {
+                  // no adjustment needed
+               }
+               else
+               {
+                  readTimeZoneOffset(timeZoneOffset,
+                                     timeString,
+                                     pos);
+               }
+            }
+         }
+      }  
+   }
+   else
+   {
+      // need at least hours 
+      return false;
+   }
+   
+   if(shiftToGmtOffsetZero && (timeZoneOffset!=0))
+   {
+      addSeconds(-timeZoneOffset);
+   }
+   return true;
 }
 
 ossimRefPtr<ossimXmlNode> ossimLocalTm::saveXml()const

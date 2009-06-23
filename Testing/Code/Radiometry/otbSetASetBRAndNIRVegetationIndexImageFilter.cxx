@@ -10,18 +10,18 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "itkExceptionObject.h"
 
-#include "otbRAndNIRVegetationIndexImageFilter.h"
+#include "otbRAndNIRIndexImageFilter.h"
 #include "otbImage.h"
 #include "otbImageFileReader.h"
 #include "otbImageFileWriter.h"
-#include "otbVegetationIndex.h"
+#include "otbVegetationIndicesFunctor.h"
 
 template<class TInputRImage, class TInputNIRImage, class TOutputImage, class TFunction>
 void generic_SetASetBRAndNIRVegetationIndexImageFilter(int argc, char * argv[])
@@ -30,11 +30,11 @@ void generic_SetASetBRAndNIRVegetationIndexImageFilter(int argc, char * argv[])
   typedef otb::ImageFileReader<TInputNIRImage> NIRReaderType;
   typedef otb::ImageFileWriter<TOutputImage> WriterType;
 
-  typedef otb::RAndNIRVegetationIndexImageFilter<TInputRImage,TInputNIRImage,TOutputImage,TFunction> 
-    RAndNIRVegetationIndexImageFilterType;
+  typedef otb::RAndNIRIndexImageFilter<TInputRImage,TInputNIRImage,TOutputImage,TFunction>
+  RAndNIRIndexImageFilterType;
 
   // Instantiating object
-  typename RAndNIRVegetationIndexImageFilterType::Pointer filter = RAndNIRVegetationIndexImageFilterType::New();
+  typename RAndNIRIndexImageFilterType::Pointer filter = RAndNIRIndexImageFilterType::New();
   typename RReaderType::Pointer readerR = RReaderType::New();
   typename NIRReaderType::Pointer readerNIR = NIRReaderType::New();
   typename WriterType::Pointer writer = WriterType::New();
@@ -47,8 +47,8 @@ void generic_SetASetBRAndNIRVegetationIndexImageFilter(int argc, char * argv[])
   readerR->SetFileName( inputFilenameR );
   readerNIR->SetFileName( inputFilenameNIR );
   writer->SetFileName( outputFilename  );
-  filter->SetInputR( readerR->GetOutput() ); 
-  filter->SetInputNIR( readerNIR->GetOutput() ); 
+  filter->SetInputR( readerR->GetOutput() );
+  filter->SetInputNIR( readerNIR->GetOutput() );
   filter->GetFunctor().SetA(a);
   filter->GetFunctor().SetB(b);
   writer->SetInput( filter->GetOutput() );
@@ -63,20 +63,15 @@ int otbSetASetBRAndNIRVegetationIndexImageFilter(int argc, char * argv[])
   typedef unsigned char PixelType;
   typedef otb::Image<PixelType,Dimension> InputRImageType;
   typedef otb::Image<PixelType,Dimension> InputNIRImageType;
-  typedef otb::Image<float,Dimension> OutputImageType;
-        
+  typedef otb::Image<double,Dimension> OutputImageType;
+
   std::string strArgv(argv[1]);
   argc--;
   argv++;
   if ( strArgv == "PVI" ) generic_SetASetBRAndNIRVegetationIndexImageFilter<InputRImageType, InputNIRImageType, OutputImageType,
-			    otb::Functor::PVI<     InputRImageType::PixelType,
-			    InputNIRImageType::PixelType,
-			    OutputImageType::PixelType> >
-			    (argc,argv);
-  else if ( strArgv == "TSAVI" ) generic_SetASetBRAndNIRVegetationIndexImageFilter<InputRImageType, InputNIRImageType, OutputImageType,
-				   otb::Functor::TSAVI<     InputRImageType::PixelType,
-				   InputNIRImageType::PixelType,
-				   OutputImageType::PixelType> >
-				   (argc,argv);
+    otb::Functor::PVI<     InputRImageType::PixelType,
+    InputNIRImageType::PixelType,
+    OutputImageType::PixelType> >
+    (argc,argv);
   return EXIT_SUCCESS;
 }

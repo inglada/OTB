@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,7 +21,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "otbImageFileWriter.h"
 #include "itkPointSet.h"
 #include "itkVariableLengthVector.h"
-#include "otbRationalQuotientResampleImageFilter.h"
 #include "itkRGBPixel.h"
 #include "itkImageRegionIterator.h"
 
@@ -37,7 +36,7 @@ int otbImageToSIFTKeyPointSetFilterOutputAscii(int argc, char * argv[])
   const unsigned int scales = atoi(argv[4]);
   const float threshold = atof(argv[5]);
   const float ratio = atof(argv[6]);
-  
+
   typedef float RealType;
   const unsigned int Dimension =2;
 
@@ -52,43 +51,43 @@ int otbImageToSIFTKeyPointSetFilterOutputAscii(int argc, char * argv[])
   typedef PointsContainerType::Iterator PointsIteratorType;
   typedef PointSetType::PointDataContainer PointDataContainerType;
   typedef PointDataContainerType::Iterator PointDataIteratorType;
-  
+
   // Instantiating object
   ReaderType::Pointer reader = ReaderType::New();
   ImageToSIFTKeyPointSetFilterType::Pointer filter = ImageToSIFTKeyPointSetFilterType::New();
-  
+
   reader->SetFileName(infname);
-  filter->SetInput(0,reader->GetOutput());
+  filter->SetInput(reader->GetOutput());
   filter->SetOctavesNumber(octaves);
   filter->SetScalesNumber(scales);
   filter->SetDoGThreshold(threshold);
   filter->SetEdgeThreshold(ratio);
   filter->Update();
-  
+
   PointsIteratorType pIt = filter->GetOutput()->GetPoints()->Begin();
   PointDataIteratorType pDataIt = filter->GetOutput()->GetPointData()->Begin();
-  
+
   std::ofstream outfile(outfname);
-  
+
   outfile << "Number of octaves: "<<octaves << std::endl;
   outfile << "Number of scales: "<<scales << std::endl;
   outfile << "Number of SIFT key points: " << filter->GetOutput()->GetNumberOfPoints() << std::endl;
-  while( pIt!=filter->GetOutput()->GetPoints()->End() )
-    {      
-      outfile << "[" << std::fixed << std::setprecision(2) << pIt.Value()[0] << ", " << std::setprecision(2) << pIt.Value()[1] << "][";
-      
-      unsigned int lIterDesc=0;
-      while (lIterDesc < pDataIt.Value().Size())
-	{
-	  outfile << std::setprecision(3) << pDataIt.Value()[lIterDesc] << " ";
-	  lIterDesc++;
-	}
-      outfile << "]" << std::endl;
-      ++pIt;
-      ++pDataIt;
+  while ( pIt!=filter->GetOutput()->GetPoints()->End() )
+  {
+    outfile << "[" << std::fixed << std::setprecision(2) << pIt.Value()[0] << ", " << std::setprecision(2) << pIt.Value()[1] << "][";
+
+    unsigned int lIterDesc=0;
+    while (lIterDesc < pDataIt.Value().Size())
+    {
+      outfile << std::setprecision(3) << pDataIt.Value()[lIterDesc] << " ";
+      lIterDesc++;
     }
-  
+    outfile << "]" << std::endl;
+    ++pIt;
+    ++pDataIt;
+  }
+
   outfile.close();
-  
+
   return EXIT_SUCCESS;
 }

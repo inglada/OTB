@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -31,11 +31,11 @@ namespace otb
  * \ingroup PathFunctions
  */
 
-template < class TInputPath,    
-           class TOutput,
-       	   class TPrecision = double>
+template < class TInputPath,
+class TOutput,
+class TPrecision = double>
 class ITK_EXPORT GeometricMomentPathFunction :
-  public PathFunction< TInputPath, TOutput>
+      public PathFunction< TInputPath, TOutput>
 {
 public:
   /** Standard class typedefs. */
@@ -43,7 +43,7 @@ public:
   typedef PathFunction< TInputPath, TOutput>         Superclass;
   typedef itk::SmartPointer<Self>                    Pointer;
   typedef itk::SmartPointer<const Self>              ConstPointer;
-  
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(GeometricMomentPathFunction, PathFunction);
 
@@ -51,7 +51,7 @@ public:
   /** InputPathType typedef support. */
   typedef typename Superclass::InputPathType         PathType;
   typedef typename Superclass::InputPathConstPointer PathConstPointer;
- 
+
   /** OutputPathType typedef support. */
   typedef typename Superclass::OutputType            OutputType;
 
@@ -61,12 +61,12 @@ public:
 
 protected:
   GeometricMomentPathFunction() {};
-  ~GeometricMomentPathFunction(){};
-  void PrintSelf(std::ostream& os, itk::Indent indent) const 
-     {
-      Superclass::PrintSelf( os, indent );
-     }
-     
+  ~GeometricMomentPathFunction() {};
+  void PrintSelf(std::ostream& os, itk::Indent indent) const
+  {
+    Superclass::PrintSelf( os, indent );
+  }
+
 private:
   GeometricMomentPathFunction( const Self& ); //purposely not implemented
   void operator=( const Self& );               //purposely not implemented

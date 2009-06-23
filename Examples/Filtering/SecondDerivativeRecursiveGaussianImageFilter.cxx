@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -32,7 +32,7 @@
 //  the same way as if they were intended to be used for building the Hessian
 //  matrix of the image.
 //
-//  Software Guide : EndLatex 
+//  Software Guide : EndLatex
 
 
 // Software Guide : BeginCodeSnippet
@@ -47,12 +47,12 @@
 int main(int argc, char * argv [] )
 {
 
-  if( argc < 3 )
-    {
+  if ( argc < 3 )
+  {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImage outputPrefix  [sigma] " << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   typedef float            PixelType;
   typedef float            OutputPixelType;
@@ -61,15 +61,15 @@ int main(int argc, char * argv [] )
 
   typedef otb::Image< PixelType,       Dimension >  ImageType;
   typedef otb::Image< OutputPixelType, Dimension >  OutputImageType;
- 
+
   typedef otb::ImageFileReader< ImageType       >   ReaderType;
   typedef otb::ImageFileWriter< OutputImageType >   WriterType;
 
   typedef itk::ImageDuplicator< OutputImageType >   DuplicatorType;
 
-  typedef itk::RecursiveGaussianImageFilter< 
-                                      ImageType, 
-                                      ImageType >  FilterType;
+  typedef itk::RecursiveGaussianImageFilter<
+  ImageType,
+  ImageType >  FilterType;
 
   ReaderType::Pointer  reader  = ReaderType::New();
   WriterType::Pointer  writer  = WriterType::New();
@@ -77,20 +77,20 @@ int main(int argc, char * argv [] )
   DuplicatorType::Pointer duplicator  = DuplicatorType::New();
 
   reader->SetFileName( argv[1] );
-  
+
   std::string outputPrefix = argv[2];
   std::string outputFileName;
 
   try
-    {
+  {
     reader->Update();
-    }
-  catch( itk::ExceptionObject & excp )
-    {
+  }
+  catch ( itk::ExceptionObject & excp )
+  {
     std::cerr << "Problem reading the input file" << std::endl;
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   FilterType::Pointer ga = FilterType::New();
   FilterType::Pointer gb = FilterType::New();
@@ -100,13 +100,13 @@ int main(int argc, char * argv [] )
   gb->SetDirection( 1 );
   gc->SetDirection( 2 );
 
-  if( argc > 3 )
-    {
+  if ( argc > 3 )
+  {
     const float sigma = atof( argv[3] );
     ga->SetSigma( sigma );
     gb->SetSigma( sigma );
     gc->SetSigma( sigma );
-    }
+  }
 
   ga->SetZeroOrder();
   gb->SetZeroOrder();
@@ -121,7 +121,7 @@ int main(int argc, char * argv [] )
   duplicator->SetInputImage( gc->GetOutput() );
 
 
-  gc->Update(); 
+  gc->Update();
   duplicator->Update();
 
   ImageType::Pointer Izz = duplicator->GetOutput();
@@ -215,8 +215,8 @@ int main(int argc, char * argv [] )
   writer->Update();
 
   // Software Guide : EndCodeSnippet
-  
-return EXIT_SUCCESS;
+
+  return EXIT_SUCCESS;
 }
 
 

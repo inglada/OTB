@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -35,17 +35,17 @@ class ITK_EXPORT FileName : public ossimFilename
 {
 public:
 
-	 FileName();
-	 FileName(const FileName& src);
-   FileName(const ossimFilename& src);
-   FileName(const ossimString& src);
-   FileName(const char* src);
+  FileName();
+  FileName(const FileName& src);
+  FileName(const ossimFilename& src);
+  FileName(const ossimString& src);
+  FileName(const char* src);
 
-	 /**
-    *  Return "t1" if file is "/data/images/t1.tif".
-    */
-   FileName ObtainFileNameWithNoExtension() const;
-		 
+  /**
+   *  Return "t1" if file is "/data/images/t1.tif".
+   */
+  FileName ObtainFileNameWithNoExtension() const;
+
 };
 
 }

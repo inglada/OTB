@@ -10,8 +10,8 @@ Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
 See OTBCopyright.txt for details.
 
 
-This software is distributed WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -40,7 +40,7 @@ int otbSurfaceAdjencyEffect6SCorrectionSchemeFilter(int argc, char * argv[])
   typedef otb::VectorImage<PixelType,Dimension> OutputImageType;
   typedef otb::ImageFileReader<InputImageType>  ReaderType;
   typedef otb::ImageFileWriter<OutputImageType> WriterType;
-     
+
   typedef otb::SurfaceAdjencyEffect6SCorrectionSchemeFilter<InputImageType, OutputImageType> SurfaceAdjencyEffect6SCorrectionSchemeFilterType;
   typedef SurfaceAdjencyEffect6SCorrectionSchemeFilterType::WeightingMatrixType            WeightingMatrixType;
   typedef SurfaceAdjencyEffect6SCorrectionSchemeFilterType::WeightingValuesContainerType   WeightingValuesContainerType;
@@ -53,7 +53,7 @@ int otbSurfaceAdjencyEffect6SCorrectionSchemeFilter(int argc, char * argv[])
   typedef CorrectionParametersType::AerosolModelType                                       AerosolModelType;
   typedef FilterFunctionValuesType::WavelenghtSpectralBandType                             ValueType;
   typedef FilterFunctionValuesType::ValuesVectorType                                       ValuesVectorType;
-      
+
 
 
 
@@ -63,21 +63,21 @@ int otbSurfaceAdjencyEffect6SCorrectionSchemeFilter(int argc, char * argv[])
   FilterFunctionValuesType::Pointer                   functionValues;
   // Instantiating object
   SurfaceAdjencyEffect6SCorrectionSchemeFilterType::Pointer filter = SurfaceAdjencyEffect6SCorrectionSchemeFilterType::New();
-     
+
   ReaderType::Pointer reader  = ReaderType::New();
   WriterType::Pointer writer = WriterType::New();
   reader->SetFileName(inputFileName);
   writer->SetFileName(outputFileName);
-  reader->GenerateOutputInformation();
+  reader->UpdateOutputInformation();
   std::vector<const char *> wavelenghFiles;
   unsigned int nbChannel = reader->GetOutput()->GetNumberOfComponentsPerPixel();
-  for(unsigned int i=0; i<nbChannel; i++)
-    {
-      wavelenghFiles.push_back( argv[i+6] );
-    }
-      
+  for (unsigned int i=0; i<nbChannel; i++)
+  {
+    wavelenghFiles.push_back( argv[i+6] );
+  }
+
   ValueType val = 0.0025;
- 
+
   // Correction parameters initialization
   double solarZenithalAngle(0.);
   double solarAzimutalAngle(0.);
@@ -89,7 +89,7 @@ int otbSurfaceAdjencyEffect6SCorrectionSchemeFilter(int argc, char * argv[])
   double waterVaporAmount(0.);
   double ozoneAmount(0.);
   double aerosolOptical(0.);
-  
+
 
   std::ifstream fin;
   fin.open(paramFile);
@@ -115,44 +115,44 @@ int otbSurfaceAdjencyEffect6SCorrectionSchemeFilter(int argc, char * argv[])
   param->SetViewingAzimutalAngle(static_cast<double>(viewingAzimutalAngle));
   param->SetMonth(month);
   param->SetDay(day);
-  param->SetAtmosphericPressure(static_cast<double>(atmosphericPressure)); 
+  param->SetAtmosphericPressure(static_cast<double>(atmosphericPressure));
   param->SetWaterVaporAmount(static_cast<double>(waterVaporAmount));
   param->SetOzoneAmount(static_cast<double>(ozoneAmount));
   param->SetAerosolModel(aerosolModel);
   param->SetAerosolOptical(static_cast<double>(aerosolOptical));
 
   ValuesVectorType vect;
-  for(unsigned int j=0; j<nbChannel; j++)
+  for (unsigned int j=0; j<nbChannel; j++)
+  {
+    functionValues = FilterFunctionValuesType::New();
+    vect.clear();
+
+    // Filter function values initialization
+    float minSpectralValue(0.);
+    float maxSpectralValue(0.);
+    float value(0.);
+
+    std::ifstream fin;
+    //Read input file parameters
+    fin.open(wavelenghFiles[j]);
+    fin >> minSpectralValue;//wlinf;
+    fin >> maxSpectralValue;//wlsup;
+
+    while (!fin.eof() && fin.good())
     {
-      functionValues = FilterFunctionValuesType::New();
-      vect.clear();
-	  
-      // Filter function values initialization
-      float minSpectralValue(0.);
-      float maxSpectralValue(0.);
-      float value(0.);
-	  	  
-      std::ifstream fin;
-      //Read input file parameters
-      fin.open(wavelenghFiles[j]);
-      fin >> minSpectralValue;//wlinf;
-      fin >> maxSpectralValue;//wlsup; 
- 
-      while (!fin.eof() && fin.good())
-	{
-	  fin >> value;
-	  vect.push_back(value);
-	}
-
-      fin.close();
-      functionValues->SetFilterFunctionValues(vect);
-      functionValues->SetMinSpectralValue(minSpectralValue);
-      functionValues->SetMaxSpectralValue(maxSpectralValue);
-      functionValues->SetUserStep( val );
-
-      param->SetWavelenghtSpectralBandWithIndex(j, functionValues);
+      fin >> value;
+      vect.push_back(value);
     }
- 
+
+    fin.close();
+    functionValues->SetFilterFunctionValues(vect);
+    functionValues->SetMinSpectralValue(minSpectralValue);
+    functionValues->SetMaxSpectralValue(maxSpectralValue);
+    functionValues->SetUserStep( val );
+
+    param->SetWavelenghtSpectralBandWithIndex(j, functionValues);
+  }
+
   corrToRadia->SetInput( param );
 
   filter->SetAtmosphericRadiativeTerms(corrToRadia->GetOutput());

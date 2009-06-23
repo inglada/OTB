@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,19 +21,19 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbMorphologicalPyramidResamplerNew);
-REGISTER_TEST(otbMorphologicalPyramidResampler);
-REGISTER_TEST(otbMorphologicalPyramidAnalysisFilterNew);
-REGISTER_TEST(otbMorphologicalPyramidAnalysisFilter);
-REGISTER_TEST(otbMorphologicalPyramidSynthesisFilterNew);
-REGISTER_TEST(otbMorphologicalPyramidSynthesisFilter);
-REGISTER_TEST(otbMorphologicalPyramidMRToMSConverterNew);
-REGISTER_TEST(otbMorphologicalPyramidMRToMSConverter);
-REGISTER_TEST(otbMorphologicalPyramidSegmenterNew);
-REGISTER_TEST(otbMorphologicalPyramidSegmenter);
+  REGISTER_TEST(otbMorphologicalPyramidResamplerNew);
+  REGISTER_TEST(otbMorphologicalPyramidResampler);
+  REGISTER_TEST(otbMorphologicalPyramidAnalysisFilterNew);
+  REGISTER_TEST(otbMorphologicalPyramidAnalysisFilter);
+  REGISTER_TEST(otbMorphologicalPyramidSynthesisFilterNew);
+  REGISTER_TEST(otbMorphologicalPyramidSynthesisFilter);
+  REGISTER_TEST(otbMorphologicalPyramidMRToMSConverterNew);
+  REGISTER_TEST(otbMorphologicalPyramidMRToMSConverter);
+  REGISTER_TEST(otbMorphologicalPyramidSegmenterNew);
+  REGISTER_TEST(otbMorphologicalPyramidSegmenter);
 }

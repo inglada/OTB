@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -57,43 +57,45 @@ template < class TInput, class TOutput, class TPrecision, class TCoordRep>
 typename ComplexMomentImageFunction<TInput,TOutput,TPrecision,TCoordRep>::ComplexType
 ComplexMomentImageFunction<TInput,TOutput,TPrecision,TCoordRep>
 ::EvaluateAtIndex(const IndexType& index) const
-{  
+{
   typename TInput::SizeType           ImageSize;
   ComplexPrecisionType                Sum;
   ComplexPrecisionType                ValP;
   ComplexPrecisionType                ValQ;
+  PrecisionType                       Norm;
   IndexType                           IndexValue;
   IndexType                           indexPos = index;
   typename TInput::SizeType           kernelSize;
 
-  if( !this->GetInputImage() )
-    {
+  if ( !this->GetInputImage() )
+  {
     otbMsgDevMacro( << "Pb with GetInputImage" );
-    return ( static_cast<ComplexType>( itk::NumericTraits<PrecisionType>::max(), itk::NumericTraits<PrecisionType>::max() ) );
-    }
+    return ( ComplexType(itk::NumericTraits<PrecisionType>::Zero, itk::NumericTraits<PrecisionType>::Zero ) );
+  }
 
-   if(this->GetNeighborhoodRadius()<0)
-     {
-     ImageSize = this->GetInputImage()->GetBufferedRegion().GetSize();
-     
-     indexPos[0] = ImageSize[0] / 2 ;
-     indexPos[1] = ImageSize[1] / 2;
-     
-     kernelSize[0] = indexPos[0];
-     kernelSize[1] = indexPos[1];          
-     }
-     else
-     {
-       kernelSize.Fill( this->GetNeighborhoodRadius() );
-     }  
+  if (this->GetNeighborhoodRadius()<0)
+  {
+    ImageSize = this->GetInputImage()->GetBufferedRegion().GetSize();
 
-   itk::ConstNeighborhoodIterator<TInput>
-    it(kernelSize, this->GetInputImage(), this->GetInputImage()->GetBufferedRegion());
+    indexPos[0] = ImageSize[0] / 2;
+    indexPos[1] = ImageSize[1] / 2;
+
+    kernelSize[0] = indexPos[0];
+    kernelSize[1] = indexPos[1];
+  }
+  else
+  {
+    kernelSize.Fill( this->GetNeighborhoodRadius() );
+  }
+
+  itk::ConstNeighborhoodIterator<TInput>
+  it(kernelSize, this->GetInputImage(), this->GetInputImage()->GetBufferedRegion());
 
 
   // Set the iterator at the desired location
   it.SetLocation(indexPos);
-  Sum = ComplexPrecisionType(0.0,0.0); 
+  Sum = ComplexPrecisionType(0.0,0.0);
+  Norm = 0;
 
   const unsigned int size = it.Size();
   for (unsigned int i = 0; i < size; ++i)
@@ -102,25 +104,25 @@ ComplexMomentImageFunction<TInput,TOutput,TPrecision,TCoordRep>
     ValP = ComplexPrecisionType(1.0,0.0);
     ValQ = ComplexPrecisionType(1.0,0.0);
     unsigned int p  = m_P;
-    while(p>0)
-     {
-      ValP *= ComplexPrecisionType(IndexValue[0], IndexValue[1]);
-      --p; 
-     }
+    while (p>0)
+    {
+      ValP *= ComplexPrecisionType(IndexValue[0]-indexPos[0], IndexValue[1]-indexPos[1]);
+      --p;
+    }
     unsigned int q  = m_Q;
-    while(q>0)
-     {
-      ValQ *= ComplexPrecisionType(IndexValue[0], -IndexValue[1]);
-      --q; 
-     }
-          
-    Sum += ( ValP * ValQ * ComplexPrecisionType(static_cast<PrecisionType>(it.GetPixel(i)),0.0) );
+    while (q>0)
+    {
+      ValQ *= ComplexPrecisionType(IndexValue[0]-indexPos[0], -IndexValue[1]-indexPos[1]);
+      --q;
+    }
 
+    Sum += ( ValP * ValQ * ComplexPrecisionType(static_cast<PrecisionType>(it.GetPixel(i)),0.0) );
+    Norm+=it.GetPixel(i);
   }
 
-  return (static_cast<ComplexType>(Sum) );
+  Norm = vcl_pow(Norm,((PrecisionType)m_P+(PrecisionType)m_Q)/2.);
 
-
+  return (static_cast<ComplexType>(Sum/Norm));
 }
 
 

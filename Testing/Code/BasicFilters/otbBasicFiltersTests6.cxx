@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -22,20 +22,20 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
-REGISTER_TEST(otbBSplineDecompositionImageFilterNew);
-REGISTER_TEST(otbBSplineDecompositionImageFilter);
-REGISTER_TEST(otbBSplineInterpolateImageFunctionNew);
-REGISTER_TEST(otbBSplineInterpolateImageFunction);
-REGISTER_TEST(otbProlateInterpolateImageFunctionNew);
-REGISTER_TEST(otbProlateInterpolateImageFunction);
-REGISTER_TEST(otbWindowedSincInterpolateImageFunctionBaseNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageGaussianFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageGaussianFunction);
-REGISTER_TEST(otbWindowedSincInterpolateImageHammingFunctionNew);
-REGISTER_TEST(otbWindowedSincInterpolateImageHammingFunction);
+  REGISTER_TEST(otbBSplineDecompositionImageFilterNew);
+  REGISTER_TEST(otbBSplineDecompositionImageFilter);
+  REGISTER_TEST(otbBSplineInterpolateImageFunctionNew);
+  REGISTER_TEST(otbBSplineInterpolateImageFunction);
+  REGISTER_TEST(otbProlateInterpolateImageFunctionNew);
+  REGISTER_TEST(otbProlateInterpolateImageFunction);
+  REGISTER_TEST(otbWindowedSincInterpolateImageFunctionBaseNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageGaussianFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageGaussianFunction);
+  REGISTER_TEST(otbWindowedSincInterpolateImageHammingFunctionNew);
+  REGISTER_TEST(otbWindowedSincInterpolateImageHammingFunction);
 }

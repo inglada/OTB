@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,8 +21,8 @@
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-#include <iostream>
-#include "otbTestMain.h" 
+
+#include "otbTestMain.h"
 
 void RegisterTests()
 {
@@ -32,11 +32,11 @@ REGISTER_TEST(otbImageToGrayscaleAnaglyphImageFilterNew);
 REGISTER_TEST(otbImageToGrayscaleAnaglyphImageFilter);
 REGISTER_TEST(otbVectorImageToColorAnaglyphVectorImageFilterNew);
 REGISTER_TEST(otbVectorImageToColorAnaglyphVectorImageFilter);
-REGISTER_TEST(otbAlternateViewerTest);
 REGISTER_TEST(otbImageWidgetPolygonFormNew);
 REGISTER_TEST(otbImageWidgetPolygonForm);
 REGISTER_TEST(otbHistogramAndTransferFunctionWidgetNew);
 REGISTER_TEST(otbHistogramAndTransferFunctionWidget);
 REGISTER_TEST(otbImageWidgetTransferFunctionsNew);
 REGISTER_TEST(otbImageWidgetTransferFunctions);
+REGISTER_TEST(otbImageViewerWithOverlay);
 }

@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -28,26 +28,29 @@
 namespace otb
 {
 /** \class ImageWidgetFormBase
- * \brief 
+   * \brief <b>DEPRECATED</b>
+ *
+ *  \deprecated use the new Visualization framework instead.
+ * \sa StandardImageViewer
  *
  */
 class ITK_EXPORT ImageWidgetFormBase
-  : public itk::DataObject
+      : public itk::DataObject
 {
- public:
+public:
   /** Standard class typedefs */
   typedef ImageWidgetFormBase           Self;
   typedef itk::DataObject               Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
-   /** Runtime information */
+  /** Runtime information */
   itkTypeMacro(ImageWidgetFormBase,DataObject);
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);
-  
- 
+
+
 
   typedef itk::FixedArray<float,4> ColorType;
   typedef itk::ImageRegion<2> RegionType;
@@ -65,12 +68,12 @@ class ITK_EXPORT ImageWidgetFormBase
    * \param a The alpha component.
    */
   virtual void SetColor(float r, float g, float b, float a)
-    {
-      m_Color[0]=r;
-      m_Color[1]=g;
-      m_Color[2]=b;
-      m_Color[3]=a;
-    }
+  {
+    m_Color[0]=r;
+    m_Color[1]=g;
+    m_Color[2]=b;
+    m_Color[3]=a;
+  }
   /**
    * Draw the form in opengl context.
    * \param openGlZoom the openGl zoom factor,
@@ -79,34 +82,37 @@ class ITK_EXPORT ImageWidgetFormBase
    * \param windowh The window height,
    *  \param ss_rate The subsampling rate.
    */
-  virtual void Draw(double openGlZoom, unsigned int originx, unsigned int originy, unsigned int windowh, unsigned int ss_rate){};
+  virtual void Draw(double openGlZoom, unsigned int originx, unsigned int originy, unsigned int windowh, unsigned int ss_rate) {};
 
-  virtual RegionType GetRegion(void){itkExceptionMacro("Method must be implemented in subclasses!");};
+  virtual RegionType GetRegion(void)
+  {
+    itkExceptionMacro("Method must be implemented in subclasses!");
+  };
 
- protected: 
+protected:
   /** Constructor. */
-    ImageWidgetFormBase()
-      {
-	m_Visible=true;
-	m_Color[0]=1;
-	m_Color[1]=0;
-	m_Color[2]=0;
-	m_Color[3]=1;
-      };
+  ImageWidgetFormBase()
+  {
+    m_Visible=true;
+    m_Color[0]=1;
+    m_Color[1]=0;
+    m_Color[2]=0;
+    m_Color[3]=1;
+  };
 
-    /** Destructor. */
-    ~ImageWidgetFormBase()
-      {};
+  /** Destructor. */
+  ~ImageWidgetFormBase()
+  {};
 
-    ColorType m_Color;
+  ColorType m_Color;
 
- private:
-    ImageWidgetFormBase(const Self&);// purposely not implemented
-    void operator=(const Self&);// purposely not implemented
-    
+private:
+  ImageWidgetFormBase(const Self&);// purposely not implemented
+  void operator=(const Self&);// purposely not implemented
 
-    bool m_Visible;
-    
+
+  bool m_Visible;
+
 };
 } // end namespace otb
 #endif

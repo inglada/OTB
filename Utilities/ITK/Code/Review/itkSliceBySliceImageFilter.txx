@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSliceBySliceImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2008-07-15 21:14:32 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-12-04 18:37:10 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,6 +31,7 @@ SliceBySliceImageFilter<TInputImage, TOutputImage, TInputFilter, TOutputFilter, 
   m_InputFilter = NULL;
   m_OutputFilter = NULL;
   this->m_Dimension = ImageDimension - 1;
+  m_SliceIndex = 0;
 }
 
 
@@ -166,10 +167,14 @@ SliceBySliceImageFilter<TInputImage, TOutputImage, TInputFilter, TOutputFilter, 
   ProgressReporter progress( this, 0, requestedSize[m_Dimension] );
 
   const int sliceRange = 
-    static_cast< int >( requestedSize[m_Dimension] ) - requestedIndex[m_Dimension];
+    static_cast< int >( requestedSize[m_Dimension] ) + requestedIndex[m_Dimension];
 
   for( int slice = requestedIndex[m_Dimension]; slice < sliceRange; slice++ )
     {
+
+    // say to the user that we are begining a new slice
+    m_SliceIndex = slice;
+    this->InvokeEvent( IterationEvent() );
 
     // reallocate the internal input at each slice, so the slice by slice filter can work
     // even if the pipeline is run in place
@@ -265,7 +270,6 @@ SliceBySliceImageFilter<TInputImage, TOutputImage, TInputFilter, TOutputFilter, 
 
       }
 
-    this->InvokeEvent( IterationEvent() );
     }
 }
 
@@ -282,6 +286,7 @@ SliceBySliceImageFilter<TInputImage, TOutputImage, TInputFilter, TOutputFilter, 
      << " " << this->m_InputFilter.GetPointer() << std::endl;
   os << indent << "OutputFilter: " << this->m_OutputFilter->GetNameOfClass() 
      << " " << this->m_OutputFilter.GetPointer() << std::endl;
+  os << indent << "SliceIndex: " << m_SliceIndex << std::endl;
 }
 
 }

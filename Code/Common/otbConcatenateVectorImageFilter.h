@@ -28,8 +28,8 @@ namespace otb
  * image with the vector pixel of the second image.
  */
 template<class TInputImage1,class TInputImage2,class TOutputImage>
-class ITK_EXPORT ConcatenateVectorImageFilter 
-: public itk::ImageToImageFilter<TInputImage1,TOutputImage>
+class ITK_EXPORT ConcatenateVectorImageFilter
+      : public itk::ImageToImageFilter<TInputImage1,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -39,7 +39,7 @@ public:
   typedef itk::SmartPointer<const Self>  ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);  
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VectorImageToImagePixelAccessor,ImageToImageFilter);
@@ -48,10 +48,14 @@ public:
   typedef TInputImage1 InputImage1Type;
   typedef TInputImage2 InputImage2Type;
   typedef TOutputImage OutputImageType;
-  
+
   typedef typename InputImage1Type::Pointer InputImage1PointerType;
   typedef typename InputImage2Type::Pointer InputImage2PointerType;
   typedef typename OutputImageType::Pointer OutputImagePointerType;
+
+  typedef typename OutputImageType::PixelType         OutputPixelType;
+  typedef typename OutputImageType::InternalPixelType OutputInternalPixelType;
+  typedef typename OutputImageType::RegionType        OutputImageRegionType;
 
   /**
    * Set The first input image.
@@ -79,13 +83,15 @@ public:
   itkStaticConstMacro(InputImage2Dimension, unsigned int, TInputImage2::ImageDimension);
   itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
- protected:
+protected:
   /** Constructor. */
   ConcatenateVectorImageFilter();
   /** Destructor. */
   virtual ~ConcatenateVectorImageFilter();
+  virtual void GenerateOutputInformation();
+  virtual void BeforeThreadedGenerateData();
   /** Main computation method. */
-  void GenerateData(void); 
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId);
   /** PrintSelf method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
@@ -95,6 +101,6 @@ private:
 };
 } // end namespace otb
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbConcatenateVectorImageFilter.txx"  
+#include "otbConcatenateVectorImageFilter.txx"
 #endif
 #endif

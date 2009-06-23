@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even 
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -26,19 +26,19 @@
 int otbOssimElevManagerTest(int argc,char* argv[])
 {
 
-  if(argc!=9)
-    {
-      std::cout<<"Usage: "<<std::endl;
-      std::cout<<argv[0]<<" srtmDir outfname originX originY spacingX spacingY sizeX sizeY"<<std::endl;
-      return EXIT_FAILURE;
-    }
+  if (argc!=9)
+  {
+    std::cout<<"Usage: "<<std::endl;
+    std::cout<<argv[0]<<" srtmDir outfname originX originY spacingX spacingY sizeX sizeY"<<std::endl;
+    return EXIT_FAILURE;
+  }
 
   const ossimFilename srtmDir(argv[1]);
-  const char * outfname = argv[2];  
+  const char * outfname = argv[2];
 
   typedef double PixelType;
   const unsigned int Dimension = 2;
-  
+
   typedef otb::Image<PixelType,Dimension> ImageType;
   typedef otb::ImageFileWriter<ImageType> WriterType;
   typedef itk::ImageRegionIteratorWithIndex<ImageType> IteratorType;
@@ -82,32 +82,32 @@ int otbOssimElevManagerTest(int argc,char* argv[])
 
   IteratorType it(image,image->GetLargestPossibleRegion());
 
-  for(it.GoToBegin();!it.IsAtEnd();++it)
+  for (it.GoToBegin();!it.IsAtEnd();++it)
+  {
+    PointType point;
+    image->TransformIndexToPhysicalPoint(it.GetIndex(),point);
+    ossimGpt ossimWorldPoint;
+    ossimWorldPoint.lon=point[0];
+    ossimWorldPoint.lat=point[1];
+    double height = elevManager->getHeightAboveMSL(ossimWorldPoint);
+
+    if (!ossim::isnan(height))
     {
-      PointType point;
-      image->TransformIndexToPhysicalPoint(it.GetIndex(),point);
-      ossimGpt ossimWorldPoint;
-      ossimWorldPoint.lon=point[0];
-      ossimWorldPoint.lat=point[1];
-      double height = elevManager->getHeightAboveMSL(ossimWorldPoint);
- 
-	 if (!ossim::isnan(height))
-	  {
-	    // Fill the image
-	    it.Set(height);
-	  } 
-	else 
-	  {
-	    // Back to the MNT default value
-	    it.Set(0);
-	  }
+      // Fill the image
+      it.Set(height);
     }
+    else
+    {
+      // Back to the MNT default value
+      it.Set(0);
+    }
+  }
 
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(image);
   writer->SetFileName(outfname);
   writer->Update();
-  
+
 
 
   return EXIT_SUCCESS;

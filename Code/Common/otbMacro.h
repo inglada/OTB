@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -20,19 +20,31 @@
 /**
  * otbMacro.h defines standard system-wide macros, constants, and other
  * parameters. One of its most important functions is to define macros used
- * to interface to instance variables in a standard fashion. 
+ * to interface to instance variables in a standard fashion.
  */
-  
+
 #ifndef __otbMacro_h
 #define __otbMacro_h
 
 #include "itkMacro.h"
+#include "itkObject.h"
+#include "otbConfigure.h"
+
+/**
+ * \namespace otb
+ * \brief The "otb" namespace contains all Orfeo Toolbox (OTB) classes
+ * There are several nested namespaces withing the otb:: namespace.
+ */
+namespace otb
+{
+} // end namespace otb - this is here for documentation purposes
+
 
 /** This macro is used to print debug (or other information). They are
  * also used to catch errors, etc. Example usage looks like:
  * itkDebugMacro(<< "this is debug info" << this->SomeVariable); */
 #if defined(OTB_LEAN_AND_MEAN) || defined(__BORLANDC__)
-#define otbDebugMacro(x) 
+#define otbDebugMacro(x)
 #else
 #define otbDebugMacro(x) itkDebugMacro(x)
 /*  { if ( this->GetDebug() && *::itk::Object::GetGlobalWarningDisplay())   \
@@ -58,37 +70,37 @@
 #if defined(OTB_LEAN_AND_MEAN) || defined(__BORLANDC__)
 #define otbGenericMsgDebugMacro(x)
 #else
-  #ifndef NDEBUG
-    #define otbGenericMsgDebugMacro(x) \
+#ifndef NDEBUG
+#define otbGenericMsgDebugMacro(x) \
     {  \
-     	if ( ::itk::Object::GetGlobalWarningDisplay())   \
+       if ( ::itk::Object::GetGlobalWarningDisplay())   \
         { ::itk::OStringStream itkmsg; \
           itkmsg << " Generic Msg Debug: " x << "\n"; \
           ::itk::OutputWindowDisplayDebugText(itkmsg.str().c_str());} \
-	}
-  #else
-    #define otbGenericMsgDebugMacro(x)
-  #endif 
+  }
+#else
+#define otbGenericMsgDebugMacro(x)
+#endif
 #endif
 
 #define otbGenericMsgTestingMacro(x) \
     {  \
-     	std::cout x << std::endl; \
-		}
+       std::cout x << std::endl; \
+    }
 
 
 #if defined(OTB_LEAN_AND_MEAN) || defined(__BORLANDC__)
 #define otbMsgDevMacro(x)
 #else
-  #ifdef OTB_ACTIVE_MSG_DEV_MACRO
-    #define otbMsgDevMacro(x) \
+#ifdef OTB_SHOW_ALL_MSG_DEBUG
+#define otbMsgDevMacro(x) \
     { { ::itk::OStringStream itkmsg; \
       itkmsg << " Msg Dev: " x << "\n"; \
       ::itk::OutputWindowDisplayDebugText(itkmsg.str().c_str());} \
      }
-  #else
-     #define otbMsgDevMacro(x)
-  #endif
+#else
+#define otbMsgDevMacro(x)
+#endif
 #endif
 
 
@@ -108,8 +120,8 @@
 }
 #endif
 
-/** This macro is used to control condition. It use ONLY by the OTB developpers 
-  *  
+/** This macro is used to control condition. It use ONLY by the OTB developpers
+  *
   */
 #define otbControlConditionTestMacro(condition, message) \
 {       if( (condition) ) \
@@ -125,7 +137,7 @@
     itkDebugMacro("setting member " #name " to " << _arg); \
     this->m_##object->Set##name(_arg); \
     this->Modified(); \
-} 
+}
 
 /** Get built-in type.  Creates member Get"name"() (e.g., GetVisibility()); */
 #define otbGetObjectMemberMacro(object,name,type) \
@@ -156,6 +168,130 @@
     return this->m_##object->Get##name(); \
 }
 
+/** Testing macro. This macro doesn't throw a exception if the called command
+ * generate a itk::ExceptionObject object. For alls others use cases, the macro
+ * generate a exception. */
+#define otbTestingCheckValidCommand(command) \
+  { \
+        try \
+        { \
+                command;\
+        } \
+        catch( std::bad_alloc & err )     { throw err; } \
+        catch( itk::ExceptionObject & e ) { throw e; } \
+        catch( const std::exception & stde)   { throw stde; } \
+        catch( ... ) \
+        { \
+                ::itk::OStringStream message; \
+                message << "otb::ERROR Unknow error while running "<<#command<<" (catch(...) )"; \
+                ::itk::ExceptionObject e_(__FILE__, __LINE__, message.str().c_str(),ITK_LOCATION); \
+                throw e_; \
+        } \
+        std::cout << " Checking valid command "<< #command " ok."<<std::endl; \
+   }
+
+#define otbTestingCheckNotValidCommand(command) \
+  { \
+        int result(1); \
+        try \
+        { \
+                command;\
+        } \
+        catch( std::bad_alloc & err )     { throw err; } \
+        catch( itk::ExceptionObject &) { std::cout << "Checking not valid Command "<< #command " ok."<<std::endl; result = 0; } \
+        catch( const std::exception & stde)   { throw stde; } \
+        catch( ... ) \
+        { \
+                ::itk::OStringStream message; \
+                message << "otb::ERROR Unknow error while running "<<#command<<" (catch(...) )"; \
+                ::itk::ExceptionObject e_(__FILE__, __LINE__, message.str().c_str(),ITK_LOCATION); \
+                throw e_; \
+        } \
+        if(result == 1) \
+        { \
+                ::itk::OStringStream message; \
+                message << "otb::ERROR: "<<#command<<" should be throwing an exception."; \
+                ::itk::ExceptionObject e_(__FILE__, __LINE__, message.str().c_str(),ITK_LOCATION); \
+                throw e_; \
+        } \
+   }
+
+
+#ifdef OTB_USE_VISU_GUI
+#include <FL/Fl.H>
+
+// Replace th Fl::run method
+#define otbFlRunMacro(condition) { while(condition) { Fl::wait(1e20); } }
+
+// Check if application running or will be stopped
+#define otbRunningMacro() \
+     private: \
+        virtual void StartRunning() {this->m_Running = true;  } \
+        virtual void StopRunning()  {this->m_Running = false; } \
+        bool m_Running;\
+        public: \
+        virtual bool IsRunning() { return this->m_Running; }
+
+#define otbTestCallbackWithValue(view,button,button_value)\
+  { \
+        std::cout<<"Line "<<__LINE__<<", testing widget "<<#button<<" of view "<<view->GetNameOfClass()<<" with value "<<#button_value<<": ";\
+        if(view->button->active() && (view->button->callback()))\
+  {\
+          std::cout<<" active, triggering callback."<<std::endl;\
+    view->button->value(button_value);\
+    view->button->do_callback(view->button);\
+    Fl::check();\
+  }\
+  else \
+        {\
+    std::cout<<"inactive."<<std::endl; \
+  }\
+  }
+
+#define otbTestCallback(view,button)\
+  { \
+        std::cout<<"Line "<<__LINE__<<", testing widget "<<#button<<" of view "<<view->GetNameOfClass()<<": ";\
+        if(view->button->active() && (view->button->callback()))\
+  {\
+          std::cout<<" active, triggering callback."<<std::endl;\
+    view->button->do_callback(view->button);\
+    Fl::check();\
+  }\
+  else \
+        {\
+    std::cout<<"inactive."<<std::endl; \
+  }\
+  }
+
+#define otbTestMenuItemCallback(view,menubar,button)\
+  { \
+         std::cout<<"Line "<<__LINE__<<", testing menu item "<<#button<<" from menu bar "<<#menubar<<" of view "<< view->GetNameOfClass()<<": ";\
+        if(view->button->active() && (view->button->callback()))\
+  {\
+          std::cout<<" active, triggering callback."<<std::endl;\
+    view->button->do_callback(view->menubar);\
+    Fl::check();\
+  }\
+  else \
+        {\
+           std::cout<<"inactive."<<std::endl; \
+  }\
+  }
+
+#else
+
+#define otbFlRunMacro(condition)
+#define otbRunningMacro()
+#define otbTestCallbackWithValue(view,button,button_value)
+#define otbTestCallback(view,button)
+#define otbTestMenuItemCallback(view,menubar,button)
+
+
+
+#endif
+
+
+
 namespace otb
 {
 
@@ -176,15 +312,18 @@ private:
 #else
 namespace StringStreamDetail
 {
-  class Cleanup
+class Cleanup
+{
+public:
+  Cleanup(std::strstream& ostr): m_StrStream(ostr) {}
+  ~Cleanup()
   {
-  public:
-    Cleanup(std::strstream& ostr): m_StrStream(ostr) {}
-    ~Cleanup() { m_StrStream.rdbuf()->freeze(0); }
-    static void IgnoreUnusedVariable(const Cleanup&) {}
-  protected:
-    std::strstream& m_StrStream;
-  };
+    m_StrStream.rdbuf()->freeze(0);
+  }
+  static void IgnoreUnusedVariable(const Cleanup&) {}
+protected:
+  std::strstream& m_StrStream;
+};
 }//namespace OStringStreamDetail
 
 class StringStream: public std::strstream
@@ -193,13 +332,13 @@ public:
   typedef std::strstream Superclass;
   StringStream() {}
   std::string str()
-    {
-      StringStreamDetail::Cleanup cleanup(*this);
-      StringStreamDetail::Cleanup::IgnoreUnusedVariable(cleanup);
-      int pcount = this->pcount();
-      const char* ptr = this->Superclass::str();
-      return std::string(ptr?ptr:"", pcount);
-    }
+  {
+    StringStreamDetail::Cleanup cleanup(*this);
+    StringStreamDetail::Cleanup::IgnoreUnusedVariable(cleanup);
+    int pcount = this->pcount();
+    const char* ptr = this->Superclass::str();
+    return std::string(ptr?ptr:"", pcount);
+  }
 private:
   StringStream(const StringStream&);
   void operator=(const StringStream&);

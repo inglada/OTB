@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -54,8 +54,8 @@ PlaceNameToLonLat
 
 bool PlaceNameToLonLat::Evaluate()
 {
-  string::size_type loc = m_PlaceName.find(" ", 0 );
-  while (loc != string::npos)
+  std::string::size_type loc = m_PlaceName.find(" ", 0 );
+  while (loc != std::string::npos)
   {
     m_PlaceName.replace(loc, 1, "+");
     loc = m_PlaceName.find(" ", loc);
@@ -65,59 +65,75 @@ bool PlaceNameToLonLat::Evaluate()
   {
     std::ostringstream urlStream;
     urlStream << "http://maps.google.com/maps?q=";
-    urlStream << m_PlaceName; 
+    urlStream << m_PlaceName;
     urlStream << "&sll=38.9594,-95.2655&sspn=119.526,360&output=kml&ie=utf-8&v=2.2&cv=4.2.0180.1134&hl=en";
     RetrieveXML(urlStream);
     ParseXMLGoogle();
   }
-  
-  if ((m_Lat == -1000.0) && (m_Lon == -1000.0))
-  {
-    std::ostringstream urlStream;
-    urlStream << "http://maps.google.fr/maps?q=";
-    urlStream << m_PlaceName; 
-    urlStream << "&sll=38.9594,-95.2655&sspn=119.526,360&output=kml&ie=utf-8&v=2.2&cv=4.2.0180.1134&hl=en";
-    RetrieveXML(urlStream);
-    ParseXMLGoogle();
-  }
-  
+
   if ((m_Lat == -1000.0) && (m_Lon == -1000.0))
   {
     std::ostringstream urlStream;
     urlStream << "http://api.local.yahoo.com/MapsService/V1/geocode?appid=com.sun.blueprints.ui.geocoder&location=";
-    urlStream << m_PlaceName; 
+    urlStream << m_PlaceName;
     RetrieveXML(urlStream);
     ParseXMLYahoo();
   }
 
   if ((m_Lat == -1000.0) && (m_Lon == -1000.0))
-    {
+  {
     std::cout << "Search Error: fallback on the origin" << std::endl;
     m_Lat = 43.560204;
     m_Lon = 1.480736;
     return false;
-    }
+  }
   return true;
 }
 
+/*
+//This method will be necessary to process the file directly in memory
+//without writing it to the disk. Waiting for the xml lib to handle that
+//also
+static size_t
+curlHandlerWriteMemoryCallback(void *ptr, size_t size, size_t nmemb,
+  void *data)
+{
+  register int realsize = (int)(size * nmemb);
+
+  std::vector<char> *vec
+    = static_cast<std::vector<char>*>(data);
+  const char* chPtr = static_cast<char*>(ptr);
+  vec->insert(vec->end(), chPtr, chPtr + realsize);
+
+  return realsize;
+}
+*/
+
 void PlaceNameToLonLat::RetrieveXML(std::ostringstream& urlStream)
 {
-  
+
   CURL *curl;
   CURLcode res;
 
   FILE* output_file = fopen("out.xml","w");
   curl = curl_easy_init();
 
-  std::cout << "URL data " << urlStream.str().data() << std::endl;
+//   std::cout << "URL data " << urlStream.str().data() << std::endl;
 
 
   char url[256];
   strcpy(url,urlStream.str().data());
 
 //   std::cout << url << std::endl;
-  if(curl) {
+  if (curl)
+  {
+    std::vector<char> chunk;
     curl_easy_setopt(curl, CURLOPT_URL, url);
+    /*
+    //Step needed to handle curl without temporary file
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,this->curlHandlerWriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_FILE, (void *)&chunk);
+    */
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
     res = curl_easy_perform(curl);
 
@@ -125,7 +141,7 @@ void PlaceNameToLonLat::RetrieveXML(std::ostringstream& urlStream)
     /* always cleanup */
     curl_easy_cleanup(curl);
   }
-  
+
 }
 
 
@@ -134,7 +150,7 @@ void PlaceNameToLonLat::ParseXMLYahoo()
   TiXmlDocument doc( "out.xml" );
   doc.LoadFile();
   TiXmlHandle docHandle( &doc );
-  
+
   TiXmlElement* childLat = docHandle.FirstChild( "ResultSet" ).FirstChild( "Result" ).FirstChild( "Latitude" ).Element();
   if ( childLat )
   {
@@ -145,7 +161,7 @@ void PlaceNameToLonLat::ParseXMLYahoo()
   {
     m_Lon=atof(childLon->GetText());
   }
-  
+
 }
 
 void PlaceNameToLonLat::ParseXMLGoogle()
@@ -153,7 +169,7 @@ void PlaceNameToLonLat::ParseXMLGoogle()
   TiXmlDocument doc( "out.xml" );
   doc.LoadFile();
   TiXmlHandle docHandle( &doc );
-  
+
   TiXmlElement* childLat = docHandle.FirstChild( "kml" ).FirstChild( "Placemark" ).FirstChild( "LookAt" ).FirstChild( "latitude" ).Element();
   if ( childLat )
   {
@@ -164,7 +180,11 @@ void PlaceNameToLonLat::ParseXMLGoogle()
   {
     m_Lon=atof(childLon->GetText());
   }
-  
+
+}
+void PlaceNameToLonLat::ParseXMLGeonames()
+{
+
 }
 
 } // namespace otb
