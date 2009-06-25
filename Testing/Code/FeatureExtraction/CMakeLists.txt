@@ -981,7 +981,7 @@ ADD_TEST(feTuImageToFastSIFTKeyPointSetFilterNew ${FEATUREEXTRACTION_TESTS10}
          otbImageToFastSIFTKeyPointSetFilterNew)
 
 ADD_TEST(feTvImageToFastSIFTKeyPointSetFilterSceneOutputDescriptorAscii ${FEATUREEXTRACTION_TESTS10}
---compare-ascii ${EPSILON_3}
+--compare-list ${EPSILON_3}
 		${BASELINE_FILES}/feTvImageToFastSIFTKeyPointSetFilterSceneKeysOutputDescriptor.txt
 		${TEMP}/feTvImageToFastSIFTKeyPointSetFilterSceneKeysOutputDescriptor.txt
          otbImageToFastSIFTKeyPointSetFilterOutputDescriptorAscii
@@ -1755,6 +1755,17 @@ ADD_TEST(feTvImageToLineSegmentVectorData ${FEATUREEXTRACTION_TESTS15}
       ${TEMP}/feTvImageToLineSegmentVectorData.kml
 )
 
+# -------            otb::SqrtSpectralAngleImageFilter (Ossman)------------------------------
+ADD_TEST(feTvSqrtSpectralAngleImageFilter ${FEATUREEXTRACTION_TESTS15}
+ --compare-image ${EPSILON_8}   ${BASELINE}/feSqrtSpectralAngle.tif
+                   ${TEMP}/feSqrtSpectralAngle.tif
+        otbSqrtSpectralAngleImageFilter
+        ${INPUTDATA}/qb_RoadExtract2sub200x200.tif
+        ${TEMP}/feSqrtSpectralAngle.tif
+        185 270 150 619 #reference pixel
+)
+
+
 # A enrichir
 SET(BasicFeatureExtraction_SRCS1
 otbAlignImageToPath.cxx
@@ -1917,6 +1928,7 @@ otbRegionImageToRectangularPathListFilter.cxx
 SET(BasicFeatureExtraction_SRCS15
 otbImageToLineSegmentVectorDataNew.cxx
 otbImageToLineSegmentVectorData.cxx
+otbSqrtSpectralAngleImageFilter.cxx
 )
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)

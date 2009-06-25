@@ -23,6 +23,7 @@
 #include "otbMacro.h"
 #include <iostream>
 #include <fstream>
+#include <cctype>
 
 #include "otbImage.h"
 #include "otbVectorImage.h"
@@ -397,6 +398,411 @@ namespace otb
     }
     return (nbdiff != 0) ? 1 : 0;
   }
+
+/******************************************/
+/******************************************/
+/******************************************/
+int TestHelper::RegressionTestListFile(const char * testListFileName, const char * baselineListFileName, int reportErrors, const double epsilon, std::vector<std::string> ignoredLines) const
+{
+  std::ifstream fluxfileref(baselineListFileName);
+  // stores the line number of the tested file that has already matched a line of the baseline
+  std::vector<unsigned int> usedLineInTestFile;
+  // store the number of words in each line of the tested file
+  std::vector<unsigned int> testedLineLength;
+  
+  enum TypeEtat { ETAT_NUM, ETAT_CHAR };
+
+  std::string diffListFileName(testListFileName);
+  diffListFileName += ".diff.txt";
+  std::ofstream fluxfilediff;
+
+  if ( reportErrors )
+    {
+      fluxfilediff.open(diffListFileName.c_str());
+    }
+
+  std::string strfileref;
+
+  int nbdiff(0);
+  int numLine(1);
+
+  if (!fluxfileref)
+    {
+      itkGenericExceptionMacro(<< "Impossible to open the baseline List file <"<<baselineListFileName<<">.");
+    }
+
+  TypeEtat etatPrec(ETAT_NUM), etatCour(ETAT_NUM);
+
+  std::vector<std::string> listStrDiffLineFileRef;
+  std::vector<std::string> listStrDiffLineFileTest;
+
+
+  // For each line of the baseline file
+  while ( std::getline(fluxfileref,strfileref)!=0  )
+    {
+      // test if there's ignore lines
+      bool foundexpr = false;
+      if (ignoredLines.size()>0)
+        {
+
+          std::vector<std::string>::iterator itIgnoredLines = ignoredLines.begin();
+
+          for (;(itIgnoredLines != ignoredLines.end()); ++itIgnoredLines)
+	    {
+	      std::string ignoredLinesList = (*itIgnoredLines);
+	      std::string::size_type loc = strfileref.find(ignoredLinesList);
+	      if ( loc != std::string::npos )
+		{
+		  foundexpr = true;
+		}
+
+	    }
+
+        }
+      // If no ignore lines
+      if ( foundexpr == false )
+        {
+	  // is the baseline line (ref) and the tested line (test) matches
+	  bool isFound = false;
+	  // tested file line number
+	  unsigned int lineId = 0;
+	  std::string strfiletest;
+	  // Open tested file
+	  std::ifstream fluxfiletest(testListFileName);
+	  if (!fluxfiletest)
+	    {
+	      itkGenericExceptionMacro(<<"Impossible to open the test List file <"<<testListFileName<<">.");
+	    }
+	  
+	  // number of word in baseline file line
+	  unsigned int refElt = 1;
+	  int lastElt = strfileref[0];
+	  for( unsigned int l=1; l<strfileref.size(); l++ )
+	    {
+	      if( !std::isspace(lastElt) && std::isspace(strfileref[l]))
+		refElt++;
+	      
+	      lastElt = strfileref[l];
+	    }
+	  if(std::isspace(lastElt))
+	    refElt--;
+
+	  // For each line of the tested file
+	  while ( std::getline(fluxfiletest,strfiletest)!=0 && isFound==false )
+	    {
+	      lineId++;
+	      otb::StringStream buffstreamTest, buffstreamRef;
+	      isFound=true;
+
+	      buffstreamTest << strfiletest;
+	      buffstreamRef << strfileref;
+	      int nblinediff(0);
+
+	      //Check number of element in each line, if not equal : out
+	      unsigned int testElt = 1;
+	      // if alreday computed
+	      if( lineId <= testedLineLength.size() )
+		{
+		  testElt = testedLineLength[lineId-1];
+		}
+	      else
+		{
+		  lastElt = strfiletest[0];
+		  for( unsigned int l=1; l<strfiletest.size(); l++ )
+		    {
+		      if( !std::isspace(lastElt) && std::isspace(strfiletest[l]))
+			testElt++;
+		      
+		      lastElt = strfiletest[l];
+		    }
+		  if(std::isspace(lastElt))
+		    testElt--;
+		  testedLineLength.push_back(testElt);
+		}
+	       if(refElt!=testElt)
+		 {
+		   isFound = false;
+		 }
+	       // Chek word by word the match of the line
+	       else
+		 {
+		   // Store the match result between 2 words of the same position
+		   bool wordFound = true;
+		   while (buffstreamRef.peek() != EOF  && buffstreamTest.peek() != EOF && wordFound==true)
+		     {
+		       std::string strRef = "";
+		       std::string strTest = "";
+
+		       std::string strNumRef = "";
+		       std::string strCharRef = "";
+		       std::string strNumTest = "";
+		       std::string strCharTest = "";
+
+		       buffstreamRef >> strRef;
+		       buffstreamTest >> strTest;
+
+		       bool chgt= false;
+		       std::string charTmpRef = "";
+		       std::string charTmpTest = "";
+		       unsigned int i=0;
+
+		       if (!isHexaPointerAddress(strRef))
+			 {
+			   //Analyse if strRef contains scientific value (ex: "-142.124e-012")
+			   if (isScientificNumeric(strRef))
+			     {
+			       if (!isScientificNumeric(strTest))
+				 {
+				   wordFound = false;
+				 }
+			       else if ( (strRef != strTest)
+					 && (vcl_abs(atof(strRef.c_str())) > m_EpsilonBoundaryChecking)
+					 && (vcl_abs(atof(strRef.c_str())-atof(strTest.c_str()))
+					     > epsilon*vcl_abs(atof(strRef.c_str()))
+					     ) )//epsilon as relative error
+				 {
+				   wordFound = false;
+				 }
+			     }
+			   else
+			     {
+			       while (i < strRef.size())
+				 {
+				   charTmpRef=strRef[i];
+
+				   if (i<strTest.size())
+				     {
+				       charTmpTest=strTest[i];
+				     }
+
+				   if (isNumeric(charTmpRef))
+				     etatCour = ETAT_NUM;
+				   else
+				     etatCour = ETAT_CHAR;
+
+				   // "reference" state initialisation.
+				   if (i==0)
+				     etatPrec=etatCour;
+
+				   // Case where there's a number after characteres.
+				   if ((etatCour==ETAT_NUM)&&(etatPrec==ETAT_CHAR))
+				     {
+				       if ( strCharRef != strCharTest )
+					 {
+					   wordFound = false;
+					 }
+
+				       strCharRef="";
+				       strCharTest="";
+				       strNumRef=charTmpRef;
+				       strNumTest=charTmpTest;
+				       chgt=true;
+				     }
+				   // Case where there's a character after numbers.
+				   else if ((etatCour==ETAT_CHAR)&&(etatPrec==ETAT_NUM))
+				     {
+				       if ( (strNumRef != strNumTest)
+					    && (vcl_abs(atof(strNumRef.c_str())) > m_EpsilonBoundaryChecking)
+					    && (vcl_abs(atof(strNumRef.c_str())-atof(strNumTest.c_str()))
+						> epsilon*vcl_abs(atof(strNumRef.c_str()))
+						) ) //epsilon as relative error
+					 {
+					   wordFound = false;
+					 }
+
+				       strNumRef="";
+				       strNumTest="";
+				       strCharRef=charTmpRef;
+				       strCharTest=charTmpTest;
+				       chgt=true;
+				     }
+				   else if (etatCour==etatPrec)
+				     {
+				       if (etatCour==ETAT_CHAR)
+					 {
+					   strCharRef+=charTmpRef;
+					   strCharTest+=charTmpTest;
+					 }
+				       else
+					 {
+					   strNumRef+=charTmpRef;
+					   strNumTest+=charTmpTest;
+					 }
+				     }
+
+				   etatPrec = etatCour;
+				   ++i;
+				 }
+			       // Simpliest case : string characters or numeric value between 2 separators
+			       if (!chgt)
+				 {
+				   if (isNumeric(strRef))
+				     {
+				       if ( ( strRef != strTest)
+					    && (vcl_abs(atof(strRef.c_str())) > m_EpsilonBoundaryChecking)
+					    && (vcl_abs(atof(strRef.c_str())-atof(strTest.c_str()))
+						> epsilon*vcl_abs(atof(strRef.c_str()))
+						)) //epsilon as relative error
+					 {
+					   wordFound = false;
+					 }
+				     }
+				   else
+				     {
+				       if ( strRef != strTest )
+					 {
+					   wordFound = false;
+					 }
+				     }
+				 }
+			     } // else
+			 } // if(!isHexaPointerAddress(strRef))
+		     }  // while (buffstreamRef.peek() != EOF && buffstreamTest.peek() != EOF && wordFound == true)
+
+		   if(wordFound==false)
+		     {
+		       isFound = false;
+		     }
+		     
+		 }
+
+	       // Check that the tested line has been alreday used (2 same lines in the baseline)
+	       // If yes, it won't be retained
+	       if(isFound == true)
+		 {
+		   bool lineAlreadyUsed = false;
+		   unsigned int count = 0;
+		   while(count<usedLineInTestFile.size() &&  lineAlreadyUsed==false)
+		     {
+		       if(usedLineInTestFile[count]==lineId)
+			 {
+			   isFound = false;
+			   lineAlreadyUsed = true;
+			 }
+		       count++;
+		     }
+		   if(lineAlreadyUsed==false)
+		       usedLineInTestFile.push_back(lineId);
+		 }
+
+
+	    }// end while( std::getline(fluxfiletestremoved,strfiletest)!=0 && foundexpr == false )
+
+	  // Stores the baseline line that hasn't found a twin in the tested file
+	  if(isFound == false)
+	    {
+	      listStrDiffLineFileRef.push_back(strfileref);
+	      nbdiff++;
+	    }
+	  fluxfiletest.close();
+	} // endif ( foundexpr == false )
+    }// end while( std::getline(fluxfileref,strfileref)!=0 )
+
+
+  fluxfileref.close();
+
+
+  // Stores the tested file lines that haven't found a twin in the baseline file
+  std::ifstream fluxfiletest(testListFileName);
+  std::string strfiletest;
+  unsigned int testNbLines = 0;
+  //  number of lines in tested file
+  while ( std::getline(fluxfiletest,strfiletest) )
+    {
+      testNbLines++;
+    }
+
+
+  if( testNbLines > usedLineInTestFile.size() )
+    {
+      std::ifstream fluxfiletestTmp(testListFileName);
+      unsigned int count = 0;
+      while ( std::getline(fluxfiletestTmp,strfiletest)!=0 )
+	{
+	  count++;
+	  bool found = false;
+	  unsigned int j=0;
+	  while(j<usedLineInTestFile.size() &&  found==false)
+	    {
+	      if(usedLineInTestFile[j]==count)
+		{
+		  found = true;
+		}
+	      j++;
+	    }
+	  if(found==false)
+	    {
+	      if (ignoredLines.size()>0)
+		{
+		  std::vector<std::string>::iterator itIgnoredLines = ignoredLines.begin();
+
+		  for (;(itIgnoredLines != ignoredLines.end()); ++itIgnoredLines)
+		    {
+		      std::string ignoredLinesList = (*itIgnoredLines);
+		      std::string::size_type loc = strfiletest.find(ignoredLinesList);
+		      if ( loc == std::string::npos )
+			{
+			  listStrDiffLineFileTest.push_back(strfiletest);
+			}
+
+		    }
+
+		}
+	      else
+		listStrDiffLineFileTest.push_back(strfiletest);
+	    }
+	}
+    }
+
+
+
+  if ( nbdiff!=0 && reportErrors)
+    {
+      std::cout << "<DartMeasurement name=\"ListFileError\" type=\"numeric/int\">";
+      std::cout << nbdiff;
+      std::cout <<  "</DartMeasurement>" << std::endl;
+      std::cout << "================================================================"<<std::endl;
+      std::cout << "baseline List File : "<<baselineListFileName << std::endl;
+      std::cout << "Test List File     : "<<testListFileName << std::endl;
+      std::cout << "Diff List File     : "<<diffListFileName << std::endl;
+      std::cout << "Tolerance value     : "<<epsilon << std::endl;
+      std::cout << "Tolerance max check : "<<m_EpsilonBoundaryChecking << std::endl;
+
+      std::cout << "Nb lines differents : "<<listStrDiffLineFileRef.size() << std::endl;
+      std::cout << "Line(s) in Baseline file but not in Test file : "<<listStrDiffLineFileRef.size() << std::endl;
+
+      fluxfilediff << "Nb lines differents : "<<listStrDiffLineFileRef.size() << std::endl;
+      fluxfilediff << "Line(s) in Baseline file but not in Test file : "<<listStrDiffLineFileRef.size() << std::endl;
+      for ( unsigned int i = 0; i  < listStrDiffLineFileRef.size(); ++i)
+	{
+	  std::cout <<listStrDiffLineFileRef[i]<<std::endl;
+	  fluxfilediff << ">> " << listStrDiffLineFileRef[i]<<std::endl;
+	}
+      std::cout << "   -------------------------------"<<std::endl;
+      std::cout << "Line(s) in Test file but not in Baseline file : "<<listStrDiffLineFileTest.size() << std::endl;
+      fluxfilediff << "   -------------------------------"<<std::endl;
+      fluxfilediff << "Line(s) in Test file but not in Baseline file : "<<listStrDiffLineFileTest.size() << std::endl;
+
+      for ( unsigned int i = 0; i  < listStrDiffLineFileTest.size(); ++i)
+	{
+	  std::cout <<listStrDiffLineFileTest[i]<<std::endl;
+	  fluxfilediff << "<< " <<listStrDiffLineFileTest[i]<<std::endl;
+	}
+    }
+
+
+  if ( reportErrors )
+    {
+      fluxfilediff.close();
+    }
+
+  return (nbdiff != 0) ? 1 : 0;
+}
+
+/******************************************/
+/******************************************/
+/******************************************/
+
 
   int TestHelper::RegressionTestBinaryFile(const char * testBinaryFileName, const char * baselineBinaryFileName, int reportErrors) const
   {
@@ -912,7 +1318,7 @@ namespace otb
     if( ref_poDS == NULL )
     {
         OGRSFDriverRegistrar    *ref_poR = OGRSFDriverRegistrar::GetRegistrar();
-        
+
         if(bVerbose) std::cout << "FAILURE:\n"
                 "Unable to open REF datasource `"<<ref_pszDataSource<<"' with the following drivers."<<std::endl;
         for( int iDriver = 0; iDriver < ref_poR->GetDriverCount(); ++iDriver )
@@ -926,7 +1332,7 @@ namespace otb
     if( test_poDS == NULL )
     {
         OGRSFDriverRegistrar    *test_poR = OGRSFDriverRegistrar::GetRegistrar();
-        
+
         if(bVerbose) std::cout << "FAILURE:\n"
                 "Unable to open TEST datasource `"<<test_pszDataSource<<"' with the following drivers."<<std::endl;
         for( int iDriver = 0; iDriver < test_poR->GetDriverCount(); ++iDriver )
@@ -949,7 +1355,7 @@ namespace otb
     if( strRefName != strTestName)
     {
         if(!bVerbose) otbPrintDiff("WARNING: INFO: Internal data source name poDS->GetName() were different",strRefName,strTestName);
-    } 
+    }
 
 /* -------------------------------------------------------------------- */
 /*      Process each data source layer.                                 */
@@ -975,7 +1381,7 @@ namespace otb
             //Check Layer inforamtion
             ogrReportOnLayer( ref_poLayer, ref_pszWHERE, ref_poSpatialFilter, test_poLayer, test_pszWHERE, test_poSpatialFilter, nbdiff, bVerbose);
 
-            //If no difference, check the feature 
+            //If no difference, check the feature
             if(nbdiff == 0)
             {
                 OGRFeature  *ref_poFeature = NULL;
@@ -1022,7 +1428,7 @@ namespace otb
 
                     nbFeature++;
                 }
-                // If no verbose and an diff was found, exit checking. The full checking will be executed in verbose mode 
+                // If no verbose and an diff was found, exit checking. The full checking will be executed in verbose mode
                 if( (!bVerbose) && (nbdiff!=0) ) return (1);
             } //if(nbdiff == 0)
 
@@ -1225,7 +1631,7 @@ namespace otb
 /*                           ReportOnLayer()                            */
 /************************************************************************/
 
-void TestHelper::ogrReportOnLayer( 
+void TestHelper::ogrReportOnLayer(
     OGRLayer * ref_poLayer,   const char *ref_pszWHERE,   OGRGeometry *ref_poSpatialFilter,
     OGRLayer * test_poLayer,  const char *test_pszWHERE,  OGRGeometry *test_poSpatialFilter,
                            int & nbdiff, int bVerbose) const
@@ -1255,13 +1661,13 @@ void TestHelper::ogrReportOnLayer(
 /*      Report various overall information.                             */
 /* -------------------------------------------------------------------- */
     printf( "\n" );
-    
+
     otbCheckStringValue("Layer name", ref_poDefn->GetName() ,test_poDefn->GetName() ,nbdiff,bVerbose);
 
     otbCheckStringValue( "Geometry", OGRGeometryTypeToName( ref_poDefn->GetGeomType() ),  OGRGeometryTypeToName( test_poDefn->GetGeomType() ) ,nbdiff,bVerbose );
-        
+
     otbCheckValue("Feature Count", ref_poLayer->GetFeatureCount(),test_poLayer->GetFeatureCount() ,nbdiff,bVerbose);
-        
+
         OGREnvelope ref_oExt;
         OGREnvelope test_oExt;
 
@@ -1277,25 +1683,25 @@ void TestHelper::ogrReportOnLayer(
 
         char    *ref_pszWKT;
         char    *test_pszWKT;
-        
+
         if( ref_poLayer->GetSpatialRef() == NULL )
             ref_pszWKT = CPLStrdup( "(unknown)" );
         else
         {
             ref_poLayer->GetSpatialRef()->exportToPrettyWkt( &ref_pszWKT );
-        }            
+        }
         if( test_poLayer->GetSpatialRef() == NULL )
             test_pszWKT = CPLStrdup( "(unknown)" );
         else
         {
             test_poLayer->GetSpatialRef()->exportToPrettyWkt( &test_pszWKT );
-        }            
+        }
 
     otbCheckStringValue( "Layer SRS WKT", ref_pszWKT,test_pszWKT ,nbdiff,bVerbose);
 
         CPLFree( ref_pszWKT );
         CPLFree( test_pszWKT );
-    
+
     otbCheckStringValue( "FID Column", ref_poLayer->GetFIDColumn(),test_poLayer->GetFIDColumn() ,nbdiff,bVerbose);
     otbCheckStringValue( "Geometry Column", ref_poLayer->GetGeometryColumn(),test_poLayer->GetGeometryColumn() ,nbdiff,bVerbose);
     otbCheckValue("GetFieldCount",ref_poDefn->GetFieldCount(),test_poDefn->GetFieldCount(),nbdiff,bVerbose);
@@ -1305,7 +1711,7 @@ void TestHelper::ogrReportOnLayer(
         {
             OGRFieldDefn    *ref_poField = ref_poDefn->GetFieldDefn( iAttr );
             OGRFieldDefn    *test_poField = test_poDefn->GetFieldDefn( iAttr );
-            
+
             otbCheckStringValue( "Field GetName",ref_poField->GetNameRef(),test_poField->GetNameRef(),nbdiff,bVerbose);
             otbCheckStringValue( "Field GetFieldTypeName",ref_poField->GetFieldTypeName( ref_poField->GetType() ),test_poField->GetFieldTypeName( test_poField->GetType() ),nbdiff,bVerbose);
             otbCheckValue( "Field GetWidth",ref_poField->GetWidth(),test_poField->GetWidth(),nbdiff,bVerbose);
