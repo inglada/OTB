@@ -15,33 +15,29 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbGISTable_h
-#define __otbGISTable_h
+#ifndef __otbPostGISTable_h
+#define __otbPostGISTable_h
 
-#include "itkDataObject.h"
-#include "itkObjectFactory.h"
-#include "itkPoint.h"
-#include "otbPolyLineParametricPathWithValue.h"
-#include "otbPolygon.h"
+#include "otbGISTable.h"
 
 namespace otb
 {
-/** \class GISTable
- * \brief this class represents a table of a geospatial database (ie. PostGIS).
+/** \class PostGISTable
+ * \brief this class represents a table of a geospatial database (PostGIS).
  *
  * 
  * \sa GISTableFileReader
  * \sa GISTableFileWriter
  *
  */
-template <class TConnectionImplementation, class TPrecision = double, unsigned int SpatialDimension =2>
-class GISTable
-      : public itk::DataObject
+template <class TConnectionImplementation, class TPrecision =double, unsigned int SpatialDimension =2>
+class ITK_EXPORT PostGISTable
+  : public GISTable <TConnectionImplementation, TPrecision, SpatialDimension>
 {
 public:
   /** Standard class typedefs */
-  typedef GISTable Self;
-  typedef itk::DataObject Superclass;
+  typedef PostGISTable Self;
+  typedef GISTable <TConnectionImplementation, TPrecision, SpatialDimension> Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -49,7 +45,7 @@ public:
 
   /** Standard macros */
   itkNewMacro(Self);
-  itkTypeMacro(GISTable,DataObject);
+  itkTypeMacro(PostGISTable,GISTable);
   itkStaticConstMacro(Dimension, unsigned int, SpatialDimension);
 
   /** Typedefs */
@@ -62,57 +58,64 @@ public:
   typedef PolyLineParametricPathWithValue < TPrecision , SpatialDimension >  LineType;
   typedef typename LineType::Pointer 	LinePointerType;
   
+  
   typedef Polygon < TPrecision > 	        PolygonType;
   typedef typename PolygonType::Pointer 	                PolygonPointerType;
   typedef typename PolygonType::ConstPointer 	        PolygonConstPointerType;
   typedef ObjectList< PolygonType > 	        PolygonListType;
   typedef typename PolygonListType::Pointer 	        PolygonListPointerType;
   typedef typename PolygonListType::ConstPointer 	PolygonListConstPointerType;
+  
   /** Acessors */
 
   itkGetConstMacro(TableName, std::string);
-  itkSetMacro(TableName, std::string);
+  //itkSetMacro(TableName, std::string);
 
-  itkGetConstObjectMacro(Connection, ConnectionType);
+  itkGetObjectMacro(Connection, ConnectionType);
   itkSetObjectMacro(Connection, ConnectionType);
 
   /** Clear the vector data  not implemented yet*/
-  virtual bool Clear(){};
+  bool Clear();
   
   /** Get attributes of the Table*/ //TODO implement
   
   /** Get srid of the geometric column*/ //TODO implement 
   //virtual 
   /** Add Point content to the GIS Table*/ //TODO implement
-  virtual void InsertPoint( const PointType &pt ){};
-  virtual void InsertMultiPoint(){};
-  virtual void InsertPolygons(PolygonConstPointerType polygonExtRing, PolygonListConstPointerType polygonListInteriorRing){};
-  virtual void InsertLineString(LinePointerType l){};
+  void InsertBegin( std::stringstream & sqlCmd );
+  void InsertPoint( const PointType &pt );
+//   virtual void InsertMultiPoint();
+  void InsertPolygons(PolygonConstPointerType polygonExtRing, PolygonListConstPointerType polygonListInteriorRing);
+  void InsertLineString(LinePointerType l);
   
-  virtual void CreateTable(){};
+  void InsertGeometries (const std::string &sqlCmd );
+  
+  void EraseLastChar (std::stringstream &sqlCmd );
+  
+  void CreateTable ();
 protected:
+
   /** Constructor */
-  GISTable();
+  PostGISTable();
   /** Destructor */
-  virtual ~GISTable() {};
+  virtual ~PostGISTable() {};
   /** PrintSelf method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
-  GISTable(const Self&); //purposely not implemented
+  PostGISTable(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 
-  std::string m_TableName;
-  ConnectionPointerType m_Connection;
+    std::string m_TableName;
+    ConnectionPointerType m_Connection;
 
-  
 };
 }// end namespace otb
 
 
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbGISTable.txx"
+#include "otbPostGISTable.txx"
 #endif
 
 #endif
