@@ -15,20 +15,18 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#include "itkExceptionObject.h"
-#include "otbMacro.h"
+#include "otbAttributesMapLabelObject.h"
 
-#include "otbGISTable.h"
-#include "otbPostGISConnectionImplementation.h"
-
-int otbGISTableNew(int argc, char * argv[])
+int otbAttributesMapLabelObjectNew(int argc, char * argv[])
 {
-  typedef otb::PostGISConnectionImplementation GISConnectionType;
-
-  typedef otb::GISTable<GISConnectionType, double, 2> GISTableType;
-
-  //Instantiation
-  GISTableType::Pointer data = GISTableType::New();
+  const unsigned int Dimension = 2;
+  
+  typedef unsigned short                         LabelType;
+  typedef otb::AttributesMapLabelObject<LabelType,Dimension,double> LabelObjectType;
+  typedef LabelObjectType::Pointer                            LabelObjectPointerType;
+  
+  // Instantiation
+  LabelObjectPointerType myAttMapLabelObject = LabelObjectType::New();
 
   return EXIT_SUCCESS;
 }
