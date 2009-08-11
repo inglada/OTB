@@ -26,13 +26,12 @@
 
 void RegisterTests()
 {
-  REGISTER_TEST(otbPostGISConnectionImplementationNew);
-  REGISTER_TEST(otbPostGISConnectionImplementationConnectToDB);
-  REGISTER_TEST(otbPostGISConnectionImplementationPerformTransaction);  
-  REGISTER_TEST(otbGISTableNew); 
-  REGISTER_TEST(otbPostGISTableNew); 
-  REGISTER_TEST(otbVectorDataToGISTableFilterNew); 
-  REGISTER_TEST(otbVectorDataToGISTableFilter); 
-  REGISTER_TEST(otbLabelMapToGISTableFilterNew); 
-  REGISTER_TEST(otbGISTableToVectorDataFilterNew); 
+  REGISTER_TEST(otbAttributesMapLabelObjectNew);
+  REGISTER_TEST(otbLabelObjectToPolygonFunctorNew);
+  REGISTER_TEST(otbRadiometricAttributesLabelMapFilterNew);
+//   REGISTER_TEST(otbShapeAttributesLabelMapFilterNew);
+  REGISTER_TEST(otbStatisticsAttributesLabelMapFilterNew);
+  REGISTER_TEST(otbAttributesMapOpeningLabelMapFilterNew);
+  REGISTER_TEST(otbLabelMapToVectorDataFilterNew);
+
 }
