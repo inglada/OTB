@@ -18,17 +18,17 @@
 #include "itkExceptionObject.h"
 #include "otbMacro.h"
 
-#include "otbGISTable.h"
+#include "otbPostGISTable.h"
 #include "otbPostGISConnectionImplementation.h"
 
-int otbGISTableNew(int argc, char * argv[])
+int otbPostGISTableNew(int argc, char * argv[])
 {
   typedef otb::PostGISConnectionImplementation GISConnectionType;
 
-  typedef otb::GISTable<GISConnectionType, double, 2> GISTableType;
+  typedef otb::PostGISTable<GISConnectionType, double, 2> PostGISTableType;
 
   //Instantiation
-  GISTableType::Pointer data = GISTableType::New();
+  PostGISTableType::Pointer data = PostGISTableType::New();
 
   return EXIT_SUCCESS;
 }
