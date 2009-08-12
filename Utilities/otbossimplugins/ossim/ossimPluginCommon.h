@@ -18,10 +18,16 @@
 #include <vector>
 #include <ossim/base/ossimRefPtr.h>
 
-class CivilDateTime;
 class ossimString;
 class ossimXmlDocument;
 class ossimXmlNode;
+
+namespace ossimplugins
+{
+
+
+class CivilDateTime;
+
 
 namespace ossim
 {
@@ -81,5 +87,6 @@ namespace ossim
                       ossimString& s);
 
 } // matches: namespace ossim
+}
 
 #endif /* matches: #ifndef ossimPluginCommon_HEADER */

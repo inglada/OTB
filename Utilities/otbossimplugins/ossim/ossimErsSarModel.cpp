@@ -1,21 +1,21 @@
-#include "ossimErsSarModel.h"
-#include <ossim/projection/otb/GalileanEphemeris.h>
-#include <ossim/projection/otb/GeographicEphemeris.h>
+//----------------------------------------------------------------------------
+//
+// "Copyright Centre National d'Etudes Spatiales"
+//
+// License:  LGPL
+//
+// See LICENSE.txt file in the top level directory for more details.
+//
+//----------------------------------------------------------------------------
+// $Id$
 
-#include <ossim/projection/otb/JSDDateTime.h>
-#include <ossim/projection/otb/GMSTDateTime.h>
-#include <ossim/projection/otb/CivilDateTime.h>
+#include <ossimErsSarModel.h>
+#include <otb/GalileanEphemeris.h>
+#include <otb/GeographicEphemeris.h>
 
-#include <ossim/projection/otb/PlatformPosition.h>
-#include <ossim/projection/otb/SensorParams.h>
-#include <ossim/projection/otb/RefPoint.h>
-#include <ossim/projection/otb/SarSensor.h>
-#include <ossim/base/ossimString.h>
-
-#include <math.h>
-#include <cctype> // for toupper
-#include <string>
-#include <algorithm>
+#include <otb/JSDDateTime.h>
+#include <otb/GMSTDateTime.h>
+#include <otb/CivilDateTime.h>
 
 #include <ossim/base/ossimTrace.h>
 #include "ers/ErsSar/ErsSarLeader/ErsSarLeader.h"
@@ -24,6 +24,13 @@
 
 // Static trace for debugging
 static ossimTrace traceDebug("ossimErsSarModel:debug");
+
+#include <string>
+#include <algorithm>
+
+namespace ossimplugins
+{
+
 
 RTTI_DEF1(ossimErsSarModel, "ossimErsSarModel", ossimGeometricSarSensorModel);
 
@@ -215,7 +222,7 @@ bool ossimErsSarModel::saveState(ossimKeywordlist& kwl,
 
 bool ossimErsSarModel::InitPlatformPosition(const ossimKeywordlist &kwl, const char *prefix)
 {
-	const double PI          = 3.14159265358979323846 ;
+   // const double PI          = 3.14159265358979323846 ;
 	CivilDateTime ref_civil_date;
 	/*
 	 * Ephemerisis reference date retrieval
@@ -498,7 +505,7 @@ bool ossimErsSarModel::InitSRGR(const ossimKeywordlist &kwl, const char *prefix)
 
 	// Range pixels numbers corresponding
 	// Todo : check if it works with "DECREASING LINE TIME"
-	double x1 = 0.0;
+	// double x1 = 0.0;
 	double x2 = atof(kwl.find("sc_pix")) - 1.0;
 	double x3 = 2.0*(x2+1.0) -1.0 ;
 
