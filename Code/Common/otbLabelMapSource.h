@@ -16,8 +16,8 @@
 
 =========================================================================*/
 
-#ifndef __otbGISTableSource_h
-#define __otbGISTableSource_h
+#ifndef __otbLabelMapSource_h
+#define __otbLabelMapSource_h
 
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
@@ -29,21 +29,21 @@
 
 namespace otb
 {
-/** \class GISTableSource
- * \brief Filter hierarchy for generating GISTables
+/** \class LabelMapSource
+ * \brief Filter hierarchy for generating LabelMap
  *
  *
  * \ingroup IO
  *
  */
 
-template <class TOutputGISTable>
-class ITK_EXPORT GISTableSource : public itk::ProcessObject
+template <class TOutputLabelMap>
+class ITK_EXPORT LabelMapSource : public itk::ProcessObject
 {
-  public :
+public :
 
   /** Standard class typedefs. */
-  typedef GISTableSource                        Self;
+  typedef LabelMapSource                      Self;
   typedef itk::ProcessObject                    Superclass;
   typedef itk::SmartPointer<Self>               Pointer;
   typedef itk::SmartPointer<const Self>         ConstPointer;
@@ -52,18 +52,18 @@ class ITK_EXPORT GISTableSource : public itk::ProcessObject
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GISTableSource, itk::ProcessObject);
+  itkTypeMacro(LabelMapSource, itk::ProcessObject);
 
-  typedef TOutputGISTable     OutputGISTableType;
-  typedef typename TOutputGISTable::Pointer OutputGISTablePointer;
+  typedef TOutputLabelMap     OutputLabelMapType;
+  typedef typename TOutputLabelMap::Pointer OutputLabelMapPointer;
 
   /** Overriding GetOutput() method */
-  virtual OutputGISTableType* GetOutput(void);
-  virtual OutputGISTableType* GetOutput(unsigned int idx);
+  virtual OutputLabelMapType* GetOutput(void);
+  virtual OutputLabelMapType* GetOutput(unsigned int idx);
 
 protected:
-  GISTableSource();
-  ~GISTableSource();
+  LabelMapSource();
+  ~LabelMapSource();
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
@@ -71,7 +71,7 @@ protected:
   virtual void  AllocateOutputs();
 
 private:
-  GISTableSource(const Self&); //purposely not implemented
+  LabelMapSource(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 };
@@ -79,7 +79,9 @@ private:
 } // end namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbGISTableSource.txx"
+#include "otbLabelMapSource.txx"
 #endif
 
-#endif // __otbGISTableSource_h
+#endif // __otbLabelMapSource_h
+
+
