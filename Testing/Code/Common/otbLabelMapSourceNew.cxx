@@ -16,19 +16,25 @@
 
 =========================================================================*/
 #include "itkExceptionObject.h"
-#include "otbMacro.h"
 
-#include "otbGISTable.h"
-#include "otbPostGISConnectionImplementation.h"
+#include "otbLabelMapSource.h"
+#include "itkLabelMap.h"
+#include "otbAttributesMapLabelObject.h"
 
-int otbGISTableNew(int argc, char * argv[])
+int otbLabelMapSourceNew(int argc, char * argv[])
 {
-  typedef otb::PostGISConnectionImplementation GISConnectionType;
+  const unsigned int Dimension = 2;
+  typedef unsigned short                         LabelType;
+  
+  typedef otb::AttributesMapLabelObject<LabelType,Dimension,double> LabelObjectType;
+  
+  typedef itk::LabelMap<LabelObjectType> InputLabelMapType;
+  typedef otb::LabelMapSource<InputLabelMapType> LabelMapSourceType;
 
-  typedef otb::GISTable<GISConnectionType, double, 2> GISTableType;
+  // Instantiating LabelMapSource object
+  LabelMapSourceType::Pointer LabelMap = LabelMapSourceType::New();
 
-  //Instantiation
-  GISTableType::Pointer data = GISTableType::New();
+
 
   return EXIT_SUCCESS;
 }
