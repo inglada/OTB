@@ -16,19 +16,22 @@
 
 =========================================================================*/
 #include "itkExceptionObject.h"
-#include "otbMacro.h"
 
-#include "otbGISTable.h"
-#include "otbPostGISConnectionImplementation.h"
+#include "otbVectorDataSource.h"
+#include "otbVectorData.h"
 
-int otbGISTableNew(int argc, char * argv[])
+
+int otbVectorDataSourceNew(int argc, char * argv[])
 {
-  typedef otb::PostGISConnectionImplementation GISConnectionType;
+  const unsigned int Dimension = 2;
+  typedef double InputPixelType;
+  typedef otb::VectorData<InputPixelType,Dimension> InputVectorDataType;
+  typedef otb::VectorDataSource<InputVectorDataType> VectorDataSourceType;
 
-  typedef otb::GISTable<GISConnectionType, double, 2> GISTableType;
+  // Instantiating VectorDataSource object
+  VectorDataSourceType::Pointer VectorData = VectorDataSourceType::New();
 
-  //Instantiation
-  GISTableType::Pointer data = GISTableType::New();
+
 
   return EXIT_SUCCESS;
 }

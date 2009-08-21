@@ -26,18 +26,13 @@
 
 void RegisterTests()
 {
-  REGISTER_TEST(otbGenericInterpolateImageFunctionNew);
-  REGISTER_TEST(otbMirrorBoundaryConditionTest);
-  REGISTER_TEST(otbStandardFilterWatcherNew);
-  REGISTER_TEST(otbDataNodeTest);
-  REGISTER_TEST(otbVectorDataNew);
-  REGISTER_TEST(otbVectorDataSourceNew);
-  REGISTER_TEST(otbVectorData);
-  REGISTER_TEST(otbShiftScaleImageAdaptorNew);
-  REGISTER_TEST(otbShiftScaleImageAdaptor);
-  REGISTER_TEST(otbStandardWriterWatcher);
-  REGISTER_TEST(otbUnaryFunctorNeighborhoodWithOffsetImageFilterNew);
-  REGISTER_TEST(otbUnaryFunctorNeighborhoodWithOffsetImageFilter);
-  REGISTER_TEST(otbRemoteSensingRegionNew);
-  REGISTER_TEST(otbRemoteSensingRegion);
+  REGISTER_TEST(otbAttributesMapLabelObjectNew);
+  REGISTER_TEST(otbLabelObjectToPolygonFunctorNew);
+  REGISTER_TEST(otbRadiometricAttributesLabelMapFilterNew);
+  REGISTER_TEST(otbShapeAttributesLabelMapFilterNew);
+  REGISTER_TEST(otbStatisticsAttributesLabelMapFilterNew);
+  REGISTER_TEST(otbAttributesMapOpeningLabelMapFilterNew);
+  REGISTER_TEST(otbLabelMapToVectorDataFilterNew);
+  REGISTER_TEST(otbLabelMapSourceNew);
+
 }
