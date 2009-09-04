@@ -47,6 +47,9 @@ IF(OTB_USE_LIBLAS)
   SET(IO_TESTS17    ${CXX_TEST_PATH}/otbIOTests17)
 ENDIF(OTB_USE_LIBLAS)
 
+SET(IO_TESTS18    ${CXX_TEST_PATH}/otbIOTests18)
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON_TESTS3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1387,19 +1390,6 @@ ADD_TEST(ioTvDEMToImageGeneratorTest ${IO_TESTS12}
         -0.002
         )
 
-#Big extend
-ADD_TEST(ioTvDEMToImageGeneratorTest2 ${IO_TESTS12}
---compare-image ${EPSILON_9}  ${BASELINE}/ioTvDEMToImageGenerator2.tif
-                        ${TEMP}/ioTvDEMToImageGenerator2.tif
-        otbDEMToImageGeneratorTest
-         ${INPUTDATA}/DEM/srtm_directory
-         ${TEMP}/ioTvDEMToImageGenerator2.tif
-         -1.8 52 232 422  0.02 -0.018
-#          576378.080 5763132.837 232 422 2000 -2000 30 N
-# 3.765220920574784 44.224685913433
-)
-
-
 ADD_TEST(ioTvossimElevManagerTest ${IO_TESTS12}
 --compare-image ${EPSILON_9}  ${BASELINE}/ioTvossimElevManagerTest.tif
                         ${TEMP}/ioTvossimElevManagerTest.tif
@@ -1414,29 +1404,6 @@ ADD_TEST(ioTvossimElevManagerTest ${IO_TESTS12}
         500
         )
 
-ADD_TEST(ioTvossimElevManagerTest3 ${IO_TESTS12}
---compare-image ${EPSILON_9}  ${BASELINE}/ioTvossimElevManagerTest3.tif
-                        ${TEMP}/ioTvossimElevManagerTest3.tif
-        otbOssimElevManagerTest
-         ${INPUTDATA}/DEM/srtm_directory
-         ${TEMP}/ioTvossimElevManagerTest3.tif
-         -1.8 52   0.02 -0.018 232 422
-#         -1.8870830 52.0135758  0.024363378967 -0.018457085039 232 422
-        )
-
-#This test investigate the problem with the ossimElevManager
-# - differences between plaforms
-# - file descriptor leak
-ADD_TEST(ioTvossimElevManagerTest4 ${IO_TESTS12}
---compare-image ${EPSILON_9}  ${BASELINE}/ioTvossimElevManagerTest3.tif
-                        ${TEMP}/ioTvossimElevManagerTest4.hdr
-        otbOssimElevManagerTest4
-         ${INPUTDATA}/DEM/srtm_directory
-         ${TEMP}/ioTvossimElevManagerTest4
-         -1.8 52   0.02 -0.018 232 422
-        )
-
-
 ADD_TEST(ioTvossimElevManagerTest2 ${IO_TESTS12}
 --compare-ascii ${EPSILON_9}  ${BASELINE_FILES}/ioTvossimElevManagerTest2.txt
                         ${TEMP}/ioTvossimElevManagerTest2.txt
@@ -1448,6 +1415,7 @@ ADD_TEST(ioTvossimElevManagerTest2 ${IO_TESTS12}
 	0.002
 	500
          )
+
 
 
 # ---  otb::DEMToOrthoImageGenerator ---
@@ -1935,6 +1903,22 @@ ADD_TEST(ioTvImageMetadataInterfaceTest ${IO_TESTS17}
         ${TEMP}/ioTvImageMetadataInterface.txt
 )
 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS18 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST(ioTvImageMetadataInterfaceTerraSar ${IO_TESTS18}
+         --compare-ascii ${EPSILON_9} ${BASELINE_FILES}/ioTvmageMetadataInterfaceTerraSar.txt
+                         ${TEMP}/ioTvImageMetadataInterfaceTerraSar.txt
+        otbImageMetadataInterfaceTerraSar
+        ${LARGEDATA}/TERRASARX/dims/TSX-1.SAR.L1B/TSX1_SAR__SSC/IMAGEDATA/IMAGE_HH_SRA_strip_011.cos
+        ${TEMP}/ioTvImageMetadataInterfaceTerraSar.txt
+)
+ENDIF(OTB_DATA_USE_LARGEINPUT)
+
+
 #----------------------------------------------------------------------------------
 SET(BasicIO_SRCS1
 otbIOTests1.cxx
@@ -2030,7 +2014,6 @@ otbDEMToImageGeneratorNew.cxx
 otbDEMToImageGeneratorTest.cxx
 otbOssimElevManagerTest.cxx
 otbOssimElevManagerTest2.cxx
-otbOssimElevManagerTest4.cxx
 otbDEMToOrthoImageGeneratorNew.cxx
 otbDEMToOrthoImageGeneratorTest.cxx
 otbPrepareSRTMDirectoryNew.cxx
@@ -2099,6 +2082,11 @@ otbImageMetadataInterfaceTest.cxx
 otbImageMetadataInterfaceTest2.cxx
 )
 
+SET(BasicIO_SRCS18
+otbIOTests18.cxx
+otbImageMetadataInterfaceTerraSar.cxx
+)
+
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 
 OTB_ADD_EXECUTABLE(otbIOTests1 "${BasicIO_SRCS1}" "OTBIO;OTBTesting")
@@ -2130,6 +2118,8 @@ OTB_ADD_EXECUTABLE(otbIOTests16 "${BasicIO_SRCS16}" "OTBIO;OTBTesting")
 IF(OTB_USE_LIBLAS)
   OTB_ADD_EXECUTABLE(otbIOTests17 "${BasicIO_SRCS17}" "OTBIO;OTBTesting")
 ENDIF(OTB_USE_LIBLAS)
+
+OTB_ADD_EXECUTABLE(otbIOTests18 "${BasicIO_SRCS18}" "OTBIO;OTBTesting")
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 
