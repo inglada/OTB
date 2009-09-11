@@ -24,25 +24,25 @@ SET(UTILITIES_TESTS ${CXX_TEST_PATH}/otbUtilitiesTests)
 #ADD_TEST(utOssimIntegrationTest ${UTILITIES_TESTS}
 #        ossimIntegrationTest
 #        ossimTiffWriter
-#        ${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+#        ${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
 #        ${TEMP}/utOssimIntegration.tif
 #)
 
 IF(OTB_DATA_USE_LARGEINPUT)
 
 ADD_TEST(utTvOssimKeywordlistToulouseQuickBirdTest ${UTILITIES_TESTS}
---compare-ascii ${EPSILON_10e6}  ${BASELINE_FILES}/utOssimKeywordlistToulouseQuickBird.txt
+--compare-list ${EPSILON_10e6}  ${BASELINE_FILES}/utOssimKeywordlistToulouseQuickBird.txt
                         ${TEMP}/utOssimKeywordlistToulouseQuickBird.txt
         ossimKeywordlistTest
-        ${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+        ${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
         ${TEMP}/utOssimKeywordlistToulouseQuickBird.txt
         )
 
 ADD_TEST(utTvOssimKeywordlistBlossevilleIkonosTest ${UTILITIES_TESTS}
---compare-ascii ${TOL}  ${BASELINE_FILES}/utOssimKeywordlistBlossevilleIkonos.txt
+--compare-list ${TOL}  ${BASELINE_FILES}/utOssimKeywordlistBlossevilleIkonos.txt
                         ${TEMP}/utOssimKeywordlistBlossevilleIkonos.txt
         ossimKeywordlistTest
-        ${IMAGEDATA}/IKONOS_BLOSSEVILLE/po_2619900_grn_0000000.tif
+        ${IMAGEDATA}/IKONOS/BLOSSEVILLE/po_2619900_grn_0000000.tif
         ${TEMP}/utOssimKeywordlistBlossevilleIkonos.txt
         )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
@@ -50,16 +50,6 @@ ENDIF(OTB_DATA_USE_LARGEINPUT)
 ADD_TEST(utTuOssimElevManagerTest ${UTILITIES_TESTS}
         ossimElevManagerTest
         )
-
-
-ADD_TEST(utTvIjBSplineScatteredDataPointSetToImageFilterTest ${UTILITIES_TESTS}
---compare-image ${EPSILON}
-		${BASELINE}/ijBSplineScatteredDataPointSetToImageFilterTestOutput.hdr
-		${TEMP}/ijBSplineScatteredDataPointSetToImageFilterTestOutput.hdr
-		ijBSplineScatteredDataPointSetToImageFilterTest
-		${INPUTDATA}/brain.png
-		${TEMP}/ijBSplineScatteredDataPointSetToImageFilterTestOutput.hdr
-)
 
 # -------            lib otbsvm   ------------------------------
 
@@ -150,7 +140,7 @@ ADD_TEST(utTvTinyXMLTest ${UTILITIES_TESTS}
 IF(OTB_DATA_USE_LARGEINPUT)
 ADD_TEST(utTvOssimRadarSatSupport ${UTILITIES_TESTS}
         ossimRadarSatSupport
-        ${IMAGEDATA}/RADARSAT2/SCENE01/DAT_01.001
+        ${IMAGEDATA}/RADARSAT1/GOMA2/SCENE01/DAT_01.001
         )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
@@ -442,7 +432,6 @@ SET(UtilitiesTests_SRCS
 ossimIntegrationTest.cxx
 ossimKeywordlistTest.cxx
 ossimElevManagerTest.cxx
-ijBSplineScatteredDataPointSetToImageFilterTest.cxx
 svmGenericKernelFunctor.cxx
 svmTest.cxx
 svmGenericKernelTest.cxx
@@ -492,7 +481,6 @@ ENDIF(NOT OTB_USE_EXTERNAL_EXPAT)
 
 # -------       Select sources files suppress warning  -----------------------------------
 SET(UtilitiesTests_DisableWarning_SRCS
-    ijBSplineScatteredDataPointSetToImageFilterTest.cxx
     siftfast.cpp
     openthreadsWorkCrew.cpp
     expatchardata.cxx

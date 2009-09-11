@@ -18,12 +18,13 @@
 #ifndef __otbImageLayerRenderingModel_h
 #define __otbImageLayerRenderingModel_h
 
-#include "otbMVCModelBase.h"
+#include "otbMVCModel.h"
 #include "otbLayerBasedModel.h"
 #include "otbImageLayerBase.h"
 #include "otbObjectList.h"
 #include "otbImageLayerRenderingModelListener.h"
 #include "otbBlendingImageFilter.h"
+#include "otbListenerBase.h"
 
 namespace otb
 {
@@ -40,14 +41,15 @@ namespace otb
 *  \ingroup Visualization
  */
 
-template <class TOutputImage = otb::Image<itk::RGBAPixel<unsigned char>,2 >  >
+template <class TOutputImage = otb::Image<itk::RGBAPixel<unsigned char>,2 >,
+          class TLayer = otb::ImageLayerBase<TOutputImage>  >
 class ImageLayerRenderingModel
-  : public MVCModelBase<ImageLayerRenderingModelListener>, public LayerBasedModel< ImageLayerBase<TOutputImage> >
+  : public MVCModel<ListenerBase>, public LayerBasedModel< TLayer >
 {
 public:
   /** Standard class typedefs */
   typedef ImageLayerRenderingModel                         Self;
-  typedef LayerBasedModel< ImageLayerBase <TOutputImage> > Superclass;
+  typedef LayerBasedModel<TLayer> Superclass;
   typedef itk::SmartPointer<Self>                          Pointer;
   typedef itk::SmartPointer<const Self>                    ConstPointer;
 
@@ -73,7 +75,8 @@ public:
   typedef typename LayerListType::ConstIterator LayerIteratorType;
 
   /** Listener typedef */
-  typedef ImageLayerRenderingModelListener          ListenerType;
+//  typedef ImageLayerRenderingModelListener          ListenerType;
+  typedef ListenerBase ListenerType;
 
   /** Blending filter typedef */
   typedef otb::BlendingImageFilter<OutputImageType> BlendingFilterType;
@@ -108,46 +111,46 @@ public:
 
   /** Update will render all visible layers, rasterize all visible
    * layers and notify all listeners. */
-  void Update(void);
+  virtual void Update(void);
 
   /** Change the Scaled extract region by giving the center of the
    * region */
-  void SetScaledExtractRegionCenter(const IndexType & index);
+  virtual void SetScaledExtractRegionCenter(const IndexType & index);
 
   /** Change the extract region by giving the center of the
    * region */
-  void SetExtractRegionCenter(const IndexType & index);
+  virtual void SetExtractRegionCenter(const IndexType & index);
 
   /** Change the extract region by giving the 2 points of the
    * region */
-  void SetExtractRegionByIndex(const IndexType & startIndex, const IndexType & stopIndex );
+  virtual void SetExtractRegionByIndex(const IndexType & startIndex, const IndexType & stopIndex );
 
   /** Get the sumbsampling rate */
-  unsigned int GetSubsamplingRate();
+  virtual unsigned int GetSubsamplingRate();
 
   /** Filters Initialisation. */
-  void Init();
+  virtual void Init();
 
 protected:
   /** Constructor */
   ImageLayerRenderingModel();
   /** Destructor */
-  ~ImageLayerRenderingModel();
+  virtual ~ImageLayerRenderingModel();
 
   /** Printself method */
-  void          PrintSelf(std::ostream& os, itk::Indent indent) const;
+  virtual void          PrintSelf(std::ostream& os, itk::Indent indent) const;
 
   /** Renders all visible layers */
-   void         RenderVisibleLayers(void);
+  virtual void         RenderVisibleLayers(void);
 
   /** Rasterize visible layers */
-   void         RasterizeVisibleLayers(void);
+  virtual void         RasterizeVisibleLayers(void);
 
   /** Notify a registered listener */
-   void         Notify(ListenerType * listener);
+  virtual  void         Notify(ListenerType * listener);
 
   /** Constrains the given region to the largest possible one. */
-  RegionType    ConstrainRegion(const RegionType & region, const RegionType & largest);
+  virtual RegionType    ConstrainRegion(const RegionType & region, const RegionType & largest);
 
 private:
   ImageLayerRenderingModel(const Self&);     // purposely not implemented

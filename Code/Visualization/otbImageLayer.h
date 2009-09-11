@@ -27,6 +27,7 @@
 #include "otbListSampleToHistogramListGenerator.h"
 
 #include "otbRenderingImageFilter.h"
+#include "otbGenericRSTransform.h"
 
 namespace otb
 {
@@ -39,7 +40,8 @@ namespace otb
 *  \ingroup Visualization
  */
 
-template <class TImage, class TOutputImage = otb::Image<itk::RGBAPixel<unsigned char>, 2 > >
+// template <class TImage, class TOutputImage = otb::Image<itk::RGBAPixel<unsigned char>, 2 > >
+template <class TImage, class TOutputImage>
 class ImageLayer
   : public ImageLayerBase<TOutputImage>
 {
@@ -67,6 +69,9 @@ public:
   typedef typename ImageType::RegionType                              RegionType;
   typedef typename ImageType::IndexType                               IndexType;
 
+  typedef itk::Point<double,2>                                          PointType;
+  typedef otb::GenericRSTransform<double> TransformType;
+
   /** Output image typedef */
   typedef TOutputImage                                                OutputImageType;
   typedef typename OutputImageType::PixelType                         OutputPixelType;
@@ -78,10 +83,10 @@ public:
   typedef itk::Statistics::ListSample<SampleType>                     ListSampleType;
   typedef typename ListSampleType::Pointer                       ListSamplePointerType;
 
-
+  typedef itk::Statistics::DenseFrequencyContainer                   DFContainerType;
   typedef itk::Statistics::Histogram<
                   typename itk::NumericTraits<ScalarType>::RealType,1,
-                  typename itk::Statistics::DenseFrequencyContainer> HistogramType;
+                  DFContainerType> HistogramType;
   typedef typename HistogramType::Pointer                             HistogramPointerType;
   typedef ObjectList<HistogramType>                                   HistogramListType;
   typedef typename HistogramListType::Pointer                         HistogramListPointerType;
@@ -95,38 +100,38 @@ public:
   typedef typename ExtractFilterType::Pointer                         ExtractFilterPointerType;
 
   /** Set/Get the image */
-  void SetImage(ImageType * img)
+  virtual void SetImage(ImageType * img)
   {
-    if(m_Image != img)
+    if(this->m_Image != img)
       {
-      m_Image = img;
-      m_ExtractFilter->SetInput(m_Image);
-      m_ScaledExtractFilter->SetInput(m_Image);
+      this-> m_Image = img;
+      this->m_ExtractFilter->SetInput(m_Image);
+      this->m_ScaledExtractFilter->SetInput(m_Image);
       }
   }
   itkGetObjectMacro(Image,ImageType);
 
   /** Set/Get the quicklook */
-  void SetQuicklook(ImageType * ql)
+  virtual void SetQuicklook(ImageType * ql)
   {
-    if(m_Quicklook != ql)
+    if(this->m_Quicklook != ql)
       {
-      m_Quicklook = ql;
-      m_QuicklookRenderingFilter->SetInput(m_Quicklook);
+      this->m_Quicklook = ql;
+      this->m_QuicklookRenderingFilter->SetInput(m_Quicklook);
       }
 
   }
   itkGetObjectMacro(Quicklook,ImageType);
 
   /** Get the histogram list */
-  HistogramListPointerType GetHistogramList()
+  virtual HistogramListPointerType GetHistogramList()
   {
     //FIXME Update condition?
     return m_RenderingFunction->GetHistogramList();
   }
 
   /** Set/Get the rendering function */
-  void SetRenderingFunction(RenderingFunctionType * function)
+  virtual void SetRenderingFunction(RenderingFunctionType * function)
   {
     m_RenderingFunction = function;
     m_RenderingFunction->SetListSample(this->GetListSample());
@@ -172,32 +177,46 @@ public:
   /** Get the pixel description */
   virtual std::string GetPixelDescription(const IndexType & index);
 
-protected:
-  /** Constructor */
-  ImageLayer();
-  /** Destructor */
-  ~ImageLayer();
-  /** Printself method */
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  /** Get the pixel location */
+  virtual PointType GetPixelLocation(const IndexType & index);
 
-  /** Update the histogram */
-  virtual void UpdateListSample();
-
+  /** Get the list sample used by the rendering function */
   virtual ListSamplePointerType GetListSample()
   {
 //     this->UpdateListSample();//FIXME condition to IsModified
     return m_ListSample;
   }
 
+  /** Set the list sample used by the rendering function */
+  virtual void SetListSample(ListSamplePointerType listSample)
+  {
+    m_ListSample = listSample;
+    m_ListSampleProvided = true;
+    m_RenderingFunction->SetListSample(m_ListSample);
+  }
+
+
+protected:
+  /** Constructor */
+  ImageLayer();
+  /** Destructor */
+  virtual ~ImageLayer();
+  /** Printself method */
+  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+
+  /** Update the histogram */
+  virtual void UpdateListSample();
+
   /** Update the images */
   virtual void RenderImages();
+
+  virtual void InitTransform();
 
   /** Find out the histogram size from the pixel */
   unsigned int PixelSize(ImagePointerType image, ScalarType* v) const;
   unsigned int PixelSize(ImagePointerType image, VectorPixelType* v) const;
   unsigned int PixelSize(ImagePointerType image, RGBPixelType* v) const;
   unsigned int PixelSize(ImagePointerType image, RGBAPixelType* v) const;
-
 
 private:
   ImageLayer(const Self&);     // purposely not implemented
@@ -211,6 +230,7 @@ private:
 
   /** List sample used to compute the histogram by the rendering function*/
   ListSamplePointerType m_ListSample;
+  bool m_ListSampleProvided;//To remember if the list sample was provided manually by the user
 
   /** Rendering function */
   RenderingFunctionPointerType m_RenderingFunction;
@@ -223,6 +243,13 @@ private:
   /** Extract filters */
   ExtractFilterPointerType    m_ExtractFilter;
   ExtractFilterPointerType    m_ScaledExtractFilter;
+
+  /** Coordinate transform */
+  TransformType::Pointer m_Transform;
+
+  /** General info about the image*/
+  std::string m_PlaceName;//FIXME the call should be done by a more general method outside of the layer
+  std::string m_CountryName;//which would also handle the dependance to curl
 
 }; // end class
 } // end namespace otb

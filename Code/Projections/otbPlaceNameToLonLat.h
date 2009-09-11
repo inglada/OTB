@@ -61,7 +61,7 @@ public:
 
 protected:
   PlaceNameToLonLat();
-  ~PlaceNameToLonLat() {};
+  virtual ~PlaceNameToLonLat() {};
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
   void RetrieveXML(std::ostringstream& urlStream);
   void ParseXMLYahoo();
@@ -80,8 +80,5 @@ private:
 
 } // namespace otb
 
-#ifndef OTB_MANUAL_INSTANTIATION
-#include "otbPlaceNameToLonLat.txx"
-#endif
 
 #endif

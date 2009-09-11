@@ -218,7 +218,7 @@ bool ossimRadarSat2ProductDoc::initPlatformPosition(
             ephemeris[i] = eph;
             ++nbrData;
 
-	 } // matches:  for (int i = 0 ; i < nbrData; ++i)
+   } // matches:  for (int i = 0 ; i < nbrData; ++i)
 
          if (result)
          {
@@ -419,7 +419,7 @@ bool ossimRadarSat2ProductDoc::initImageSize(const ossimXmlDocument* xdoc,
       ossimString s;
       if ( getNumberOfSamplesPerLine(xdoc, s) )
       {
-         imageSize.x = s.toFloat64();
+         imageSize.x = static_cast<ossim_int32>(s.toFloat64());
       }
       else
       {
@@ -427,7 +427,7 @@ bool ossimRadarSat2ProductDoc::initImageSize(const ossimXmlDocument* xdoc,
       }
       if ( getNumberOfLines(xdoc, s) )
       {
-         imageSize.y = s.toFloat64();
+         imageSize.y = static_cast<ossim_int32>(s.toFloat64());
       }
       else
       {
@@ -628,10 +628,25 @@ bool ossimRadarSat2ProductDoc::getSensor(const ossimXmlDocument* xdoc,
    return ossim::getPath(path, xdoc, s);
 }
 
+bool ossimRadarSat2ProductDoc::getBeamModeMnemonic(
+   const ossimXmlDocument* xdoc, ossimString& s) const
+{
+   ossimString path = "/product/sourceAttributes/beamModeMnemonic";
+   return ossim::getPath(path, xdoc, s);
+}
+
 bool ossimRadarSat2ProductDoc::getImageId(const ossimXmlDocument* xdoc,
                                           ossimString& s) const
 {
    ossimString path = "/product/sourceAttributes/imageId";
+   return ossim::getPath(path, xdoc, s);
+}
+
+bool ossimRadarSat2ProductDoc::getAcquisitionType(
+   const ossimXmlDocument* xdoc, ossimString& s) const
+{
+   ossimString path =
+      "/product/sourceAttributes/radarParameters/acquisitionType";
    return ossim::getPath(path, xdoc, s);
 }
 

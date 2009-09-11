@@ -29,6 +29,9 @@
 #include "itkNumericTraits.h"
 #include "itkVariableLengthVector.h"
 #include "otbMacro.h"
+#include "otbImageMetadataInterfaceBase.h"
+#include "otbImageMetadataInterfaceFactory.h"
+
 
 namespace otb
 {
@@ -56,7 +59,7 @@ public:
     m_IlluminationCorrectionCoefficient(1.0)
   {};
 
-  ~LuminanceToReflectanceImageFunctor() {};
+  virtual ~LuminanceToReflectanceImageFunctor() {};
 
   void SetSolarIllumination(double solarIllumination)
   {
@@ -81,7 +84,7 @@ public:
     TOutput outPixel;
     double temp;
     temp = static_cast<double>(inPixel)
-           * static_cast<double>(M_PI)
+           * static_cast<double>(CONST_PI)
            * m_IlluminationCorrectionCoefficient
            / m_SolarIllumination;
     outPixel = static_cast<TOutput>(temp);
@@ -221,7 +224,7 @@ protected:
   /** Update the functor list and input parameters */
   virtual void BeforeThreadedGenerateData(void)
   {
-    ImageMetadataInterface::Pointer imageMetadataInterface= ImageMetadataInterface::New();
+    ImageMetadataInterfaceBase::Pointer imageMetadataInterface = ImageMetadataInterfaceFactory::CreateIMI(this->GetInput()->GetMetaDataDictionary());
     if ((m_Day == 0) && (!m_IsSetFluxNormalizationCoefficient))
     {
       m_Day = imageMetadataInterface->GetDay(this->GetInput()->GetMetaDataDictionary());
@@ -269,7 +272,7 @@ protected:
           otb_6s_integer month = static_cast<otb_6s_integer>(m_Month);
           int cr(0);
           cr = otb_6s_varsol_(&day, &month, &dsol);
-          coefTemp = vcl_cos(m_ZenithalSolarAngle*M_PI/180.)*static_cast<double>(dsol);
+          coefTemp = vcl_cos(m_ZenithalSolarAngle*CONST_PI_180)*static_cast<double>(dsol);
         }
         else
         {
@@ -278,7 +281,7 @@ protected:
       }
       else
       {
-        coefTemp = vcl_cos(m_ZenithalSolarAngle*M_PI/180.)*m_FluxNormalizationCoefficient*m_FluxNormalizationCoefficient;
+        coefTemp = vcl_cos(m_ZenithalSolarAngle*CONST_PI_180)*m_FluxNormalizationCoefficient*m_FluxNormalizationCoefficient;
       }
       functor.SetIlluminationCorrectionCoefficient(1. / coefTemp);
       functor.SetSolarIllumination(static_cast<double>(m_SolarIllumination[i]));

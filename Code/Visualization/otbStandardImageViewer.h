@@ -93,7 +93,7 @@ public:
   typedef Image<RGBPixelType,2>                     OutputImageType;
 
   /** Image layer type */
-  typedef ImageLayer<ImageType>                     ImageLayerType;
+  typedef ImageLayer<ImageType, OutputImageType>    ImageLayerType;
   typedef typename ImageLayerType::Pointer          ImageLayerPointerType;
   typedef typename ImageLayerType::HistogramType    HistogramType;
 
@@ -178,7 +178,7 @@ protected:
   /** Destructor */
   ~StandardImageViewer();
   /** Printself method */
-  void PrintSelf(std::ostream& os, itk::Indent indent) const {};
+  void PrintSelf(std::ostream& , itk::Indent ) const {};
 
 private:
   StandardImageViewer(const Self&);     // purposely not implemented

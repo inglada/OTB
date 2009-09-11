@@ -42,7 +42,7 @@ class Identity
 {
 public:
   Identity(){};
-  ~Identity(){};
+  virtual ~Identity(){};
   bool operator !=(const Identity &) const
   {
     return false;
@@ -102,7 +102,7 @@ public:
 
 
   /** Extrema vector */
-  typedef std::vector<ScalarType>                    ExtremaVectorType;
+  typedef std::vector<RealScalarType>                    ExtremaVectorType;
   typedef TTransferFunction                          TransferFunctionType;
   typedef TPixelRepresentationFunction               PixelRepresentationFunctionType;
   typedef typename PixelRepresentationFunctionType::ChannelListType ChannelListType;
@@ -142,6 +142,7 @@ public:
 //            << "m_TransferFunction(spixel[0])" << m_TransferFunction(spixel[0])
 //            << ", m_TransferedMinimum[0] " << m_TransferedMinimum[0]
 //            << ", m_TransferedMaximum[0] " << m_TransferedMaximum[0])
+
     if (spixel.Size() == 1)
     {
       OutputValueType value = ClampRescale(m_TransferFunction(spixel[0]),m_TransferedMinimum[0],m_TransferedMaximum[0]);
@@ -158,7 +159,8 @@ public:
 
     if ((spixel.Size() == 4) && (output.Size() == 4))
     {
-      output[3] = spixel[3];//just copy the alpha channel
+      assert((spixel[3] >= 0) && (spixel[3] <=255));
+      output[3] = static_cast<OutputValueType>(spixel[3]);//just copy the alpha channel
     }
 
     return output;
@@ -175,22 +177,23 @@ public:
        || (this->GetPixelRepresentationFunction().GetMTime() > m_UTime))
     //NOTE: we assume that Transfer function have no parameters
     {
+      if ((this->GetListSample()).IsNotNull())
+      {
+        //the size of the Vector was unknow at construction time for the
+        //m_PixelRepresentationFunction, now, we may get a better default
+        if (m_PixelRepresentationFunction.IsUsingDefaultParameters())
+        {
+           if (this->GetListSample()->GetMeasurementVectorSize() >=3)
+           {
+             m_PixelRepresentationFunction.SetRedChannelIndex(0);
+             m_PixelRepresentationFunction.SetGreenChannelIndex(1);
+             m_PixelRepresentationFunction.SetBlueChannelIndex(2);
+           }
+        }
+      }
       if(m_AutoMinMax)
       {
-        if ((this->GetListSample()).IsNotNull())
-        {
-          //the size of the Vector was unknow at construction time for the
-          //m_PixelRepresentationFunction, now, we may get a better default
-          if (m_PixelRepresentationFunction.IsUsingDefaultParameters())
-          {
-             if (this->GetListSample()->GetMeasurementVectorSize() >=3)
-             {
-               m_PixelRepresentationFunction.SetRedChannelIndex(0);
-               m_PixelRepresentationFunction.SetGreenChannelIndex(1);
-               m_PixelRepresentationFunction.SetBlueChannelIndex(2);
-             }
-          }
-        }
+
         unsigned int nbComps = m_PixelRepresentationFunction.GetOutputSize();//FIXME check what happen if the m_PixelRepresentationFunction is modified AFTER the Initialize.
 
         otbMsgDevMacro(<<"Initialize(): "<<nbComps<<" components, quantile= "<<100*m_AutoMinMaxQuantile<<" %");
@@ -214,6 +217,18 @@ public:
               <<", max= "<<static_cast< typename itk::NumericTraits<ScalarType >::PrintType>(m_Maximum.back()));
         }
 
+      }
+      else
+      {
+        unsigned int nbComps = m_PixelRepresentationFunction.GetOutputSize();
+        if (m_Minimum.empty())
+        {
+          m_Minimum.resize(nbComps,0);
+        }
+        if (m_Maximum.empty())
+        {
+          m_Maximum.resize(nbComps,255);
+        }
       }
 
       typename ExtremaVectorType::const_iterator minIt = this->m_Minimum.begin();
@@ -239,8 +254,7 @@ public:
   const std::string Describe(const PixelType & spixel) const
   {
     itk::OStringStream oss;
-    oss << m_PixelRepresentationFunction.GetDescription() << ": "<< std::endl;
-    oss << "Channel displayed: ";
+    oss << m_PixelRepresentationFunction.GetDescription() << ": ";
     typename PixelRepresentationFunctionType::ChannelListType channels;
     channels = m_PixelRepresentationFunction.GetChannelList();
 
@@ -259,85 +273,17 @@ public:
     oss << "Value computed : "
             << static_cast<typename itk::NumericTraits<InternalPixelType>::PrintType>(spixelRepresentation) << std::endl;
     oss << "Value displayed: " << std::endl;
-    oss << "R " << static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[0]) << std::endl;
-    oss << "G " << static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[1]) << std::endl;
-    oss << "B " << static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[2]) << std::endl;
+    oss << "R " << std::setw(3)<< static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[0]) << ", ";
+    oss << "G " << std::setw(3)<< static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[1]) << ", ";
+    oss << "B " << std::setw(3)<< static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[2]);
     if (spixelDisplay.Size() == 4)
     {
-      oss << "A " << static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[3]) << std::endl;
+      oss << ", ";
+      oss << "A " << std::setw(3)<< static_cast<typename itk::NumericTraits<OutputValueType>::PrintType>(spixelDisplay[3]);
     }
-
+    oss << std::endl;
     return oss.str();
   }
-
-//   inline const std::string Describe(const ScalarType & spixel) const //FIXME not updated yet
-//   {
-//     itk::OStringStream oss;
-//     OutputPixelType output = this->Evaluate(spixel);
-//     oss<<"Grayscale [value: "<< static_cast<typename itk::NumericTraits<PixelType>::PrintType>(spixel)<<", displayed: "<< static_cast<unsigned int>(output[0])<<"]";
-//     return oss.str();
-//   }
-//
-//   inline const std::string Describe(const VectorPixelType & vpixel) const//FIXME not updated yet
-//   {
-//     itk::OStringStream oss;
-//     OutputPixelType output = this->Evaluate(vpixel);
-//
-//     for(unsigned int channel = 0; channel < vpixel.Size();++channel)
-//       {
-//       oss<<"c= "<< channel << ", ";
-//       if(channel == m_RedChannelIndex)
-//         {
-//         oss <<"R= " << std::setw(3) <<(int)output[0]<< ", ";
-//         }
-//       else if(channel == m_GreenChannelIndex)
-//         {
-//         oss <<"G= " << std::setw(3) <<(int)output[1]<< ", ";
-//         }
-//       else if(channel == m_BlueChannelIndex)
-//         {
-//         oss <<"B= " << std::setw(3) <<(int)output[2]<< ", ";
-//         }
-//       else
-//         {
-//         oss <<"       ";
-//         }
-//         oss<<"v= "<<static_cast<typename itk::NumericTraits<PixelType>::PrintType>(vpixel[channel])<<std::endl;
-//       }
-//     return oss.str();
-//   }
-//
-//   inline const std::string Describe(const RGBPixelType & spixel) const //FIXME not updated yet
-//   {
-//     itk::OStringStream oss;
-//     OutputPixelType output = this->Evaluate(spixel);
-//     oss<<"RGB value: "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[0])
-//         << ", "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[1])
-//         << ", "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[2])
-//         << std::endl;
-//     oss <<"   displayed: "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[0])
-//         << ", "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[1])
-//         << ", "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[2])
-//         <<std::endl;
-//     return oss.str();
-//   }
-//
-//   inline const std::string Describe(const RGBAPixelType & spixel) const //FIXME not updated yet
-//   {
-//     itk::OStringStream oss;
-//     OutputPixelType output = this->Evaluate(spixel);
-//     oss<<"RGBA value: "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[0])
-//         << ", "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[1])
-//         << ", "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[2])
-//         << " alpha: "<< static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(spixel[3])
-//         << std::endl;
-//     oss <<"   displayed: "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[0])
-//         << ", "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[1])
-//         << ", "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[2])
-//         << " alpha: "<< static_cast<typename itk::NumericTraits<OutputPixelType>::PrintType>(output[3])
-//         <<std::endl;
-//     return oss.str();
-//   }
 
    /** Set the minimum and maximum for the different bands.
      * Has to be provided as [minBand0, maxBand0, minBand1, maxBand1,...]
@@ -356,6 +302,7 @@ public:
      }
      m_AutoMinMax = false;
      UpdateTransferedMinMax();
+     otbMsgDevMacro(<< "StandardRenderingFunction::SetParameters: " << m_Minimum.size() << "; " << m_Maximum.size());
    }
 
   virtual void SetChannelList(std::vector<unsigned int>& channels)
@@ -384,7 +331,11 @@ public:
   }
 
     /** Set/Get the AutoMinMax mode */
-  itkSetMacro(AutoMinMax,bool);
+  virtual void SetAutoMinMax(bool val)
+  {
+	m_AutoMinMax = val;
+	this->Modified();
+  }
   itkGetMacro(AutoMinMax,bool);
   itkBooleanMacro(AutoMinMax);
 
@@ -396,7 +347,8 @@ protected:
                                 m_AutoMinMaxQuantile(0.02), m_DefaultChannelsAreSet(false), m_UTime()
   {}
   /** Destructor */
-  ~StandardRenderingFunction() {}
+  virtual ~StandardRenderingFunction() {}
+
   /** Perform the computation for a single value (this is done in
    * order to have the same code for vector and scalar version)
    */

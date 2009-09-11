@@ -40,10 +40,10 @@ class RemoveWrongDirectionFunctor
 {
 public:
   RemoveWrongDirectionFunctor() {};
-  ~RemoveWrongDirectionFunctor() {};
+  virtual ~RemoveWrongDirectionFunctor() {};
   inline TOutput operator()(const TInput1 &A, const TInput2 &B)
   {
-    if (B < M_PI/8)
+    if (B < CONST_PI_8)
     {
       return 0;
     }

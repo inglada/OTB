@@ -7,10 +7,11 @@ SET(INPUTDATA ${OTB_DATA_ROOT}/Input)
 SET(TEMP ${OTBTesting_BINARY_DIR}/Temporary)
 
 # Tolerance for pixel difference
-SET(TOL 0.0)
+SET(NOTOL 0.0)
 
 #EPSILON loose tolerance for multiplatform support.
-SET(EPSILON 0.0000000001)
+SET(EPSILON_10 0.0000000001)
+SET(EPSILON_4  0.0001)
 
 SET(DISPARITYMAP_TESTS1 ${CXX_TEST_PATH}/otbDisparityMapTests1)
 SET(DISPARITYMAP_TESTS2 ${CXX_TEST_PATH}/otbDisparityMapTests2)
@@ -25,7 +26,7 @@ ADD_TEST(dmTuDisparityMapEstimationMethodNew ${DISPARITYMAP_TESTS1}
 	 otbDisparityMapEstimationMethodNew)
 
 ADD_TEST(dmTvDisparityMapEstimationMethod ${DISPARITYMAP_TESTS1}
-   --compare-ascii ${TOL}
+   --compare-ascii ${NOTOL}
        ${BASELINE_FILES}/dmDisparityMapEstimationOutput.txt
        ${TEMP}/dmDisparityMapEstimationOutput.txt
    otbDisparityMapEstimationMethod
@@ -36,7 +37,7 @@ ADD_TEST(dmTvDisparityMapEstimationMethod ${DISPARITYMAP_TESTS1}
        2 3
 )
 ADD_TEST(dmTlDisparityMapEstimationMethod ${DISPARITYMAP_TESTS1}
-   --compare-ascii ${TOL}
+   --compare-ascii ${NOTOL}
        ${BASELINE_FILES}/dmDisparityMapEstimationOutput1.txt
        ${TEMP}/dmDisparityMapEstimationOutput1.txt
    otbDisparityMapEstimationMethod
@@ -58,7 +59,7 @@ ADD_TEST(dmTuNearestPointDeformationFieldGeneratorNew ${DISPARITYMAP_TESTS1}
 	 otbNearestPointDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvNearestPointDeformationFieldGenerator ${DISPARITYMAP_TESTS1}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_10}
 		${BASELINE}/dmTvNearestPointDeformationField.hdr
 		${TEMP}/dmTvNearestPointDeformationField.hdr
 	 otbNearestPointDeformationFieldGenerator
@@ -71,7 +72,7 @@ ADD_TEST(dmTuNCCRegistrationFilterNew ${DISPARITYMAP_TESTS1}
 	 otbNCCRegistrationFilterNew)
 
 ADD_TEST(dmTvNCCRegistrationFilter ${DISPARITYMAP_TESTS1}
---compare-image ${EPSILON}
+--compare-image ${EPSILON_10}
 		${BASELINE}/dmNCCRegistrationFilterOutput.tif
 		${TEMP}/dmNCCRegistrationFilterOutput.tif
 		otbNCCRegistrationFilter
@@ -86,7 +87,7 @@ ADD_TEST(dmTuMIRegistrationFilterNew ${DISPARITYMAP_TESTS1}
 	 otbMIRegistrationFilterNew)
 
 ADD_TEST(dmTvMIRegistrationFilter ${DISPARITYMAP_TESTS1}
---compare-image ${EPSILON}
+--compare-image ${EPSILON_10}
 		${BASELINE}/dmMIRegistrationFilterOutput.tif
 		${TEMP}/dmMIRegistrationFilterOutput.tif
 		otbMIRegistrationFilter
@@ -101,7 +102,7 @@ ADD_TEST(dmTuNNearestPointsLinearInterpolateDeformationFieldGeneratorNew ${DISPA
 	 otbNNearestPointsLinearInterpolateDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvNNearestPointsLinearInterpolateDeformationFieldGenerator ${DISPARITYMAP_TESTS1}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_10}
 		${BASELINE}/dmTvNNearestPointsLinearInterpolateDeformationField.hdr
 		${TEMP}/dmTvNNearestPointsLinearInterpolateDeformationField.hdr
 	 otbNNearestPointsLinearInterpolateDeformationFieldGenerator
@@ -115,7 +116,7 @@ ADD_TEST(dmTuBSplinesInterpolateDeformationFieldGeneratorNew ${DISPARITYMAP_TEST
 	 otbNNearestPointsLinearInterpolateDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvBSplinesInterpolateDeformationFieldGenerator ${DISPARITYMAP_TESTS1}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_10}
 		${BASELINE}/dmTvBSplinesInterpolateDeformationField.hdr
 		${TEMP}/dmTvBSplinesInterpolateDeformationField.hdr
 	 otbBSplinesInterpolateDeformationFieldGenerator
@@ -139,7 +140,7 @@ ADD_TEST(dmTuNearestTransformDeformationFieldGeneratorNew ${DISPARITYMAP_TESTS2}
 	 otbNearestTransformDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvNearestTransformDeformationFieldGenerator ${DISPARITYMAP_TESTS2}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_10}
 		${BASELINE}/dmTvNearestTransformDeformationField.hdr
 		${TEMP}/dmTvNearestTransformDeformationField.hdr
 	 otbNearestTransformDeformationFieldGenerator
@@ -153,7 +154,7 @@ ADD_TEST(dmTuNNearestTransformsLinearInterpolateDeformationFieldGeneratorNew ${D
 	 otbNNearestTransformsLinearInterpolateDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvNNearestTransformsLinearInterpolateDeformationFieldGenerator ${DISPARITYMAP_TESTS2}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_10}
 		${BASELINE}/dmTvNNearestTransformsLinearInterpolateDeformationField.hdr
 		${TEMP}/dmTvNNearestTransformsLinearInterpolateDeformationField.hdr
 	 otbNNearestTransformsLinearInterpolateDeformationFieldGenerator
@@ -166,7 +167,7 @@ ADD_TEST(dmTuBSplinesInterpolateTransformDeformationFieldGeneratorNew ${DISPARIT
 	 otbBSplinesInterpolateTransformDeformationFieldGeneratorNew)
 
 ADD_TEST(dmTvBSplinesInterpolateTransformDeformationFieldGenerator ${DISPARITYMAP_TESTS2}
-              --compare-image ${EPSILON}
+              --compare-image ${EPSILON_4}
 		${BASELINE}/dmTvBSplinesInterpolateTransformDeformationFieldGenerator.hdr
 		${TEMP}/dmTvBSplinesInterpolateTransformDeformationFieldGenerator.hdr
 	 otbBSplinesInterpolateTransformDeformationFieldGenerator
@@ -176,7 +177,7 @@ ADD_TEST(dmTvBSplinesInterpolateTransformDeformationFieldGenerator ${DISPARITYMA
 # -------  Additional tests for deformation fields estimation   ----------
 
 ADD_TEST(dmTlTranslationDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
-              --compare-n-images ${EPSILON} 12
+              --compare-n-images ${EPSILON_4} 12
 	      ${BASELINE}/dmTvTranslationDeformationFieldEstimationOutput_bs_df.hdr
 	      ${TEMP}/dmTvTranslationDeformationFieldEstimationOutput_bs_df.hdr
 	      ${BASELINE}/dmTvTranslationDeformationFieldEstimationOutput_bs_oi.tif
@@ -209,7 +210,7 @@ ADD_TEST(dmTlTranslationDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
 )
 
 ADD_TEST(dmTlEuler2DDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
-              --compare-n-images ${EPSILON} 12
+              --compare-n-images ${EPSILON_4} 12
 	      ${BASELINE}/dmTvEuler2DDeformationFieldEstimationOutput_bs_df.hdr
 	      ${TEMP}/dmTvEuler2DDeformationFieldEstimationOutput_bs_df.hdr
 	      ${BASELINE}/dmTvEuler2DDeformationFieldEstimationOutput_bs_oi.tif
@@ -242,7 +243,7 @@ ADD_TEST(dmTlEuler2DDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
 )
 
 ADD_TEST(dmTlCenteredRigidDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
-              --compare-n-images ${EPSILON} 12
+              --compare-n-images ${EPSILON_4} 12
 	      ${BASELINE}/dmTvCenteredRigidDeformationFieldEstimationOutput_bs_df.hdr
 	      ${TEMP}/dmTvCenteredRigidDeformationFieldEstimationOutput_bs_df.hdr
 	      ${BASELINE}/dmTvCenteredRigidDeformationFieldEstimationOutput_bs_oi.tif
@@ -276,7 +277,7 @@ ADD_TEST(dmTlCenteredRigidDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
 
 
 ADD_TEST(dmTlSinusoidDeformationFieldEstimation ${DISPARITYMAP_TESTS2}
-              --compare-n-images ${EPSILON} 12
+              --compare-n-images ${EPSILON_4} 12
 	      ${BASELINE}/dmTvSinusoidDeformationFieldEstimationOutput_bs_df.hdr
 	      ${TEMP}/dmTvSinusoidDeformationFieldEstimationOutput_bs_df.hdr
 	      ${BASELINE}/dmTvSinusoidDeformationFieldEstimationOutput_bs_oi.tif
@@ -315,7 +316,7 @@ ADD_TEST(dmTuStreamingWarpImageFilterNew ${DISPARITYMAP_TESTS3}
 	otbStreamingWarpImageFilterNew)
 
 ADD_TEST(dmTvStreamingWarpImageFilter ${DISPARITYMAP_TESTS3}
-	--compare-image ${EPSILON}
+	--compare-image ${EPSILON_10}
 	${BASELINE}/dmStreamingWarpImageFilterOutput.tif
 	${TEMP}/dmStreamingWarpImageFilterOutput.tif
 	otbStreamingWarpImageFilter
@@ -333,6 +334,7 @@ ADD_TEST(dmTvStreamingWarpImageFilter ${DISPARITYMAP_TESTS3}
 
 # -------       Fichiers sources CXX -----------------------------------
 SET(BasicDisparityMap_SRCS1
+otbDisparityMapTests1.cxx
 otbDisparityMapEstimationMethodNew.cxx
 otbDisparityMapEstimationMethod.cxx
 otbNCCRegistrationFilterNew.cxx
@@ -349,6 +351,7 @@ otbBSplinesInterpolateDeformationFieldGenerator.cxx
 otbPointSetWithTransformToDeformationFieldGeneratorNew.cxx
 )
 SET(BasicDisparityMap_SRCS2
+otbDisparityMapTests2.cxx
 otbNearestTransformDeformationFieldGeneratorNew.cxx
 otbNearestTransformDeformationFieldGenerator.cxx
 otbNNearestTransformsLinearInterpolateDeformationFieldGeneratorNew.cxx
@@ -360,17 +363,15 @@ otbBSplinesInterpolateTransformDeformationFieldGeneratorNew.cxx
 otbBSplinesInterpolateTransformDeformationFieldGenerator.cxx
 )
 SET(BasicDisparityMap_SRCS3
+otbDisparityMapTests3.cxx
 otbStreamingWarpImageFilterNew.cxx
 otbStreamingWarpImageFilter.cxx
 )
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 
-ADD_EXECUTABLE(otbDisparityMapTests1 otbDisparityMapTests1.cxx ${BasicDisparityMap_SRCS1})
-TARGET_LINK_LIBRARIES(otbDisparityMapTests1 OTBIO OTBDisparityMap OTBTesting)
-ADD_EXECUTABLE(otbDisparityMapTests2 otbDisparityMapTests2.cxx ${BasicDisparityMap_SRCS2})
-TARGET_LINK_LIBRARIES(otbDisparityMapTests2 OTBIO OTBDisparityMap OTBTesting)
-ADD_EXECUTABLE(otbDisparityMapTests3 otbDisparityMapTests3.cxx ${BasicDisparityMap_SRCS3})
-TARGET_LINK_LIBRARIES(otbDisparityMapTests3 OTBIO OTBDisparityMap OTBTesting)
+OTB_ADD_EXECUTABLE(otbDisparityMapTests1 "${BasicDisparityMap_SRCS1}" "OTBDisparityMap;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbDisparityMapTests2 "${BasicDisparityMap_SRCS2}" "OTBDisparityMap;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbDisparityMapTests3 "${BasicDisparityMap_SRCS3}" "OTBDisparityMap;OTBIO;OTBTesting")
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

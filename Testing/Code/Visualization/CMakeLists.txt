@@ -85,7 +85,10 @@ ${INPUTDATA}/couleurs.tif
 ${TEMP}/vrTvImageLayerVectorQuicklookOutput.png
 ${TEMP}/vrTvImageLayerVectorExtractOutput.png
 ${TEMP}/vrTvImageLayerVectorScaledExtractOutput.png
-10 50 50 50 200 200 200
+10 # sampling rate
+50 200 #min/max
+50 200 #min/max
+50 200 #min/max
 )
 
 #------------ otb::StandardRenderingFunction ------------
@@ -117,10 +120,10 @@ ${TEMP}/vrTvRenderingImageFilterVectorOutput.png
 otbRenderingImageFilterVector
 ${INPUTDATA}/QB_Toulouse_Ortho_XS.tif
 ${TEMP}/vrTvRenderingImageFilterVectorOutput.png
-0 1 2 #channel to extract
-179 802 #min max
-100 600 #min max
-200 700 #min max
+2 1 0 #channel to extract
+117 390 #min max
+223 430 #min max
+190 287 #min max
 )
 
 ADD_TEST(vrTvRenderingImageFilterVectorWithExpNegativeTransfer ${VISUREFAC_TESTS1}
@@ -297,7 +300,7 @@ IF(OTB_DATA_USE_LARGEINPUT)
 
 ADD_TEST(vrTvImageViewerEndToEndWithVectorData ${VISUREFAC_TESTS1}
 otbImageViewerEndToEndWithVectorData
-${LARGEINPUTDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+${LARGEINPUTDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
 ${INPUTDATA}/ToulouseRoad-examples.shp
 ${INPUTDATA}/DEM/srtm_directory
 200 500 200 0
@@ -318,7 +321,7 @@ ${INPUTDATA}/couleurs.tif 0
 IF(OTB_DATA_USE_LARGEINPUT)
 ADD_TEST(vrTvStandardImageViewerToulouseWithWaterwaysShp ${VISUREFAC_TESTS1}
 otbStandardImageViewer
-${LARGEINPUTDATA}/TOULOUSE/QuickBird/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
+${LARGEINPUTDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
 0
 ${LARGEINPUTDATA}/VECTOR/MidiPyrenees/waterways.shp
 ${INPUTDATA}/DEM/srtm_directory
@@ -336,6 +339,7 @@ otbSplittedWidgetManagerNew
 
 # Testing srcs
 SET(Visualization_SRCS1
+otbVisualizationTests1.cxx
 otbImageWidgetNew.cxx
 otbImageWidget.cxx
 otbImageWidgetActionHandlerNew.cxx
@@ -383,8 +387,6 @@ otbSplittedWidgetManagerNew.cxx
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 
-# Building testing executables
-ADD_EXECUTABLE(otbVisualizationTests1 otbVisualizationTests1.cxx ${Visualization_SRCS1})
-TARGET_LINK_LIBRARIES(otbVisualizationTests1 OTBVisualization OTBIO OTBTesting)
+OTB_ADD_EXECUTABLE(otbVisualizationTests1 "${Visualization_SRCS1}" "OTBVisualization;OTBIO;OTBTesting")
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

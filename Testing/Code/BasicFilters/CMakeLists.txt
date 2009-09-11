@@ -187,7 +187,7 @@ IF(OTB_DATA_USE_LARGEINPUT)
 		${BASELINE}/bfTvStreamingShrinkImageFilterQBPANOutput.hdr
 		${TEMP}/bfTvStreamingShrinkImageFilterQBPANOutput.hdr
 	otbStreamingShrinkImageFilter
-	${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+	${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
 	${TEMP}/bfTvStreamingShrinkImageFilterQBPANOutput.hdr
 	50
 )
@@ -197,7 +197,7 @@ ADD_TEST(bfTvStreamingShrinkImageFilterQBMUL ${BASICFILTERS_TESTS2}
 		${BASELINE}/bfTvStreamingShrinkImageFilterQBMULOutput.hdr
 		${TEMP}/bfTvStreamingShrinkImageFilterQBMULOutput.hdr
 		otbStreamingShrinkImageFilter
-	${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
+	${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
 	${TEMP}/bfTvStreamingShrinkImageFilterQBMULOutput.hdr
 	20
 )
@@ -246,7 +246,7 @@ IF(OTB_DATA_USE_LARGEINPUT)
 		${BASELINE_FILES}/ioOSSIMImageQuickbirdMetaDataReader.txt
                 ${TEMP}/bfTvImportGeoInformationKeywordListOutput.txt
          otbImportGeoInformationImageFilterWithKeywordList
-         ${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+         ${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
 	 ${TEMP}/bfTvImportGeoInformationKeywordListOutput.txt
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
@@ -397,7 +397,7 @@ ADD_TEST(bfTvStreamingStatisticsImageFilter ${BASICFILTERS_TESTS4}
  		   ${BASELINE_FILES}/bfStreamingStatisticsImageFilterResults.txt
  		   ${TEMP}/bfStreamingStatisticsImageFilterResults.txt
          otbStreamingStatisticsImageFilter
-#		${IMAGEDATA}/TOULOUSE/QuickBird/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+#		${IMAGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
                 ${INPUTDATA}/small_poupees_1canal.hd
 		${TEMP}/bfStreamingStatisticsImageFilterResults.txt)
 
@@ -425,9 +425,12 @@ ADD_TEST(bfTuStreamingResampleImageFilterNew ${BASICFILTERS_TESTS5}
          otbStreamingResampleImageFilterNew)
 
 ADD_TEST(bfTvStreamingResampleImageFilter ${BASICFILTERS_TESTS5}
-				otbStreamingResampleImageFilter
-				${INPUTDATA}/poupees.tif
-				${TEMP}/bfTvStreamingResamplePoupeesTest.tif
+          --compare-image ${NOTOL}
+              ${BASELINE}/bfTvStreamingResamplePoupeesTest.tif
+              ${TEMP}/bfTvStreamingResamplePoupeesTest.tif
+          otbStreamingResampleImageFilter
+              ${INPUTDATA}/poupees.tif
+              ${TEMP}/bfTvStreamingResamplePoupeesTest.tif
 )
 
 ADD_TEST(bfTvStreamingResampleImageFilterCompareWithITK ${BASICFILTERS_TESTS5}
@@ -452,6 +455,15 @@ ADD_TEST(bfTvStreamingResampleImageFilterCompareWithITK ${BASICFILTERS_TESTS5}
 #					${TEMP}/bfTvStreamingResampleSPOT5TestOTB.tif
 #)
 
+
+ADD_TEST(bfTvResampleSLCImage ${BASICFILTERS_TESTS5}
+            --compare-image ${NOTOL}
+                ${BASELINE}/bfTvResampleSLCImage.tif
+                ${TEMP}/bfTvResampleSLCImage.tif
+            otbResampleSLCImage
+                ${INPUTDATA}/RSAT_imagery_HH.tif
+                ${TEMP}/bfTvResampleSLCImage.tif
+)
 
 
 # -------            otb::StreamingStatisticsVectorImageFilter   ----------------------------
@@ -514,7 +526,16 @@ ADD_TEST(bfTvPrintableImageFilter ${BASICFILTERS_TESTS5}
 		${TEMP}/bfTvPrintableImageFilter.png
 		)
 
-
+ADD_TEST(bfTvPrintableImageFilterWithMask ${BASICFILTERS_TESTS5}
+     --compare-image ${NOTOL}
+     		     ${BASELINE}/bfTvPrintableImageFilterWithMask.png
+		     ${TEMP}/bfTvPrintableImageFilterWithMask.png
+         otbPrintableImageFilterWithMask
+		${INPUTDATA}/poupees.tif
+		${INPUTDATA}/carre.png
+		${TEMP}/bfTvPrintableImageFilterWithMask.png
+		0 # background
+		)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbBasicFiltersTests6 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -800,9 +821,19 @@ ${TEMP}/bfTvVectorImageToAmplitudeImageFilterOutput.tif
   ADD_TEST(bfTuEuclideanDistanceWithMissingValueNew ${BASICFILTERS_TESTS8}
          otbEuclideanDistanceWithMissingValueNew)
 
-ADD_TEST(bfTvEuclideanDistanceWithMissingValue ${BASICFILTERS_TESTS8}
+  ADD_TEST(bfTvEuclideanDistanceWithMissingValue ${BASICFILTERS_TESTS8}
          otbEuclideanDistanceWithMissingValue)
 
+
+# -------            otb::FlexibleDistanceWithMissingValue   ----------------------------
+
+  ADD_TEST(bfTuFlexibleDistanceWithMissingValueNew ${BASICFILTERS_TESTS8}
+         otbFlexibleDistanceWithMissingValueNew)
+
+  ADD_TEST(bfTvFlexibleDistanceWithMissingValue ${BASICFILTERS_TESTS8}
+          otbFlexibleDistanceWithMissingValue
+          0.000001
+)
 
 # -------            otb::LabelizeNeighborhoodConnectedImageFilter   ----------------------------
 
@@ -891,6 +922,11 @@ ADD_TEST(bfTvVarianceImageFilter ${BASICFILTERS_TESTS8}
         ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
         ${TEMP}/bfVarianceImageFilter.tif
 )
+
+# ------             otb::BoxAndWhiskerImageFilter -------------
+
+ADD_TEST(bfTuBoxAndWhiskerImageFilter ${BASICFILTERS_TESTS8}
+         otbBoxAndWhiskerImageFilterNew )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbBasicFiltersTests9 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1140,7 +1176,23 @@ ADD_TEST(bfTvPolygonCompacityFunctor ${BASICFILTERS_TESTS10}
 	 ${TEMP}/bfPolygonCompacityFunctorTest.txt
 )
 
+ADD_TEST(bfTvPathLengthFunctor ${BASICFILTERS_TESTS10}
+        --compare-ascii ${NOTOL}
+            ${BASELINE_FILES}/bfPathLengthFunctorTest.txt
+            ${TEMP}/bfPathLengthFunctorTest.txt
+         otbPathLengthFunctor
+         ${INPUTDATA}/polygon.png
+         ${TEMP}/bfPathLengthFunctorTest.txt
+)
 
+ADD_TEST(bfTvClosePathFunctor ${BASICFILTERS_TESTS10}
+        --compare-ascii ${NOTOL}
+            ${BASELINE_FILES}/bfClosePathFunctorTest.txt
+            ${TEMP}/bfClosePathFunctorTest.txt
+         otbClosePathFunctor
+         ${INPUTDATA}/polygon.png
+         ${TEMP}/bfClosePathFunctorTest.txt
+)
 
 # -------            otb::PersistentVectorizationImageFilter   ----------------------------
 
@@ -1497,10 +1549,47 @@ ADD_TEST(bfTvChangeLabelImageFilter ${BASICFILTERS_TESTS12}
   255   # upper  threshold
 )
 
+# ----- otbSubsampleImageFilter --------------------------------------
+ADD_TEST(bfTuSubsampleImageFilterNew ${BASICFILTERS_TESTS12}
+	otbSubsampleImageFilterNew)
+
+ADD_TEST(bfTvSubsampleImageFilter ${BASICFILTERS_TESTS12}
+	--compare-image ${NOTOL}
+		${TEMP}/bfSubsampleImageFilterOversampled.tif
+		${TEMP}/bfSubsampleImageFilterOnePixelOutOf2.tif
+	otbSubsampleImageFilter
+		${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+		${TEMP}/bfSubsampleImageFilterOversampled.tif
+		${TEMP}/bfSubsampleImageFilterOnePixelOutOf2.tif
+)
+
+# -----  otbImageAndVectorImageOperationFilter  --------------------------------------
+ADD_TEST(bfTuImageAndVectorImageOperationFilterNew ${BASICFILTERS_TESTS12}
+	otbImageAndVectorImageOperationFilterNew)
+
+ADD_TEST(bfTvImageAndVectorImageOperationFilterTest ${BASICFILTERS_TESTS12}
+	--compare-n-images ${NOTOL} 4
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestAdd.tif
+		${BASELINE}/bfTvImageAndVectorImageOperationFilterTestAdd.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestSub.tif
+		${BASELINE}/bfTvImageAndVectorImageOperationFilterTestSub.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestMul.tif
+		${BASELINE}/bfTvImageAndVectorImageOperationFilterTestMul.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestDiv.tif
+		${BASELINE}/bfTvImageAndVectorImageOperationFilterTestDiv.tif
+	otbImageAndVectorImageOperationFilterTest
+		${INPUTDATA}/checkerboard_128_128.png
+		${INPUTDATA}/poupees_sub.png
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestAdd.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestSub.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestMul.tif
+		${TEMP}/bfTvImageAndVectorImageOperationFilterTestDiv.tif
+)
 
 
 # A enrichir
 SET(BasicFilters_SRCS1
+otbBasicFiltersTests1.cxx
 otbLeeFilter.cxx
 #otbFrostFilterTest.cxx
 otbFrostFilterNew.cxx
@@ -1517,6 +1606,7 @@ otbMeanFunctorImageTest.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS2
+otbBasicFiltersTests2.cxx
 otbLogPolarTransformNew.cxx
 otbLogPolarTransform.cxx
 otbLogPolarTransformResample.cxx
@@ -1531,6 +1621,7 @@ otbSpatialObjectToImageDrawingFilter.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS3
+otbBasicFiltersTests3.cxx
 otbImportGeoInformationImageFilterNew.cxx
 otbImportGeoInformationImageFilter.cxx
 otbImportGeoInformationImageFilterWithKeywordList.cxx
@@ -1546,6 +1637,7 @@ otbImageListToVectorImageFilter.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS4
+otbBasicFiltersTests4.cxx
 otbImageListToImageListApplyFilterNew.cxx
 otbImageListToImageListApplyFilter.cxx
 otbPerBandVectorImageFilterNew.cxx
@@ -1559,9 +1651,11 @@ otbVectorImageTo3DScalarImageFilter.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS5
+otbBasicFiltersTests5.cxx
 otbStreamingResampleImageFilterNew.cxx
 otbStreamingResampleImageFilter.cxx
 otbStreamingResampleImageFilterCompareWithITK.cxx
+otbResampleSLCImage.cxx
 otbStreamingStatisticsVectorImageFilterNew.cxx
 otbStreamingStatisticsVectorImageFilter.cxx
 otbMatrixTransposeMatrixImageFilterNew.cxx
@@ -1570,10 +1664,12 @@ otbUnaryImageFunctorWithVectorImageFilterNew.cxx
 otbUnaryImageFunctorWithVectorImageFilter.cxx
 otbPrintableImageFilterNew.cxx
 otbPrintableImageFilter.cxx
+otbPrintableImageFilterWithMask.cxx
 )
 
 # A enrichir
 SET(BasicFilters_SRCS6
+otbBasicFiltersTests6.cxx
 otbBSplineDecompositionImageFilterNew.cxx
 otbBSplineDecompositionImageFilter.cxx
 otbBSplineInterpolateImageFunctionNew.cxx
@@ -1589,6 +1685,7 @@ otbWindowedSincInterpolateImageHammingFunction.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS7
+otbBasicFiltersTests7.cxx
 otbWindowedSincInterpolateImageCosineFunctionNew.cxx
 otbWindowedSincInterpolateImageCosineFunction.cxx
 otbWindowedSincInterpolateImageWelchFunctionNew.cxx
@@ -1606,6 +1703,7 @@ otbVectorImageToIntensityImageFilter.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS8
+otbBasicFiltersTests8.cxx
 otbLabelizeConnectedThresholdImageFilterNew.cxx
 otbLabelizeConnectedThresholdImageFilter.cxx
 otbLabelizeNeighborhoodConnectedImageFilterNew.cxx
@@ -1622,10 +1720,14 @@ otbAmplitudePhaseToRGBFunctorNew.cxx
 otbAmplitudePhaseToRGBFunctor.cxx
 otbVarianceImageFilterNew.cxx
 otbVarianceImageFilter.cxx
+otbBoxAndWhiskerImageFilterNew.cxx
+otbFlexibleDistanceWithMissingValueNew.cxx
+otbFlexibleDistanceWithMissingValue.cxx
 )
 
 # A enrichir
 SET(BasicFilters_SRCS9
+otbBasicFiltersTests9.cxx
 otbContinuousMinimumMaximumImageCalculatorNew.cxx
 otbContinuousMinimumMaximumImageCalculatorTest.cxx
 otbMeanShiftImageFilterNew.cxx
@@ -1644,6 +1746,7 @@ otbEdgeDensityImageFilter.cxx
 
 # A enrichir
 SET(BasicFilters_SRCS10
+otbBasicFiltersTests10.cxx
 otbScalarImageTextureFunctorNew.cxx
 otbScalarImageTextureFunctor.cxx
 otbScalarVectorImageTextureFunctorNew.cxx
@@ -1651,6 +1754,8 @@ otbScalarVectorImageTextureFunctor.cxx
 otbGaborFilterGeneratorNew.cxx
 otbGaborFilterGenerator.cxx
 otbPolygonCompacityFunctor.cxx
+otbPathLengthFunctor.cxx
+otbClosePathFunctor.cxx
 otbPersistentVectorizationFilterNew.cxx
 otbPersistentVectorizationFilter.cxx
 )
@@ -1665,6 +1770,7 @@ otbCompareOverlapSaveAndClassicalConvolutionWithGaborFilter.cxx
 ENDIF(USE_FFTWD)
 
 SET(BasicFilters_SRCS11
+otbBasicFiltersTests11.cxx
 otbExtractROIResample.cxx
 #otbPointSetFunctionNew.cxx
 otbPointSetDensityFunctionNew.cxx
@@ -1691,48 +1797,31 @@ otbListSampleToHistogramListGenerator.cxx
 )
 
 SET(BasicFilters_SRCS12
+otbBasicFiltersTests12.cxx
 otbEdgeDetectorImageFilter.cxx
 otbEdgeDetectorImageFilterNew.cxx
 otbChangeLabelImageFilterNew.cxx
 otbChangeLabelImageFilter.cxx
+otbSubsampleImageFilterNew.cxx
+otbSubsampleImageFilter.cxx
+otbImageAndVectorImageOperationFilterNew.cxx
+otbImageAndVectorImageOperationFilterTest.cxx
 )
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 
-ADD_EXECUTABLE(otbBasicFiltersTests1 otbBasicFiltersTests1.cxx ${BasicFilters_SRCS1})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests1  OTBBasicFilters OTBIO OTBTesting)
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests1 "${BasicFilters_SRCS1}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests2 "${BasicFilters_SRCS2}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests3 "${BasicFilters_SRCS3}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests4 "${BasicFilters_SRCS4}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests5 "${BasicFilters_SRCS5}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests6 "${BasicFilters_SRCS6}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests7 "${BasicFilters_SRCS7}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests8 "${BasicFilters_SRCS8}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests9 "${BasicFilters_SRCS9}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests10 "${BasicFilters_SRCS10}" "OTBBasicFilters;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests11 "${BasicFilters_SRCS11}" "OTBBasicFilters;ITKAlgorithms;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests12 "${BasicFilters_SRCS12}" "OTBBasicFilters;ITKAlgorithms;OTBIO;OTBTesting")
 
-ADD_EXECUTABLE(otbBasicFiltersTests2 otbBasicFiltersTests2.cxx ${BasicFilters_SRCS2})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests2  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests3 otbBasicFiltersTests3.cxx ${BasicFilters_SRCS3})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests3  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests4 otbBasicFiltersTests4.cxx ${BasicFilters_SRCS4})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests4  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests5 otbBasicFiltersTests5.cxx ${BasicFilters_SRCS5})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests5  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests6 otbBasicFiltersTests6.cxx ${BasicFilters_SRCS6})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests6  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests7 otbBasicFiltersTests7.cxx ${BasicFilters_SRCS7})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests7  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests8 otbBasicFiltersTests8.cxx ${BasicFilters_SRCS8})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests8  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests9 otbBasicFiltersTests9.cxx ${BasicFilters_SRCS9})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests9  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests10 otbBasicFiltersTests10.cxx ${BasicFilters_SRCS10})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests10  OTBBasicFilters  OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests11 otbBasicFiltersTests11.cxx ${BasicFilters_SRCS11})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests11  OTBBasicFilters ITKAlgorithms OTBIO  OTBTesting)
-
-ADD_EXECUTABLE(otbBasicFiltersTests12 otbBasicFiltersTests12.cxx ${BasicFilters_SRCS12})
-TARGET_LINK_LIBRARIES(otbBasicFiltersTests12  OTBBasicFilters ITKAlgorithms OTBIO  OTBTesting)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

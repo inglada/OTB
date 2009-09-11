@@ -107,7 +107,7 @@ public:
 
 protected:
   /** Constructor */
-  AtmosphericRadiativeTermsSingleChannel() {};
+  AtmosphericRadiativeTermsSingleChannel();
   /** Destructor */
   ~AtmosphericRadiativeTermsSingleChannel() {};
   /**PrintSelf method */
@@ -144,7 +144,6 @@ private:
 
   /** The upward diffuse transmittance for aerosols. */
   double m_UpwardDiffuseTransmittanceForAerosol;
-
 };
 
 

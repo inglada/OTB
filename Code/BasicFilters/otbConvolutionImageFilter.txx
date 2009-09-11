@@ -116,8 +116,8 @@ ConvolutionImageFilter< TInputImage, TOutputImage, TBoundaryCondition>
   // support progress methods/callbacks
   itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
 
-  InputRealType sum;
-  InputRealType norm;
+  InputRealType sum = itk::NumericTraits<InputRealType>::Zero;
+  InputRealType norm = itk::NumericTraits<InputRealType>::Zero;
 
   // Process each of the boundary faces.  These are N-d regions which border
   // the edge of the buffer.
@@ -131,14 +131,23 @@ ConvolutionImageFilter< TInputImage, TOutputImage, TBoundaryCondition>
     bit.GoToBegin();
     unsigned int neighborhoodSize = bit.Size();
 
+    // Compute the norm of the filter
+    if(m_NormalizeFilter)
+      {
+      norm = itk::NumericTraits<InputRealType>::Zero;
+      for (i = 0; i < neighborhoodSize; ++i)
+	{
+	 norm += static_cast<InputRealType>( vcl_abs(m_Filter(i)) );
+	}
+      }
+
     while ( ! bit.IsAtEnd() )
     {
       sum = itk::NumericTraits<InputRealType>::Zero;
-      norm = itk::NumericTraits<InputRealType>::Zero;
+
       for (i = 0; i < neighborhoodSize; ++i)
       {
         sum += static_cast<InputRealType>( bit.GetPixel(i)*m_Filter(i) );
-        norm += static_cast<InputRealType>( m_Filter(i) );
       }
 
       // get the mean value

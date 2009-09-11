@@ -32,7 +32,7 @@ namespace otb
 
 template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
 GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-::GenericRSTransform() : Superclass(SpaceDimension,ParametersDimension)
+::GenericRSTransform() : Superclass(SpaceDimension,ParametersDimension), m_DEMDirectory(""),  m_AverageElevation(-32768.0)
 {
   m_InputProjectionRef.clear();
   m_OutputProjectionRef.clear();
@@ -47,149 +47,8 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   m_InputTransform = NULL;
   m_OutputTransform = NULL;
   m_TransformUpToDate = false;
+  m_TransformAccuracy = Projection::UNKNOWN;
 }
-
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetInputSpacing(const SpacingType & spacing )
-{
-  itkDebugMacro("setting Spacing to " << spacing);
-  if ( this->m_InputSpacing != spacing )
-  {
-    this->m_InputSpacing = spacing;
-    this->Modified();
-  }
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetInputSpacing(const double spacing[2] )
-{
-  SpacingType s(spacing);
-  this->SetInputSpacing(s);
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetInputSpacing(const float spacing[2] )
-{
-  itk::Vector<float, 2> sf(spacing);
-  SpacingType s;
-  s.CastFrom( sf );
-  this->SetInputSpacing(s);
-}
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetInputOrigin(const double origin[2] )
-{
-  OriginType p(origin);
-  this->SetInputOrigin( p );
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetInputOrigin(const float origin[2] )
-{
-  itk::Point<float, 2> of(origin);
-  OriginType p;
-  p.CastFrom( of );
-  this->SetInputOrigin( p );
-}
-
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetOutputSpacing(const SpacingType & spacing )
-{
-  itkDebugMacro("setting Spacing to " << spacing);
-  if ( this->m_OutputSpacing != spacing )
-  {
-    this->m_OutputSpacing = spacing;
-    this->Modified();
-  }
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetOutputSpacing(const double spacing[2] )
-{
-  SpacingType s(spacing);
-  this->SetOutputSpacing(s);
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetOutputSpacing(const float spacing[2] )
-{
-  itk::Vector<float, 2> sf(spacing);
-  SpacingType s;
-  s.CastFrom( sf );
-  this->SetOutputSpacing(s);
-}
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetOutputOrigin(const double origin[2] )
-{
-  OriginType p(origin);
-  this->SetOutputOrigin( p );
-}
-
-
-//----------------------------------------------------------------------------
-template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-    void
-        GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-  ::SetOutputOrigin(const float origin[2] )
-{
-  itk::Point<float, 2> of(origin);
-  OriginType p;
-  p.CastFrom( of );
-  this->SetOutputOrigin( p );
-}
-
-
-
-// template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
-//     const typename GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>::TransformType*
-// GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
-// ::GetTransform ()
-// {
-//   itkDebugMacro("returning MapProjection address " << this->m_Transform );
-//   if ((reinstanciateTransform) || (m_Transform == NULL))
-//   {
-//     this->InstanciateProjection();
-//   }
-//
-//   return this->m_Transform;
-// }
 
 
 template<class TScalarType, unsigned int NInputDimensions, unsigned int NOutputDimensions>
@@ -206,10 +65,6 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   return this->m_Transform;
 }
 
-
-
-
-
 /**
  * Instanciate the transformation according to informations
  */
@@ -220,23 +75,14 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
 {
   m_Transform = TransformType::New();
 
-  //If the information was not specified by the user, it is filled from the metadata
-  //   InputVectorDataPointer input = this->GetInput();
-  //   const itk::MetaDataDictionary & m_InputDictionary = input->GetMetaDataDictionary();
-
   if (m_InputKeywordList.GetSize()  == 0)
   {
-    ossimKeywordlist kwl;
-    itk::ExposeMetaData<ossimKeywordlist>(m_InputDictionary, MetaDataKey::OSSIMKeywordlistKey, kwl );
-    m_InputKeywordList.SetKeywordlist(kwl);
+    itk::ExposeMetaData<ImageKeywordlist>(m_InputDictionary, MetaDataKey::OSSIMKeywordlistKey, m_InputKeywordList );
   }
   if (m_InputProjectionRef.empty())
   {
     itk::ExposeMetaData<std::string>(m_InputDictionary, MetaDataKey::ProjectionRefKey, m_InputProjectionRef );
   }
-
-
-
 
   otbMsgDevMacro(<< "Information to instanciate transform: ");
   otbMsgDevMacro(<< " * Input Origin: " << m_InputOrigin);
@@ -250,41 +96,54 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   otbMsgDevMacro(<< " * Output Origin: " << m_OutputOrigin);
   otbMsgDevMacro(<< " * Output Spacing: " << m_OutputSpacing);
 
+  //Make sure that the state is clean:
+  m_InputTransform = NULL;
+  m_OutputTransform = NULL;
+
   bool firstTransformGiveGeo = true;
+  bool inputTransformIsSensor = false;
+  bool inputTransformIsMap = false;
+  bool outputTransformIsSensor = false;
+  bool outputTransformIsMap = false;
 
   //*****************************
   //Set the input transformation
   //*****************************
-
   try
-    {
+  {
     if (m_InputKeywordList.GetSize()  > 0)
-      {
-      typedef otb::ForwardSensorModel<double> ForwardSensorModelType;
-      ForwardSensorModelType::Pointer sensorModel = ForwardSensorModelType::New();
+    {
+      typedef otb::ForwardSensorModel<double, InputSpaceDimension, InputSpaceDimension> ForwardSensorModelType;
+      typename ForwardSensorModelType::Pointer sensorModel = ForwardSensorModelType::New();
       sensorModel->SetImageGeometry(m_InputKeywordList);
       if ( !m_DEMDirectory.empty())
-        {
+      {
         sensorModel->SetDEMDirectory(m_DEMDirectory);
-        }
-      m_InputTransform = sensorModel.GetPointer();
-      otbMsgDevMacro(<< "Input projection set to sensor model.");
       }
+      else if (m_AverageElevation != -32768.0)
+      {
+        sensorModel->SetAverageElevation(m_AverageElevation);
+      }
+      m_InputTransform = sensorModel.GetPointer();
+      inputTransformIsSensor = true;
+      otbMsgDevMacro(<< "Input projection set to sensor model.");
     }
+  }
   catch(itk::ExceptionObject &)
-    {
+  {
     otbMsgDevMacro(<<" Input keyword list does not describe a sensor model.");
-    }
+  }
 
 
   if ((m_InputTransform.IsNull()) && ( !m_InputProjectionRef.empty() ))//map projection
   {
-    typedef otb::GenericMapProjection<otb::INVERSE> InverseMapProjectionType;
-    InverseMapProjectionType::Pointer mapTransform = InverseMapProjectionType::New();
+    typedef otb::GenericMapProjection<otb::INVERSE, ScalarType, InputSpaceDimension, InputSpaceDimension> InverseMapProjectionType;
+    typename InverseMapProjectionType::Pointer mapTransform = InverseMapProjectionType::New();
     mapTransform->SetWkt(m_InputProjectionRef);
     if (mapTransform->GetMapProjection() != NULL)
     {
       m_InputTransform = mapTransform.GetPointer();
+      inputTransformIsMap = true;
       otbMsgDevMacro(<< "Input projection set to map transform: " << m_InputTransform);
     }
 
@@ -292,7 +151,7 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
 
   if (m_InputTransform.IsNull())//default if we didn't manage to instantiate it before
   {
-    m_InputTransform = itk::IdentityTransform< double, 2 >::New();
+    m_InputTransform = itk::IdentityTransform< double, NInputDimensions >::New();
 //     firstTransformGiveGeo = false;
 
     OGRSpatialReferenceH  hSRS = NULL;
@@ -322,34 +181,40 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   //Set the output transformation
   //*****************************
   try
-    {
+  {
     if (m_OutputKeywordList.GetSize()  > 0)
-      {
-      typedef otb::InverseSensorModel<double> InverseSensorModelType;
-      InverseSensorModelType::Pointer sensorModel = InverseSensorModelType::New();
+    {
+      typedef otb::InverseSensorModel<double, InputSpaceDimension, OutputSpaceDimension> InverseSensorModelType;
+      typename InverseSensorModelType::Pointer sensorModel = InverseSensorModelType::New();
       sensorModel->SetImageGeometry(m_OutputKeywordList);
       if ( !m_DEMDirectory.empty())
-        {
+      {
         sensorModel->SetDEMDirectory(m_DEMDirectory);
-        }
-      m_OutputTransform = sensorModel.GetPointer();
-      otbMsgDevMacro(<< "Output projection set to sensor model");
       }
+      else if (m_AverageElevation != -32768.0)
+      {
+        sensorModel->SetAverageElevation(m_AverageElevation);
+      }
+      m_OutputTransform = sensorModel.GetPointer();
+      outputTransformIsSensor = true;
+      otbMsgDevMacro(<< "Output projection set to sensor model");
     }
+  }
   catch(itk::ExceptionObject &)
-    {
+  {
     otbMsgDevMacro(<<" Output keyword list does not describe a sensor model.");
-    }
+  }
 
 
   if ((m_OutputTransform.IsNull()) && ( !m_OutputProjectionRef.empty() ))//map projection
   {
-    typedef otb::GenericMapProjection<otb::FORWARD> ForwardMapProjectionType;
-    ForwardMapProjectionType::Pointer mapTransform = ForwardMapProjectionType::New();
+    typedef otb::GenericMapProjection<otb::FORWARD, ScalarType, InputSpaceDimension, OutputSpaceDimension> ForwardMapProjectionType;
+    typename ForwardMapProjectionType::Pointer mapTransform = ForwardMapProjectionType::New();
     mapTransform->SetWkt(m_OutputProjectionRef);
     if (mapTransform->GetMapProjection() != NULL)
     {
       m_OutputTransform = mapTransform.GetPointer();
+      outputTransformIsMap = true;
       otbMsgDevMacro(<< "Output projection set to map transform: " << m_OutputTransform);
     }
 
@@ -357,7 +222,7 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
 
   if (m_OutputTransform.IsNull())//default if we didn't manage to instantiate it before
   {
-    m_OutputTransform = itk::IdentityTransform< double, 2 >::New();
+    m_OutputTransform = itk::IdentityTransform< double, NOutputDimensions >::New();
     if (firstTransformGiveGeo)
     {
       m_OutputProjectionRef = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
@@ -366,27 +231,24 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   }
 
 
-  //If the projection information for the output is provided, propagate it
-//   OutputVectorDataPointer output = this->GetOutput();
-//   itk::MetaDataDictionary & m_OutputDictionary = output->GetMetaDataDictionary();
-
-  //FIXME: this part will need to be propagated independantly in the VectorDataProjectionFilter
-//   if (m_OutputKeywordList.GetSize()  != 0)
-//   {
-//     ossimKeywordlist kwl;
-//     m_OutputKeywordList.convertToOSSIMKeywordlist (kwl);
-//     itk::EncapsulateMetaData<ossimKeywordlist>(m_OutputDictionary, MetaDataKey::OSSIMKeywordlistKey, kwl );
-//   }
-//   if ( !m_OutputProjectionRef.empty())
-//   {
-//     itk::EncapsulateMetaData<std::string>(m_OutputDictionary, MetaDataKey::ProjectionRefKey, m_OutputProjectionRef );
-//   }
-
-
   m_Transform->SetFirstTransform(m_InputTransform);
   m_Transform->SetSecondTransform(m_OutputTransform);
-
   m_TransformUpToDate = true;
+  //The acurracy information is a simplistic model for now and should be refined
+  if ((inputTransformIsSensor || outputTransformIsSensor) && (m_DEMDirectory.empty()))
+  {
+    //Sensor model without DEM
+    m_TransformAccuracy = Projection::ESTIMATE;
+  }
+  else if (!inputTransformIsSensor && !outputTransformIsSensor && !inputTransformIsMap && !outputTransformIsMap)
+  {
+    //no transform
+    m_TransformAccuracy = Projection::UNKNOWN;
+  }
+  else
+  {
+    m_TransformAccuracy = Projection::PRECISE;
+  }
 
 }
 
@@ -409,6 +271,8 @@ GenericRSTransform<TScalarType, NInputDimensions, NOutputDimensions>
   // Apply output origin/spacing
   outputPoint[0] = (outputPoint[0] - m_OutputOrigin[0]) / m_OutputSpacing[0];
   outputPoint[1] = (outputPoint[1] - m_OutputOrigin[1]) / m_OutputSpacing[1];
+
+//  otbMsgDevMacro("GenericRSTransform: " << point << " -> " << outputPoint);
 
   return outputPoint;
 }

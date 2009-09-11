@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDecompositionImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2008-10-09 20:43:42 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2009-04-05 23:09:19 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -182,8 +182,8 @@ BSplineDecompositionImageFilter<TInputImage, TOutputImage>
 {
   /* begining InitialCausalCoefficient */
   /* See Unser, 1999, Box 2 for explaination */
-
-  double  sum, zn, z2n, iz;
+  CoeffType sum;
+  double zn, z2n, iz;
   unsigned long  horizon;
 
   /* this initialization corresponds to mirror boundaries */
@@ -191,7 +191,7 @@ BSplineDecompositionImageFilter<TInputImage, TOutputImage>
   zn = z;
   if (m_Tolerance > 0.0)
     {
-    horizon = (long)vcl_ceil(log(m_Tolerance) / vcl_log(fabs(z)));
+    horizon = (long)vcl_ceil(vcl_log(m_Tolerance) / vcl_log(vcl_fabs(z)));
     }
   if (horizon < m_DataLength[m_IteratorDirection])
     {
@@ -340,7 +340,7 @@ BSplineDecompositionImageFilter<TInputImage, TOutputImage>
   unsigned long j = 0;
   while ( !Iter.IsAtEndOfLine() )
     {
-    m_Scratch[j] = static_cast<double>( Iter.Get() );
+    m_Scratch[j] = static_cast<CoeffType>( Iter.Get() );
     ++Iter;
     ++j;
     }

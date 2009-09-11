@@ -217,7 +217,7 @@ int main( int argc, char *argv[] )
   //
   // Where :
   // \begin{itemize}
-  // \item $\mathbf{rho_{TOA}^{k}}$ is the reflectance measured by the sensor;
+  // \item $\mathbf{\rho_{TOA}^{k}}$ is the reflectance measured by the sensor;
   // \item $\theta_{S}$ is the zenithal solar angle in degrees;
   // \item $E_{S}^{k}$ is the solar illumination out of the atmosphere measured at a distance
   // $d_{0}$ from the Earth;
@@ -419,6 +419,8 @@ int main( int argc, char *argv[] )
 
   filterAtmosphericCorrectionParametersTo6SRadiativeTerms->SetInput(
     dataAtmosphericCorrectionParameters );
+
+  filterAtmosphericCorrectionParametersTo6SRadiativeTerms->Update();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

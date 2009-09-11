@@ -8,7 +8,8 @@ SET(TEMP ${OTBTesting_BINARY_DIR}/Temporary)
 
 #Tolerance sur diff pixel image
 SET(TOL 0.0)
-SET(EPSILON 0.00000001)
+SET(EPSILON6 0.000001)
+SET(EPSILON8 0.00000001)
 
 
 SET(MULTISCALE_TESTS1 ${CXX_TEST_PATH}/otbMultiScaleTests1)
@@ -25,7 +26,7 @@ ADD_TEST(msTuMorphoPyrResamplerNew ${MULTISCALE_TESTS1}
          otbMorphologicalPyramidResamplerNew)
 
 ADD_TEST(msTvMorphoPyrResampler ${MULTISCALE_TESTS1}
-  --compare-n-images ${EPSILON} 2
+  --compare-n-images ${EPSILON8} 2
 		   ${BASELINE}/msPyrResampler_IKO_LesHalles_256_2.hdr
 		   ${TEMP}/msPyrResampler_IKO_LesHalles_256_2.hdr
 		   ${BASELINE}/msPyrResampler_IKO_LesHalles_full.hdr
@@ -83,7 +84,7 @@ ADD_TEST(msTuMorphoPyrMRToMSConverterNew ${MULTISCALE_TESTS1}
          otbMorphologicalPyramidMRToMSConverterNew)
 
 ADD_TEST(msTvMorphoPyrMRToMSConverter ${MULTISCALE_TESTS1}
-   --compare-n-images ${EPSILON} 3
+   --compare-n-images ${EPSILON8} 3
  		   ${BASELINE}/msPyrMRToMS_IKO_Halles_4_2_sf_full.hdr
  		   ${TEMP}/msPyrMRToMS_IKO_Halles_4_2_sf_full.hdr
 		   ${BASELINE}/msPyrMRToMS_IKO_Halles_4_2_if_full.hdr
@@ -357,71 +358,104 @@ ADD_TEST(msTvGeodesicMorphologyIterativeDecompositionImageFilter ${MULTISCALE_TE
 )
 
 
+# -------            otb::WaveletOperator    ----------
+
+ADD_TEST(msTuWaveletOperatorNew ${MULTISCALE_TESTS4}
+         otbWaveletOperatorNew )
+
+# Further tests ar skiped for the moment due to unexpected "Multiple Defined" errors...
+#IF(DESACTIVATED_FOR_NOW)
+
+ADD_TEST(msTuWaveletOperator ${MULTISCALE_TESTS4}
+         otbWaveletOperator )
+
+# -------            otb::WaveletFilterBankNew   ----------
+ADD_TEST(msTuWaveletFilterBankNew ${MULTISCALE_TESTS4}
+         otbWaveletFilterBankNew)
+
+ADD_TEST(msTuWaveletInverseFilterBankNew ${MULTISCALE_TESTS4}
+         otbWaveletInverseFilterBankNew)
+
+ADD_TEST(msTvWaveletFilterBank ${MULTISCALE_TESTS4}
+        --compare-image ${TOL}
+              ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+              ${TEMP}/ROI_IKO_PAN_LesHalles_FilterBank.tif
+         otbWaveletFilterBank
+          ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+		  2
+          ${TEMP}/ROI_IKO_PAN_LesHalles_FilterBank.tif
+)
+
+ADD_TEST(msTvWaveletMultiScaleFilterBank ${MULTISCALE_TESTS4}
+        --compare-image ${EPSILON6}
+              ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+              ${TEMP}/ROI_IKO_PAN_LesHalles_FilterBankMultiScale.tif
+         otbWaveletFilterBank
+          ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+		  1
+          ${TEMP}/ROI_IKO_PAN_LesHalles_FilterBankMultiScale.tif
+)
+
 # -------            otb::WaveletTransform   ----------
 ADD_TEST(msTuWaveletTransformNew ${MULTISCALE_TESTS4}
          otbWaveletTransformNew)
 
+ADD_TEST(msTuWaveletInverseTransformNew ${MULTISCALE_TESTS4}
+         otbWaveletInverseTransformNew)
+
 ADD_TEST(msTvWaveletTransform ${MULTISCALE_TESTS4}
-        --compare-n-images ${TOL} 4
-              ${BASELINE}/msTvWaveletTransform-0.tif
-              ${TEMP}/msTvWaveletTransform-0.tif
-              ${BASELINE}/msTvWaveletTransform-1.tif
-              ${TEMP}/msTvWaveletTransform-1.tif
-              ${BASELINE}/msTvWaveletTransform-2.tif
-              ${TEMP}/msTvWaveletTransform-2.tif
-              ${BASELINE}/msTvWaveletTransform-3.tif
-              ${TEMP}/msTvWaveletTransform-3.tif
+        --compare-image ${EPSILON6}
+			  ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+              ${TEMP}/ROI_IKO_PAN_LesHalles_Wvlt.tif
          otbWaveletTransform
           ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
-          1
-          ${TEMP}/msTvWaveletTransform
+          2 2
+		  ${TEMP}/ROI_IKO_PAN_LesHalles_Wvlt.tif
+)
+
+ADD_TEST(msTvWaveletMultiScaleTransform ${MULTISCALE_TESTS4}
+        --compare-image ${TOL}
+			  ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+              ${TEMP}/ROI_IKO_PAN_LesHalles_WvltMultiScale.tif
+         otbWaveletTransform
+          ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+          2 1
+		  ${TEMP}/ROI_IKO_PAN_LesHalles_WvltMultiScale.tif
 )
 
 # -------            otb::WaveletPacketTransform   ----------
 ADD_TEST(msTuWaveletPacketTransformNew ${MULTISCALE_TESTS4}
          otbWaveletPacketTransformNew)
 
+ADD_TEST(msTuWaveletPacketInverseTransformNew ${MULTISCALE_TESTS4}
+         otbWaveletPacketInverseTransformNew)
+
 ADD_TEST(msTvWaveletPacketTransform ${MULTISCALE_TESTS4}
-        --compare-n-images ${TOL} 4
-              ${BASELINE}/msTvWaveletPacketTransform-0.tif
-              ${TEMP}/msTvWaveletPacketTransform-0.tif
-              ${BASELINE}/msTvWaveletPacketTransform-1.tif
-              ${TEMP}/msTvWaveletPacketTransform-1.tif
-              ${BASELINE}/msTvWaveletPacketTransform-2.tif
-              ${TEMP}/msTvWaveletPacketTransform-2.tif
-              ${BASELINE}/msTvWaveletPacketTransform-3.tif
-              ${TEMP}/msTvWaveletPacketTransform-3.tif
+        --compare-image ${EPSILON6}
+			  ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+			  ${TEMP}/ROI_IKO_PAN_LesHalles_WvltPacket.tif
          otbWaveletPacketTransform
           ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
-          1
-          ${TEMP}/msTvWaveletPacketTransform
+          2 2
+          ${TEMP}/ROI_IKO_PAN_LesHalles_WvltPacket.tif
 )
 
-# -------            otb::WaveletFilterBankNew   ----------
-ADD_TEST(msTuWaveletFilterBankNew ${MULTISCALE_TESTS4}
-         otbWaveletFilterBankNew)
-
-# Waiting for the code to stabilized before changing to a
-#small baseline (100x100 max)
-IF(DESACTIVATED_FOR_NOW)
-ADD_TEST(msTvWaveletFilterBank ${MULTISCALE_TESTS4}
-        --compare-n-images ${TOL} 4
-              ${BASELINE}/msTvStationaryFilterBank-0.tif
-              ${TEMP}/msTvWaveletFilterBank-0.tif
-              ${BASELINE}/msTvStationaryFilterBank-1.tif
-              ${TEMP}/msTvWaveletFilterBank-1.tif
-              ${BASELINE}/msTvStationaryFilterBank-2.tif
-              ${TEMP}/msTvWaveletFilterBank-2.tif
-              ${BASELINE}/msTvStationaryFilterBank-3.tif
-              ${TEMP}/msTvWaveletFilterBank-3.tif
-         otbWaveletFilterBank
+ADD_TEST(msTvWaveletPacketMultiScaleTransform ${MULTISCALE_TESTS4}
+        --compare-image ${EPSILON6}
+			  ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
+			  ${TEMP}/ROI_IKO_PAN_LesHalles_WvltPacketMultiScale.tif
+         otbWaveletPacketTransform
           ${INPUTDATA}/ROI_IKO_PAN_LesHalles.tif
-          ${TEMP}/msTvWaveletFilterBank
+          2 1
+          ${TEMP}/ROI_IKO_PAN_LesHalles_WvltPacketMultiScale.tif
 )
-ENDIF(DESACTIVATED_FOR_NOW)
+
+#ENDIF(DESACTIVATED_FOR_NOW)
+
 
 # -------       Fichiers sources CXX -----------------------------------
 SET(BasicMultiScale_SRCS1
+otbMultiScaleTests1.cxx
 otbMorphologicalPyramidResamplerNew.cxx
 otbMorphologicalPyramidResampler.cxx
 otbMorphologicalPyramidAnalysisFilterNew.cxx
@@ -434,6 +468,7 @@ otbMorphologicalPyramidSegmenterNew.cxx
 otbMorphologicalPyramidSegmenter.cxx
 )
 SET(BasicMultiScale_SRCS2
+otbMultiScaleTests2.cxx
 otbMorphologicalPyramidSegmentationFilterNew.cxx
 otbMorphologicalPyramidSegmentationFilter.cxx
 otbGeodesicMorphologyDecompositionImageFilterNew.cxx
@@ -448,6 +483,7 @@ otbMorphologicalClosingProfileFilterNew.cxx
 otbMorphologicalClosingProfileFilter.cxx
 )
 SET(BasicMultiScale_SRCS3
+otbMultiScaleTests3.cxx
 otbProfileToProfileDerivativeFilterNew.cxx
 otbProfileToProfileDerivativeFilter.cxx
 otbProfileDerivativeToMultiScaleCharacteristicsFilterNew.cxx
@@ -458,23 +494,25 @@ otbGeodesicMorphologyIterativeDecompositionImageFilterNew.cxx
 otbGeodesicMorphologyIterativeDecompositionImageFilter.cxx
 )
 SET(BasicMultiScale_SRCS4
+otbMultiScaleTests4.cxx
+otbWaveletOperatorNew.cxx
+otbWaveletOperator.cxx
+otbWaveletFilterBankNew.cxx
+otbWaveletInverseFilterBankNew.cxx
+otbWaveletFilterBank.cxx
 otbWaveletTransformNew.cxx
+otbWaveletInverseTransformNew.cxx
 otbWaveletTransform.cxx
 otbWaveletPacketTransformNew.cxx
+otbWaveletPacketInverseTransformNew.cxx
 otbWaveletPacketTransform.cxx
-otbWaveletFilterBankNew.cxx
-otbWaveletFilterBank.cxx
 )
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Testing/Code)
 
-ADD_EXECUTABLE(otbMultiScaleTests1 otbMultiScaleTests1.cxx ${BasicMultiScale_SRCS1})
-TARGET_LINK_LIBRARIES(otbMultiScaleTests1 OTBIO OTBMultiScale OTBTesting)
-ADD_EXECUTABLE(otbMultiScaleTests2 otbMultiScaleTests2.cxx ${BasicMultiScale_SRCS2})
-TARGET_LINK_LIBRARIES(otbMultiScaleTests2 OTBIO OTBMultiScale OTBTesting)
-ADD_EXECUTABLE(otbMultiScaleTests3 otbMultiScaleTests3.cxx ${BasicMultiScale_SRCS3})
-TARGET_LINK_LIBRARIES(otbMultiScaleTests3 OTBIO OTBMultiScale OTBTesting)
-ADD_EXECUTABLE(otbMultiScaleTests4 otbMultiScaleTests4.cxx ${BasicMultiScale_SRCS4})
-TARGET_LINK_LIBRARIES(otbMultiScaleTests4 OTBIO OTBMultiScale OTBTesting)
+OTB_ADD_EXECUTABLE(otbMultiScaleTests1 "${BasicMultiScale_SRCS1}" "OTBMultiScale;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbMultiScaleTests2 "${BasicMultiScale_SRCS2}" "OTBMultiScale;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbMultiScaleTests3 "${BasicMultiScale_SRCS3}" "OTBMultiScale;OTBIO;OTBTesting")
+OTB_ADD_EXECUTABLE(otbMultiScaleTests4 "${BasicMultiScale_SRCS4}" "OTBMultiScale;OTBIO;OTBTesting")
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

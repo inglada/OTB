@@ -52,6 +52,7 @@ SET(OTB_INCLUDE_DIRS_BUILD_TREE ${OTB_INCLUDE_DIRS_BUILD_TREE}
 #   ${OTB_SOURCE_DIR}/Utilities/otbossim/include/ossim/projection
 # Add otbossimplugins/ossim/otb into the include directories path
   ${OTB_SOURCE_DIR}/Utilities/otbossimplugins/ossim
+  ${OTB_SOURCE_DIR}/Utilities/otbossimplugins/ossim/otb
   ${OTB_SOURCE_DIR}/Utilities/dxflib
   ${OTB_SOURCE_DIR}/Utilities/InsightJournal
   ${OTB_SOURCE_DIR}/Utilities/otb6S
@@ -161,7 +162,17 @@ ELSE(OTB_USE_EXTERNAL_ITK)
         ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/vxl/v3p/netlib
         ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/vxl/vcl
         ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/vxl/core
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities
         ${OTB_BINARY_DIR}/Utilities/ITK/Utilities
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/itkExtHdrs
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/DICOMParser
+        ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/DICOMParser
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/MetaIO
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/nifti/niftilib
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/nifti/znzlib
+        ${OTB_SOURCE_DIR}/Utilities/ITK/Utilities/gdcm/src
+        ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/gdcm
+        ${OTB_BINARY_DIR}/Utilities/ITK/Utilities/NrrdIO
         )
 ENDIF(OTB_USE_EXTERNAL_ITK)
 

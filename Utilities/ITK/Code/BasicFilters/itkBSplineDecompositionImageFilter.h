@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDecompositionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2009-01-14 18:39:05 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2009-04-25 12:27:05 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -85,6 +85,8 @@ public:
   typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
   typedef typename Superclass::OutputImagePointer     OutputImagePointer;
 
+  typedef typename itk::NumericTraits<typename TOutputImage::PixelType>::RealType CoeffType;
+
   /** Dimension underlying input image. */
   itkStaticConstMacro(ImageDimension, unsigned int,TInputImage::ImageDimension);
   itkStaticConstMacro(OutputImageDimension, unsigned int,
@@ -96,19 +98,20 @@ public:
   /** Get/Sets the Spline Order, supports 0th - 5th order splines. The default
    *  is a 3rd order spline. */
   void SetSplineOrder(unsigned int SplineOrder);
-  itkGetMacro(SplineOrder, int);
+  itkGetConstMacro(SplineOrder, int);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(DimensionCheck,
     (Concept::SameDimension<ImageDimension, OutputImageDimension>));
-  itkConceptMacro(InputConvertibleToDoubleCheck,
-    (Concept::Convertible<typename TInputImage::PixelType, double>));
-  itkConceptMacro(OutputConvertibleToDoubleCheck,
-    (Concept::Convertible<typename TOutputImage::PixelType, double>));
-  itkConceptMacro(InputConvertibleToOutputCheck,
-     (Concept::Convertible<typename TInputImage::PixelType,
-                           typename TOutputImage::PixelType>));
+//   itkConceptMacro(InputConvertibleToDoubleCheck,
+//     (Concept::Convertible<typename TInputImage::PixelType, double>));
+//   itkConceptMacro(OutputConvertibleToDoubleCheck,
+//     (Concept::Convertible<typename TOutputImage::PixelType, double>));
+//   itkConceptMacro(InputConvertibleToOutputCheck,
+//      (Concept::Convertible<typename TInputImage::PixelType,
+//                            typename TOutputImage::PixelType>));
+//FIXME probably need a fix in the OptBSplineInterpolateImageFilter
   itkConceptMacro(DoubleConvertibleToOutputCheck,
     (Concept::Convertible<double, typename TOutputImage::PixelType>));
   /** End concept checking */
@@ -128,7 +131,7 @@ protected:
   void EnlargeOutputRequestedRegion( DataObject *output ); 
 
   /** These are needed by the smoothing spline routine. */
-  std::vector<double>              m_Scratch;       // temp storage for processing of Coefficients
+  std::vector<CoeffType>              m_Scratch;       // temp storage for processing of Coefficients
   typename TInputImage::SizeType   m_DataLength;  // Image size
 
   unsigned int              m_SplineOrder;   // User specified spline order (3rd or cubic is the default)

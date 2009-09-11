@@ -17,7 +17,7 @@ PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
 
 #include "otbImage.h"
-#include "otbSplineBiOrthogonalOperator.h"
+#include "otbWaveletOperator.h"
 #include "otbWaveletFilterBank.h"
 
 int otbWaveletFilterBankNew(int argc, char * argv[])
@@ -25,12 +25,16 @@ int otbWaveletFilterBankNew(int argc, char * argv[])
   const int Dimension = 2;
   typedef double PixelType;
   typedef otb::Image< PixelType, Dimension >  ImageType;
-  typedef otb::LowPassSplineBiOrthogonalOperator< otb::FORWARD, PixelType, Dimension > LowPassOperator;
-  typedef otb::HighPassSplineBiOrthogonalOperator< otb::FORWARD, PixelType, Dimension > HighPassOperator;
 
-  typedef otb::WaveletFilterBank< ImageType, ImageType, LowPassOperator, HighPassOperator, otb::FORWARD >
+  /* Wavelet choice */
+  //const otb::MotherWaveletOperatorEnum wvltID = otb::HAAR;
+  const otb::MotherWaveletOperatorEnum wvltID = otb::DB4;
+  typedef otb::WaveletOperator< wvltID, otb::FORWARD, PixelType, Dimension > WaveletOperator;
+
+  typedef otb::WaveletFilterBank< ImageType, ImageType, WaveletOperator, otb::FORWARD >
     FilterType;
   FilterType::Pointer filter = FilterType::New();
 
   return EXIT_SUCCESS;
 }
+

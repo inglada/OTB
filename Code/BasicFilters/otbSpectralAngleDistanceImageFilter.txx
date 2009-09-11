@@ -44,7 +44,7 @@ SpectralAngleDistanceImageFilter<TInputImage,TOutputImage>
 {
   if ( this->GetInput()->GetNumberOfComponentsPerPixel() == 1 )
   {
-    itkExceptionMacro(<<"Not valid input image : mono channel image not supported.");
+    itkExceptionMacro(<<"Not valid input image : mono channel image gives a nul output image.");
   }
 }
 
@@ -112,7 +112,7 @@ SpectralAngleDistanceImageFilter<TInputImage,TOutputImage>
     }
     //------ This part was supressed since the filter must perform only the spectral angle computation ---
     // Spectral angle normalisation
-    // dist = dist/(M_PI/2);
+    // dist = dist/(CONST_PI_2);
     //square ponderation
     // dist = vcl_sqrt(dist);
     outputIt.Set(static_cast<OutputPixelType>(dist));

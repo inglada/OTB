@@ -9,11 +9,11 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
-  Copyright (c) Institut Telecom / Telecom Bretagne. All rights reserved.
+  Copyright (c) Institut Telecom / Telecom Bretagne. All rights reserved. 
   See ITCopyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,84 +21,76 @@
 #ifndef __otbEuclideanDistanceWithMissingValue_h
 #define __otbEuclideanDistanceWithMissingValue_h
 
-#include "itkEuclideanDistance.h"
+#include "otbEuclideanDistanceWithMissingValuePow2.h"
 
-namespace otb
-{
+namespace otb {
 
-namespace Statistics
-{
+namespace Statistics {
 
 /** \class EuclideanDistanceWithMissingValue
  * \brief Euclidean distance function facing missing value.
  *
- * This class is derived from EuclideanDistance class. In addition
- * to the initial Evaluate method, the class does not perform calculation
- * when a component does not contain any data.
- *
+ * This class is derived from EuclideanDistanceWithMissingValuePow2 class that handle the missing value
+ * functonnalities. Here, the square root is included in the evaluation...
+ * 
  * The class can be templated over any container that holds data elements, as
- * for template of EuclideanDistance.
+ * for template of EuclideanDistance. 
  *
- * The only restriction is that elemnts have to support \code NaN \endcode.
+ * The only restriction is that elemnts have to support '\code{NaN}'.
  *
  * \sa EuclideanDistance
+ * \sa EuclideanDistanceWithMissingValuePow2
  */
 template< class TVector >
 class ITK_EXPORT EuclideanDistanceWithMissingValue :
-      public itk::Statistics::EuclideanDistance< TVector >
+  public otb::Statistics::EuclideanDistanceWithMissingValuePow2< TVector >
 {
-public:
-  /** Standard "Self" typedef. */
-  typedef EuclideanDistanceWithMissingValue Self;
-  typedef itk::Statistics::EuclideanDistance< TVector > Superclass;
-  typedef itk::SmartPointer< Self > Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
-  typedef typename Superclass::MeasurementVectorSizeType MeasurementVectorSizeType;
+  public:
+    /** Standard "Self" typedef. */
+    typedef EuclideanDistanceWithMissingValue Self;
+    typedef otb::Statistics::EuclideanDistanceWithMissingValuePow2< TVector > 
+      Superclass;
+    typedef itk::SmartPointer< Self > Pointer ; 
+    typedef itk::SmartPointer<const Self> ConstPointer;
 
-  /** Run-time type information (and related methods). */
-  itkTypeMacro(EuclideanDistanceWithMissingValue, EuclideanDistance);
+    typedef typename Superclass::MeasurementVectorSizeType 
+      MeasurementVectorSizeType;
 
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(EuclideanDistanceWithMissingValue, EuclideanDistance);
 
-  /** Type of the component of a vector */
-  typedef typename TVector::ValueType ValueType;
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self) ;
 
-  /** Gets the distance between the origin and x */
-  double Evaluate(const TVector &x) const;
+    /** Type of the component of a vector */
+    typedef typename TVector::ValueType ValueType ;
 
-  /** Gets the distance between x1 and x2 */
-  double Evaluate(const TVector &x1, const TVector &x2) const;
+    /** Gets the distance between the origin and x */
+    double Evaluate(const TVector &x) const {
+      return ::vcl_sqrt( Superclass::Evaluate( x ) );  }
 
-  /** Gets the cooridnate distance between a and b. NOTE: a and b
-  * should be type of component */
-  double Evaluate(const ValueType &a, const ValueType &b) const;
+    /** Gets the distance between x1 and x2 */
+    double Evaluate(const TVector &x1, const TVector &x2) const {
+      return ::vcl_sqrt( Superclass::Evaluate( x1, x2 ) ); }
 
-  /** Returns true if the distance between x and the origin is less
-  * than radius */
-  bool IsWithinRange(const TVector &x, const double radius) const
-  {
-    return Superclass::IsWithinRange( x, radius );
-  }
+    /** Gets the cooridnate distance between a and b. NOTE: a and b
+    * should be type of component */ 
+    double Evaluate(const ValueType &a, const ValueType &b) const {
+      return ::vcl_sqrt( Superclass::Evaluate( a, b ) ); }
 
-  /** Check if a value is NaN or not */
-  static bool IsMissingValue ( const ValueType & v);
+    /** Returns true if the distance between x and the origin is less
+    * than radius */
+    bool IsWithinRange(const TVector &x, const double radius) const {
+      return Superclass::IsWithinRange( x, radius ); }
 
-  /** Set a value to Nan */
-  static void SetToMissingValue ( ValueType & v );
-
-protected:
-  EuclideanDistanceWithMissingValue() {}
-  virtual ~EuclideanDistanceWithMissingValue() {}
-}; // end of class
+  protected:
+    EuclideanDistanceWithMissingValue() {}
+    virtual ~EuclideanDistanceWithMissingValue() {} 
+} ; // end of class
 
 } // end namespace statistics
 
 } // end namespace otb
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "otbEuclideanDistanceWithMissingValue.txx"
-#endif
 
 #endif
 

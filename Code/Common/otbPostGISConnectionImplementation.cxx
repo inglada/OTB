@@ -15,9 +15,6 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbPostGISConnectionImplementation_cxx
-#define __otbPostGISConnectionImplementation_cxx
-
 #include "otbPostGISConnectionImplementation.h"
 #include <sstream>
 #include <sstream>
@@ -31,7 +28,7 @@ PostGISConnectionImplementation::PostGISConnectionImplementation()
   m_DBName = "";
   m_User = "postgres";
   m_Password = "";
-  m_Port = "";
+  m_Port = "5432";
   m_Options = "";
 
   
@@ -64,13 +61,13 @@ void PostGISConnectionImplementation::ConnectToDB()
 
 }
 
-void PostGISConnectionImplementation::PerformTransaction(const TransactorType& theTransaction)
+void PostGISConnectionImplementation::PerformTransaction(const TransactorType& theTransaction) const
 {
-  assert(0); //do not use this method yet
-//  m_PostGISConnection->perform( theTransaction );
+  //assert(0); //do not use this method yet
+  //m_PostGISConnection->perform( theTransaction );
 }
 
-PostGISConnectionImplementation::BasicConnectionType* PostGISConnectionImplementation::GetConnection()
+PostGISConnectionImplementation::BasicConnectionType* PostGISConnectionImplementation::GetConnection() const
 {
   return m_PostGISConnection;
 }
@@ -86,5 +83,3 @@ void PostGISConnectionImplementation::PrintSelf(std::ostream& os, itk::Indent in
 }
 
 } // end namespace otb
-
-#endif

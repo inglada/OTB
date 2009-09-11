@@ -24,7 +24,8 @@
 
 namespace otb
 {
-/** \class PointSetFileReader
+/**
+ * \class PointSetFileReader
  * \brief Read a point set from a lidar file.
  *
  * \sa PointSetSource
@@ -75,7 +76,7 @@ public:
 
 protected:
   PointSetFileReader();
-  ~PointSetFileReader();
+  virtual ~PointSetFileReader();
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
   void TestFileExistanceAndReadability();

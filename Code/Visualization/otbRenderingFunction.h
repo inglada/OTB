@@ -31,6 +31,7 @@
 #include "itkListSample.h"
 #include "otbListSampleToHistogramListGenerator.h"
 #include "itkConceptChecking.h"
+#include "itkDenseFrequencyContainer.h"
 
 namespace otb
 {
@@ -79,9 +80,8 @@ public:
   typedef otb::ListSampleToHistogramListGenerator
       <ListSampleType,ScalarType,DFContainerType>                     HistogramFilterType;
   typedef itk::Statistics::Histogram<
-                  typename itk::NumericTraits<ScalarType>::RealType,1,
-                  typename itk::Statistics::DenseFrequencyContainer> HistogramType;
-  typedef typename HistogramType::Pointer HistogramPointerType;
+                  RealScalarType,1,DFContainerType>         HistogramType;
+  typedef typename HistogramType::Pointer                   HistogramPointerType;
   typedef ObjectList<HistogramType>                         HistogramListType;
   typedef typename HistogramListType::Pointer               HistogramListPointerType;
 
@@ -116,12 +116,17 @@ public:
     itkExceptionMacro(<<"Subclasses should override this method");
   }
 
-  virtual void SetChannelList(std::vector<unsigned int> channels)
+  virtual void SetChannelList(std::vector<unsigned int>& /*channels*/)
   {
     itkExceptionMacro(<<"Subclasses should override this method");
   }
 
   virtual std::vector<unsigned int> GetChannelList()
+  {
+    itkExceptionMacro(<<"Subclasses should override this method");
+  }
+
+  virtual void SetAutoMinMax(bool /*autoMinMax*/)
   {
     itkExceptionMacro(<<"Subclasses should override this method");
   }

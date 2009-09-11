@@ -65,7 +65,7 @@ public:
     this->SetNumberOfDirections(20); // set the step too
     m_SelectedTextures = std::vector<bool>(6, 1);
   }
-  ~SFSTexturesFunctor() {};
+  virtual ~SFSTexturesFunctor() {};
 
   typedef typename TIter::InternalPixelType InternalPixelType;
   typedef typename TIter::SizeType          SizeType;
@@ -81,7 +81,7 @@ public:
   void SetNumberOfDirections( unsigned int D )
     {
       m_NumberOfDirections = D;
-      m_DirectionStep = 2*M_PI/static_cast<double>(D);
+      m_DirectionStep = CONST_2PI/static_cast<double>(D);
     };
   void SetDirectionStep( double step ){ m_DirectionStep = step; };
   void SetSelectedTextures( std::vector<bool> vect )

@@ -25,18 +25,14 @@ PURPOSE.  See the above copyright notices for more information.
 #include "itkTransform.h"
 #include "itkExceptionObject.h"
 #include "itkMacro.h"
-// #include "base/ossimGpt.h"
-// #include "base/ossimDpt.h"
-// #include "projection/ossimProjection.h"
-// #include "base/ossimEllipsoid.h"
-// #include "base/ossimEllipsoidFactory.h"
-// #include "base/ossimString.h"
-// #include "ossimOgcWktTranslator.h"
 #include "otbCompositeTransform.h"
 
 namespace otb
 {
-
+  namespace Projection
+  {
+    enum TransformAccuracy {UNKNOWN, ESTIMATE, PRECISE};
+  }
   /** \class GenericRSTransform
    *  \brief This is the class to handle generic remote sensing transform
    *
@@ -72,14 +68,11 @@ namespace otb
       typedef itk::Vector<double, 2> SpacingType;
       typedef itk::Point<double, 2> OriginType;
 
-      typedef itk::Transform<double, 2, 2> GenericTransformType;
+      typedef itk::Transform<double, NInputDimensions, NOutputDimensions> GenericTransformType;
       typedef typename GenericTransformType::Pointer GenericTransformPointerType;
       typedef otb::CompositeTransform<GenericTransformType, GenericTransformType> TransformType;
       typedef typename TransformType::Pointer                                     TransformPointerType;
 
-//       typedef itk::MetaDataDictionary MetaDataDictionary;
-//       typedef itk::SmartPointer<MetaDataDictionary> MetaDataDictionaryPointer;
-//       typedef itk::SmartPointer<const MetaDataDictionary> MetaDataDictionaryConstPointer;
       /** Method for creation through the object factory. */
       itkNewMacro( Self );
 
@@ -103,13 +96,10 @@ namespace otb
       itkSetStringMacro(DEMDirectory);
       itkGetStringMacro(DEMDirectory);
 
+      itkSetMacro(AverageElevation, double);
+      itkGetMacro(AverageElevation, double);
+
       /** Set/Get Dictionary*/
-
-//       itkSetConstObjectMacro(InputDictionary, MetaDataDictionary);
-//       itkGetConstObjectMacro(InputDictionary, MetaDataDictionary);
-//       itkSetObjectMacro(OutputDictionary, MetaDataDictionary);
-//       itkGetObjectMacro(OutputDictionary, MetaDataDictionary);
-
       const itk::MetaDataDictionary& GetInputDictionary() const
       {
         return m_InputDictionary;
@@ -132,7 +122,7 @@ namespace otb
         this->Modified();
       }
 
-
+     /** Set/Get Keywordlist*/
 
       itkGetMacro(InputKeywordList,ImageKeywordlist);
       void SetInputKeywordList(const ImageKeywordlist& kwl)
@@ -151,37 +141,34 @@ namespace otb
       /** Set the origin of the vector data.
       * \sa GetOrigin() */
       itkSetMacro(InputOrigin, OriginType);
-      virtual void SetInputOrigin( const double origin[2] );
-      virtual void SetInputOrigin( const float origin[2] );
-
       itkGetConstReferenceMacro(InputOrigin, OriginType);
 
 
       /** Set the spacing (size of a pixel) of the vector data.
         * \sa GetSpacing() */
-      virtual void SetInputSpacing (const SpacingType & spacing);
-      virtual void SetInputSpacing (const double spacing[2]);
-      virtual void SetInputSpacing (const float spacing[2]);
-
+      itkSetMacro(InputSpacing, SpacingType);
       itkGetConstReferenceMacro(InputSpacing, SpacingType);
 
 
       /** Set the origin of the vector data.
       * \sa GetOrigin() */
       itkSetMacro(OutputOrigin, OriginType);
-      virtual void SetOutputOrigin( const double origin[2] );
-      virtual void SetOutputOrigin( const float origin[2] );
-
       itkGetConstReferenceMacro(OutputOrigin, OriginType);
 
 
       /** Set the spacing (size of a pixel) of the vector data.
       * \sa GetSpacing() */
-      virtual void SetOutputSpacing (const SpacingType & spacing);
-      virtual void SetOutputSpacing (const double spacing[2]);
-      virtual void SetOutputSpacing (const float spacing[2]);
-
+      itkSetMacro(OutputSpacing, SpacingType);
       itkGetConstReferenceMacro(OutputSpacing, SpacingType);
+
+      /** Check if the transform is up to date */
+      virtual bool IsUpToDate()
+      {
+        return m_TransformUpToDate;
+      }
+
+      /** Get Transform accuracy */
+      itkGetMacro(TransformAccuracy, Projection::TransformAccuracy);
 
       /** Methods prototypes */
       virtual const TransformType * GetTransform() const;
@@ -223,6 +210,7 @@ namespace otb
       std::string m_InputProjectionRef;
       std::string m_OutputProjectionRef;
       std::string m_DEMDirectory;
+      double m_AverageElevation;
 
       SpacingType         m_InputSpacing;
       OriginType          m_InputOrigin;
@@ -234,6 +222,8 @@ namespace otb
       GenericTransformPointerType m_InputTransform;
       GenericTransformPointerType m_OutputTransform;
       bool                        m_TransformUpToDate;
+      Projection::TransformAccuracy           m_TransformAccuracy;
+
     };
 
 

@@ -24,7 +24,7 @@
 
 namespace otb
 {
-/** \class 2DCurveWidget
+/** \class Curves2DWidget
  *
  *  \brief This widget renders a set of curves to the screen.
  *
@@ -124,7 +124,7 @@ protected:
   /** Constructor */
   Curves2DWidget();
   /** Destructor */
-  ~Curves2DWidget();
+  virtual ~Curves2DWidget();
   /** Printself method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 

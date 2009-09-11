@@ -52,9 +52,9 @@ public:
   itkGetMacro(ForwardEvents,bool);
 
   /** Users actions */
-  virtual void RegionSelected(const RegionType & region) {};
+  virtual void RegionSelected(const RegionType & ) {};
   virtual void ViewedRegionChanged() {};
-  virtual void PixelClicked(const IndexType& index) {};
+  virtual void PixelClicked(const IndexType& ) {};
 
 protected:
   /** Constructor */
@@ -63,7 +63,7 @@ protected:
     m_ForwardEvents = false;
   }
   /** Destructor */
-  ~ImageViewerFullResolutionEventsInterface() {}
+  virtual ~ImageViewerFullResolutionEventsInterface() {}
 
 private:
   ImageViewerFullResolutionEventsInterface(const Self&); //purposely not implemented

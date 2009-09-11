@@ -21,8 +21,6 @@
 #include "otbMRFEnergy.h"
 #include "otbMath.h"
 
-#define M_SQUARE(x) ((x)*(x))
-
 namespace otb
 {
 /**
@@ -46,10 +44,10 @@ template< class TInput1, class TInput2>
 class ITK_EXPORT MRFEnergyGaussianClassification:public MRFEnergy< TInput1, TInput2>
 {
 public:
-  typedef MRFEnergyGaussianClassification Self;
-  typedef MRFEnergy< TInput1, TInput2>    Superclass;
-  typedef itk::SmartPointer<Self>         Pointer;
-  typedef itk::SmartPointer<const Self>   ConstPointer;
+  typedef MRFEnergyGaussianClassification       Self;
+  typedef MRFEnergy< TInput1, TInput2>          Superclass;
+  typedef itk::SmartPointer<Self>               Pointer;
+  typedef itk::SmartPointer<const Self>         ConstPointer;
 
   typedef TInput1                               InputImageType;
   typedef TInput2                               LabelledImageType;
@@ -69,7 +67,7 @@ public:
   }
 
 
-  double GetSingleValue(const InputImagePixelType & value1,  const LabelledImagePixelType & value2)
+  double GetSingleValue(const InputImagePixelType & value1, const LabelledImagePixelType & value2)
   {
     if ((unsigned int)value2 >= this->GetNumberOfParameters()/2)
     {
@@ -77,9 +75,9 @@ public:
     }
     double val1 = static_cast<double>(value1);
 
-    double result = M_SQUARE(val1-this->m_Parameters[2*static_cast<int>(value2)])
-                    / (2*M_SQUARE(this->m_Parameters[2*static_cast<int>(value2)+1]))
-                    + vcl_log(vcl_sqrt(2*M_PI)*this->m_Parameters[2*static_cast<int>(value2)+1]);
+    double result = vnl_math_sqr(val1-this->m_Parameters[2*static_cast<int>(value2)])
+                    / (2*vnl_math_sqr(this->m_Parameters[2*static_cast<int>(value2)+1]))
+                    + vcl_log(vcl_sqrt(CONST_2PI)*this->m_Parameters[2*static_cast<int>(value2)+1]);
 
     return static_cast<double>( result );
   }

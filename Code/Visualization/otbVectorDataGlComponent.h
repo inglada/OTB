@@ -72,6 +72,7 @@ public:
   typedef typename VectorDataType::Pointer        VectorDataPointerType;
   typedef typename VectorDataType::DataNodeType   DataNodeType;
   typedef typename DataNodeType::Pointer          DataNodePointerType;
+  typedef typename DataNodeType::ConstPointer          DataNodeConstPointerType;
   typedef typename VectorDataType::DataTreeType   DataTreeType;
   typedef typename DataNodeType::LineType         LineType;
   typedef typename DataNodeType::PolygonType      PolygonType;
@@ -123,20 +124,20 @@ protected:
   /** Destructor */
   virtual ~VectorDataGlComponent();
   /** Printself method */
-  void PrintSelf(std::ostream& os, itk::Indent indent) const
+  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const
   {
     Superclass::PrintSelf(os,indent);
   }
 
   /// Render a point
-  void RenderPoint(const PointType & p, const RegionType & extent, const AffineTransformType * transform);
+  virtual void RenderPoint(DataNodePointerType dataNode, const RegionType & extent, const AffineTransformType * transform);
   /// Render a polyline
-  void RenderLine(const LineType * l, const RegionType & extent, const AffineTransformType * transform);
+  virtual void RenderLine(DataNodePointerType dataNode, const RegionType & extent, const AffineTransformType * transform);
   // Render a complex polygon (with holes)
-  void RenderPolygon(const PolygonType * extRing, const PolygonListType * intRings, const RegionType & extent, const AffineTransformType * transform);
+  virtual void RenderPolygon(DataNodePointerType dataNode, const RegionType & extent, const AffineTransformType * transform);
 
   // Recursive rendering method
-  void Render(InternalTreeNodeType * node, const RegionType & extent, const AffineTransformType * space2ScreenTransform);
+  virtual void Render(InternalTreeNodeType * node, const RegionType & extent, const AffineTransformType * space2ScreenTransform);
 
   /// Frame a given point using the frame width and color (point
   /// should be in gl screen coordinates)
@@ -147,10 +148,10 @@ private:
   void operator=(const Self&);        // purposely not implemented
 
   // Function pointer typedef
-  typedef void (CALLBACK * FunctionPointerType)();
+  typedef GLvoid (CALLBACK * FunctionPointerType)();
 
   // Static Combine callback for tesselation
-  static void CALLBACK TesselationCombineCallback(GLdouble coords[3],GLdouble * data[4], GLfloat weights[4],GLdouble **dataOut)
+  static void CALLBACK TesselationCombineCallback(GLdouble coords[3],GLdouble * /*data*/[4], GLfloat /*weights*/[4],GLdouble **dataOut)
   {
     GLdouble * vertex = new GLdouble[3];
     vertex[0] = coords[0];

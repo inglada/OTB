@@ -788,7 +788,7 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
   this->ApplyMirrorBoundaryConditions((evaluateIndex), m_SplineOrder);
 
   // perform interpolation
-  double interpolated = 0.0;
+  TCoefficientType interpolated = 0.0;
   IndexType coefficientIndex;
   // Step through eachpoint in the N-dimensional interpolation cube.
   for (unsigned int p = 0; p < m_MaxNumberInterpolationPoints; p++)
@@ -800,7 +800,7 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
       w *= (weights)[n][indx];
       coefficientIndex[n] = (evaluateIndex)[n][indx];
       }
-    interpolated += w * m_Coefficients->GetPixel(coefficientIndex);
+    interpolated += w * static_cast<TCoefficientType>(m_Coefficients->GetPixel(coefficientIndex));
     }
 
   return(interpolated);
@@ -831,7 +831,7 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
   this->ApplyMirrorBoundaryConditions( (evaluateIndex), m_SplineOrder);
 
   unsigned int indx;
-  double tmpV;
+  TCoefficientType tmpV;
   double w, w1, tmpW;
   IndexType coefficientIndex;
   value = 0.0;

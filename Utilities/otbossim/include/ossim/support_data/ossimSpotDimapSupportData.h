@@ -63,14 +63,20 @@ public:
    ossimString   getSensorID()                            const;
    ossimString   getMetadataVersionString()               const;
    ossimString   getAcquisitionDate()                     const;
+   ossimString   getProductionDate()                      const;
    ossimString   getImageID()                             const;
+   ossimString   getInstrument()                          const;
+   ossim_uint32  getInstrumentIndex()                     const;
    ossimFilename getMetadataFile()                        const;
    void          getSunAzimuth(ossim_float64& az)         const;
    void          getSunElevation(ossim_float64& el)       const;
    void          getImageSize(ossimDpt& sz)               const;
    void          getLineSamplingPeriod(ossim_float64& pe) const;
    void          getIncidenceAngle(ossim_float64& ia)     const;
+   void          getViewingAngle(ossim_float64& va)       const;
+   void          getSceneOrientation(ossim_float64& so)   const;
    ossim_uint32  getNumberOfBands()                       const;
+   ossim_uint32  getStepCount()                           const;
    bool          isStarTrackerUsed()                      const;
    bool          isSwirDataUsed()                         const;
 
@@ -205,6 +211,7 @@ private:
     * theUrCorner
     * theLrCorner
     * theLlCorner
+    * theViewingAngle
     *
     * Note that the theRefImagePoint will be the zero based center of the
     * frame.
@@ -216,6 +223,9 @@ private:
    ossimSpotMetadataVersion    theMetadataVersion;
    ossimString                 theImageID;
    ossimFilename               theMetadataFile;
+   ossimString                 theProductionDate;
+   ossimString                 theInstrument;
+   ossim_uint32                theInstrumentIndex;
 
    /*
     * From xml section:
@@ -225,7 +235,9 @@ private:
    ossim_float64               theSunAzimuth;
    ossim_float64               theSunElevation;
    ossim_float64               theIncidenceAngle;
-
+   ossim_float64               theViewingAngle;
+   ossim_float64               theSceneOrientation;   
+   
    ossimDpt                    theImageSize;
 
    /** Center of frame on ground, if sub image it's the center of that. */
@@ -257,6 +269,8 @@ private:
    bool                        theSwirDataFlag;
    ossim_uint32                theNumBands;
    ossimString                 theAcquisitionDate;
+   ossim_uint32                theStepCount;
+   
 
    //---
    // Corner points:

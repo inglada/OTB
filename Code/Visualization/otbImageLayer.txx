@@ -23,12 +23,15 @@
 #include "itkTimeProbe.h"
 #include "otbStandardRenderingFunction.h"
 
+#include "otbImageKeywordlist.h"
+// #include "otbCoordinateToName.h"
+
 namespace otb
 {
 
 template <class TImage, class TOutputImage>
 ImageLayer<TImage,TOutputImage>
-::ImageLayer() : m_Quicklook(), m_Image(), m_ListSample(), m_RenderingFunction(),
+::ImageLayer() : m_Quicklook(), m_Image(), m_ListSample(), m_ListSampleProvided(false), m_RenderingFunction(),
                  m_QuicklookRenderingFilter(), m_ExtractRenderingFilter(), m_ScaledExtractRenderingFilter(),
                  m_ExtractFilter(), m_ScaledExtractFilter()
 {
@@ -54,6 +57,11 @@ ImageLayer<TImage,TOutputImage>
   // Wiring
   m_ExtractRenderingFilter->SetInput(m_ExtractFilter->GetOutput());
   m_ScaledExtractRenderingFilter->SetInput(m_ScaledExtractFilter->GetOutput());
+
+  m_Transform = TransformType::New();
+
+  m_PlaceName = "";
+  m_CountryName = "";
 }
 
 template <class TImage, class TOutputImage>
@@ -80,6 +88,9 @@ ImageLayer<TImage,TOutputImage>
 
   // Render images
   this->RenderImages();
+
+  // Initialize the geotransform
+  this->InitTransform();
 }
 
 template <class TImage, class TOutputImage>
@@ -106,7 +117,7 @@ ImageLayer<TImage,TOutputImage>
     {
     itk::TimeProbe probe;
     probe.Start();
-    //std::cout<<"Extent: "<<this->GetExtent()<<" Largest: "<<m_Image->GetLargestPossibleRegion()<<" ExtractRegion: "<<this->GetExtractRegion()<<std::endl;
+//    std::cout<<"Extent: "<<this->GetExtent()<<" Largest: "<<m_Image->GetLargestPossibleRegion()<<" ExtractRegion: "<<this->GetExtractRegion()<<std::endl;
     m_ExtractRenderingFilter->GetOutput()->SetRequestedRegion(this->GetExtractRegion());
     m_ExtractRenderingFilter->Update();
     this->SetRenderedExtract(m_ExtractRenderingFilter->GetOutput());
@@ -142,57 +153,60 @@ void
 ImageLayer<TImage,TOutputImage>
 ::UpdateListSample()
 {
-//   otbMsgDevMacro(<<"ImageLayer::UpdateListSample():"<<" ("<<this->GetName()<<")"<< " Entering method");
-  // Declare the source of the histogram
-  ImagePointerType histogramSource;
+  if(!m_ListSampleProvided)
+  {
+  //   otbMsgDevMacro(<<"ImageLayer::UpdateListSample():"<<" ("<<this->GetName()<<")"<< " Entering method");
+    // Declare the source of the histogram
+    ImagePointerType histogramSource;
 
-  // if there is a quicklook, use it for histogram generation
-  if(m_Quicklook.IsNotNull())
-    {
-    histogramSource = m_Quicklook;
-    }
-  else
-    {
-    // Else use the full image (update the data)
-    // REVIEW: Not sure the region is right here. Should be the
-    // largest ?
-    // REPLY: might be... didn't change anything
-    //
-    histogramSource = m_Image;
-    histogramSource->SetRequestedRegion(this->GetExtractRegion());
-    }
+    // if there is a quicklook, use it for histogram generation
+    if(m_Quicklook.IsNotNull())
+      {
+      histogramSource = m_Quicklook;
+      }
+    else
+      {
+      // Else use the full image (update the data)
+      // REVIEW: Not sure the region is right here. Should be the
+      // largest ?
+      // REPLY: might be... didn't change anything
+      //
+      histogramSource = m_Image;
+      histogramSource->SetRequestedRegion(this->GetExtractRegion());
+      }
 
-  // Check if we need to generate the histogram again
-  if( m_ListSample.IsNull() || m_ListSample->Size() == 0 || (histogramSource->GetUpdateMTime() < histogramSource->GetPipelineMTime()) )
-    {
-    otbMsgDevMacro(<<"ImageLayer::UpdateListSample():"<<" ("<<this->GetName()<<")"<< " Regenerating histogram due to pippeline update.");
+    // Check if we need to generate the histogram again
+    if( m_ListSample.IsNull() || m_ListSample->Size() == 0 || (histogramSource->GetUpdateMTime() < histogramSource->GetPipelineMTime()) )
+      {
+      otbMsgDevMacro(<<"ImageLayer::UpdateListSample():"<<" ("<<this->GetName()<<")"<< " Regenerating histogram due to pippeline update.");
 
-    // Update the histogram source
-    histogramSource->Update();
+      // Update the histogram source
+      histogramSource->Update();
 
-    // Iterate on the image
-    itk::ImageRegionConstIterator<ImageType> it(histogramSource,histogramSource->GetBufferedRegion());
+      // Iterate on the image
+      itk::ImageRegionConstIterator<ImageType> it(histogramSource,histogramSource->GetBufferedRegion());
 
-    // declare a list to store the samples
-    m_ListSample->Clear();
+      // declare a list to store the samples
+      m_ListSample->Clear();
 
-    unsigned int sampleSize = VisualizationPixelTraits::PixelSize(it.Get());
-    m_ListSample->SetMeasurementVectorSize(sampleSize);
+      unsigned int sampleSize = VisualizationPixelTraits::PixelSize(it.Get());
+      m_ListSample->SetMeasurementVectorSize(sampleSize);
 
-    // Fill the samples list
-    it.GoToBegin();
-    while(!it.IsAtEnd())
-    {
-      SampleType sample(sampleSize);
-      VisualizationPixelTraits::Convert( it.Get(), sample );
-      m_ListSample->PushBack(sample);
-      ++it;
-    }
-    otbMsgDevMacro(<<"ImageLayer::UpdateListSample()"<<" ("<<this->GetName()<<")"<< " Sample list generated ("<<m_ListSample->Size()<<" samples, "<< sampleSize <<" bands)");
+      // Fill the samples list
+      it.GoToBegin();
+      while(!it.IsAtEnd())
+      {
+        SampleType sample(sampleSize);
+        VisualizationPixelTraits::Convert( it.Get(), sample );
+        m_ListSample->PushBack(sample);
+        ++it;
+      }
+      otbMsgDevMacro(<<"ImageLayer::UpdateListSample()"<<" ("<<this->GetName()<<")"<< " Sample list generated ("<<m_ListSample->Size()<<" samples, "<< sampleSize <<" bands)");
 
-    m_RenderingFunction->SetListSample(m_ListSample);
+      m_RenderingFunction->SetListSample(m_ListSample);
 
-    }
+      }
+  }
 }
 
 
@@ -226,7 +240,61 @@ ImageLayer<TImage,TOutputImage>
       oss<<" (ql)"<<std::endl<<m_RenderingFunction->Describe(m_Quicklook->GetPixel(ssindex));
       }
     }
+  //here, we consider that if the transform is not ready (call to InitTransform)
+  //the user of the class don't want to use it
+  if (m_Transform->IsUpToDate())
+  {
+    if (m_Transform->GetTransformAccuracy() != Projection::UNKNOWN)
+    {
+      PointType point = this->GetPixelLocation(index);
+      oss<< setiosflags(ios::fixed) << setprecision(6) << "Lon: " << point[0] << " Lat: "<< point[1] << std::endl;
+      if (m_Transform->GetTransformAccuracy() == Projection::PRECISE) oss<< "(precise location)" << std::endl;
+      if (m_Transform->GetTransformAccuracy() == Projection::ESTIMATE) oss<< "(estimated location)" << std::endl;
+
+//       if ((m_PlaceName == "") && (m_CountryName == ""))
+//       {
+//         CoordinateToName::Pointer conv = CoordinateToName::New();
+//         conv->SetLon(point[0]);
+//         conv->SetLat(point[1]);
+//         conv->Evaluate();
+//
+//         m_PlaceName = conv->GetPlaceName();
+//         m_CountryName = conv->GetCountryName();
+//       }
+//       if (m_PlaceName != "") oss << "Near " << m_PlaceName;
+//       if (m_CountryName != "") oss << " in " << m_CountryName;
+    }
+    else
+    {
+      oss << "Location unknown" << std::endl;
+    }
+  }
   return oss.str();
+}
+
+template <class TImage, class TOutputImage>
+typename ImageLayer<TImage,TOutputImage>::PointType
+ImageLayer<TImage,TOutputImage>
+::GetPixelLocation(const IndexType & index)
+{
+  PointType inputPoint;
+  inputPoint[0] = index[0];
+  inputPoint[1] = index[1];
+  return m_Transform->TransformPoint(inputPoint);
+}
+
+
+template <class TImage, class TOutputImage>
+void
+ImageLayer<TImage,TOutputImage>
+::InitTransform()
+{
+  const itk::MetaDataDictionary & inputDict = m_Image->GetMetaDataDictionary();
+  m_Transform->SetInputDictionary(inputDict);
+  m_Transform->SetInputOrigin(m_Image->GetOrigin());
+  m_Transform->SetInputSpacing(m_Image->GetSpacing());
+  //  m_Transform->SetDEMDirectory(m_DEMDirectory);
+  m_Transform->InstanciateTransform();
 }
 
 }

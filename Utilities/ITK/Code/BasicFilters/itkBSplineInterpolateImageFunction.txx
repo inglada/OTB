@@ -168,7 +168,7 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
       }
     // Convert our step p to the appropriate point in ND space in the
     // m_Coefficients cube.
-    interpolated += w * m_Coefficients->GetPixel(coefficientIndex);
+    interpolated += w * (m_Coefficients->GetPixel(coefficientIndex));
     }
     
   return(interpolated);

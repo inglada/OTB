@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOptResampleImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2008-11-06 15:25:08 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2009-04-23 03:43:42 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -100,12 +100,15 @@ public:
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
 
+  /** Image pixel value typedef. */
+  typedef typename TOutputImage::PixelType              PixelType;
+  typedef typename TInputImage::PixelType               InputPixelType;
 
-  /**
+  /** 
    *  Transform typedef.
    */
   typedef double CoordRepType;
-  typedef Transform<CoordRepType,
+  typedef Transform<TInterpolatorPrecisionType,
                     itkGetStaticConstMacro(ImageDimension),
                     itkGetStaticConstMacro(ImageDimension)>       TransformType;
   typedef typename TransformType::ConstPointer             TransformPointerType;
@@ -121,7 +124,7 @@ public:
                                               LinearInterpolatorPointerType;
 
   typedef BSplineInterpolateImageFunction<InputImageType,
-                      CoordRepType>   BSplineInterpolatorType;
+                      CoordRepType,InputPixelType>   BSplineInterpolatorType;
   typedef typename BSplineInterpolatorType::Pointer
                                               BSplineInterpolatorPointerType;
 
@@ -134,10 +137,6 @@ public:
   /** Image point typedef. */
   typedef typename InterpolatorType::PointType          PointType;
   //typedef typename TOutputImage::PointType            PointType;
-
-  /** Image pixel value typedef. */
-  typedef typename TOutputImage::PixelType              PixelType;
-  typedef typename TInputImage::PixelType               InputPixelType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType             OutputImageRegionType;
@@ -237,7 +236,7 @@ public:
 
   itkSetMacro(UseReferenceImage, bool);
   itkBooleanMacro(UseReferenceImage);
-  itkGetMacro(UseReferenceImage, bool);
+  itkGetConstMacro(UseReferenceImage, bool);
 
   /** ResampleImageFilter produces an image which is a different size
    * than its input.  As such, it needs to provide an implementation

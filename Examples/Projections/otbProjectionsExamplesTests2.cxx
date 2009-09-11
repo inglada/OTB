@@ -27,9 +27,14 @@
 void RegisterTests()
 {
   REGISTER_TEST(PlaceNameToLonLatExampleTest);
+  REGISTER_TEST(CoordinateToNameExampleTest);
 }
 
 
 #undef main
 #define main PlaceNameToLonLatExampleTest
 #include "PlaceNameToLonLatExample.cxx"
+
+#undef main
+#define main CoordinateToNameExampleTest
+#include "CoordinateToNameExample.cxx"

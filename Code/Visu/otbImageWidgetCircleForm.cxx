@@ -15,9 +15,6 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbImageWidgetCircleForm_cxx
-#define __otbImageWidgetCircleForm_cxx
-
 #include "otbImageWidgetCircleForm.h"
 #include "otbMath.h"
 
@@ -55,7 +52,7 @@ ImageWidgetCircleForm
   {
     glBegin(GL_LINE_LOOP);
   }
-  for (double angle = 0;angle <= 2*M_PI;angle+=0.01/static_cast<double>(m_Radius))
+  for (double angle = 0;angle <= CONST_2PI;angle+=0.01/static_cast<double>(m_Radius))
   {
     double xi = m_Center[0]+static_cast<double>(m_Radius)*vcl_sin(angle);
     double yi = m_Center[1]+static_cast<double>(m_Radius)*vcl_cos(angle);
@@ -69,5 +66,3 @@ ImageWidgetCircleForm
 }
 
 } // end namespace otb
-
-#endif

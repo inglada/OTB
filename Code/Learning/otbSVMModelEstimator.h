@@ -102,12 +102,9 @@ public:
   itkSetMacro(NumberOfCrossValidationFolders,unsigned int);
   itkGetMacro(NumberOfCrossValidationFolders,unsigned int);
 
-  /** Set the number of classes */
-  void SetNumberOfClasses(unsigned int nbClasses)
-  {
-    this->GetModel()->SetNumberOfClasses(nbClasses);
-    this->Modified();
-  }
+  /** Set the number of classes. This method is deprecated and is
+   * maintained for backward compatibility only */
+  itkLegacyMacro(void SetNumberOfClasses(unsigned int /*nbClasses*/){})
 
   /** Get the number of classes */
   unsigned int GetNumberOfClasses()
@@ -300,7 +297,7 @@ protected:
   /** Constructor */
   SVMModelEstimator();
   /** Destructor */
-  ~SVMModelEstimator();
+  virtual ~SVMModelEstimator();
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
   /** Starts the modelling process */

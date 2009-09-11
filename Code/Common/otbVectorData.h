@@ -72,11 +72,17 @@ public:
   /** Template parameters typedef */
   typedef TPrecision PrecisionType;
   typedef TValuePrecision ValuePrecisionType;
+  //define VDimension Dimension;
   typedef otb::DataNode<TPrecision,VDimension,TValuePrecision> DataNodeType;
   typedef typename DataNodeType::Pointer DataNodePointerType;
   typedef itk::TreeContainer<DataNodePointerType> DataTreeType;
   typedef typename DataTreeType::Pointer DataTreePointerType;
+
   typedef typename DataNodeType::PointType PointType;
+  typedef typename DataNodeType::LineType LineType;
+  typedef typename DataNodeType::PolygonType PolygonType;
+
+
 
   typedef itk::Vector<double, 2> SpacingType;
   typedef itk::Point<double, 2> OriginType;

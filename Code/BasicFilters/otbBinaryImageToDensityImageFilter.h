@@ -34,6 +34,7 @@ class ITK_EXPORT BinaryImageToDensityImageFilter
       : public itk::ImageToImageFilter<TInputImage,TOutputImage  >
 {
 public:
+
   /** Standard typedefs */
   typedef BinaryImageToDensityImageFilter                     Self;
   typedef itk::ImageToImageFilter<TInputImage,TOutputImage>   Superclass;
@@ -81,7 +82,7 @@ protected:
   /** Constructor */
   BinaryImageToDensityImageFilter();
   /** Destructor */
-  ~BinaryImageToDensityImageFilter();
+  virtual ~BinaryImageToDensityImageFilter();
   /** PrintSelf method */
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
