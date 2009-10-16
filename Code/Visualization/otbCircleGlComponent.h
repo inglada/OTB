@@ -43,7 +43,7 @@ namespace otb
 /** \class CircleGlComponent
 *   \brief This Gl Component to render a Circle.
 *   No checking is done upon the adequation between the Circle
-*   projection and the underlying image projection.
+*   projection and the underlying image projection. Gie possibility to represnts the circle center (by a point or a cross)
 *
 *   Origin and Spacing allows to fit to the image axis.
 *  \ingroup Visualization
@@ -68,6 +68,8 @@ public:
   typedef itk::Index<> IndexType;
   typedef std::vector<IndexType> IndexListType;
   typedef std::vector<ColorType> ColorListType;
+
+  typedef enum { NO, CIRCLE, CROSS } CenterRepresentationEnumType;
 
   /** Runtime information */
   itkTypeMacro(CircleGlComponent,GlComponent);
@@ -132,6 +134,10 @@ public:
   itkSetMacro(Radius,double);
   itkGetMacro(Radius,double);
 
+  /** Set/Get the center circle radius. */
+  itkSetMacro(CenterRepresentation,CenterRepresentationEnumType);
+  itkGetMacro(CenterRepresentation,CenterRepresentationEnumType);
+
 protected:
   /** Constructor */
   CircleGlComponent();
@@ -174,6 +180,9 @@ private:
   
   /** Default color : red*/
   ColorType m_RedColor;
+
+  /** Center representation */ 
+  CenterRepresentationEnumType m_CenterRepresentation;
 
 }; // end class
 } // end namespace otb
