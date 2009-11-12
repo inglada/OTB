@@ -1,13 +1,4 @@
-// $Id: ossimOrthoIgen.cpp 15849 2009-11-04 15:19:35Z dburken $
-
-// In Windows, standard output is ASCII by default. 
-// Let's include the following in case we have
-// to change it over to binary mode.
-#if defined(_WIN32)
-#include <io.h>
-#include <fcntl.h>
-#endif
-
+// $Id: ossimOrthoIgen.cpp 15785 2009-10-21 14:55:04Z dburken $
 #include <sstream>
 #include <ossim/parallel/ossimOrthoIgen.h>
 #include <ossim/parallel/ossimIgen.h>
@@ -89,7 +80,6 @@ ossimOrthoIgen::ossimOrthoIgen()
    theCombinerTemplate(""),
    theAnnotationTemplate(""),
    theWriterTemplate(""),
-   theSupplementaryDirectory(""),
    theSlaveBuffers("2"),
    theCutOriginType(ossimOrthoIgen::OSSIM_CENTER_ORIGIN),
    theCutOrigin(ossim::nan(), ossim::nan()),
@@ -141,8 +131,6 @@ void ossimOrthoIgen::addArguments(ossimArgumentParser& argumentParser)
    argumentParser.getApplicationUsage()->addCommandLineOption("--hist-stretch","Specify in normalized percent the low clip and then the high clip value");
 
    argumentParser.getApplicationUsage()->addCommandLineOption("--hist-auto-minmax","uses the automatic search for the best min and max clip values");
-
-   argumentParser.getApplicationUsage()->addCommandLineOption("--supplementary-directory","Specify the supplementary directory path where overviews are located");
 
    argumentParser.getApplicationUsage()->addCommandLineOption("--scale-to-8-bit","Scales output to eight bits if not already.");
    argumentParser.getApplicationUsage()->addCommandLineOption("--writer-prop","Passes a name=value pair to the writer for setting it's property.  Any number of these can appear on the line.");
@@ -285,20 +273,6 @@ void ossimOrthoIgen::initialize(ossimArgumentParser& argumentParser)
  
    if (argumentParser.read("--stdout"))
    {
-#if defined(_WIN32)
-      // In Windows, cout is ASCII by default. 
-      // Let's change it over to binary mode.
-      int result = _setmode( _fileno(stdout), _O_BINARY );
-      if( result == -1 )
-      {
-         ossimNotify(ossimNotifyLevel_WARN)
-            << "ossimOrthoIgen::initialize WARNING:"
-            << "\nCannot set standard output mode to binary."
-            << std::endl;
-         return;
-      }
-#endif
-
       theStdoutFlag = true;
    }
    
@@ -377,10 +351,6 @@ void ossimOrthoIgen::initialize(ossimArgumentParser& argumentParser)
    {
       theResamplerType = tempString;
    }
-   if(argumentParser.read("--supplementary-directory", stringParam))
-   {
-      theSupplementaryDirectory = ossimFilename(tempString);
-   }
    if(traceDebug())
    {
          ossimNotify(ossimNotifyLevel_DEBUG)
@@ -437,8 +407,11 @@ bool ossimOrthoIgen::execute()
       {
          if (traceDebug())
          {
-            ossimNotify(ossimNotifyLevel_DEBUG) << e.what() << std::endl;
+            ossimNotify(ossimNotifyLevel_DEBUG)
+               << "ossimOrthoIgen::execute DEBUG: setupIgenKwl caught exception."
+               << std::endl;
          }
+
          throw; // re-throw exception
       }
 
@@ -453,7 +426,7 @@ bool ossimOrthoIgen::execute()
          }
       }
    }
-
+   
    ossimIgen *igen = new ossimIgen;
    igen->initialize(igenKwl);
 
@@ -463,15 +436,18 @@ bool ossimOrthoIgen::execute()
    }
    catch(const ossimException& e)
    {
-      if (traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_DEBUG) << e.what() << std::endl;
-      }
       delete igen;
       igen = 0;
       throw; // re-throw
    }
    
+//    if(ossimMpi::instance()->getRank() == 0)
+//    {
+//       stop = ossimMpi::instance()->getTime();
+//       ossimNotify(ossimNotifyLevel_NOTICE)
+//          << "Time elapsed: " << (stop-start)
+//          << std::endl;
+//    }
    delete igen;
    igen = 0;
 
@@ -520,7 +496,6 @@ void ossimOrthoIgen::setDefaultValues()
    theResamplerType = "nearest neighbor";
    theTilingTemplate = "";
    theTilingFilename = "";
-   theSupplementaryDirectory = "";
    theSlaveBuffers = "2";
    clearFilenameList();
    theLowPercentClip = ossim::nan();
@@ -618,7 +593,9 @@ void ossimOrthoIgen::setupIgenKwl(ossimKeywordlist& kwl)
    {
       if (traceDebug())
       {
-         ossimNotify(ossimNotifyLevel_DEBUG) << e.what() << std::endl;
+         ossimNotify(ossimNotifyLevel_DEBUG)
+            << "ossimOrthoIgen::execute DEBUG: setupView through exception!"
+            << std::endl;
       }
       throw; // re-throw exception
    }
@@ -693,7 +670,7 @@ void ossimOrthoIgen::setupIgenKwl(ossimKeywordlist& kwl)
          chain = tempChain;
       }
       
-      ossim_uint32 fileSize = (ossim_uint32)theFilenames.size()-1;
+      ossim_uint32 fileSize = theFilenames.size()-1;
       ossim_uint32 idx;
       ossim_uint32 chainIdx = 1;
       ossimRefPtr<ossimImageChain> rootChain = new ossimImageChain;
@@ -707,13 +684,6 @@ void ossimOrthoIgen::setupIgenKwl(ossimKeywordlist& kwl)
          ossimHistogramRemapper* histRemapper = 0;
          if(handler.valid())
          {
-            if ( theSupplementaryDirectory.empty() == false )
-            {
-               handler->setSupplementaryDirectory( theSupplementaryDirectory );
-               ossimFilename overviewFilename = handler->getFilenameWithThisExtension(ossimString(".ovr"));
-               handler->openOverview( overviewFilename );
-            }
-
             std::vector<ossim_uint32> entryList;
             if(theFilenames[idx].theEntry >-1)
             {
@@ -729,13 +699,6 @@ void ossimOrthoIgen::setupIgenKwl(ossimKeywordlist& kwl)
             {
                ossimImageHandler* h = (ossimImageHandler*)handler->dup();
                h->setCurrentEntry(entryList[entryIdx]);
-               if ( theSupplementaryDirectory.empty() == false )
-               {
-                  h->setSupplementaryDirectory( theSupplementaryDirectory );
-                  ossimFilename overviewFilename = h->getFilenameWithThisExtension(ossimString(".ovr"));
-                  h->openOverview( overviewFilename );
-               }
-
                ossimImageChain* tempChain = (ossimImageChain*)chain->dup();
                tempChain->addLast(h);
                if( ( (ossim::isnan(theHighPercentClip) == false)  &&
@@ -847,7 +810,9 @@ void ossimOrthoIgen::setupIgenKwl(ossimKeywordlist& kwl)
       {
          if (traceDebug())
          {
-            ossimNotify(ossimNotifyLevel_DEBUG) << e.what() << std::endl;
+            ossimNotify(ossimNotifyLevel_DEBUG)
+               << "ossimOrthoIgen::execute DEBUG: setupWriter returned false..."
+               << std::endl;
          }
          throw; // re-throw exception
       }
@@ -1202,13 +1167,6 @@ void ossimOrthoIgen::setupView(ossimKeywordlist& kwl)
          std::string errMsg = "Could not open file: ";
          errMsg += input;
          throw(ossimException(errMsg));
-      }
-
-      if ( theSupplementaryDirectory.empty() == false )
-      {
-         handler->setSupplementaryDirectory( theSupplementaryDirectory );
-         ossimFilename overviewFilename = handler->getFilenameWithThisExtension(ossimString(".ovr"));
-         handler->openOverview( overviewFilename );
       }
 
       const ossimProjection* inputProj = 0;

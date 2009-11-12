@@ -120,7 +120,7 @@ GenericMapProjection<Transform, TScalarType, NInputDimensions, NOutputDimensions
 
     if (!projectionInformationAvailable)
     {
-      otbMsgDevMacro(<<"WARNING: Impossible to create the projection from string: "<< m_ProjectionRefWkt);
+      std::cout << "WARNING: Impossible to create the projection from string: "<< m_ProjectionRefWkt << std::endl;
       return false;
     }
 
@@ -129,7 +129,7 @@ GenericMapProjection<Transform, TScalarType, NInputDimensions, NOutputDimensions
     //a better solution might be available...
     if (std::string(kwl.find("type")) == "ossimEquDistCylProjection")
     {
-      otbMsgDevMacro(<< "WARNING: Not instanciating a ossimEquDistCylProjection");
+      std::cout << "WARNING: Not instanciating a ossimEquDistCylProjection"<< std::endl;
       return false;
     }
 

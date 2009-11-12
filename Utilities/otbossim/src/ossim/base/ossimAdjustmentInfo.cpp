@@ -6,7 +6,7 @@
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimAdjustmentInfo.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimAdjustmentInfo.cpp 9094 2006-06-13 19:12:40Z dburken $
 #include <ossim/base/ossimAdjustmentInfo.h>
 #include <ossim/base/ossimKeywordNames.h>
 
@@ -71,7 +71,7 @@ void ossimAdjustmentInfo::setNumberOfAdjustableParameters(ossim_uint32 numberOfA
 
 ossim_uint32 ossimAdjustmentInfo::getNumberOfAdjustableParameters()const
 {
-   return (ossim_uint32)theParameterList.size();
+   return theParameterList.size();
 }
 
 ossimString ossimAdjustmentInfo::getDescription()const

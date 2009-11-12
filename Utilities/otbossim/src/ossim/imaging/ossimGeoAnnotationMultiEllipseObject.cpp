@@ -5,7 +5,7 @@
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimGeoAnnotationMultiEllipseObject.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimGeoAnnotationMultiEllipseObject.cpp 15766 2009-10-20 12:37:09Z gpotts $
 
 #include <ossim/imaging/ossimGeoAnnotationMultiEllipseObject.h>
 #include <ossim/imaging/ossimAnnotationMultiEllipseObject.h>
@@ -64,10 +64,10 @@ void ossimGeoAnnotationMultiEllipseObject::transform(
    ossimImageGeometry* projection)
 {
    const std::vector<ossimGpt>::size_type BOUNDS = thePointList.size();
-   theProjectedObject->resize((ossim_uint32)BOUNDS);
+   theProjectedObject->resize(BOUNDS);
    for(std::vector<ossimGpt>::size_type i = 0; i < BOUNDS; ++i)
    {
-      projection->worldToLocal(thePointList[(int)i], (*theProjectedObject)[(int)i]);
+      projection->worldToLocal(thePointList[i], (*theProjectedObject)[i]);
       
    }
    computeBoundingRect();

@@ -35,9 +35,7 @@ ossimVpfAnnotationFeatureInfo::ossimVpfAnnotationFeatureInfo(const ossimString& 
     theThickness(thickness),
     theFillEnabledFlag(false),
     theEnabledFlag(enabledFlag),
-    theFeatureType(ossimVpfAnnotationFeatureType_UNKNOWN),
-    theFontInformation(),
-    theAnnotationArray(0)
+    theFeatureType(ossimVpfAnnotationFeatureType_UNKNOWN)
 {
    ossimFont* font = ossimFontFactoryRegistry::instance()->getDefaultFont();
 
@@ -66,7 +64,7 @@ void ossimVpfAnnotationFeatureInfo::transform(ossimImageGeometry* proj)
    {
       for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
       {
-         if(theAnnotationArray[idx].valid())
+         if(theAnnotationArray[idx])
          {
             theAnnotationArray[idx]->transform(proj);
             theAnnotationArray[idx]->computeBoundingRect();
@@ -83,7 +81,7 @@ ossimIrect ossimVpfAnnotationFeatureInfo::getBoundingProjectedRect()const
   {
      for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
      {
-        if(theAnnotationArray[idx].valid())
+        if(theAnnotationArray[idx])
 	{
            ossimIrect tempRect = theAnnotationArray[idx]->getBoundingRect();
            if(!tempRect.hasNans())
@@ -419,7 +417,7 @@ ossimVpfAnnotationFeatureInfo::ossimVpfAnnotationFeatureType ossimVpfAnnotationF
 
 void ossimVpfAnnotationFeatureInfo::deleteAllObjects()
 {
-   theAnnotationArray.clear();
+  theAnnotationArray.clear();
 }
 
 void ossimVpfAnnotationFeatureInfo::setDrawingFeaturesToAnnotation()
@@ -428,10 +426,10 @@ void ossimVpfAnnotationFeatureInfo::setDrawingFeaturesToAnnotation()
    {
    case ossimVpfAnnotationFeatureType_POINT:
    {
-      ossimGeoAnnotationMultiEllipseObject* annotation = 0;
+      ossimGeoAnnotationMultiEllipseObject* annotation = NULL;
       for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
       {
-         annotation = (ossimGeoAnnotationMultiEllipseObject*)theAnnotationArray[idx].get();
+         annotation = (ossimGeoAnnotationMultiEllipseObject*)theAnnotationArray[idx];
 
          annotation->setColor(thePenColor.getR(),
                               thePenColor.getG(),
@@ -445,12 +443,12 @@ void ossimVpfAnnotationFeatureInfo::setDrawingFeaturesToAnnotation()
    }
    case ossimVpfAnnotationFeatureType_TEXT:
    {
-      ossimGeoAnnotationFontObject* annotation = 0;
+      ossimGeoAnnotationFontObject* annotation = NULL;
       ossimRefPtr<ossimFont> font = ossimFontFactoryRegistry::instance()->createFont(theFontInformation);
 
       for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
       {
-         annotation = (ossimGeoAnnotationFontObject*)theAnnotationArray[idx].get();
+         annotation = (ossimGeoAnnotationFontObject*)theAnnotationArray[idx];
          annotation->setColor(thePenColor.getR(),
                               thePenColor.getG(),
                               thePenColor.getB());
@@ -469,10 +467,10 @@ void ossimVpfAnnotationFeatureInfo::setDrawingFeaturesToAnnotation()
    }
    case ossimVpfAnnotationFeatureType_LINE:
    {
-      ossimGeoAnnotationMultiPolyLineObject* annotation = 0;
+      ossimGeoAnnotationMultiPolyLineObject* annotation = NULL;
       for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
       {
-         annotation = (ossimGeoAnnotationMultiPolyLineObject*)theAnnotationArray[idx].get();
+         annotation = (ossimGeoAnnotationMultiPolyLineObject*)theAnnotationArray[idx];
          annotation->setColor(thePenColor.getR(),
                               thePenColor.getG(),
                               thePenColor.getB());
@@ -483,10 +481,10 @@ void ossimVpfAnnotationFeatureInfo::setDrawingFeaturesToAnnotation()
    }
    case ossimVpfAnnotationFeatureType_POLYGON:
    {
-      ossimGeoAnnotationMultiPolyObject* annotation = 0;
+      ossimGeoAnnotationMultiPolyObject* annotation = NULL;
       for(int idx = 0; idx < (int)theAnnotationArray.size();++idx)
       {
-         annotation = (ossimGeoAnnotationMultiPolyObject*)theAnnotationArray[idx].get();
+         annotation = (ossimGeoAnnotationMultiPolyObject*)theAnnotationArray[idx];
          annotation->setColor(thePenColor.getR(),
                               thePenColor.getG(),
                               thePenColor.getB());
@@ -985,112 +983,112 @@ ossimDpt *ossimVpfAnnotationFeatureInfo::getXy(vpf_table_type table,
 					       long pos, 
 					       long *count)
 {
-   long i;
-   ossimDpt *coord = 0;
+  long i;
+  ossimDpt *coord = NULL;
   
-   switch (table.header[pos].type)
-   {
-      case 'C':
+  switch (table.header[pos].type)
+    {
+    case 'C':
       {
-         coordinate_type temp, *ptr;
-         ptr = (coordinate_type*)get_table_element(pos, row, table, &temp, count);
-         coord = new ossimDpt[*count];
-         if ((*count == 1) && (ptr == (coordinate_type*)0))
-         {
+	coordinate_type temp, *ptr;
+	ptr = (coordinate_type*)get_table_element(pos, row, table, &temp, count);
+	coord = new ossimDpt[*count];
+	if ((*count == 1) && (ptr == (coordinate_type*)NULL))
+	  {
             coord->x = (double)temp.x;
             coord->y = (double)temp.y;
-         }
-         else 
-         {
+	  }
+	else 
+	  {
 	    for (i=0; i<*count; i++)
-            {
-               coord[i].x = (double)ptr[i].x;
-               coord[i].y = (double)ptr[i].y;
-            }
-         }
-         if (ptr)
-         {
+	      {
+		coord[i].x = (double)ptr[i].x;
+		coord[i].y = (double)ptr[i].y;
+	      }
+	  }
+	if (ptr)
+	  {
             free((char *)ptr);
-         }
-         break;
+	  }
+	break;
       }
-      case 'Z':
+    case 'Z':
       {
          tri_coordinate_type temp, *ptr;
          ptr = (tri_coordinate_type*)get_table_element (pos, row, table, &temp, count);
 	 coord = new ossimDpt[*count];
-         if ((*count == 1) && (ptr == (tri_coordinate_type*)0))
-         {
-            coord->x = (double)temp.x;
-            coord->y = (double)temp.y;
-         }
+         if ((*count == 1) && (ptr == (tri_coordinate_type*)NULL))
+	   {
+	     coord->x = (double)temp.x;
+	     coord->y = (double)temp.y;
+	   }
          else
-         {
-            for (i=0; i<*count; i++)
-            {
-               coord[i].x = (double)ptr[i].x;
-               coord[i].y = (double)ptr[i].y;
-            }
-         }
+	   {
+	     for (i=0; i<*count; i++)
+               {
+		 coord[i].x = (double)ptr[i].x;
+		 coord[i].y = (double)ptr[i].y;
+               }
+	   }
          if (ptr)
-         {
-            free ((char*)ptr);
-         }
+	   {
+	     free ((char*)ptr);
+	   }
          break;
       }
-      case 'B':
+    case 'B':
       {
-         double_coordinate_type temp, *ptr;
-         ptr = (double_coordinate_type*)get_table_element (pos, row, table, &temp, count);
-         coord = new ossimDpt[*count];
-         if ((*count == 1) && (ptr == (double_coordinate_type*)0))
-         {
+	double_coordinate_type temp, *ptr;
+	ptr = (double_coordinate_type*)get_table_element (pos, row, table, &temp, count);
+	coord = new ossimDpt[*count];
+	if ((*count == 1) && (ptr == (double_coordinate_type*)NULL))
+	  {
             coord->x = temp.x;
             coord->y = temp.y;
-         }
-         else
-         {
+	  }
+	else
+	  {
 	    for (i=0; i<*count; i++)
-            {
-               coord[i].x = ptr[i].x;
-               coord[i].y = ptr[i].y;
-            }
-         }
-         if (ptr)
-         {
+	      {
+		coord[i].x = ptr[i].x;
+		coord[i].y = ptr[i].y;
+	      }
+	  }
+	if (ptr)
+	  {
 	    free ((char*)ptr);
-         }
-         break;
+	  }
+	break;
       }
-      case 'Y':
+    case 'Y':
       {
-         double_tri_coordinate_type temp, *ptr;
-         ptr = (double_tri_coordinate_type*)get_table_element (pos, row, table, &temp, count);
-         coord = new ossimDpt[*count];
-         if ((*count == 1) && (ptr == (double_tri_coordinate_type*)0))
-         {
+	double_tri_coordinate_type temp, *ptr;
+	ptr = (double_tri_coordinate_type*)get_table_element (pos, row, table, &temp, count);
+	coord = new ossimDpt[*count];
+	if ((*count == 1) && (ptr == (double_tri_coordinate_type*)NULL))
+	  {
             coord->x = temp.x;
             coord->y = temp.y;
-         }
-         else
-         {
+	  }
+	else
+	  {
             for (i=0; i<*count; i++)
-            {
-               coord[i].x = ptr[i].x;
-               coord[i].y = ptr[i].y;
-            }
-         }
-         if (ptr)
-         {
+	      {
+		coord[i].x = ptr[i].x;
+		coord[i].y = ptr[i].y;
+	      }
+	  }
+	if (ptr)
+	  {
 	    free((char*)ptr);
-         }
-         break;
+	  }
+	break;
       }
       
-      default:
-         break;
-   } /* switch type */
-   return (coord);
+    default:
+      break;
+    } /* switch type */
+  return (coord);
 }
 
 int ossimVpfAnnotationFeatureInfo::readTableCellAsInt (int rowNumber,
@@ -1381,33 +1379,30 @@ void ossimVpfAnnotationFeatureInfo::readGeoPolygon(ossimGeoPolygon& polygon,
 			      &count);
   
     if(ptArray)
-    {
-       int rightFace = getEdgeKeyId( *edgTable.getVpfTableData(), row, rightFaceCol );
-       
-       if (rightFace == faceId)
-       {
+      {
+	int rightFace = getEdgeKeyId( *edgTable.getVpfTableData(), row, rightFaceCol );
+
+	if (rightFace == faceId) {
 	  for(int p = 0; p < count; ++p)
-          {
-             if((fabs(ptArray[p].x) <= 180.0)&&
-                (fabs(ptArray[p].y) <= 90.0))
-             {
-                polygon.addPoint(ptArray[p].y, ptArray[p].x);
-             }
-          }
-       }
-       else
-       {
+	    {
+	      if((fabs(ptArray[p].x) <= 180.0)&&
+		 (fabs(ptArray[p].y) <= 90.0))
+		{
+		  polygon.addPoint(ptArray[p].y, ptArray[p].x);
+		}
+	    }
+	} else {
 	  for(int p = count - 1; p >= 0; --p)
-          {
-             if((fabs(ptArray[p].x) <= 180.0)&&
-                (fabs(ptArray[p].y) <= 90.0))
-             {
-                polygon.addPoint(ptArray[p].y, ptArray[p].x);
-             }
-          }
-       }
-       delete [] ptArray;
-    }
+	    {
+	      if((fabs(ptArray[p].x) <= 180.0)&&
+		 (fabs(ptArray[p].y) <= 90.0))
+		{
+		  polygon.addPoint(ptArray[p].y, ptArray[p].x);
+		}
+	    }
+	}
+	delete [] ptArray;
+      }
   }
   free_row(row,  *edgTable.getVpfTableData());
 }

@@ -7,13 +7,12 @@
 // Description: .
 //
 //----------------------------------------------------------------------------
-// $Id: ossimOverviewBuilderFactory.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimOverviewBuilderFactory.cpp 15766 2009-10-20 12:37:09Z gpotts $
 
 #include <cstddef> /* for NULL */
 
 #include <ossim/imaging/ossimOverviewBuilderFactory.h>
 #include <ossim/imaging/ossimTiffOverviewBuilder.h>
-#include <ossim/imaging/ossimVirtualOverviewBuilder.h>
 
 ossimOverviewBuilderFactory*
 ossimOverviewBuilderFactory::theInstance = NULL;
@@ -35,20 +34,17 @@ ossimOverviewBuilderFactory::~ossimOverviewBuilderFactory()
 ossimOverviewBuilderBase* ossimOverviewBuilderFactory::createBuilder(
    const ossimString& typeName) const
 {
-   ossimRefPtr<ossimOverviewBuilderBase> result = new ossimTiffOverviewBuilder();
-   if ( result->hasOverviewType(typeName) == false )
+   ossimRefPtr<ossimOverviewBuilderBase> result = new  ossimTiffOverviewBuilder();
+   if ( result->hasOverviewType(typeName) == true )
    {
-      result = new ossimVirtualOverviewBuilder();
+      // Capture the type.  (This builder has more than one.)
+      result->setOverviewType(typeName);
    }
-   if ( result->hasOverviewType(typeName) == false )
+   else
    {
       result = 0;
    }
-
-   if ( result.get() )
-   {
-      result->setOverviewType(typeName);
-   }
+   
    return result.release();
 }
 
@@ -56,9 +52,6 @@ void ossimOverviewBuilderFactory::getTypeNameList(
    std::vector<ossimString>& typeList) const
 {
    ossimRefPtr<ossimOverviewBuilderBase> builder = new  ossimTiffOverviewBuilder();
-   builder->getTypeNameList(typeList);
-
-   builder = new  ossimVirtualOverviewBuilder();
    builder->getTypeNameList(typeList);
    builder = 0;
 }

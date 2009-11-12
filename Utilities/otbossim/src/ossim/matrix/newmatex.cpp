@@ -4,9 +4,6 @@
 
 #define WANT_STREAM                  // include.h will get stream fns
 
-#include <iostream>
-#include <iomanip>
-
 #include <ossim/matrix/include.h>
 #include <ossim/matrix/newmat.h>
 
@@ -280,9 +277,9 @@ ExeCounter::ExeCounter(int xl, int xf) : line(xl), fileid(xf), nexe(0) {}
 ExeCounter::~ExeCounter()
 {
    nreports++;
-   std::cout << "REPORT  " << std::setw(6) << nreports << "  "
-      << std::setw(6) << fileid << "  " << std::setw(6) << line
-      << "  " << std::setw(6) << nexe << "\n";
+   cout << "REPORT  " << setw(6) << nreports << "  "
+      << setw(6) << fileid << "  " << setw(6) << line
+      << "  " << setw(6) << nexe << "\n";
 }
 
 #endif

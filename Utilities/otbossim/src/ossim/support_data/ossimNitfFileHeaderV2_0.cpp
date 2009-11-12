@@ -9,7 +9,7 @@
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfFileHeaderV2_0.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimNitfFileHeaderV2_0.cpp 14662 2009-06-07 16:15:23Z dburken $
 
 
 #include <sstream>
@@ -980,17 +980,17 @@ bool ossimNitfFileHeaderV2_0::isEncrypted()const
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfImages()const
 {
-   return (ossim_int32)theNitfImageInfoRecords.size();
+   return theNitfImageInfoRecords.size();
 }
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfLabels()const
 {
-   return ((ossim_int32)theNitfLabelInfoRecords.size());
+   return (theNitfLabelInfoRecords.size());
 }
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfSymbols()const
 {
-   return ((ossim_int32)theNitfSymbolInfoRecords.size());
+   return (theNitfSymbolInfoRecords.size());
 }
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfGraphics()const
@@ -1000,12 +1000,12 @@ ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfGraphics()const
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfTextSegments()const
 {
-   return (ossim_int32)theNitfTextInfoRecords.size();
+   return theNitfTextInfoRecords.size();
 }
 
 ossim_int32 ossimNitfFileHeaderV2_0::getNumberOfDataExtSegments()const
 {
-   return (ossim_int32)theNitfDataExtSegInfoRecords.size();
+   return theNitfDataExtSegInfoRecords.size();
 }
 
 ossim_int32 ossimNitfFileHeaderV2_0::getHeaderSize()const

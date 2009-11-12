@@ -357,11 +357,7 @@ ImageFileReader<TOutputImage>
   {
     otbMsgDevMacro( <<"OSSIM Open Image SUCCESS ! ");
 //     hasMetaData = handler->getImageGeometry(geom_kwl);
-    ossimProjection* projection = handler->getImageGeometry()->getProjection();
-    if (projection)
-    {
-      hasMetaData = projection->saveState(geom_kwl);
-    }
+    hasMetaData = handler->saveState(geom_kwl);
   }
   // Free memory
   delete handler;

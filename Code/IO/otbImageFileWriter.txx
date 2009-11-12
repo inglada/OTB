@@ -108,11 +108,9 @@ ImageFileWriter<TInputImage>
       }
     else
       {
-        //FIXME find out exactly what we are trying to do here
-        //there is no meaning to blindly save the kwl if we didn't update it in the pipeline
 //       handler->setImageGeometry(geom_kwl);
-//       handler->getImageGeometry()->getProjection()->loadState(geom_kwl);
-//       handler->saveImageGeometry();
+      handler->loadState(geom_kwl);
+      handler->saveImageGeometry();
       handler->close();
       }
     }

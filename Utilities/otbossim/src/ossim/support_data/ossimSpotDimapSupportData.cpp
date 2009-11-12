@@ -9,7 +9,7 @@
 // Contains definition of class ossimSpotDimapSupportData.
 //
 //*****************************************************************************
-// $Id: ossimSpotDimapSupportData.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimSpotDimapSupportData.cpp 14208 2009-04-01 18:18:06Z dburken $
 
 
 #include <iostream>
@@ -267,7 +267,7 @@ bool ossimSpotDimapSupportData::loadXmlFile(const ossimFilename& file,
          if(testString.contains("xml"))
          {
             in.seekg(0);
-            in.read(&fullBuffer.front(), (std::streamsize)fullBuffer.size());
+            in.read(&fullBuffer.front(), fullBuffer.size());
             if(!in.fail())
             {
                bufferedIo = ossimString(fullBuffer.begin(),
@@ -437,7 +437,7 @@ void ossimSpotDimapSupportData::getPositionEcf(ossim_uint32 sample,
          ossim_uint32 idxEnd = (ossim_uint32)ceil(tempIdx);
          if(idxEnd >= thePosEcfSamples.size())
          {
-            idxEnd = (ossim_uint32)thePosEcfSamples.size()-1;
+            idxEnd = thePosEcfSamples.size()-1;
          }
          if(idxStart > idxEnd)
          {
@@ -496,7 +496,7 @@ void ossimSpotDimapSupportData::getVelocityEcf(ossim_uint32 sample, ossimEcefPoi
          ossim_uint32 idxEnd = (ossim_uint32)ceil(tempIdx);
          if(idxEnd >= theVelEcfSamples.size())
          {
-            idxEnd = (ossim_uint32)theVelEcfSamples.size()-1;
+            idxEnd = theVelEcfSamples.size()-1;
          }
          if(idxStart > idxEnd)
          {
@@ -555,7 +555,7 @@ void ossimSpotDimapSupportData::getEphSampTime(ossim_uint32 sample,
          ossim_uint32 idxEnd = (ossim_uint32)ceil(tempIdx);
          if(idxEnd >= theEphSampTimes.size())
          {
-            idxEnd = (ossim_uint32)theEphSampTimes.size()-1;
+            idxEnd = theEphSampTimes.size()-1;
          }
          if(idxStart > idxEnd)
          {
@@ -740,7 +740,7 @@ void ossimSpotDimapSupportData::getLagrangeInterpolation(
 
    if(T.size() <= filter_size)
    {
-      filter_size = (ossim_uint32)T.size()/2;
+      filter_size = T.size()/2;
       lagrange_half_filter = filter_size/2;
    }
    if ((time <  T[lagrange_half_filter]) ||
@@ -1015,17 +1015,17 @@ void ossimSpotDimapSupportData::getRefLineTimeLine(ossim_float64& rtl) const
 
 ossim_uint32 ossimSpotDimapSupportData::getNumEphSamples() const
 {
-   return (ossim_uint32)theEphSampTimes.size();
+   return theEphSampTimes.size();
 }
 
 ossim_uint32 ossimSpotDimapSupportData::getNumAttSamples() const
 {
-   return (ossim_uint32)theAttSampTimes.size();
+   return theAttSampTimes.size();
 }
 
 ossim_uint32 ossimSpotDimapSupportData::getNumGeoPosPoints() const
 {
-   return (ossim_uint32)theGeoPosImagePoints.size();
+   return theGeoPosImagePoints.size();
 }
 
 void ossimSpotDimapSupportData::getUlCorner(ossimGpt& pt) const
@@ -1937,7 +1937,7 @@ bool ossimSpotDimapSupportData::parsePart2(
    sub_nodes.clear();
    xml_nodes[band_index]->findChildNodes(xpath, sub_nodes);
 
-   theDetectorCount = (ossim_uint32)sub_nodes.size();
+   theDetectorCount = sub_nodes.size();
 
    if (theMetadataVersion == OSSIM_SPOT_METADATA_VERSION_1_1)
    {
@@ -1980,7 +1980,7 @@ bool ossimSpotDimapSupportData::parsePart2(
          idxEnd = (ossim_int32)ceil(tempIdx);
          if(idxEnd >= (ossim_int32)sub_nodes.size())
          {
-            idxEnd = (ossim_int32)sub_nodes.size()-1;
+            idxEnd = sub_nodes.size()-1;
          }
 
          thePixelLookAngleX.push_back(tempV[idxStart] + tempIdxFraction*(tempV[idxEnd] - tempV[idxStart]));
@@ -2037,7 +2037,7 @@ bool ossimSpotDimapSupportData::parsePart2(
          idxEnd = (ossim_int32)ceil(tempIdx);
          if(idxEnd >= (ossim_int32)sub_nodes.size())
          {
-            idxEnd = (ossim_int32)sub_nodes.size()-1;
+            idxEnd = sub_nodes.size()-1;
          }
          if(idxStart > idxEnd)
          {
