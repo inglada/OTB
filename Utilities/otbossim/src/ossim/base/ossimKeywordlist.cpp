@@ -5,7 +5,7 @@
 // Description: This class provides capabilities for keywordlists.
 //
 //********************************************************************
-// $Id: ossimKeywordlist.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimKeywordlist.cpp 15766 2009-10-20 12:37:09Z gpotts $
 #include <algorithm>
 #include <fstream>
 #include <list>
@@ -16,7 +16,6 @@
 #include <ossim/base/ossimKeywordlist.h>
 #include <ossim/base/ossimNotifyContext.h>
 #include <ossim/base/ossimTrace.h>
-#include <ossim/base/ossimDirectory.h>
 
 static ossimTrace traceDebug("ossimKeywordlist:debug");
 static const ossim_int32 MAX_LINE_LENGTH = 256;
@@ -26,7 +25,7 @@ static const char NULL_KEY_NOTICE[]
 
 #ifdef OSSIM_ID_ENABLED
 static const bool TRACE = false;
-static const char OSSIM_ID[] = "$Id: ossimKeywordlist.cpp 15833 2009-10-29 01:41:53Z eshirschorn $";
+static const char OSSIM_ID[] = "$Id: ossimKeywordlist.cpp 15766 2009-10-20 12:37:09Z gpotts $";
 #endif
 
 ossimKeywordlist::ossimKeywordlist(char delimiter)
@@ -821,38 +820,16 @@ bool ossimKeywordlist::parseFile(const ossimFilename& file,
    std::ifstream is;
    is.open(file.c_str(), std::ios::in | std::ios::binary);
 
-   if ( !is.is_open() )
+   if (!is)
    {
-      // ESH 07/2008, Trac #234: OSSIM is case sensitive 
-      // when using worldfile templates during ingest
-      // -- If first you don't succeed with the user-specified
-      // filename, try again with the results of a case insensitive search.
-      ossimDirectory directory(file.path());
-      ossimFilename filename(file.file());
-
-      std::vector<ossimFilename> result;
-      bool bSuccess = directory.findCaseInsensitiveEquivalents( filename, result );
-      if ( bSuccess == true )
+      if(traceDebug())
       {
-         int numResults = (int)result.size();
-         int i;
-         for ( i=0; i<numResults && !is.is_open(); ++i )
-         {
-            is.open( result[i].c_str(), std::ios::in | std::ios::binary );
-         }
+         // report all errors that aren't existance problems.
+         // we want to know about things like permissions, too many open files, etc.
+         ossimNotify(ossimNotifyLevel_DEBUG)
+            << "Error opening file: " << file.c_str() << std::endl;
       }
-
-      if ( !is.is_open() )
-      {
-         if ( traceDebug() ) 
-         {
-            // report all errors that aren't existence problems.
-            // we want to know about things like permissions, too many open files, etc.
-            ossimNotify(ossimNotifyLevel_DEBUG)
-               << "Error opening file: " << file.c_str() << std::endl;
-         }
-         return false;
-      }
+      return false;
    }
 
    bool result = parseStream(is, ignoreBinaryChars);
@@ -1134,7 +1111,7 @@ void ossimKeywordlist::stripPrefixFromAll(const ossimString& regularExpression)
 
 ossim_uint32 ossimKeywordlist::getSize()const
 {
-   return (ossim_uint32)theMap.size();
+   return theMap.size();
 }
 
 const ossimKeywordlist::KeywordMap& ossimKeywordlist::getMap()const

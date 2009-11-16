@@ -12,7 +12,7 @@
 // Contains class definition for TiffTileSource.
 //
 //*******************************************************************
-//  $Id: ossimTiffTileSource.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+//  $Id: ossimTiffTileSource.cpp 15825 2009-10-27 15:31:44Z dburken $
 
 #include <cstdlib> /* for abs(int) */
 #include <ossim/imaging/ossimTiffTileSource.h>
@@ -673,11 +673,7 @@ bool ossimTiffTileSource::open()
    openValidVertices();
    loadMetaData();
 
-   // ESH 05/2009 -- If memory allocations failed, then
-   // let's bail out of this driver and hope another one
-   // can handle the image ok. I.e. InitializeBuffers()
-   // was changed to return a boolean success/fail flag.
-   bool bSuccess = initializeBuffers();
+   initializeBuffers();
 
    if (traceDebug())
    {
@@ -686,7 +682,7 @@ bool ossimTiffTileSource::open()
    }
    
    // Finished...
-   return bSuccess;
+   return true;
 }
    
 ossim_uint32 ossimTiffTileSource::getNumberOfLines(
@@ -1645,7 +1641,6 @@ bool ossimTiffTileSource::allocateBuffer()
    theBufferRect.makeNan();
    theBufferRLevel = theCurrentDirectory;
 
-   bool bSuccess = true;
    if (buffer_size != theBufferSize)
    {
       theBufferSize = buffer_size;
@@ -1653,33 +1648,10 @@ bool ossimTiffTileSource::allocateBuffer()
       {
          delete [] theBuffer;
       }
-
-      // ESH 05/2009 -- Fix for ticket #738:  
-      // image_info crashing on aerial_ortho image during ingest
-      try
-      {
-         theBuffer = new ossim_uint8[buffer_size];
-      }
-      catch(...)
-      {
-         if (theBuffer)
-         {
-            delete [] theBuffer;
-            theBuffer = 0;
-         }
-
-         bSuccess = false;
-         if (traceDebug())
-         {
-            ossimNotify(ossimNotifyLevel_WARN)
-               << "ossimTiffTileSource::allocateBuffer WARN:"
-               << "\nNot enough memory: buffer_size:  " << buffer_size
-               << endl;
-         }
-      }
+      theBuffer = new ossim_uint8[buffer_size];
    }
 
-   return bSuccess;
+   return true;
 }
 
 ossim_uint32 ossimTiffTileSource::getNumberOfDirectories() const
@@ -1895,7 +1867,7 @@ void ossimTiffTileSource::setReadMethod()
    setTiffDirectory(0);
 }
 
-bool ossimTiffTileSource::initializeBuffers()
+void ossimTiffTileSource::initializeBuffers()
 {
    if(theBuffer)
    {
@@ -1920,7 +1892,7 @@ bool ossimTiffTileSource::initializeBuffers()
    theCurrentTileWidth  = theTile->getWidth();
    theCurrentTileHeight = theTile->getHeight();
    
-   return allocateBuffer();
+   allocateBuffer();
 }
 
 

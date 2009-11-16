@@ -1,4 +1,5 @@
 //*************************************************************************
+// Copyright (C) 2004 Intelligence Data Systems, Inc.  All rights reserved.
 //
 // License:  LGPL
 // 
@@ -7,7 +8,7 @@
 // Author: Garrett Potts
 // 
 //**************************************************************************
-// $Id: ossimVpfAnnotationLibraryInfo.cpp 15836 2009-10-30 12:29:09Z dburken $
+// $Id: ossimVpfAnnotationLibraryInfo.cpp 15766 2009-10-20 12:37:09Z gpotts $
 
 #include <algorithm>
 
@@ -232,7 +233,7 @@ bool ossimVpfAnnotationLibraryInfo::loadState(const ossimKeywordlist& kwl,
   vector<ossimString> keys =
     kwl.getSubstringKeyList( regExpression );
   std::vector<int> theNumberList(keys.size());
-  int offset = (int)(ossimString(prefix)+"coverage").size();
+  int offset = (ossimString(prefix)+"coverage").size();
   int idx = 0;
   for(idx = 0; idx < (int)theNumberList.size();++idx)
     {

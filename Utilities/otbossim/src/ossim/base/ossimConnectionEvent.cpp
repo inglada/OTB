@@ -6,7 +6,7 @@
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimConnectionEvent.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimConnectionEvent.cpp 15766 2009-10-20 12:37:09Z gpotts $
 
 #include <ossim/base/ossimConnectionEvent.h>
 
@@ -76,12 +76,12 @@ ossimConnectionEvent::ossimConnectionDirectionType ossimConnectionEvent::getDire
 
 ossim_uint32 ossimConnectionEvent::getNumberOfNewObjects()const
 {
-   return (ossim_uint32)theNewObjectList.size();
+   return theNewObjectList.size();
 }
 
 ossim_uint32 ossimConnectionEvent::getNumberOfOldObjects()const
 {
-   return (ossim_uint32)theOldObjectList.size();
+   return theOldObjectList.size();
 }
 
 ossimConnectableObject* ossimConnectionEvent::getOldObject(ossim_uint32 i)

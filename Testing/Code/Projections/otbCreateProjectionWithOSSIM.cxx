@@ -75,7 +75,7 @@ int otbCreateProjectionWithOSSIM( int argc, char* argv[] )
 
   ossimKeywordlist geom;
   otbGenericMsgDebugMacro(<< "Read ossim Keywordlist..." );
-  handler->getImageGeometry()->getProjection()->saveState(geom);
+  handler->saveState(geom);
   ossimGpt ossimGPoint(0,0);
   ossimDpt ossimDPoint;
   otbGenericMsgDebugMacro(<< "Creating projection..." );

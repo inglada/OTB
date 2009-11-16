@@ -117,7 +117,7 @@ VectorDataExtractROI<TVectorData>
   chrono.Start();
   ProcessNode(inputRoot,outputRoot);
   chrono.Stop();
-  otbMsgDevMacro(<<"VectorDataExtractROI: "<<m_Kept<<" Features processed in "<<chrono.GetMeanTime()<<" seconds.");
+  std::cout<<"VectorDataExtractROI: "<<m_Kept<<" Features processed in "<<chrono.GetMeanTime()<<" seconds."<<std::endl;
 }/*End GenerateData()*/
 
 

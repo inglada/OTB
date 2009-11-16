@@ -5,7 +5,7 @@
 // Author: Garrett Potts
 //
 //*************************************************************************
-// $Id: ossimContainerProperty.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimContainerProperty.cpp 12969 2008-06-03 17:17:43Z gpotts $
 #include <ossim/base/ossimContainerProperty.h>
 #include <ossim/base/ossimStringProperty.h>
 
@@ -163,7 +163,7 @@ void ossimContainerProperty::valueToString(ossimString& valueResult)const
 
 ossim_uint32 ossimContainerProperty::getNumberOfProperties()const
 {
-   return (ossim_uint32)theChildPropertyList.size();
+   return theChildPropertyList.size();
 }
 
 ossimRefPtr<ossimProperty> ossimContainerProperty::getProperty(ossim_uint32 idx)

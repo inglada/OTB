@@ -7,7 +7,7 @@
 //
 // Contains class definition for ossimNotify.
 //*******************************************************************
-//  $Id: ossimNotify.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+//  $Id: ossimNotify.cpp 12633 2008-04-07 20:07:37Z gpotts $
 
 #include <iostream>
 #include <cstdio>
@@ -91,7 +91,7 @@ protected:
                                   std::ios::app|std::ios::out);
             if(outFile)
             {
-               outFile.write(tempString.c_str(), (std::streamsize)tempString.length());
+               outFile.write(tempString.c_str(), tempString.length());
             }
             
             tempString = "";

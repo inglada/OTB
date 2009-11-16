@@ -9,7 +9,7 @@
 // Description: Nitf support class
 // 
 //********************************************************************
-// $Id: ossimNitfFileHeaderV2_1.cpp 15833 2009-10-29 01:41:53Z eshirschorn $
+// $Id: ossimNitfFileHeaderV2_1.cpp 15411 2009-09-11 19:46:32Z dburken $
 
 #include <iostream>
 #include <iomanip>
@@ -674,7 +674,7 @@ bool ossimNitfFileHeaderV2_1::isEncrypted()const
 
 ossim_int32 ossimNitfFileHeaderV2_1::getNumberOfImages()const
 {
-   return (ossim_int32)theNitfImageInfoRecords.size();
+   return theNitfImageInfoRecords.size();
 }
 
 ossim_int32 ossimNitfFileHeaderV2_1::getNumberOfTextSegments()const

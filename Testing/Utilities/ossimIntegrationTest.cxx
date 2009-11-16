@@ -90,7 +90,7 @@ int ossimIntegrationTest(int argc, char* argv[])
 
       ossimKeywordlist geom;
 //       handler->getImageGeometry(geom);
-      handler->getImageGeometry()->getProjection()->saveState(geom);
+      handler->saveState(geom);
       // grab a projection if it exists
       //
       ossimProjection* inputProjection = ossimProjectionFactoryRegistry::instance()->createProjection(geom);
