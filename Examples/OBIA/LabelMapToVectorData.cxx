@@ -185,20 +185,6 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  //  Software Guide : BeginLatex
-  //
-  // \begin{figure} \center
-  // \includegraphics[width=0.44\textwidth]{QB_Suburb.eps}
-  // \includegraphics[width=0.44\textwidth]{QB_Suburb_labelled.eps}
-  // \itkcaption[Output of object analysis]{Result 
-  // of the object filtering using the NDVI mean.}
-  // \label{fig:ScalarImageKMeansClassifierOutput}
-  // \end{figure}
-  //
-  //  Figure \ref{fig:ScalarImageKMeansClassifierOutput}
-  //  illustrates the effect of this filter with three classes.
-  //  The means can be estimated by ScalarImageKmeansModelEstimator.cxx.
-  //
-  //  Software Guide : EndLatex
+  return EXIT_SUCCESS;
   
 }
