@@ -41,7 +41,7 @@
 #include "ossim/imaging/ossimImageHandlerRegistry.h"
 #include "ossim/imaging/ossimImageHandlerSarFactory.h"
 // #include "ossim/projection/ossimTerraSarModel.h"
-#include "ossim/ossimRadarSatModel.h"
+#include "ossimRadarSatModel.h"
 
 int ossimRadarSatSupport(int argc, char* argv[])
 {
