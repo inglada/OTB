@@ -1944,52 +1944,57 @@ ADD_TEST(ioTvPointSetFileReader2 ${IO_TESTS17}
 
 ENDIF(OTB_USE_LIBLAS)
 
-ADD_TEST(ioTuSpotImageMetadataInterfaceNew ${IO_TESTS17}
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS18 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+ADD_TEST(ioTuSpotImageMetadataInterfaceNew ${IO_TESTS18}
         otbSpotImageMetadataInterfaceNew
 )
 
-ADD_TEST(ioTuIkonosImageMetadataInterfaceNew ${IO_TESTS17}
+ADD_TEST(ioTuIkonosImageMetadataInterfaceNew ${IO_TESTS18}
         otbIkonosImageMetadataInterfaceNew
 )
 
-ADD_TEST(ioTuQuickBirdImageMetadataInterfaceNew ${IO_TESTS17}
+ADD_TEST(ioTuQuickBirdImageMetadataInterfaceNew ${IO_TESTS18}
         otbQuickBirdImageMetadataInterfaceNew
 )
 
-ADD_TEST(ioTuTerraSarImageMetadataInterfaceNew ${IO_TESTS17}
+ADD_TEST(ioTuTerraSarImageMetadataInterfaceNew ${IO_TESTS18}
         otbTerraSarImageMetadataInterfaceNew
 )
 
 IF(OTB_DATA_USE_LARGEINPUT)
-ADD_TEST(ioTvImageMetadataInterfaceQBTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceQBTest ${IO_TESTS18}
          --compare-ascii ${NOTOL} ${BASELINE_FILES}/ioTvImageMetadataInterfaceQB.txt
                          ${TEMP}/ioTvImageMetadataInterfaceQB.txt
         otbImageMetadataInterfaceTest
         ${LARGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
         ${TEMP}/ioTvImageMetadataInterfaceQB.txt
 )
-ADD_TEST(ioTvImageMetadataInterfaceQBCevennesTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceQBCevennesTest ${IO_TESTS18}
          --compare-ascii ${NOTOL} ${BASELINE_FILES}/ioTvImageMetadataInterfaceQBCevennes.txt
                          ${TEMP}/ioTvImageMetadataInterfaceQBCevennes.txt
         otbImageMetadataInterfaceTest
         ${LARGEDATA}/QUICKBIRD/CEVENNES/06FEB12104912-P1BS-005533998070_01_P001.TIF
         ${TEMP}/ioTvImageMetadataInterfaceQBCevennes.txt
 )
-ADD_TEST(ioTvImageMetadataInterfaceQBMULTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceQBMULTest ${IO_TESTS18}
          --compare-ascii ${NOTOL} ${BASELINE_FILES}/ioTvImageMetadataInterfaceQBMUL.txt
                          ${TEMP}/ioTvImageMetadataInterfaceQBMUL.txt
         otbImageMetadataInterfaceTest
         ${LARGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
         ${TEMP}/ioTvImageMetadataInterfaceQBMUL.txt
 )
-ADD_TEST(ioTvImageMetadataInterfaceIKONOSTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceIKONOSTest ${IO_TESTS18}
          --compare-ascii ${NOTOL} ${BASELINE_FILES}/ioTvImageMetadataInterfaceIKONOS.txt
                          ${TEMP}/ioTvImageMetadataInterfaceIKONOS.txt
         otbImageMetadataInterfaceTest
         ${LARGEDATA}/IKONOS/BLOSSEVILLE/po_2619900_blu_0000000.tif
         ${TEMP}/ioTvImageMetadataInterfaceIKONOS.txt
 )
-ADD_TEST(ioTvImageMetadataInterfaceSPOTTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceSPOTTest ${IO_TESTS18}
          --compare-ascii ${NOTOL} ${BASELINE_FILES}/ioTvImageMetadataInterfaceSPOT.txt
                          ${TEMP}/ioTvImageMetadataInterfaceSPOT.txt
         otbImageMetadataInterfaceTest
@@ -1998,7 +2003,7 @@ ADD_TEST(ioTvImageMetadataInterfaceSPOTTest ${IO_TESTS17}
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
-ADD_TEST(ioTvImageMetadataInterfaceTest ${IO_TESTS17}
+ADD_TEST(ioTvImageMetadataInterfaceTest ${IO_TESTS18}
          --compare-ascii ${EPSILON_9} ${BASELINE_FILES}/ioTvImageMetadataInterface.txt
                          ${TEMP}/ioTvImageMetadataInterface.txt
         otbImageMetadataInterfaceTest2
@@ -2006,9 +2011,6 @@ ADD_TEST(ioTvImageMetadataInterfaceTest ${IO_TESTS17}
         ${TEMP}/ioTvImageMetadataInterface.txt
 )
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS18 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 IF(OTB_DATA_USE_LARGEINPUT)
 ADD_TEST(ioTvTerraSarImageMetadataInterface_dims ${IO_TESTS18}
@@ -2182,21 +2184,29 @@ ENDIF(OTB_DATA_USE_LARGEINPUT)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS19 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ADD_TEST(ioTvImageFileReaderServerNameHTTPTest ${IO_TESTS19}
+	otbImageFileReaderServerName
+	http://tile.openstreetmap.org/)
+
+ADD_TEST(ioTvImageFileReaderServerNameOTBTest ${IO_TESTS19}
+	otbImageFileReaderServerName
+	${OTB_DATA_ROOT}/Examples/osmfile.otb)
+
 IF(OTB_USE_CURL)
 
 ADD_TEST(ioTuTileMapImageSourceNew ${IO_TESTS19}
         otbTileMapImageSourceNew )
 
-ADD_TEST(ioTvTileMapImageSource ${IO_TESTS19}
-        --compare-image ${NOTOL}
-                ${BASELINE}/ioTileMapImageSourceToulouse.png
-                ${TEMP}/ioTileMapImageSourceToulouse.png
-        otbTileMapImageSource
-                43.6044
-                1.44295
-                http://tile.openstreetmap.org/
-		${TEMP}/ioTileMapImageSourceToulouse.png
-		256)
+#ADD_TEST(ioTvTileMapImageSource ${IO_TESTS19}
+#        --compare-image ${NOTOL}
+#                ${BASELINE}/ioTileMapImageSourceToulouse.png
+#                ${TEMP}/ioTileMapImageSourceToulouse.png
+#        otbTileMapImageSource
+#                43.6044
+#                1.44295
+#                http://tile.openstreetmap.org
+#		${TEMP}/ioTileMapImageSourceToulouse.png
+#		256)
 
 ADD_TEST(ioTuTileMapFetcherNew ${IO_TESTS19}
         otbTileMapFetcherNew )
@@ -2367,11 +2377,18 @@ otbImageFileReaderRADComplexDouble.cxx
 otbImageSeriesFileReader.cxx
 )
 
+#Reserved for liblas
 SET(BasicIO_SRCS17
 otbIOTests17.cxx
 otbPointSetFileReaderNew.cxx
 otbPointSetFileReader.cxx
 otbPointSetFileReader2.cxx
+)
+
+SET(BasicIO_SRCS18
+otbIOTests18.cxx
+otbImageKeywordlist.cxx
+otbTerraSarImageMetadataInterface.cxx
 otbSpotImageMetadataInterfaceNew.cxx
 otbQuickBirdImageMetadataInterfaceNew.cxx
 otbIkonosImageMetadataInterfaceNew.cxx
@@ -2380,15 +2397,10 @@ otbImageMetadataInterfaceTest.cxx
 otbImageMetadataInterfaceTest2.cxx
 )
 
-SET(BasicIO_SRCS18
-otbIOTests18.cxx
-otbImageKeywordlist.cxx
-otbTerraSarImageMetadataInterface.cxx
-)
-
 IF(OTB_USE_CURL)
 SET(BasicIO_SRCS19
 otbIOTests19.cxx
+otbImageFileReaderServerName.cxx
 otbTileMapImageSourceNew.cxx
 otbTileMapImageSource.cxx
 otbTileMapFetcherNew.cxx

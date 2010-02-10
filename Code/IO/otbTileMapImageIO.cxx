@@ -18,32 +18,25 @@
 
 #include "itkExceptionObject.h"
 #include "itkMacro.h"
-#include "itkByteSwapper.h"
-#include "itkRGBPixel.h"
-#include "itkRGBAPixel.h"
 
-#include "gdal.h"
-#include "gdal_priv.h"
-//#include <iostream.h>
 #include <string.h>
-#include <list>
-#include <vector>
 #include <math.h>
-//#include <zlib.h>
-
-#include "otbTileMapImageIO.h"
-#include "otbMacro.h"
-#include "otbSystem.h"
-
-#include "itkMetaDataObject.h"
-#include "itkPNGImageIO.h"
-#include "itkJPEGImageIO.h"
 
 #include <iostream>
 #include <fstream>
 
 //This is to check the file existence
 #include <sys/stat.h>
+
+/* Curl Library*/
+#include <curl/curl.h>
+
+#include "otbTileMapImageIO.h"
+#include "otbMacro.h"
+#include "otbSystem.h"
+
+#include "itkPNGImageIO.h"
+#include "itkJPEGImageIO.h"
 
 #include "base/ossimFilename.h"
 
@@ -70,28 +63,27 @@ TileMapImageIO::TileMapImageIO()
   m_Origin[0] = 0.0;
   m_Origin[1] = 0.0;
 
-  m_currentfile = NULL;
-
   m_NbBands = 3;
   m_FlagWriteImageInformation = true;
 
   //Resolution depth
   m_Depth = 8;
 
-  m_NbOctetPixel=1;
+  m_BytePerPixel=1;
 
-  useCache=false;
+  m_UseCache=false;
   m_ServerName="";
   m_CacheDirectory="";
   m_FileSuffix="jpg";
   m_AddressMode="0";
+  
+  m_FileNameIsServerName = false;
 
   this->AddSupportedWriteExtension(".otb");
   this->AddSupportedWriteExtension(".OTB");
 
   this->AddSupportedReadExtension(".otb");
   this->AddSupportedReadExtension(".OTB");
-
 }
 
 TileMapImageIO::~TileMapImageIO()
@@ -99,10 +91,9 @@ TileMapImageIO::~TileMapImageIO()
 }
 
 
-
-// Tell only if the file can be read with GDAL.
+// Tell only if the file can be read with TileMap.
 bool TileMapImageIO::CanReadFile(const char* file)
-{
+{  
   // First check the extension
   if (  file == NULL )
   {
@@ -116,6 +107,17 @@ bool TileMapImageIO::CanReadFile(const char* file)
   if ( (gmPos != std::string::npos)
        && (gmPos == filename.length() - 4) )
   {
+    m_FileNameIsServerName = false;
+    return true;
+  }
+  // Filename is http server
+  else if (file[0]=='h'
+           || file[1]=='t'
+           || file[2]=='t'
+           || file[3]=='p'
+           || file[4]==':')
+  {
+    m_FileNameIsServerName = true;
     return true;
   }
   return false;
@@ -128,13 +130,7 @@ void TileMapImageIO::PrintSelf(std::ostream& os, itk::Indent indent) const
   os << indent << "Compression Level : " << m_CompressionLevel << "\n";
 }
 
-// Read a 3D image (or event more bands)... not implemented yet
-void TileMapImageIO::ReadVolume(void*)
-{
-}
-
-
-// Read image with GDAL
+// Read image with TileMap
 void TileMapImageIO::Read(void* buffer)
 {
   unsigned char * p = static_cast<unsigned char *>(buffer);
@@ -155,9 +151,6 @@ void TileMapImageIO::Read(void* buffer)
   otbMsgDevMacro( <<" Region read (IORegion)  : "<<this->GetIORegion());
   otbMsgDevMacro( <<" Nb Of Components  : "<<this->GetNumberOfComponents());
 
-//     std::streamoff lNbPixels = (static_cast<std::streamoff>(totSamples))*(static_cast<std::streamoff>(totLines));
-
-  //otbMsgDevMacro( <<" Allocation buff tempon taille : "<<lNbPixels<<"*"<<m_NbOctetPixel<<" (NbOctetPixel) = "<<lTailleBuffer);
   otbMsgDevMacro( <<" sizeof(streamsize)    : "<<sizeof(std::streamsize));
   otbMsgDevMacro( <<" sizeof(streampos)     : "<<sizeof(std::streampos));
   otbMsgDevMacro( <<" sizeof(streamoff)     : "<<sizeof(std::streamoff));
@@ -212,7 +205,6 @@ void TileMapImageIO::Read(void* buffer)
         }
       }//end of tile copy
 
-
     }
   }//end of full image copy
 
@@ -222,12 +214,16 @@ void TileMapImageIO::Read(void* buffer)
   otbMsgDevMacro( << "TileMapImageIO::Read() completed");
 }
 
-
+/*
+ * This method is responsible for filling the buffer with the tile information
+ * either by getting it from the cache or by retrieving it from the internet
+ * (using one of the GetFromNet**() method).
+ * This method is NOT responsible for allocating the buffer.
+ */
 void TileMapImageIO::InternalRead(double x, double y, void* buffer)
 {
   std::ostringstream quad;
   std::ostringstream quad2;
-//   int lDepth=m_Depth;
   unsigned char * bufferCacheFault = NULL;
   double xorig=x;
   double yorig=y;
@@ -248,6 +244,10 @@ void TileMapImageIO::InternalRead(double x, double y, void* buffer)
   {
     imageIO = itk::PNGImageIO::New();
   }
+  if (m_AddressMode[0] == '2')
+  {
+    imageIO = itk::JPEGImageIO::New();
+  }
   bool lCanRead(false);
   lCanRead = imageIO->CanReadFile(filename.str().c_str());
   otbMsgDevMacro( << filename.str());
@@ -262,6 +262,10 @@ void TileMapImageIO::InternalRead(double x, double y, void* buffer)
     if (m_AddressMode[0] == '1')
     {
       GetFromNetOSM(filename, xorig, yorig);
+    }
+    if (m_AddressMode[0] == '2')
+    {
+      GetFromNetNearMap(filename, xorig, yorig);
     }
     lCanRead = imageIO->CanReadFile(filename.str().c_str());
   }
@@ -285,7 +289,8 @@ void TileMapImageIO::InternalRead(double x, double y, void* buffer)
 
 }
 
-void TileMapImageIO::BuildFileName(std::ostringstream& quad, std::ostringstream& filename)
+
+void TileMapImageIO::BuildFileName(const std::ostringstream& quad, std::ostringstream& filename) const
 {
 
   int quadsize=quad.str().size();
@@ -312,8 +317,51 @@ void TileMapImageIO::BuildFileName(std::ostringstream& quad, std::ostringstream&
 
 }
 
+/* Handle the curl call to get the tile urlStream and save it into filename */
+void TileMapImageIO::RetrieveTile(const std::ostringstream & filename, std::ostringstream & urlStream) const
+{
+  FILE* output_file = fopen(filename.str().c_str(), "w");
+  if (output_file == NULL)
+  {
+    itkExceptionMacro(<<"TileMap read : bad file name.");
+  }
+
+  CURL *curl;
+  CURLcode res;
+  curl = curl_easy_init();
+
+  otbMsgDevMacro( << urlStream.str().data() );
+
+  char url[200];
+  strcpy(url, urlStream.str().data());
+
+  std::ostringstream browserStream;
+  browserStream   << "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11";
+
+  char browser[200];
+  strcpy(browser, browserStream.str().data());
+
+  // Download the file
+  if (curl)
+  {
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, browser);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
+    res = curl_easy_perform(curl);
+    if (res != 0)
+    {
+      itkExceptionMacro(<<"TileMap read : transfer error.");
+    }
+
+    fclose(output_file);
+    /* always cleanup */
+    curl_easy_cleanup(curl);
+  }
+}
+
+
 /** Get the file from net in a qtrssrtstr.jpg fashion */
-void TileMapImageIO::GetFromNetGM(std::ostringstream& filename, double x, double y)
+void TileMapImageIO::GetFromNetGM(const std::ostringstream& filename, double x, double y) const
 {
 
   std::ostringstream quad;
@@ -323,52 +371,12 @@ void TileMapImageIO::GetFromNetGM(std::ostringstream& filename, double x, double
   urlStream << m_ServerName;
   urlStream << quad.str();
 
-//     std::ostringstream filename;
-//     BuildFileName(quad, filename);
-
-  FILE* output_file = fopen(filename.str().c_str(),"w");
-  if (output_file == NULL)
-  {
-    itkExceptionMacro(<<"TileMap read : bad file name.");
-  }
-
-  std::ostringstream browserStream;
-  browserStream   << "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11";
-
-  CURL *curl;
-  CURLcode res;
-  curl = curl_easy_init();
-
-  otbMsgDevMacro( << urlStream.str().data() );
-
-
-  char url[200];
-  strcpy(url,urlStream.str().data());
-
-  char browser[200];
-  strcpy(browser,browserStream.str().data());
-
-  //Download the file
-  if (curl)
-  {
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, browser);
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
-    res = curl_easy_perform(curl);
-    if (res != 0)
-    {
-      itkExceptionMacro(<<"TileMap read : transfert error.");
-    }
-
-    fclose(output_file);
-    /* always cleanup */
-    curl_easy_cleanup(curl);
-  }
+  RetrieveTile(filename, urlStream);
 
 }
 
 /** Get the file from net in a 132/153.png fashion */
-void TileMapImageIO::GetFromNetOSM(std::ostringstream& filename, double x, double y)
+void TileMapImageIO::GetFromNetOSM(const std::ostringstream& filename, double x, double y) const
 {
   otbMsgDevMacro( << "(x,y): (" << x << "," << y << ")");
   std::ostringstream urlStream;
@@ -381,60 +389,45 @@ void TileMapImageIO::GetFromNetOSM(std::ostringstream& filename, double x, doubl
   urlStream << (long int) (((double) y*(1 << m_Depth)));
   urlStream << "." << m_FileSuffix;
 
-
-
-//     std::ostringstream filename;
-//     BuildFileName(quad, filename);
-
-  FILE* output_file = fopen(filename.str().c_str(),"w");
-  if (output_file == NULL)
-  {
-    itkExceptionMacro(<<"TileMap read : bad file name.");
-  }
-
-  std::ostringstream browserStream;
-  browserStream   << "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11";
-
-  CURL *curl;
-  CURLcode res;
-  curl = curl_easy_init();
-
-  otbMsgDevMacro(<< urlStream.str().data());
-
-
-  char url[200];
-  strcpy(url,urlStream.str().data());
-
-  char browser[200];
-  strcpy(browser,browserStream.str().data());
-
-  //Download the file
-  if (curl)
-  {
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, browser);
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
-    res = curl_easy_perform(curl);
-    if (res != 0)
-    {
-      itkExceptionMacro(<<"TileMap read : transfert error.");
-    }
-
-    fclose(output_file);
-    /* always cleanup */
-    curl_easy_cleanup(curl);
-  }
+  RetrieveTile(filename, urlStream);
 
 }
 
+/** Get the file from net in a http://www.nearmap.com/maps/hl=en&x=1&y=0&z=1&nml=Vert&s=Ga fashion */
+void TileMapImageIO::GetFromNetNearMap(const std::ostringstream& filename, double x, double y) const
+{
+  otbMsgDevMacro( << "(x,y): (" << x << "," << y << ")");
+  std::ostringstream urlStream;
+  urlStream << m_ServerName;
+  urlStream << "hl=en&x=";
+  urlStream << vcl_floor(x*(1 << m_Depth) );
+  urlStream << "&y=";
+  urlStream << vcl_floor(y*(1 << m_Depth) );
+  urlStream << "&z=";
+  urlStream << m_Depth;
+  urlStream << "&nml=Vert&s=Ga";
+
+  RetrieveTile(filename, urlStream);
+
+}
+
+/* Fill up dhe image information reading the ascii configuration file */
 void TileMapImageIO::ReadImageInformation()
 {
-
   if (  m_FileName.empty() == true )
   {
     itkExceptionMacro(<<"TileMap read : empty image file name file.");
   }
 
+  if (m_FileName[0]=='h'
+      || m_FileName[1]=='t'
+      || m_FileName[2]=='t'
+      || m_FileName[3]=='p'
+      || m_FileName[4]==':')
+  {
+    m_FileNameIsServerName = true;
+  }
+  
   m_Dimensions[0] = (1 << m_Depth)*256;
   m_Dimensions[1] = (1 << m_Depth)*256;
   otbMsgDevMacro(<<"Get Dimensions : x="<<m_Dimensions[0]<<" & y="<<m_Dimensions[1]);
@@ -447,27 +440,40 @@ void TileMapImageIO::ReadImageInformation()
   m_Spacing[1]=1;
   m_Origin[0] = 0;
   m_Origin[1] = 0;
-
-
-  std::ifstream file(m_FileName.c_str(), std::ifstream::in );
-  std::getline(file, m_ServerName);
-  if  (m_ServerName[0]!='h'
-       || m_ServerName[1]!='t'
-       || m_ServerName[2]!='t'
-       || m_ServerName[3]!='p')
+  
+  if (!m_FileNameIsServerName)
   {
-    itkExceptionMacro(<<"Can't read server name from file");
+    std::ifstream file(m_FileName.c_str(), std::ifstream::in );
+    std::getline(file, m_ServerName);
+    if  (m_ServerName[0]!='h'
+         || m_ServerName[1]!='t'
+         || m_ServerName[2]!='t'
+         || m_ServerName[3]!='p')
+    {
+      itkExceptionMacro(<<"Can't read server name from file");
+    }
+    std::getline(file, m_FileSuffix);
+    std::getline(file, m_AddressMode);
+    otbMsgDevMacro( << "File parameters: " << m_ServerName << " " << m_FileSuffix << " " << m_AddressMode);
   }
-  std::getline(file, m_FileSuffix);
-  std::getline(file, m_AddressMode);
-  otbMsgDevMacro( << "File parameters: " << m_ServerName << " " << m_FileSuffix << " " << m_AddressMode);
+  else
+  {
+    m_ServerName = m_FileName;
+    if  (m_ServerName[0]!='h'
+         || m_ServerName[1]!='t'
+         || m_ServerName[2]!='t'
+         || m_ServerName[3]!='p')
+    {
+      itkExceptionMacro(<<"Can't read server name from file");
+    }
+    m_FileSuffix = "png";
+    m_AddressMode = "1";
+    otbMsgDevMacro( << "File parameters: " << m_ServerName << " " << m_FileSuffix << " " << m_AddressMode);
+  }
 }
-
-
 
 bool TileMapImageIO::CanWriteFile( const char* name )
 {
-
   // First if filename is provided
   if (  name == NULL )
   {
@@ -484,7 +490,6 @@ bool TileMapImageIO::CanWriteFile( const char* name )
     return true;
   }
   return false;
-
 }
 
 void TileMapImageIO::WriteImageInformation(void)
@@ -524,10 +529,6 @@ void TileMapImageIO::Write(const void* buffer)
   otbMsgDevMacro( <<" Region read (IORegion)  : "<<this->GetIORegion());
   otbMsgDevMacro( <<" Nb Of Components  : "<<this->GetNumberOfComponents());
 
-//     std::streamoff lNbPixels = (static_cast<std::streamoff>(totSamples))*(static_cast<std::streamoff>(totLines));
-//     std::streamoff lTailleBuffer = static_cast<std::streamoff>(m_NbOctetPixel)*lNbPixels;
-
-//     otbMsgDevMacro( <<" Allocation buff tempon taille : "<<lNbPixels<<"*"<<m_NbOctetPixel<<" (NbOctetPixel) = "<<lTailleBuffer);
   otbMsgDevMacro( <<" sizeof(streamsize)    : "<<sizeof(std::streamsize));
   otbMsgDevMacro( <<" sizeof(streampos)     : "<<sizeof(std::streampos));
   otbMsgDevMacro( <<" sizeof(streamoff)     : "<<sizeof(std::streamoff));
@@ -563,7 +564,8 @@ void TileMapImageIO::Write(const void* buffer)
 
       for (int tileJ=0; tileJ<256; tileJ++)
       {
-        long int yImageOffset=(long int) (256*floor((originLine+firstLine)/256.)+256*numTileY-(originLine+firstLine)+tileJ);
+        long int yImageOffset=(long int) (256*floor((originLine+firstLine)/256.)
+                                           +256*numTileY-(originLine+firstLine)+tileJ);
         if ((yImageOffset >= 0) && (yImageOffset < totLines))
         {
           long int xImageOffset = (long int)
@@ -604,8 +606,6 @@ void TileMapImageIO::Write(const void* buffer)
 
 
   otbMsgDevMacro( << "TileMapImageIO::Write() completed");
-
-
 
 }
 
@@ -679,7 +679,7 @@ void TileMapImageIO::InternalWrite(double x, double y, const void* buffer)
 }
 
 /** Generate the quadtree address in qrts style */
-int TileMapImageIO::XYToQuadTree(double x, double y, std::ostringstream& quad)
+int TileMapImageIO::XYToQuadTree(double x, double y, std::ostringstream& quad) const
 {
   int lDepth=m_Depth;
   while (lDepth--) // (post-decrement)
@@ -713,7 +713,7 @@ int TileMapImageIO::XYToQuadTree(double x, double y, std::ostringstream& quad)
 }
 
 /** Generate the quadtree address in 0123 style */
-int TileMapImageIO::XYToQuadTree2(double x, double y, std::ostringstream& quad)
+int TileMapImageIO::XYToQuadTree2(double x, double y, std::ostringstream& quad) const
 {
   int lDepth=m_Depth;
   while (lDepth--) // (post-decrement)
@@ -747,7 +747,7 @@ int TileMapImageIO::XYToQuadTree2(double x, double y, std::ostringstream& quad)
 }
 
 /** RGB buffer filling when the tile is not found */
-void TileMapImageIO::FillCacheFaults(void* buffer)
+void TileMapImageIO::FillCacheFaults(void* buffer) const
 {
   const char * logo =
     "\344\343\337\344\343\337\344\343\337\344\343\337\344\343\337\344\343\337"
@@ -1388,7 +1388,5 @@ void TileMapImageIO::FillCacheFaults(void* buffer)
   }
 
 }
-
-
 
 } // end namespace otb
