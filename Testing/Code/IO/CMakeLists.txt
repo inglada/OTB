@@ -1724,6 +1724,21 @@ ADD_TEST(ioTlSHPVectorDataFileReader3 ${IO_TESTS15}
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
+ADD_TEST(ioTvKMLVectorDataFileReader ${IO_TESTS15}
+        --compare-ascii ${EPSILON_9}  ${BASELINE_FILES}/ioTvKMLVectorDataFileReader.txt
+                        ${TEMP}/ioTvKMLVectorDataFileReader.txt
+        otbVectorDataFileReader
+	${INPUTDATA}/lines.kml
+	${TEMP}/ioTvKMLVectorDataFileReader.txt
+)
+
+ADD_TEST(ioTvKMLVectorDataFileReader2 ${IO_TESTS15}
+        --compare-ascii ${EPSILON_9}  ${BASELINE_FILES}/ioTvKMLVectorDataFileReader2.txt
+                        ${TEMP}/ioTvKMLVectorDataFileReader2.txt
+        otbVectorDataFileReader
+	${INPUTDATA}/multigeometry.kml
+	${TEMP}/ioTvKMLVectorDataFileReader2.txt
+)
 
 ADD_TEST(ioTuVectorDataFileWriterNew ${IO_TESTS15}
         otbVectorDataFileWriterNew )
@@ -1779,6 +1794,24 @@ ADD_TEST(ioTvVectorDataFileGeoReaderWriter2 ${IO_TESTS15}
         otbVectorDataFileGeoReaderWriter
             ${INPUTDATA}/Capitole-Shadows.kml
             ${TEMP}/ioTvVectorDataFileGeoReaderWriterOutput2.shp
+	)
+
+ADD_TEST(ioTvKMLVectorDataFileGeoReaderWriter ${IO_TESTS15}
+        --compare-ogr  ${EPSILON_9}
+            ${BASELINE_FILES}/ioTvKMLVectorDataFileGeoReaderWriterOutput.kml
+            ${TEMP}/ioTvKMLVectorDataFileGeoReaderWriterOutput.kml
+        otbVectorDataFileGeoReaderWriter
+            ${INPUTDATA}/ToulouseRoad-examples.shp
+            ${TEMP}/ioTvKMLVectorDataFileGeoReaderWriterOutput.kml
+	)
+
+ADD_TEST(ioTvKMLVectorDataFileGeoReaderWriter2 ${IO_TESTS15}
+        --compare-ogr  ${EPSILON_9}
+            ${BASELINE_FILES}/ioTvKMLVectorDataFileGeoReaderWriterOutput2.kml
+            ${TEMP}/ioTvKMLVectorDataFileGeoReaderWriterOutput2.kml
+        otbVectorDataFileGeoReaderWriter
+            ${INPUTDATA}/Capitole-Shadows.kml
+            ${TEMP}/ioTvKMLVectorDataFileGeoReaderWriterOutput2.kml
 	)
 
 # CanRead OGR GML()
