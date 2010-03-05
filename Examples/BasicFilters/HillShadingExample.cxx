@@ -57,8 +57,9 @@
 #include "itkScalarToRGBColormapImageFilter.h"
 #include "otbReliefColormapFunctor.h"
 #include "itkMultiplyImageFilter.h"
+#include "itkShiftScaleImageFilter.h"
 #include "itkBinaryFunctorImageFilter.h"
-#include "itkRescaleIntensityImageFilter.h"
+#include "otbWorldFile.h"
 
 namespace otb {
 namespace Functor {
@@ -153,7 +154,7 @@ int main(int argc, char * argv[])
   //
   // After generating the dem image as in the DEMToImageGenerator example, you can declare
   // the hill shading mechanism. The hill shading is implemented as a functor doing some
-  // operations in its neighorhood. This functor is used in the
+  // operations in its neighborhood. This functor is used in the
   // \doxygen{otb}{UnaryFunctorNeighborhoodImageFilter} that will be in charge of processing
   // the whole image.
   //
@@ -172,10 +173,9 @@ int main(int argc, char * argv[])
   hillShading->GetFunctor().SetYRes(res);
 
 
-  typedef itk::RescaleIntensityImageFilter<ImageType, ScalarImageType> RescalerType;
+  typedef itk::ShiftScaleImageFilter<ImageType, ScalarImageType> RescalerType;
   RescalerType::Pointer rescaler = RescalerType::New();
-  rescaler->SetOutputMinimum(0);
-  rescaler->SetOutputMaximum(255);
+  rescaler->SetScale(255.0);
   rescaler->SetInput(hillShading->GetOutput());
 
   writer->SetInput(rescaler->GetOutput());
@@ -219,6 +219,17 @@ int main(int argc, char * argv[])
     std::cout << "Unknown exception !" << std::endl;
     return EXIT_FAILURE;
   }
+
+  otb::WorldFile::Pointer worldFile = otb::WorldFile::New();
+  worldFile->SetLonOrigin(origin[0]);
+  worldFile->SetLatOrigin(origin[1]);
+  worldFile->SetLonSpacing(spacing[0]);
+  worldFile->SetLatSpacing(spacing[1]);
+
+  worldFile->SetImageFilename(argv[1]);
+  worldFile->Update();
+  worldFile->SetImageFilename(argv[2]);
+  worldFile->Update();
 
   // Software Guide : BeginLatex
   //
