@@ -43,11 +43,11 @@ class Identity
 public:
   Identity(){}
   virtual ~Identity(){}
-  bool operator !=(const Identity&) const
+  bool operator!=(const Identity&) const
   {
     return false;
   }
-  bool operator ==(const Identity& other) const
+  bool operator==(const Identity& other) const
   {
     return !(*this != other);
   }
@@ -234,9 +234,6 @@ public:
           m_Maximum.push_back(static_cast<ScalarType> (this->GetHistogramList()->GetNthElement(comp)->Quantile(0, 1
                                                                                                                -
                                                                                                                m_AutoMinMaxQuantile)));
-          otbMsgDevMacro(<< "Initialize():" << " component " << comp
-                         << ", min= " << static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(m_Minimum.back())
-                         << ", max= " << static_cast<typename itk::NumericTraits<ScalarType>::PrintType>(m_Maximum.back()));
           }
 
         //Check if the rescaling should be applied
@@ -247,16 +244,10 @@ public:
         bool enoughDynamic = false;
         for (unsigned int comp = 0; comp < nbComps; ++comp)
           {
-          if (m_Minimum[comp] < 0) allMinMaxWithinDynamic = false;  //take margin for rounding errors
+          if (m_Minimum[comp] < -1) allMinMaxWithinDynamic = false;  //take margin for rounding errors
           if (m_Maximum[comp] > 256) allMinMaxWithinDynamic = false;
-          if (((m_Maximum[comp] - m_Minimum[comp]) > 1) || (m_Maximum[comp] == m_Minimum[comp])) enoughDynamic = true;
-          
-           otbMsgDevMacro(<< "allMinMaxWithinDynamic= " <<  allMinMaxWithinDynamic
-                         << ", enoughDynamic= " << enoughDynamic
-                         << ", min= " << m_Minimum[comp]
-                         << ", max= " << m_Maximum[comp]);
+          if (((m_Maximum[comp] - m_Minimum[comp]) > 10) || (m_Maximum[comp] == m_Minimum[comp])) enoughDynamic = true;
           }
-         
         if (allMinMaxWithinDynamic && enoughDynamic)
           {
           this->AutoMinMaxOff();
