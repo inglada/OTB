@@ -16,13 +16,11 @@
 
 =========================================================================*/
 
-
 // this file defines the otbCommonTest for the test driver
 // and all it expects is that you have a function called RegisterTests
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
-
 
 #include "otbTestMain.h"
 
@@ -35,6 +33,7 @@ void RegisterTests()
   REGISTER_TEST(otbSEMClassifierNew);
   REGISTER_TEST(otbSVMImageClassificationFilterNew);
   REGISTER_TEST(otbSVMImageClassificationFilter);
+  REGISTER_TEST(otbSVMImageClassificationWithRuleFilterNew);
   REGISTER_TEST(otbSVMModelGenericKernelsTest);
   REGISTER_TEST(otbSVMModelCopyTest);
   REGISTER_TEST(otbSVMModelCopyGenericKernelTest);

@@ -1,4 +1,3 @@
-
 /*=========================================================================
 
   Program:   ORFEO Toolbox
@@ -21,6 +20,7 @@
 
 #include "otbImageRegionTileMapSplitter.h"
 #include "otbMath.h"
+#include "otbMacro.h"
 
 namespace otb
 {
@@ -31,31 +31,39 @@ namespace otb
 template <unsigned int VImageDimension>
 unsigned int
 ImageRegionTileMapSplitter<VImageDimension>
-::GetNumberOfSplits(const RegionType &region, unsigned int requestedNumber)
+::GetNumberOfSplits(const RegionType& region, unsigned int requestedNumber)
 {
-  int splitAxis;
-  const SizeType &regionSize = region.GetSize();
+  const SizeType&  regionSize = region.GetSize();
+  const IndexType& regionIndex = region.GetIndex();
 
-  // split on the outermost dimension available
-  splitAxis = VImageDimension - 1;
-  while (regionSize[splitAxis] == 1)
-  {
-    --splitAxis;
-    if (splitAxis < 0)
-    { // cannot split
-      itkDebugMacro("  Cannot Split");
-      return 1;
-    }
-  }
+  // requested number of splits per dimension
+  unsigned int numPieces = 1;
 
   // determine the actual number of pieces that will be generated
-  SizeValueType range = regionSize[splitAxis];
-  int valuesPerPiece = static_cast<int>(vcl_ceil(static_cast<double>(range/((double)requestedNumber*256)) ) ) * 256;
-  int maxPieceUsed = static_cast<int>(vcl_ceil(static_cast<double>(range/(double)valuesPerPiece)));
-
-  return maxPieceUsed + 1;
+  for (unsigned int j = VImageDimension; j > 0; --j)
+    {
+//    otbMsgDevMacro(<< "*** Dimension: " << j-1);
+    unsigned long int remainingToDo = static_cast<unsigned long int>(vcl_ceil(static_cast<double>(requestedNumber) / numPieces));
+    unsigned int      maxPieces = (regionIndex[j - 1] + regionSize[j - 1] - 1) / m_AlignStep - regionIndex[j - 1]
+                                  / m_AlignStep + 1;
+    unsigned int stepPerPiece = 1;
+    if (remainingToDo < maxPieces)
+      {
+      stepPerPiece = static_cast<unsigned int> (vcl_floor(static_cast<double> (maxPieces) / remainingToDo));
+      if ((remainingToDo - 1) * (stepPerPiece + 1) < maxPieces)
+        {
+        stepPerPiece += 1;
+        }
+      }
+    unsigned int maxPieceUsed = static_cast<unsigned int> (vcl_ceil(static_cast<double> (maxPieces) / stepPerPiece));
+    m_SplitsPerDimension[j - 1] = maxPieceUsed;
+//    otbMsgDevMacro("*** maxPieces stepPerPiece maxPieceUsed " << maxPieces
+//                      << " " << stepPerPiece << " " << maxPieceUsed);
+    numPieces *= maxPieceUsed;
+    }
+//  otbMsgDevMacro("*** numPieces " << numPieces);
+  return numPieces;
 }
-
 
 /**
    *
@@ -63,12 +71,11 @@ ImageRegionTileMapSplitter<VImageDimension>
 template <unsigned int VImageDimension>
 itk::ImageRegion<VImageDimension>
 ImageRegionTileMapSplitter<VImageDimension>
-::GetSplit(unsigned int i, unsigned int numberOfPieces, const RegionType &region)
+::GetSplit(unsigned int i, unsigned int numberOfPieces, const RegionType& region)
 {
-  int splitAxis;
   RegionType splitRegion;
-  IndexType splitIndex;
-  SizeType splitSize, regionSize;
+  IndexType  splitIndex, regionIndex;
+  SizeType   splitSize, regionSize;
 
   // Initialize the splitRegion to the requested region
   splitRegion = region;
@@ -76,56 +83,54 @@ ImageRegionTileMapSplitter<VImageDimension>
   splitSize = splitRegion.GetSize();
 
   regionSize = region.GetSize();
+  regionIndex = region.GetIndex();
 
-  // split on the outermost dimension available
-  splitAxis = VImageDimension - 1;
-  while (regionSize[splitAxis] == 1)
-  {
-    --splitAxis;
-    if (splitAxis < 0)
-    { // cannot split
-      itkDebugMacro("  Cannot Split");
-      return splitRegion;
+  unsigned int numPieces = GetNumberOfSplits(region, numberOfPieces);
+  if (i > numPieces)
+    {
+    itkDebugMacro("  Cannot Split");
+    return splitRegion;
     }
-  }
 
-  // determine the actual number of pieces that will be generated
-  SizeValueType range = regionSize[splitAxis];
-  int valuesPerPiece = static_cast<int>((int)vcl_ceil(static_cast<double>(range/((double)numberOfPieces*256)))) * 256;
-  int maxPieceUsed = static_cast<int>(vcl_ceil(static_cast<double>(range/(double)valuesPerPiece)));
+  unsigned int stackSize = 1;
+  for (unsigned int j = 0; j < VImageDimension; ++j)
+    {
+    unsigned int slicePos = (i % (stackSize * m_SplitsPerDimension[j])) / stackSize;
+    stackSize *= m_SplitsPerDimension[j];
 
-  // Split the region
-  if ((int) i == maxPieceUsed-1)
-  {
-    splitIndex[splitAxis] += i*valuesPerPiece;
-    // last piece needs to process the "rest" dimension being split
-//     splitSize[splitAxis] = splitSize[splitAxis] - i*valuesPerPiece;
-    splitSize[splitAxis] = regionSize[splitAxis] - splitIndex[splitAxis];
-  }
-  if (((int) i == 0) && ((int) i != maxPieceUsed-1))
-  {
-    //First piece may not contain a whole piece
-    //splitIndex stay at splitRegion.GetIndex();
-    splitSize[splitAxis] = ((static_cast<int>(vcl_floor(static_cast<double>(splitIndex[splitAxis]/valuesPerPiece))))+1)
-                           *valuesPerPiece - splitIndex[splitAxis];
-  }
-  if ((int) i < maxPieceUsed-1)
-  {
-    splitIndex[splitAxis] += i*valuesPerPiece;
-    splitSize[splitAxis] = valuesPerPiece;
-  }
-
+    unsigned int generalSplitSize =
+      static_cast<unsigned int> (vcl_ceil(static_cast<double> (regionSize[j]) / (m_SplitsPerDimension[j]
+                                                                                 *
+                                                                                 m_AlignStep))) * m_AlignStep;
+    if (slicePos == 0)
+      {
+      splitIndex[j] = regionIndex[j];
+      }
+    else
+      {
+      splitIndex[j] = (regionIndex[j] / generalSplitSize + slicePos) * generalSplitSize;
+      }
+    if (slicePos == 0)
+      {
+      splitSize[j] = generalSplitSize - (regionIndex[j] % generalSplitSize);
+      }
+    else if (slicePos == m_SplitsPerDimension[j] - 1)
+      {
+      splitSize[j] = regionSize[j] - (generalSplitSize - (regionIndex[j] % generalSplitSize))
+                     - (m_SplitsPerDimension[j] - 2) * generalSplitSize;
+      }
+    else
+      {
+      splitSize[j] = generalSplitSize;
+      }
+    }
 
   // set the split region ivars
-  splitRegion.SetIndex( splitIndex );
-  splitRegion.SetSize( splitSize );
-
-
-  itkDebugMacro("  Split Piece: " << splitRegion );
+  splitRegion.SetIndex(splitIndex);
+  splitRegion.SetSize(splitSize);
 
   return splitRegion;
 }
-
 
 /**
        *
@@ -135,9 +140,8 @@ void
 ImageRegionTileMapSplitter<VImageDimension>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-  Superclass::PrintSelf(os,indent);
+  Superclass::PrintSelf(os, indent);
 }
-
 
 } // end namespace itk
 

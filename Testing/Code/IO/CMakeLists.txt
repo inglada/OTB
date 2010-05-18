@@ -14,6 +14,7 @@ SET(TEMP ${OTBTesting_BINARY_DIR}/Temporary)
 
 #Tolerance on  pixel image diff
 SET(NOTOL 0.0)
+SET(EPSILON_5 0.00001)
 SET(EPSILON_9 0.000000001)
 
 #Tolerance sur la difference des valeurs numeriques dans le --compare-ascii
@@ -25,7 +26,7 @@ SET(COMMON_TESTS3 ${CXX_TEST_PATH}/otbCommonTests3)
 SET(IO_TESTS1     ${CXX_TEST_PATH}/otbIOTests1)
 SET(IO_TESTS2     ${CXX_TEST_PATH}/otbIOTests2)
 SET(IO_TESTS3     ${CXX_TEST_PATH}/otbIOTests3)
-SET(IO_TESTS4     ${CXX_TEST_PATH}/otbIOTests4)
+#SET(IO_TESTS4     ${CXX_TEST_PATH}/otbIOTests4)
 SET(IO_TESTS5     ${CXX_TEST_PATH}/otbIOTests5)
 SET(IO_TESTS6     ${CXX_TEST_PATH}/otbIOTests6)
 SET(IO_TESTS7     ${CXX_TEST_PATH}/otbIOTests7)
@@ -53,6 +54,7 @@ IF(OTB_USE_CURL)
   SET(IO_TESTS19    ${CXX_TEST_PATH}/otbIOTests19)
 ENDIF(OTB_USE_CURL)
 
+SET(IO_TESTS20    ${CXX_TEST_PATH}/otbIOTests20)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON_TESTS3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1424,7 +1426,7 @@ ADD_TEST(ioTvDEMHandler ${IO_TESTS12}
 ADD_TEST(ioTuDEMToImageGeneratorNew ${IO_TESTS12} otbDEMToImageGeneratorNew )
 
 ADD_TEST(ioTvDEMToImageGeneratorTest ${IO_TESTS12}
---compare-image ${EPSILON_9}  ${BASELINE}/ioTvDEMToImageGenerator.tif
+--compare-image ${EPSILON_5}  ${BASELINE}/ioTvDEMToImageGenerator.tif
                         ${TEMP}/ioTvDEMToImageGenerator.tif
         otbDEMToImageGeneratorTest
          ${INPUTDATA}/DEM/srtm_directory
@@ -1439,7 +1441,7 @@ ADD_TEST(ioTvDEMToImageGeneratorTest ${IO_TESTS12}
 
 #Big extend
 ADD_TEST(ioTvDEMToImageGeneratorTest2 ${IO_TESTS12}
---compare-image ${EPSILON_9}  ${BASELINE}/ioTvDEMToImageGenerator2.tif
+--compare-image ${EPSILON_5}  ${BASELINE}/ioTvDEMToImageGenerator2.tif
                         ${TEMP}/ioTvDEMToImageGenerator2.tif
         otbDEMToImageGeneratorTest
          ${INPUTDATA}/DEM/srtm_directory
@@ -2081,7 +2083,7 @@ ADD_TEST(ioTvTerraSarImageMetadataInterface_TORONTO ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistSpot5 ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistSpot5.txt
          ${TEMP}/ioTvImageKeywordlistSpot5.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistSpot5.txt
@@ -2094,7 +2096,7 @@ ADD_TEST(ioTvImageKeywordlistSpot5 ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistQuickbird ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistQuickbird.txt
          ${TEMP}/ioTvImageKeywordlistQuickbird.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistQuickbird.txt
@@ -2107,7 +2109,7 @@ ADD_TEST(ioTvImageKeywordlistQuickbird ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistIkonos ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistIkonos.txt
          ${TEMP}/ioTvImageKeywordlistIkonos.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistIkonos.txt
@@ -2120,7 +2122,7 @@ ADD_TEST(ioTvImageKeywordlistIkonos ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistRapidEye ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistRapidEye.txt
          ${TEMP}/ioTvImageKeywordlistRapidEye.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistRapidEye.txt
@@ -2132,7 +2134,7 @@ ADD_TEST(ioTvImageKeywordlistRapidEye ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistEnvisatAsar ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistEnvisatAsar.txt
          ${TEMP}/ioTvImageKeywordlistEnvisatAsar.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistEnvisatAsar.txt
@@ -2144,7 +2146,7 @@ ADD_TEST(ioTvImageKeywordlistEnvisatAsar ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistAlosPalsar ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistAlosPalsar.txt
          ${TEMP}/ioTvImageKeywordlistAlosPalsar.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistAlosPalsar.txt
@@ -2156,7 +2158,7 @@ ADD_TEST(ioTvImageKeywordlistAlosPalsar ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistRadarSat1 ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistRadarSat1.txt
          ${TEMP}/ioTvImageKeywordlistRadarSat1.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistRadarSat1.txt
@@ -2168,7 +2170,7 @@ ADD_TEST(ioTvImageKeywordlistRadarSat1 ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistRadarSat2 ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistRadarSat2.txt
          ${TEMP}/ioTvImageKeywordlistRadarSat2.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistRadarSat2.txt
@@ -2181,7 +2183,7 @@ ADD_TEST(ioTvImageKeywordlistRadarSat2 ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistTerraSarX ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX.txt
          ${TEMP}/ioTvImageKeywordlistTerraSarX.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX.txt
@@ -2194,7 +2196,7 @@ ADD_TEST(ioTvImageKeywordlistTerraSarX ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistTerraSarX_Upsala ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX_Upsala.txt
          ${TEMP}/ioTvImageKeywordlistTerraSarX_Upsala.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX_Upsala.txt
@@ -2206,7 +2208,7 @@ ADD_TEST(ioTvImageKeywordlistTerraSarX_Upsala ${IO_TESTS18}
          ${TEMP}/ioTvImageKeywordlistTerraSarX_Upsala_saveState_loadState.txt
 )
 ADD_TEST(ioTvImageKeywordlistTerraSarX_Toronto ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX_Toronto.txt
          ${TEMP}/ioTvImageKeywordlistTerraSarX_Toronto.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistTerraSarX_Toronto.txt
@@ -2219,7 +2221,7 @@ ADD_TEST(ioTvImageKeywordlistTerraSarX_Toronto ${IO_TESTS18}
 )
 
 ADD_TEST(ioTvImageKeywordlistErs ${IO_TESTS18}
-  --compare-n-ascii ${NOTOL} 2
+  --ignore-order --compare-n-ascii ${NOTOL} 2
          ${BASELINE_FILES}/ioTvImageKeywordlistErs.txt
          ${TEMP}/ioTvImageKeywordlistErs.txt
          ${BASELINE_FILES}/ioTvImageKeywordlistErs.txt
@@ -2232,9 +2234,16 @@ ADD_TEST(ioTvImageKeywordlistErs ${IO_TESTS18}
 
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
+ADD_TEST(ioTvOssimJpegFileRessourceLeak ${IO_TESTS18}
+	otbOssimJpegFileRessourceLeakTest
+	${INPUTDATA}/poupees.jpg
+	1200
+)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS19 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+IF(OTB_USE_CURL)
 
 ADD_TEST(ioTvImageFileReaderServerNameHTTPTest ${IO_TESTS19}
 	otbImageFileReaderServerName
@@ -2243,8 +2252,6 @@ ADD_TEST(ioTvImageFileReaderServerNameHTTPTest ${IO_TESTS19}
 ADD_TEST(ioTvImageFileReaderServerNameOTBTest ${IO_TESTS19}
 	otbImageFileReaderServerName
 	${OTB_DATA_ROOT}/Examples/osmfile.otb)
-
-IF(OTB_USE_CURL)
 
 ADD_TEST(ioTuTileMapImageSourceNew ${IO_TESTS19}
         otbTileMapImageSourceNew )
@@ -2296,11 +2303,46 @@ ADD_TEST(ioTvTileMapWriter ${IO_TESTS19}
     otbTileMapWriter
        ${LARGEDATA}/SPOT5/TEHERAN/IMAGERY.TIF
 #       ${LARGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
+       ${OTB_DATA_ROOT}/Input/DEM/srtm_directory
        ${TEMP}
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 ENDIF(OTB_USE_CURL)
+
+#----------------------------------------------------------------------------------
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS20 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST(ioTvImageFileReaderTestSensorPixelValueQB ${IO_TESTS20}
+otbImageFileReaderTestSensorPixelValue
+       ${LARGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
+       ${BASELINE_FILES}/ioTvSensorsPixelValue.ini
+       OPTIC
+       QB
+       PAN
+       1
+       1024
+       1024
+)
+
+ADD_TEST(ioTvImageFileReaderTestSensorPixelValueIKONOS ${IO_TESTS20}
+otbImageFileReaderTestSensorPixelValue
+       ${LARGEDATA}/IKONOS/PARIS/po_79039_pan_0000000.tif
+       ${BASELINE_FILES}/ioTvSensorsPixelValue.ini
+       OPTIC
+       IKONOS
+       PAN
+       1
+       1024
+       1024
+)
+
+ENDIF(OTB_DATA_USE_LARGEINPUT)
+
 
 #----------------------------------------------------------------------------------
 SET(BasicIO_SRCS1
@@ -2474,6 +2516,7 @@ otbIkonosImageMetadataInterfaceNew.cxx
 otbTerraSarImageMetadataInterfaceNew.cxx
 otbImageMetadataInterfaceTest.cxx
 otbImageMetadataInterfaceTest2.cxx
+otbOssimJpegFileRessourceLeakTest.cxx
 )
 
 IF(OTB_USE_CURL)
@@ -2488,6 +2531,11 @@ otbTileMapImageIOTest.cxx
 otbTileMapWriter.cxx
 )
 ENDIF(OTB_USE_CURL)
+
+SET(BasicIO_SRCS20
+otbIOTests20.cxx
+otbImageFileReaderTestSensorPixelValue.cxx
+)
 
 OTB_ADD_EXECUTABLE(otbIOTests1 "${BasicIO_SRCS1}" "OTBIO;OTBTesting")
 OTB_ADD_EXECUTABLE(otbIOTests2 "${BasicIO_SRCS2}" "OTBIO;OTBTesting")
@@ -2526,6 +2574,8 @@ OTB_ADD_EXECUTABLE(otbIOTests18 "${BasicIO_SRCS18}" "OTBIO;OTBTesting")
 IF(OTB_USE_CURL)
   OTB_ADD_EXECUTABLE(otbIOTests19 "${BasicIO_SRCS19}" "OTBIO;OTBTesting")
 ENDIF(OTB_USE_CURL)
+
+OTB_ADD_EXECUTABLE(otbIOTests20 "${BasicIO_SRCS20}" "OTBIO;OTBTesting")
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )
 

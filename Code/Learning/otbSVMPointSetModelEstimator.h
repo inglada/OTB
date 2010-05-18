@@ -32,29 +32,30 @@ namespace otb
  * The basic functionality of the SVMPointSetModelEstimator is to
  * generate the models used in SVM classification. It
  * requires one input poinset and a training pointset to be provided by the
- * user.  This object supports data handling of multiband data. The
- * object accepts the input image in vector format only, where each
+ * user. This object supports data handling of multiband data. The
+ * object accepts the input image as a VectorImage only, where each
  * pixel is a vector and each element of the vector corresponds to an
  * entry from 1 particular band of a multiband dataset. A single band
  * data set is treated as a vector with a single element for every
  * vector. The classified data is treated as a single band scalar
  * data.
  *
- * EstimateModels() uses the libsvm library for SVM learning.
- *
  * \ingroup ClassificationFilters
  */
-template <class TInputPointSet,class TTrainingPointSet>
+template <class TInputPointSet, class TTrainingPointSet>
 class ITK_EXPORT SVMPointSetModelEstimator :
-      public SVMModelEstimator<typename TInputPointSet::PixelType::value_type, typename TTrainingPointSet::PixelType>
+  public SVMModelEstimator<typename TInputPointSet::PixelType::value_type, typename TTrainingPointSet::PixelType>
 {
 public:
   /** Standard class typedefs. */
-  typedef SVMPointSetModelEstimator      Self;
-  typedef SVMModelEstimator<typename TInputPointSet::PixelType::value_type, typename TTrainingPointSet::PixelType> Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
-                     
+  typedef SVMPointSetModelEstimator Self;
+  typedef SVMModelEstimator<typename TInputPointSet::PixelType::value_type,
+                            typename TTrainingPointSet::PixelType> Superclass;
+  typedef itk::SmartPointer<Self>
+  Pointer;
+  typedef itk::SmartPointer<const Self>
+  ConstPointer;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -62,7 +63,7 @@ public:
   itkTypeMacro(SVMPointSetModelEstimator, SVMModelEstimator);
 
   /** Type definition for the input image. */
-  typedef typename TInputPointSet::Pointer   InputPointSetPointer;
+  typedef typename TInputPointSet::Pointer InputPointSetPointer;
 
   /** Type definitions for the training image. */
   typedef typename TTrainingPointSet::Pointer TrainingPointSetPointer;
@@ -78,7 +79,7 @@ public:
 
   /** Type definitions for the iterators for the input and training images. */
   typedef typename
-  TInputPointSet::PointsContainerConstIterator  InputPointSetIteratorType;
+  TInputPointSet::PointsContainerConstIterator InputPointSetIteratorType;
   typedef typename
   TTrainingPointSet::PointsContainerConstIterator TrainingPointSetIteratorType;
 
@@ -93,7 +94,7 @@ public:
 
   /** Get the training image */
   const TTrainingPointSet * GetTrainingPointSet();
-  
+
 protected:
   /** Constructor */
   SVMPointSetModelEstimator();
@@ -105,8 +106,8 @@ protected:
   virtual void PrepareData();
 
 private:
-  SVMPointSetModelEstimator(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  SVMPointSetModelEstimator(const Self &); //purposely not implemented
+  void operator =(const Self&); //purposely not implemented
 
 }; // class SVMPointSetModelEstimator
 
@@ -116,6 +117,4 @@ private:
 #include "otbSVMPointSetModelEstimator.txx"
 #endif
 
-
 #endif
-

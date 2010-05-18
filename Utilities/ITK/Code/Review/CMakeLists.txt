@@ -9,6 +9,7 @@ SET(ITKIOReview_SRCS
   itkPhilipsPAR.cxx
   itkVoxBoCUBImageIO.cxx
   itkVoxBoCUBImageIOFactory.cxx
+  itkGaborKernelFunction.cxx
   )
  
 ADD_LIBRARY(ITKIOReview ${ITK_REVIEW_BUILD_TYPE} ${ITKIOReview_SRCS})
@@ -131,11 +132,18 @@ ENDIF(ITK_LIBRARY_PROPERTIES)
 
 
 # install the development files
+IF(ITK_USE_FLAT_DIRECTORY_INSTALL)
+  SET( ITK_INSTALL_INCLUDE_DIR_CM24_REVIEW ${ITK_INSTALL_INCLUDE_DIR_CM24})
+ELSE(ITK_USE_FLAT_DIRECTORY_INSTALL)
+  SET( ITK_INSTALL_INCLUDE_DIR_CM24_REVIEW ${ITK_INSTALL_INCLUDE_DIR_CM24}/Review)
+ENDIF(ITK_USE_FLAT_DIRECTORY_INSTALL)
+
+
 IF(NOT ITK_INSTALL_NO_DEVELOPMENT)
   FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
   FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
   INSTALL(FILES ${__files1} ${__files2}
-    DESTINATION ${ITK_INSTALL_INCLUDE_DIR_CM24}/Review
+    DESTINATION ${ITK_INSTALL_INCLUDE_DIR_CM24_REVIEW}
     COMPONENT Development)
 ENDIF(NOT ITK_INSTALL_NO_DEVELOPMENT)
 # Warn the user about the license issues and lack of stability of the API
@@ -147,7 +155,7 @@ SET(msg "${msg} drastically as it get code reviews from the developers.")
 SET(msg "${msg} Please set ITK_USE_REVIEW to OFF if you don't want to use these files.")
 
 # display the message during the setup
-MESSAGE("${msg}")
+#MESSAGE("${msg}")
 
 # and also display it during the install
 INSTALL(CODE "MESSAGE(\"${msg}\")")

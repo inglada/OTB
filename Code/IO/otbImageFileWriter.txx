@@ -56,14 +56,12 @@ ImageFileWriter<TInputImage>
   this->Superclass::SetNumberOfStreamDivisions(10);
 }
 
-
 //---------------------------------------------------------
 template <class TInputImage>
 ImageFileWriter<TInputImage>
 ::~ImageFileWriter()
 {
 }
-
 
 //---------------------------------------------------------
 template <class TInputImage>
@@ -77,44 +75,16 @@ ImageFileWriter<TInputImage>
 
   // Update the meta data
   nonConstInput->UpdateOutputInformation();
+  if (this->GetImageIO() == NULL)
+    {
+    this->SetImageIO(ImageIOFactory::CreateImageIO(this->GetFileName(), itk::ImageIOFactory::WriteMode));
+    this->SetNumberOfStreamDivisions(static_cast<unsigned int> (CalculateNumberOfStreamDivisions()));
+    }
 
-  this->SetImageIO( ImageIOFactory::CreateImageIO( this->GetFileName(),
-                        itk::ImageIOFactory::WriteMode ) );
-  this->SetNumberOfStreamDivisions( static_cast<unsigned int>( CalculateNumberOfStreamDivisions() ) );
   this->Superclass::Write();
   //TODO: Force ImageIO desctructor. Should be fixed once GDALImageIO
   //will be refactored.
   this->SetImageIO(NULL);
-
-
-  // Write the image keyword list if any
-  ossimKeywordlist geom_kwl;
-  ImageKeywordlist otb_kwl;
-
-  itk::MetaDataDictionary dict = this->GetInput()->GetMetaDataDictionary();
-  itk::ExposeMetaData<ImageKeywordlist>(dict, MetaDataKey::OSSIMKeywordlistKey, otb_kwl);
-  otb_kwl.convertToOSSIMKeywordlist(geom_kwl);
-
-  if(geom_kwl.getSize()>0)
-    {
-    otbMsgDevMacro(<<"Exporting keywordlist ...");
-//    ossimImageHandlerRegistry::instance()->addFactory(ossimImageHandlerSarFactory::instance());
-    ossimImageHandler* handler = ossimImageHandlerRegistry::instance()->open(ossimFilename(this->GetFileName()));
-
-    if(!handler)
-      {
-      otbMsgDevMacro(<<"OSSIM Open Image FAILED !");
-      }
-    else
-      {
-        //FIXME find out exactly what we are trying to do here
-        //there is no meaning to blindly save the kwl if we didn't update it in the pipeline
-//       handler->setImageGeometry(geom_kwl);
-//       handler->getImageGeometry()->getProjection()->loadState(geom_kwl);
-//       handler->saveImageGeometry();
-      handler->close();
-      }
-    }
 }
 
 /**
@@ -151,7 +121,7 @@ void
 ImageFileWriter<TInputImage>
 ::SetNumberOfStreamDivisions(unsigned long nb_divisions)
 {
-  this->Superclass::SetNumberOfStreamDivisions( nb_divisions );
+  this->Superclass::SetNumberOfStreamDivisions(nb_divisions);
   m_CalculationDivision = SET_NUMBER_OF_STREAM_DIVISIONS;
   this->Modified();
 }
@@ -203,7 +173,7 @@ unsigned long
 ImageFileWriter<TInputImage>
 ::GetNumberOfStreamDivisions(void)
 {
-  return(CalculateNumberOfStreamDivisions());
+  return (CalculateNumberOfStreamDivisions());
 }
 
 /**
@@ -236,14 +206,13 @@ ImageFileWriter<TInputImage>
                                             m_BufferNumberOfLinesDivisions);
 }
 
-
 //---------------------------------------------------------
 template <class TInputImage>
 void
 ImageFileWriter<TInputImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-  Superclass::PrintSelf(os,indent);
+  Superclass::PrintSelf(os, indent);
 }
 
 } // end namespace otb

@@ -19,18 +19,16 @@
 #include "otbEdgeDetectorImageFilter.h"
 #include "itkSobelEdgeDetectionImageFilter.h"
 
-
-int otbEdgeDetectorImageFilterNew(int, char* [] )
+int otbEdgeDetectorImageFilterNew(int, char*[])
 {
-  typedef double         PixelType;
+  typedef double PixelType;
 
-  typedef otb::Image< PixelType, 2 >                                    ImageType;
+  typedef otb::Image<PixelType, 2>                                      ImageType;
   typedef itk::SobelEdgeDetectionImageFilter<ImageType, ImageType>      SobelType;
   typedef otb::EdgeDetectorImageFilter<ImageType, ImageType, SobelType> FilterType;
 
-  /**Instancitation of an object*/
+  /**Instantiation of an object*/
   FilterType::Pointer filter = FilterType::New();
 
   return EXIT_SUCCESS;
 }
-

@@ -18,16 +18,16 @@
 #include "otbStreamingInnerProductVectorImageFilter.h"
 #include "otbVectorImage.h"
 
-int otbStreamingInnerProductVectorImageFilterNew( int argc, char* argv[] )
+int otbStreamingInnerProductVectorImageFilterNew(int argc, char* argv[])
 {
   typedef double PixelType;
   const unsigned int Dimension = 2;
 
   // Typedef
-  typedef otb::VectorImage<PixelType,Dimension> ImageType;
+  typedef otb::VectorImage<PixelType, Dimension>                 ImageType;
   typedef otb::StreamingInnerProductVectorImageFilter<ImageType> FilterType;
 
-  // Instanciation object
+  // Instantiation object
   FilterType::Pointer filter = FilterType::New();
 
   return EXIT_SUCCESS;

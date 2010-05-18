@@ -20,7 +20,6 @@
 
 #include "otbCloudEstimatorFilter.h"
 
-
 namespace otb
 {
 
@@ -28,7 +27,7 @@ namespace otb
  * Constructor
  */
 template <class TInputImage, class TOutputImage, class TFunction>
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
 ::CloudEstimatorFilter()
 {
 }
@@ -38,10 +37,10 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
  */
 template <class TInputImage, class TOutputImage, class TFunction>
 void
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 /**
@@ -49,16 +48,17 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
  */
 template <class TInputImage, class TOutputImage, class TFunction>
 void
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
 ::BeforeThreadedGenerateData()
 {
   unsigned int ReferencePixelNumberOfBands = 0;
   ReferencePixelNumberOfBands = this->GetReferencePixel().GetSize();
 
-  if ( ReferencePixelNumberOfBands != this->GetInput()->GetNumberOfComponentsPerPixel() )
-  {
-    itkExceptionMacro("The number of bands of the reference pixel is different from the number of bands of the input image. ");
-  }
+  if (ReferencePixelNumberOfBands != this->GetInput()->GetNumberOfComponentsPerPixel())
+    {
+    itkExceptionMacro(
+      "The number of bands of the reference pixel is different from the number of bands of the input image. ");
+    }
 }
 
 /**
@@ -66,10 +66,11 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
  */
 template <class TInputImage, class TOutputImage, class TFunction>
 void
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
 ::SetVariance(double var)
 {
-  this->GetFunctor().SetVariance( var );
+  this->GetFunctor().SetVariance(var);
+  this->Modified();
 }
 
 /**
@@ -77,8 +78,8 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
  */
 template <class TInputImage, class TOutputImage, class TFunction>
 double
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
-::GetVariance()
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
+::GetVariance() const
 {
   return this->GetFunctor().GetVariance();
 }
@@ -88,19 +89,20 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
  */
 template <class TInputImage, class TOutputImage, class TFunction>
 void
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
 ::SetReferencePixel(InputPixelType ref)
 {
-  this->GetFunctor().SetReferencePixel( ref );
+  this->GetFunctor().SetReferencePixel(ref);
+  this->Modified();
 }
 
 /**
  * GetReferencePixel
  */
 template <class TInputImage, class TOutputImage, class TFunction>
-typename CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>::InputPixelType
-CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
-::GetReferencePixel()
+typename CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>::InputPixelType
+CloudEstimatorFilter<TInputImage, TOutputImage, TFunction>
+::GetReferencePixel() const
 {
   return this->GetFunctor().GetReferencePixel();
 }
@@ -108,4 +110,3 @@ CloudEstimatorFilter<TInputImage,TOutputImage,TFunction>
 }
 
 #endif
-

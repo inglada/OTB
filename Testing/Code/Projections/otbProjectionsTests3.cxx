@@ -22,7 +22,6 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-
 #include "otbTestMain.h"
 
 void RegisterTests()
@@ -40,5 +39,6 @@ void RegisterTests()
   REGISTER_TEST(otbVectorDataProjectionFilterFromMapToImage);
   REGISTER_TEST(otbGeocentricTransformNew);
   REGISTER_TEST(otbGeocentricTransform);
+  REGISTER_TEST(otbTileMapTransform);
   REGISTER_TEST(otbVectorDataExtractROIandProjection);
 }

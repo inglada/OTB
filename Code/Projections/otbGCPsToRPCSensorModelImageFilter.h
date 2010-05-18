@@ -10,8 +10,8 @@
   See OTBCopyright.txt for details.
 
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,24 +21,27 @@
 #include "itkInPlaceImageFilter.h"
 #include "otbDEMHandler.h"
 
+#include "projection/ossimRpcProjection.h"
+#include "projection/ossimProjection.h"
+
 namespace otb {
 
 /** \class GCPsToRPCSensorModelImageFilter
  * \brief This filter estimates a RPC sensor models from GCPs.
- * 
+ *
  * This filters estimates an RPC sensor model from a list of user
  * defined GCPs. Internally, it uses an ossimRpcSolver, which performs
  * the estimation using the well known least-square method.
  *
  * The UseImageGCPs flag allows to import GCPs from the image
  * metadata, if any.
- *  
+ *
  * GCPs can be passed to the filter using one of the AddGCP method
  * implementation.
- * 
+ *
  * The first implementation takes geographic points with elevation (3D
  * points).
- * 
+ *
  * The second implementation accepts geographic points without the
  * elevation information. In this case, either the mean elevation or
  * an elevation fetch from a SRT directory is used, depending on the
@@ -49,9 +52,9 @@ namespace otb {
  * using the appropriate setter, or configure the existing internal
  * DEMHandler using the Getter.
  *
- * The RMS (root mean square) ground error is available through the 
+ * The RMS (root mean square) ground error is available through the
  * appropriate getter.
- * 
+ *
  * Please note that GCPs are infered to be given in physical
  * coordinates. This is seamless in most cases.
  *
@@ -61,30 +64,34 @@ namespace otb {
  *
  * This filter does not modify the image buffer, but only the
  * metadata. Therefore, it is implemented as an InPlaceImageFilter.
- * 
+ *
  * The output image can be given to the OrthorectificationFilter.
  *
  */
-template < class TImage>
+template <class TImage>
 class ITK_EXPORT GCPsToRPCSensorModelImageFilter :
-  public itk::InPlaceImageFilter< TImage >
+  public itk::InPlaceImageFilter<TImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef GCPsToRPCSensorModelImageFilter    Self;
-  typedef itk::InPlaceImageFilter< TImage >  Superclass;
-  typedef itk::SmartPointer<Self>            Pointer;
-  typedef itk::SmartPointer<const Self>      ConstPointer;
+  typedef GCPsToRPCSensorModelImageFilter Self;
+  typedef itk::InPlaceImageFilter<TImage> Superclass;
+  typedef itk::SmartPointer<Self>         Pointer;
+  typedef itk::SmartPointer<const Self>   ConstPointer;
 
   /** GCPs typedefs */
-  typedef itk::Point<double,2>               Point2DType;
-  typedef itk::Point<double,3>               Point3DType;
-  typedef std::pair<Point2DType,Point3DType> GCPType;
-  typedef std::vector<GCPType>               GCPsContainerType;
+  typedef itk::Point<double, 2>               Point2DType;
+  typedef itk::Point<double, 3>               Point3DType;
+  typedef std::pair<Point2DType, Point3DType> GCPType;
+  typedef std::vector<GCPType>                GCPsContainerType;
+  typedef std::vector<double>                 ErrorsContainerType;
+
+  typedef itk::ContinuousIndex<>          ContinuousIndexType;
+  typedef itk::ContinuousIndex<double, 3> Continuous3DIndexType;
 
   /** DEM typedef */
-  typedef otb::DEMHandler                    DEMHandlerType;
-  typedef typename DEMHandlerType::Pointer   DEMHandlerPointerType;
+  typedef otb::DEMHandler                  DEMHandlerType;
+  typedef typename DEMHandlerType::Pointer DEMHandlerPointerType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -97,32 +104,43 @@ public:
                       TImage::ImageDimension);
 
   /** Set/Get/toogle the UseImageGCPs flag */
-  itkSetMacro(UseImageGCPs,bool);
-  itkGetMacro(UseImageGCPs,bool);
-  itkBooleanMacro(UseImageGCPs);
+//  itkSetMacro(UseImageGCPs,bool);
+// itkGetMacro(UseImageGCPs,bool);
+//  itkBooleanMacro(UseImageGCPs);
+  void SetUseImageGCPs(bool use);
+  void LoadImageGCPs();
 
   /** Set/Get/toogle the UseDEM flag */
-  itkSetMacro(UseDEM,bool);
-  itkGetMacro(UseDEM,bool);
+  itkSetMacro(UseDEM, bool);
+  itkGetMacro(UseDEM, bool);
   itkBooleanMacro(UseDEM);
 
   /** Set/Get the mean elevation */
-  itkSetMacro(MeanElevation,double);
-  itkGetConstReferenceMacro(MeanElevation,double);
+  itkSetMacro(MeanElevation, double);
+  itkGetConstReferenceMacro(MeanElevation, double);
 
   /** Set/Get the DEMHandler */
-  itkSetObjectMacro(DEMHandler,DEMHandlerType);
-  itkGetObjectMacro(DEMHandler,DEMHandlerType);
+  itkSetObjectMacro(DEMHandler, DEMHandlerType);
+  itkGetObjectMacro(DEMHandler, DEMHandlerType);
 
   /** Get the residual ground error */
-  itkGetConstReferenceMacro(RMSGroundError,double);
-  
+  itkGetConstReferenceMacro(RMSGroundError, double);
+
+  /** Get the Error container */
+  ErrorsContainerType& GetErrorsContainer();
+
+  /** Get the mean error */
+  itkGetConstReferenceMacro(MeanError, double);
+
   /** Get the GCPsContainer
    * \return The GCPs container */
-  GCPsContainerType & GetGCPsContainer();
+  GCPsContainerType& GetGCPsContainer();
 
   /** Set the GCP container */
-  void SetGCPsContainer(const GCPsContainerType & container);
+  void SetGCPsContainer(const GCPsContainerType& container);
+
+  /** Get Keywordlist */
+  itkGetConstReferenceMacro(Keywordlist, ImageKeywordlist);
 
   /** Add a GCP to the GCPContainer. This version of the AddGCP method
    * accepts a 3D ground point and does not use DEM or MeanElevation
@@ -133,38 +151,55 @@ public:
    * accepts a 3D ground point and use the DEM or MeanElevation to get
    * the corresponding elevation before calling the AddGCP acception 3D
    * ground points.*/
-  void AddGCP(const Point2DType& sensorPoint, const Point2DType & groundPoint);
+  void AddGCP(const Point2DType& sensorPoint, const Point2DType& groundPoint);
+
+  /** Remove a GCP given by it's coordinates */
+  void RemoveGCP(unsigned int id);
 
   /** Clear all GCPs */
   void ClearGCPs();
+
+  /** Transform point */
+  void TransformPoint(const Point2DType sensorPoint, Point3DType& groundPoint, double height = 0.);
 
 protected:
   /** Constructor */
   GCPsToRPCSensorModelImageFilter();
   /** Destructor */
   virtual ~GCPsToRPCSensorModelImageFilter();
-  
+
   /** The PrintSelf method */
-  virtual void PrintSelf( std::ostream & os, itk::Indent indent ) const;
+  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
   /** Actual estimation of the sensor model takes place in the
    * GenerateOutputInformation() method */
   virtual void GenerateOutputInformation();
 
+  virtual void ThreadedGenerateData(const typename TImage::RegionType&, int) {}
+
 private:
-  GCPsToRPCSensorModelImageFilter ( const Self & ); // purposely not implemented
-  void operator= ( const Self & ); // purposely not implemented
+  GCPsToRPCSensorModelImageFilter (const Self &);   // purposely not implemented
+  void operator =(const Self&);    // purposely not implemented
+
+  /** Transform all GCPs and compute the error and mean error */
+  void ComputeErrors();
 
   /** True to use GCPs from image metadata as well */
-  bool   m_UseImageGCPs;
+  bool m_UseImageGCPs;
 
   /** The residual ground error */
   double m_RMSGroundError;
 
+  /** The GCP error list */
+  ErrorsContainerType m_ErrorsContainer;
+
+  /** The mean error */
+  double m_MeanError;
+
   /** True if a DEM should be used */
   bool m_UseDEM;
 
-  /** If no DEM is used, a MeanElevation 
+  /** If no DEM is used, a MeanElevation
    * over the image is used instead */
   double m_MeanElevation;
 
@@ -173,6 +208,15 @@ private:
 
   /** Container of GCPs */
   GCPsContainerType m_GCPsContainer;
+
+  /** RPC Projection */
+  ossimRefPtr<ossimRpcProjection> m_RpcProjection;
+
+  /** Projection */
+  ossimRefPtr<ossimProjection> m_Projection;
+
+  /** Keywordlist */
+  ImageKeywordlist m_Keywordlist;
 
 }; // end of class
 

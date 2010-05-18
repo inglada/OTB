@@ -28,15 +28,15 @@
 
 /* ITK Libraries */
 #include "itkImageIOBase.h"
-
+#include "otbImageRegionTileMapSplitter.h"
 
 namespace otb
 {
 
-  namespace TileMapAdressingStyle
-  {
-    enum TileMapAdressingStyle{GM, OSM, NEARMAP};
-  }
+namespace TileMapAdressingStyle
+{
+enum TileMapAdressingStyle {GM = 0, OSM = 1, NEARMAP = 2, LOCAL = 3};
+}
 
 /** \class TileMapImageIO
    *
@@ -51,9 +51,9 @@ public:
   typedef unsigned char InputPixelType;
 
   /** Standard class typedefs. */
-  typedef TileMapImageIO            Self;
-  typedef itk::ImageIOBase          Superclass;
-  typedef itk::SmartPointer<Self>   Pointer;
+  typedef TileMapImageIO          Self;
+  typedef itk::ImageIOBase        Superclass;
+  typedef itk::SmartPointer<Self> Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,40 +61,48 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(TileMapImageIO, itk::ImageIOBase);
 
+  typedef itk::ImageIORegion ImageIORegion;
+
   /** Set/Get the level of compression for the output images.
    *  0-9; 0 = none, 9 = maximum. */
   itkSetMacro(CompressionLevel, int);
   itkGetMacro(CompressionLevel, int);
 
-  virtual void SetCacheDirectory (const char* _arg)
+  /** Set/Get the maximum number of connections */
+  itkSetMacro(MaxConnect, int);
+  itkGetMacro(MaxConnect, int);
+
+  virtual void SetCacheDirectory(const char* _arg)
   {
-    if ( _arg && (_arg == this->m_CacheDirectory) )
-    {
+    if (_arg && (_arg == this->m_CacheDirectory))
+      {
       return;
-    }
+      }
     if (_arg)
-    {
+      {
       this->m_CacheDirectory = _arg;
-      this->m_UseCache=true;
-    }
+      this->m_UseCache = true;
+      }
     else
-    {
+      {
       this->m_CacheDirectory = "";
-      this->m_UseCache=false;
-    }
+      this->m_UseCache = false;
+      }
     this->Modified();
   }
 
-  virtual void SetCacheDirectory (const std::string & _arg)
+  virtual void SetCacheDirectory(const std::string& _arg)
   {
-    this->SetCacheDirectory( _arg.c_str() );
-    this->m_UseCache=true;
+    this->SetCacheDirectory(_arg.c_str());
+    this->m_UseCache = true;
   }
+  itkGetStringMacro(CacheDirectory);
 
   itkSetMacro(Depth, int);
   itkGetMacro(Depth, int);
 
-  itkGetStringMacro(CacheDirectory);
+  itkGetStringMacro(FileSuffix);
+  itkSetStringMacro(FileSuffix);
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
@@ -131,7 +139,7 @@ public:
   virtual void Write(const void* buffer);
 
 protected:
-  /** Construtor.*/
+  /** Constructor.*/
   TileMapImageIO();
   /** Destructor.*/
   virtual ~TileMapImageIO();
@@ -141,6 +149,14 @@ protected:
   void InternalReadImageInformation();
   /** Write all information on the image*/
   void InternalWriteImageInformation();
+
+  virtual unsigned int GetActualNumberOfSplitsForWritingCanStreamWrite(unsigned int numberOfRequestedSplits,
+                                                                       const ImageIORegion& pasteRegion) const;
+
+  virtual ImageIORegion GetSplitRegionForWritingCanStreamWrite(unsigned int ithPiece,
+                                                               unsigned int numberOfActualSplits,
+                                                               const ImageIORegion& pasteRegion) const;
+
   /** Number of bands of the image*/
   int m_NbBands;
 
@@ -149,23 +165,39 @@ protected:
   int m_CompressionLevel;
 
 private:
-  TileMapImageIO(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  /** Struct to save filename & tile associates */
+  typedef struct
+  {
+    int numTileX;
+    int numTileY;
+    double x;
+    double y;
+    std::string filename;
+  } TileNameAndCoordType;
 
-  void InternalRead(double x, double y, void* buffer);
+  TileMapImageIO(const Self &); //purposely not implemented
+  void operator =(const Self&); //purposely not implemented
+
   void InternalWrite(double x, double y, const void* buffer);
-  void BuildFileName(const std::ostringstream& quad, std::ostringstream& filename) const;
-  void RetrieveTile(const std::ostringstream & filename, std::ostringstream & urlStream) const;
-  void GetFromNetGM(const std::ostringstream& filename, double x, double y) const;
-  void GetFromNetOSM(const std::ostringstream& filename, double x, double y) const;
-  void GetFromNetNearMap(const std::ostringstream& filename, double x, double y) const;
+  void BuildFileName(const std::ostringstream& quad, std::ostringstream& filename, bool inCache = true) const;
   void FillCacheFaults(void* buffer) const;
   int XYToQuadTree(double x, double y, std::ostringstream& quad) const;
   int XYToQuadTree2(double x, double y, std::ostringstream& quad) const;
+  
+  /** CURL Multi */
+  void GenerateTileInfo(double x, double y, int numTileX, int numTileY);
+  bool CanReadFromCache(std::string filename);
+  void GenerateURL(double x, double y);
+  void GenerateBuffer(unsigned char * p);
+  void ReadTile(std::string filename, void * buffer);
 
+  std::vector<std::string>          m_ListFilename;
+  std::vector<std::string>          m_ListURLs;
+  std::vector<TileNameAndCoordType> m_ListTiles;
+  int                               m_MaxConnect;
 
   /** Byte per pixel pixel */
-  int                                          m_BytePerPixel;
+  int m_BytePerPixel;
 
   /** Resolution depth*/
   int                                          m_Depth;
@@ -175,10 +207,12 @@ private:
   std::string                                  m_FileSuffix;
   TileMapAdressingStyle::TileMapAdressingStyle m_AddressMode;
 
-  bool                                         m_FlagWriteImageInformation;
-  
-  bool                                         m_FileNameIsServerName;
+  bool m_FlagWriteImageInformation;
 
+  bool m_FileNameIsServerName;
+
+  typedef otb::ImageRegionTileMapSplitter<2> SplitterType;
+  SplitterType::Pointer m_TileMapSplitter;
 };
 
 } // end namespace otb

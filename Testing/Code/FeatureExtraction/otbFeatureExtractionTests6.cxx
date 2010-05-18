@@ -22,14 +22,13 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-
 #include "otbTestMain.h"
 
 void RegisterTests()
 {
   REGISTER_TEST(otbExtractSegmentsNew);
   REGISTER_TEST(otbExtractSegments);
-//REGISTER_TEST(otbFourierMellinImageFilterNew);
+  REGISTER_TEST(otbFourierMellinImageFilterNew);
 //REGISTER_TEST(otbFourierMellinImageFilterTestFFT);
   REGISTER_TEST(otbFourierMellinImageFilter);
   REGISTER_TEST(otbImageToEdgePathFilterNew);

@@ -29,10 +29,10 @@ template <class TData> class ITK_EXPORT OGRVectorDataIOFactory : public itk::Obj
 {
 public:
   /** Standard class typedefs. */
-  typedef OGRVectorDataIOFactory   Self;
-  typedef itk::ObjectFactoryBase  Superclass;
-  typedef itk::SmartPointer<Self>  Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  typedef OGRVectorDataIOFactory        Self;
+  typedef itk::ObjectFactoryBase        Superclass;
+  typedef itk::SmartPointer<Self>       Pointer;
+  typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
   virtual const char* GetITKSourceVersion(void) const;
@@ -47,8 +47,8 @@ public:
   /** Register one factory of this type  */
   static void RegisterOneFactory(void)
   {
-    typename OGRVectorDataIOFactory<TData>::Pointer SHPFactory = OGRVectorDataIOFactory<TData>::New();
-    itk::ObjectFactoryBase::RegisterFactory(SHPFactory);
+    typename OGRVectorDataIOFactory<TData>::Pointer OGRFactory = OGRVectorDataIOFactory<TData>::New();
+    itk::ObjectFactoryBase::RegisterFactory(OGRFactory);
   }
 
 protected:
@@ -56,14 +56,12 @@ protected:
   virtual ~OGRVectorDataIOFactory();
 
 private:
-  OGRVectorDataIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  OGRVectorDataIOFactory(const Self &); //purposely not implemented
+  void operator =(const Self&); //purposely not implemented
 
 };
 
-
 } // end namespace otb
-
 
 #ifndef OTB_MANUAL_INSTANTIATION
 #include "otbOGRVectorDataIOFactory.txx"

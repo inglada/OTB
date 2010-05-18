@@ -48,17 +48,17 @@
 // Software Guide : EndCodeSnippet
 #include "otbImageToSIFTKeyPointSetFilter.h"
 
-int main(int argc, char* argv[] )
+int main(int argc, char* argv[])
 {
-  const char * infname = argv[1];
-  const char * outfname = argv[2];
-  const char * prettyfname = argv[3];
+  const char *       infname = argv[1];
+  const char *       outfname = argv[2];
+  const char *       prettyfname = argv[3];
   const unsigned int scales = atoi(argv[4]);
   const unsigned int octaves = atoi(argv[5]);
   const unsigned int radius = atoi(argv[6]);
 
-  const   unsigned int         Dimension = 2;
-  typedef float                PixelType;
+  const unsigned int Dimension = 2;
+  typedef float PixelType;
 
   // Software Guide : BeginLatex
   //
@@ -68,11 +68,10 @@ int main(int argc, char* argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef otb::Image< PixelType, Dimension >         ImageType;
-  typedef otb::ImageFileReader<ImageType>            ReaderType;
-  typedef otb::ImageFileWriter<ImageType>            WriterType;
-
-    // Software Guide : EndCodeSnippet
+  typedef otb::Image<PixelType, Dimension> ImageType;
+  typedef otb::ImageFileReader<ImageType>  ReaderType;
+  typedef otb::ImageFileWriter<ImageType>  WriterType;
+  // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
   //
   // We define now the type for the keypoint detection. The keypoints
@@ -83,11 +82,10 @@ int main(int argc, char* argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  
-  typedef itk::VariableLengthVector<PixelType>       RealVectorType;
-  typedef itk::PointSet<RealVectorType,Dimension>   PointSetType;
+  typedef itk::VariableLengthVector<PixelType>     RealVectorType;
+  typedef itk::PointSet<RealVectorType, Dimension> PointSetType;
   typedef otb::ImageToSIFTKeyPointSetFilter<ImageType, PointSetType>
-                                                        DetectorType;
+  DetectorType;
   // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
   //
@@ -99,7 +97,7 @@ int main(int argc, char* argv[] )
 
   // Software Guide : BeginCodeSnippet
   typedef otb::KeyPointDensityImageFilter<ImageType, ImageType, DetectorType>
-                                                                   FilterType;
+  FilterType;
   // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
   //
@@ -110,10 +108,10 @@ int main(int argc, char* argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ReaderType::Pointer      reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
-  FilterType::Pointer    filter =     FilterType::New();
-  DetectorType::Pointer  detector = DetectorType::New();
+  ReaderType::Pointer   reader = ReaderType::New();
+  WriterType::Pointer   writer = WriterType::New();
+  FilterType::Pointer   filter =     FilterType::New();
+  DetectorType::Pointer detector = DetectorType::New();
   // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
   //
@@ -133,7 +131,7 @@ int main(int argc, char* argv[] )
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  detector ->SetOctavesNumber(octaves);
+  detector->SetOctavesNumber(octaves);
   detector->SetScalesNumber(scales);
   // Software Guide : EndCodeSnippet
   // Software Guide : BeginLatex
@@ -193,26 +191,24 @@ int main(int argc, char* argv[] )
 
   /************* Image for printing **************/
 
-  typedef otb::Image< unsigned char, 2 > OutputImageType;
+  typedef otb::Image<unsigned char, 2> OutputImageType;
 
-  typedef itk::RescaleIntensityImageFilter< ImageType, OutputImageType >
-    RescalerType;
+  typedef itk::RescaleIntensityImageFilter<ImageType, OutputImageType>
+  RescalerType;
 
   RescalerType::Pointer rescaler = RescalerType::New();
 
   rescaler->SetOutputMinimum(0);
   rescaler->SetOutputMaximum(255);
 
-  rescaler->SetInput( filter->GetOutput() );
+  rescaler->SetInput(filter->GetOutput());
 
-  typedef otb::ImageFileWriter< OutputImageType > OutputWriterType;
+  typedef otb::ImageFileWriter<OutputImageType> OutputWriterType;
   OutputWriterType::Pointer outwriter = OutputWriterType::New();
 
-  outwriter->SetFileName( prettyfname );
-  outwriter->SetInput( rescaler->GetOutput() );
+  outwriter->SetFileName(prettyfname);
+  outwriter->SetInput(rescaler->GetOutput());
   outwriter->Update();
-  
- 
+
   return EXIT_SUCCESS;
 }
-

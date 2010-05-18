@@ -35,6 +35,9 @@
 //#include <config.h>
 #include "fltk-config.h"
 
+#if !defined(__GLIBC_PREREQ)
+#   define  __GLIBC_PREREQ(a,b) 0
+#endif
 
 extern "C" {
 #ifndef HAVE_SCANDIR
@@ -61,9 +64,6 @@ int fl_filename_list(const char *d, dirent ***list,
 #elif defined(__hpux) || defined(__CYGWIN__) || defined(sun)
   // HP-UX, Cygwin define the comparison function like this:
   int n = scandir(d, list, 0, (int(*)(const dirent **, const dirent **))sort);
- #elif defined(HAVE_SCANDIR_POSIX)
-  // POSIX (2008) defines the comparison function like this:
-  int n = scandir(d, list, 0, (int(*)(const dirent **, const dirent **))sort);
 #elif defined(__osf__)
   // OSF, DU 4.0x
   int n = scandir(d, list, 0, (int(*)(dirent **, dirent **))sort);
@@ -74,7 +74,13 @@ int fl_filename_list(const char *d, dirent ***list,
   // The vast majority of UNIX systems want the sort function to have this
   // prototype, most likely so that it can be passed to qsort without any
   // changes:
-  int n = scandir(d, list, 0, (int(*)(const dirent**,const dirent**))sort);
+
+#if ( defined(__GLIBC__) && __GLIBC_PREREQ(2, 10) )
+  int n = scandir(d, list, 0, (int(*)(const dirent **, const dirent **))sort);
+#else
+  int n = scandir(d, list, 0, (int(*)(const void*, const void*))sort);
+#endif /* ( defined(__GLIBC__) && __GLIBC_PREREQ(2, 10) ) */
+
 #else
   // This version is when we define our own scandir (WIN32 and perhaps
   // some Unix systems) and apparently on IRIX:

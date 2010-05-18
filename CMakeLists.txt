@@ -70,10 +70,17 @@ SET(OTB_VERSION_MAJOR "3")
 SET(OTB_VERSION_MINOR "2")
 SET(OTB_VERSION_PATCH "1")
 
-
-# Version string should not include patch level.  The major.minor is
-# enough to distinguish available features of the toolkit.
-SET(OTB_VERSION_STRING "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}")
+FIND_PACKAGE(Mercurial)
+IF(Mercurial_FOUND)
+  Mercurial_WC_IDENTIFY(${PROJECT_SOURCE_DIR} OTB)
+  MESSAGE("Mercurial version is ${Mercurial_VERSION_HG}")
+  MESSAGE("Repository revision is ${OTB_WC_REVISION}")
+  SET(OTB_VERSION_STRING "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}.${OTB_WC_REVISION}")
+ELSE(Mercurial_FOUND)
+  # Version string should not include patch level.  The major.minor is
+  # enough to distinguish available features of the toolkit.
+  SET(OTB_VERSION_STRING "${OTB_VERSION_MAJOR}.${OTB_VERSION_MINOR}.${OTB_VERSION_PATCH}")
+ENDIF(Mercurial_FOUND)
 
 OPTION(BUILD_TESTING "Build testing." OFF)
 
@@ -265,10 +272,10 @@ IF(OTB_USE_VISU_GUI)
         FIND_PACKAGE(OpenGL)
 
         IF( NOT OPENGL_FOUND )
-                MESSAGE(FATAL_ERROR "Impossible to find OpenGL on your system.\nCannot build OTB Visu module without OpenGL library.\nInstall OpenGL on your system OR set OTB_USE_VISU to OFF to disable OTB Visu module generation !")
-	ENDIF( NOT OPENGL_FOUND )
+                MESSAGE(FATAL_ERROR "Impossible to find OpenGL on your system.\nCannot build OTB Visu module without OpenGL library.\nInstall OpenGL on your system OR set OTB_USE_VISU_GUI to OFF to disable OTB Visu module generation !")
+	    ENDIF( NOT OPENGL_FOUND )
         IF( NOT OPENGL_GLU_FOUND )
-                MESSAGE(FATAL_ERROR "Impossible to find GLU library on your system.\nCannot build OTB Visu module without GLU library.\nInstall GLU library on your system OR set OTB_USE_VISU to OFF to disable OTB Visu module generation !")
+                MESSAGE(FATAL_ERROR "Impossible to find GLU library on your system.\nCannot build OTB Visu module without GLU library.\nInstall GLU library on your system OR set OTB_USE_VISU_GUI to OFF to disable OTB Visu module generation !")
         ENDIF( NOT OPENGL_GLU_FOUND )
 
         IF(OPENGL_INCLUDE_DIR)
@@ -278,7 +285,7 @@ IF(OTB_USE_VISU_GUI)
 	#-------------------------------
         # Display images using textures using video card acceleration
         #-------------------------------
-	OPTION(OTB_GL_USE_ACCEL "Use video card acceleration." ON)
+	OPTION(OTB_GL_USE_ACCEL "Use video card acceleration." OFF)
 	MARK_AS_ADVANCED(OTB_GL_USE_ACCEL)
 
         #-------------------------------
@@ -290,11 +297,11 @@ IF(OTB_USE_VISU_GUI)
         FIND_PACKAGE(FLTK)
 
 	# If an external fltk is found, do not provide the internal fltk choice
-	IF(NOT FLTK_FOUND)
-          OPTION(OTB_USE_EXTERNAL_FLTK "Use an outside build of FLTK." OFF)
-	ELSE(NOT FLTK_FOUND)
-	  SET(OTB_USE_EXTERNAL_FLTK ON)
-	ENDIF(NOT FLTK_FOUND)
+	IF(FLTK_FOUND)
+       OPTION(OTB_USE_EXTERNAL_FLTK "Use an outside build of FLTK." ON)
+	ELSE(FLTK_FOUND)
+	   OPTION(OTB_USE_EXTERNAL_FLTK "Use an outside build of FLTK." OFF)
+	ENDIF(FLTK_FOUND)
                          
 #        IF(FLTK_FOUND)
 #           SET(OTB_USE_EXTERNAL_FLTK ON)
@@ -366,6 +373,15 @@ IF(OTB_USE_CURL)
 
         INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
 
+        # TODO add test to check if curl multi is available
+        TRY_COMPILE(OTB_CURL_MULTI_AVAILABLE
+                    ${CMAKE_CURRENT_BINARY_DIR}/CMake
+                    ${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestCurlMulti.cxx
+                    CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:PATH=${CURL_INCLUDE_DIR}" "-DLINK_LIBRARIES:STRING=${CURL_LIBRARY}"
+                    OUTPUT_VARIABLE OUTPUT)
+        IF (OTB_CURL_MULTI_AVAILABLE)
+          ADD_DEFINITIONS(-DOTB_CURL_MULTI_AVAILABLE)
+        ENDIF (OTB_CURL_MULTI_AVAILABLE)
 ENDIF(OTB_USE_CURL)
 
 #-------------------------------
@@ -514,7 +530,7 @@ IF(OTB_USE_EXTERNAL_GDAL)
   MESSAGE(FATAL_ERROR
            "Cannot find geotiff headers. Please set GEOTIFF_INCLUDE_DIRS.")
   ENDIF (NOT GEOTIFF_INCLUDE_DIRS)
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIRS})
+#  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIRS})
 
   # Find tiff headers
   FIND_PATH(TIFF_INCLUDE_DIRS tiffio.h $ENV{GDAL_INCLUDE_DIR} ${GDAL_INCLUDE_DIR} /usr/include)
@@ -522,7 +538,7 @@ IF(OTB_USE_EXTERNAL_GDAL)
   MESSAGE(FATAL_ERROR
            "Cannot find libtiff headers. Please set TIFF_INCLUDE_DIRS.")
   ENDIF (NOT TIFF_INCLUDE_DIRS)
-  INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
+#  INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
 
   # Find jpeg headers
   FIND_PATH(JPEG_INCLUDE_DIRS jpeglib.h $ENV{GDAL_INCLUDE_DIR} ${GDAL_INCLUDE_DIR} /usr/include)
@@ -628,7 +644,12 @@ IF(GETTEXT_FOUND)
 
   IF(GETTEXT_LIBRARY)
       SET(OTB_I18N 1)
+      MESSAGE(STATUS
+              "Gettext found, configuring internationalization")
       SET(OTB_LANG $ENV{LANG} CACHE STRING "OTB internationalization (Experimental)")#might want to get the Locale from the system here
+      IF(NOT OTB_LANG)
+        SET(OTB_LANG "en_EN.UTF-8" CACHE STRING "OTB internationalization (Experimental)" FORCE)
+      ENDIF(NOT OTB_LANG)
       SET(OTB_LANG_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/I18n)
       ADD_SUBDIRECTORY(I18n)
       FIND_PATH(GETTEXT_INCLUDE_DIR
@@ -836,9 +857,6 @@ SET(OTB_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
 SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 INCLUDE_DIRECTORIES( ${OTB_LIBRARY_PATH} )
-
-# Put "." in the rpath of all OTB shared libraries.
-LINK_DIRECTORIES(.)
 
 #-----------------------------------------------------------------------------
 # Option for display all developpment message !!!

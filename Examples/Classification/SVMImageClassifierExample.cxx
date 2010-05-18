@@ -19,12 +19,12 @@
 // Software Guide : BeginLatex
 //
 // In previous examples, we have used the
-// \doxygen{otb}{SVMClassifier}, which uses the ITK classifcation
+// \doxygen{otb}{SVMClassifier}, which uses the ITK classification
 // framework. This good for compatibility with the ITK framework, but
 // introduces the limitations of not being able to use streaming and
 // being able to know at compilation time the number of bands of the
 // image to be classified. In OTB we have avoided this limitation by
-// developping the \doxygen{otb}{SVMImageClassificationFilter}. In
+// developing the \doxygen{otb}{SVMImageClassificationFilter}. In
 // this example we will illustrate its use. We start by including the
 // appropriate header file.
 //
@@ -53,21 +53,21 @@ int main(int argc, char * argv[])
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-  const unsigned int     Dimension = 2;
+  const unsigned int Dimension = 2;
   typedef double         PixelType;
   typedef unsigned short LabeledPixelType;
 // Software Guide : EndCodeSnippet
 // Software Guide : BeginLatex
 //
-// Our classifier will be genric enough to be able to process images
+// Our classifier will be generic enough to be able to process images
 // with any number of bands. We read the images as
 // \doxygen{otb}{VectorImage}s. The labeled image will be a scalar image.
 //
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-  typedef otb::VectorImage<PixelType,Dimension> ImageType;
-  typedef otb::Image<LabeledPixelType,Dimension> LabeledImageType;
+  typedef otb::VectorImage<PixelType, Dimension>  ImageType;
+  typedef otb::Image<LabeledPixelType, Dimension> LabeledImageType;
 // Software Guide : EndCodeSnippet
 // Software Guide : BeginLatex
 //
@@ -77,8 +77,8 @@ int main(int argc, char * argv[])
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-  typedef otb::SVMImageClassificationFilter<ImageType,LabeledImageType>
-  ClassificationFilterType;
+  typedef otb::SVMImageClassificationFilter
+               <ImageType, LabeledImageType>  ClassificationFilterType;
   typedef ClassificationFilterType::ModelType ModelType;
 // Software Guide : EndCodeSnippet
 // Software Guide : BeginLatex
@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-  typedef otb::ImageFileReader<ImageType> ReaderType;
+  typedef otb::ImageFileReader<ImageType>                 ReaderType;
   typedef otb::StreamingImageFileWriter<LabeledImageType> WriterType;
 // Software Guide : EndCodeSnippet
 // Software Guide : BeginLatex

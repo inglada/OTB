@@ -33,31 +33,29 @@ namespace otb
  * The basic functionality of the SVMImageModelEstimator is to
  * generate the models used in SVM classification. It
  * requires input images and a training image to be provided by the
- * user.  This object supports data handling of multiband images. The
- * object accepts the input image in vector format only, where each
+ * user. This object supports data handling of multiband images. The
+ * object accepts the input image as a VectorImage only, where each
  * pixel is a vector and each element of the vector corresponds to an
  * entry from 1 particular band of a multiband dataset. A single band
  * image is treated as a vector image with a single element for every
  * vector. The classified image is treated as a single band scalar
  * image.
  *
- * EstimateModels() uses the libsvm library for SVM learning.
- *
  * \ingroup ClassificationFilters
  */
 template <class TInputImage, class TTrainingImage>
-class ITK_EXPORT SVMImageModelEstimator:
-      public SVMModelEstimator<ITK_TYPENAME TInputImage::InternalPixelType, ITK_TYPENAME TTrainingImage::PixelType>
+class ITK_EXPORT SVMImageModelEstimator :
+  public SVMModelEstimator<ITK_TYPENAME TInputImage::InternalPixelType, ITK_TYPENAME TTrainingImage::PixelType>
 {
 public:
   /** Standard class typedefs. */
-  typedef SVMImageModelEstimator   Self;
+  typedef SVMImageModelEstimator Self;
   typedef SVMModelEstimator<ITK_TYPENAME TInputImage::PixelType::ComponentType,
-  ITK_TYPENAME TTrainingImage::PixelType>
+                            ITK_TYPENAME TTrainingImage::PixelType>
   Superclass;
 
-  typedef itk::SmartPointer<Self>  Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  typedef itk::SmartPointer<Self>       Pointer;
+  typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -66,8 +64,7 @@ public:
   itkTypeMacro(SVMImageModelEstimator, otb::SVMModelEstimator);
 
   /** Type definition for the input image. */
-  /** Type definitions for the training image. */
-  typedef typename TInputImage::Pointer   InputImagePointer;
+  typedef typename TInputImage::Pointer InputImagePointer;
 
   /** Type definitions for the training image. */
   typedef typename TTrainingImage::Pointer TrainingImagePointer;
@@ -82,10 +79,10 @@ public:
 
   /** Type definitions for the iterators for the input and training images. */
   typedef
-  itk::ImageRegionIterator< TInputImage >  InputImageIterator;
+  itk::ImageRegionIterator<TInputImage>  InputImageIterator;
   typedef
-  itk::ImageRegionIterator< TTrainingImage > TrainingImageIterator;
-  
+  itk::ImageRegionIterator<TTrainingImage> TrainingImageIterator;
+
   /** Set the input image */
   void SetInputImage(const TInputImage * inputImage);
 
@@ -110,8 +107,8 @@ protected:
   virtual void PrepareData();
 
 private:
-  SVMImageModelEstimator(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  SVMImageModelEstimator(const Self &); //purposely not implemented
+  void operator =(const Self&); //purposely not implemented
 
 }; // class SVMImageModelEstimator
 
@@ -121,6 +118,4 @@ private:
 #include "otbSVMImageModelEstimator.txx"
 #endif
 
-
 #endif
-

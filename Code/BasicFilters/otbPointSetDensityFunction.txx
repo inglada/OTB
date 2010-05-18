@@ -19,80 +19,55 @@
 #define __otbPointSetDensityFunction_txx
 
 #include "otbPointSetDensityFunction.h"
-#include "otbImage.h"
 #include "otbMath.h"
-
 
 namespace otb
 {
-
 /**
- * Constructor
+ * Evaluate
  */
-template <class TPointSet, class  TOutput >
-PointSetDensityFunction< TPointSet,   TOutput>
-::PointSetDensityFunction()
-{
-  m_Radius = 1;
-}
-
-
-/**
- *
- */
-template <class TPointSet, class  TOutput >
-typename PointSetDensityFunction< TPointSet,   TOutput>
+template <class TPointSet, class TOutput>
+typename PointSetDensityFunction<TPointSet,   TOutput>
 ::OutputType
-PointSetDensityFunction< TPointSet,   TOutput>
-::Evaluate(const  InputType& input ) const
+PointSetDensityFunction<TPointSet,   TOutput>
+::Evaluate(const InputType& input) const
 {
-
-  typename otb::Image<OutputType,2>::IndexType  index;
-  index[0] = static_cast<long int>(input[0]);
-  index[1] = static_cast<long int>(input[1]);
-
-  int accu = 0;
-  double surface = CONST_PI*m_Radius*m_Radius;
+  int    accu = 0;
+  double surface = CONST_PI * m_Radius * m_Radius;
 
   if (this->GetPointSet()->GetNumberOfPoints() != 0)
-  {
+    {
     typedef typename TPointSet::PointsContainer::ConstIterator iteratorType;
     iteratorType it = this->GetPointSet()->GetPoints()->Begin();
 
-    while ( it != this->GetPointSet()->GetPoints()->End())
-    {
-      float distX = index[0]-it.Value()[0];
-      float distY = index[1]-it.Value()[1];
-      float distsq = distX*distX + distY*distY;
-
-      if (distsq <= m_Radius*m_Radius)
+    while (it != this->GetPointSet()->GetPoints()->End())
       {
+      float distX = input[0] - it.Value()[0];
+      float distY = input[1] - it.Value()[1];
+      float distsq = distX * distX + distY * distY;
+
+      if (distsq <= m_Radius * m_Radius)
+        {
         accu++;
-      }
+        }
 
       ++it;
+      }
     }
-  }
-  else
-  {
-    return 0.;
-  }
 
-  return static_cast<float>(accu/surface);
+  return static_cast<float>(accu / surface);
 }
-
 
 /**
- *
+ * PrintSelf
  */
-template <class TPointSet, class  TOutput >
+template <class TPointSet, class TOutput>
 void
-PointSetDensityFunction< TPointSet,   TOutput>
+PointSetDensityFunction<TPointSet,   TOutput>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
-
 
 } // end namespace otb
 

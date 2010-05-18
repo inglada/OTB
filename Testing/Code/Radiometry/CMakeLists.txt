@@ -208,6 +208,16 @@ ADD_TEST(raTvImageToLuminanceImageFilterAutoIkonos ${RADIOMETRY_TESTS2}
          )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST(raTvImageToLuminanceImageFilterAutoWV2 ${RADIOMETRY_TESTS2}
+  #--compare-image ${EPSILON}  ${BASELINE}/raTvImageToLuminanceImageFilterAutoIkonos.tif
+   #                       ${TEMP}/raTvImageToLuminanceImageFilterAutoIkonos.tif
+        otbImageToLuminanceImageFilterAuto
+        ${LARGEINPUT}/WORLDVIEW2/VERSAILLES/052310006010_01_P001_PAN/10MAR01111601-P1BS-052310006010_01_P001.TIF
+        ${TEMP}/raTvImageToLuminanceImageFilterAutoWV2.tif
+         )
+ENDIF(OTB_DATA_USE_LARGEINPUT)
+
 # -------            otb::LuminanceToReflectanceImageFilter   ------------------------------
 ADD_TEST(raTuLuminanceToReflectanceImageFilterNew ${RADIOMETRY_TESTS2}
         otbLuminanceToReflectanceImageFilterNew
@@ -440,19 +450,19 @@ ADD_TEST(raTvRomaniaReflectanceToRomaniaSurfaceReflectanceImageFilter ${RADIOMET
 		${INPUTDATA}/RADIO_WAVELENGHT_SPECTRAL_BAND_SPOT4_1_MIR.txt  # wavelenghts, channel 4
       )
 
-# -------            otb::SurfaceAdjencyEffect6SCorrectionSchemeFilter   ------------------------------
-ADD_TEST(raTuSurfaceAdjencyEffect6SCorrectionSchemeFilterNew ${RADIOMETRY_TESTS3}
-        otbSurfaceAdjencyEffect6SCorrectionSchemeFilterNew
+# -------            otb::SurfaceAdjacencyEffect6SCorrectionSchemeFilter   ------------------------------
+ADD_TEST(raTuSurfaceAdjacencyEffect6SCorrectionSchemeFilterNew ${RADIOMETRY_TESTS3}
+        otbSurfaceAdjacencyEffect6SCorrectionSchemeFilterNew
 )
 
-ADD_TEST(raTvSurfaceAdjencyEffect6SCorrectionSchemeFilter ${RADIOMETRY_TESTS3}
- --compare-image ${EPSILON}  ${BASELINE}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilter.tif
-                             ${TEMP}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilter.tif
-# --compare-ascii ${EPSILON_10e6} ${BASELINE_FILES}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
-#                           ${TEMP}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
-        otbSurfaceAdjencyEffect6SCorrectionSchemeFilter
+ADD_TEST(raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilter ${RADIOMETRY_TESTS3}
+ --compare-image ${EPSILON}  ${BASELINE}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilter.tif
+                             ${TEMP}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilter.tif
+# --compare-ascii ${EPSILON_10e6} ${BASELINE_FILES}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
+#                           ${TEMP}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
+        otbSurfaceAdjacencyEffect6SCorrectionSchemeFilter
 	${BASELINE}/raTvRomania_Correction.tif
-	${TEMP}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilter.tif
+	${TEMP}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilter.tif
 	2                                                            # Radius;
 	0.020                                                        # pixel spacing in kilometers
 	${INPUTDATA}/romania_parameter.txt                           # atmo param;
@@ -461,7 +471,7 @@ ADD_TEST(raTvSurfaceAdjencyEffect6SCorrectionSchemeFilter ${RADIOMETRY_TESTS3}
 	${INPUTDATA}/RADIO_WAVELENGHT_SPECTRAL_BAND_SPOT4_1_B1.txt   # wavelenghts, channel 1
 	${INPUTDATA}/RADIO_WAVELENGHT_SPECTRAL_BAND_SPOT4_1_MIR.txt  # wavelenghts, channel 4
 	# FOR plateform verification only : to remove when OK
-	${TEMP}/raTvSurfaceAdjencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
+	${TEMP}/raTvSurfaceAdjacencyEffect6SCorrectionSchemeFilterOutput6SVallues.txt
 )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -505,7 +515,7 @@ ADD_TEST(raTvAtmosphericCorrectionSequencementTest ${RADIOMETRY_TESTS4}
         0.199854
         ${INPUTDATA}/atmosphericCorrectionSequencement_wavelenght_spectral_bands_spot4_1.txt
 # ReflectanceToSurfaceReflectance parameters
-# SurfaceAdjencyEffect6SCorrectionSchemeFilter parameters
+# SurfaceAdjacencyEffect6SCorrectionSchemeFilter parameters
 	2       # Radius;
 	0.020   # pixel spacing in kilometers
         )
@@ -1217,8 +1227,8 @@ otbSIXSTraitsComputeAtmosphericParameters.cxx
 otbAtmosphericRadiativeTermsNew.cxx
 otbReflectanceToSurfaceReflectanceImageFilterNew.cxx
 otbReflectanceToSurfaceReflectanceImageFilter.cxx
-otbSurfaceAdjencyEffect6SCorrectionSchemeFilterNew.cxx
-otbSurfaceAdjencyEffect6SCorrectionSchemeFilter.cxx
+otbSurfaceAdjacencyEffect6SCorrectionSchemeFilterNew.cxx
+otbSurfaceAdjacencyEffect6SCorrectionSchemeFilter.cxx
 otbRomaniaReflectanceToRomaniaSurfaceReflectanceImageFilter.cxx
 )
 SET(Radiometry_SRCS4

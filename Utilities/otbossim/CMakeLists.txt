@@ -2,7 +2,7 @@ PROJECT(otbossim)
 
 SET(OSSIM_MAJOR_VERSION_NUMBER "1")
 SET(OSSIM_MINOR_VERSION_NUMBER "8")
-SET(OSSIM_PATCH_VERSION_NUMBER "3dev")
+SET(OSSIM_PATCH_VERSION_NUMBER "4")
 SET(OSSIM_RELEASE_NUMBER "?")
 SET(OSSIM_VERSION "${OSSIM_MAJOR_VERSION_NUMBER}-${OSSIM_MINOR_VERSION_NUMBER}-${OSSIM_PATCH_VERSION_NUMBER}" )
 
@@ -14,6 +14,9 @@ CHECK_INCLUDE_FILE("fcntl.h" CMAKE_HAVE_FCNTL_H)
 CHECK_INCLUDE_FILE("dbmalloc.h" CMAKE_HAVE_DBMALLOC_H)
 CHECK_INCLUDE_FILE("malloc.h" CMAKE_HAVE_MALLOC_H)
 CHECK_INCLUDE_FILE("dlfcn.h" CMAKE_HAVE_DLFCN_H)
+
+INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
 
 INCLUDE_DIRECTORIES(${OTB_SOURCE_DIR}/Utilities/otbossim/include)
 INCLUDE_DIRECTORIES(${OTB_BINARY_DIR}/Utilities/otbossim/include)
@@ -49,29 +52,32 @@ IF(NOT OTB_DISABLE_UTILITIES_COMPILATION)
 
   # Removing sources not in use any more (switched to ossim plugins)
   LIST(REMOVE_ITEM ossim_projection_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ossim/projection/ossimCosmoSkymedModel.cpp")
-  # Adjust the compiler flags to avoid problems with ossim code.
-  IF(CMAKE_COMPILER_IS_GNUCXX)
-    FOREACH(f      ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
-                  ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
-                  ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
-                  ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
-          SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS -w )
-    ENDFOREACH(f)
-  ELSE(CMAKE_COMPILER_IS_GNUCXX)
-    IF(NOT BORLAND)
-      IF(NOT CYGWIN)
-        IF(NOT MINGW)
-          FOREACH(f       ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
-                          ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
-                          ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
-                          ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
-                  SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS /W0 )
-          ENDFOREACH(f)
-        ENDIF(NOT MINGW)
-      ENDIF(NOT CYGWIN)
-    ENDIF(NOT BORLAND)
-  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+  # Adjust the compiler flags to avoid problems with ossim code.
+#  IF(CMAKE_COMPILER_IS_GNUCXX)
+#    FOREACH(f      ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
+#                  ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
+#                  ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
+#                  ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
+#          SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS -w )
+#    ENDFOREACH(f)
+#  ELSE(CMAKE_COMPILER_IS_GNUCXX)
+#    IF(NOT BORLAND)
+#      IF(NOT CYGWIN)
+#        IF(NOT MINGW)
+#          FOREACH(f       ${ossim_base_SRCS} ${ossim_elevation_SRCS} ${ossim_font_SRCS} ${ossim_imaging_SRCS} ${ossim_matrix_SRCS}
+#                          ${ossim_parallel_SRCS} ${ossim_projection_SRCS} ${ossim_support_data_SRCS}
+#                          ${ossim_vec_SRCS} ${ossim_vpfutil_SRCS} ${ossim_plugin_SRCS} ${ossim_init_SRCS}
+#                          ${ossim_kbool_SRCS} ${ossim_dll_main_SRCS} )
+#                  SET_SOURCE_FILES_PROPERTIES( ${f} PROPERTIES COMPILE_FLAGS /W0 )
+#          ENDFOREACH(f)
+#        ENDIF(NOT MINGW)
+#      ENDIF(NOT CYGWIN)
+#    ENDIF(NOT BORLAND)
+#  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+#
+
+IF(NOT OTB_BUILD_SHARED_LIB)
   IF(WIN32)
     IF(NOT BORLAND)
       IF(NOT CYGWIN)
@@ -81,6 +87,7 @@ IF(NOT OTB_DISABLE_UTILITIES_COMPILATION)
       ENDIF(NOT CYGWIN)
     ENDIF(NOT BORLAND)
   ENDIF(WIN32)
+ENDIF(NOT OTB_BUILD_SHARED_LIB)
 
 
   ADD_EXECUTABLE(version-config src/ossim/version-config.cpp)
@@ -119,7 +126,9 @@ IF(NOT OTB_DISABLE_UTILITIES_COMPILATION)
       )
 
   #Specify that we are making DLL here
-  ADD_DEFINITIONS(-DNOMINMAX -DOSSIMMAKINGDLL)
+  IF(NOT BUILD_SHARED_LIBS)
+    ADD_DEFINITIONS(-DNOMINMAX -DOSSIMMAKINGDLL)
+  ENDIF(NOT BUILD_SHARED_LIBS)
 
   ADD_LIBRARY(otbossim
   ${ossim_init_SRCS}
@@ -141,7 +150,7 @@ IF(NOT OTB_DISABLE_UTILITIES_COMPILATION)
 #    PROPERTIES
 #    LINK_INTERFACE_LIBRARIES ""
 #  )
-  TARGET_LINK_LIBRARIES(otbossim ${GDAL_LIBRARY})#To make sure that gdal appear before geotiff
+  #TARGET_LINK_LIBRARIES(otbossim ${GDAL_LIBRARY})#To make sure that gdal appear before geotiff
   TARGET_LINK_LIBRARIES(otbossim  ${JPEG_LIBRARY} ${TIFF_LIBRARY} ${GEOTIFF_LIBRARY} ${OPENTHREADS_LIBRARY})
 
   IF(NOT OTB_INSTALL_NO_LIBRARIES)
@@ -163,11 +172,6 @@ FILE(GLOB ossim_matrix_HDRS "include/ossim/matrix/*.h")
 FILE(GLOB ossim_parallel_HDRS "include/ossim/parallel/*.h")
 FILE(GLOB ossim_plugin_HDRS "include/ossim/plugin/*.h")
 FILE(GLOB ossim_projection_HDRS "include/ossim/projection/*.h")
-FILE(GLOB ossim_projection_sarmodel_HDRS "include/ossim/projection/SARModel/*.h")
-FILE(GLOB ossim_projection_sarmodel_DateTime_HDRS "include/ossim/projection/SARModel/DateTime/*.h")
-FILE(GLOB ossim_projection_sarmodel_Coordinates_HDRS "include/ossim/projection/SARModel/Coordinates/*.h")
-FILE(GLOB ossim_projection_sarmodel_Ephemeris_HDRS "include/ossim/projection/SARModel/Ephemeris/*.h")
-FILE(GLOB ossim_projection_sarmodel_Interpolator_HDRS "include/ossim/projection/SARModel/Interpolator/*.h")
 FILE(GLOB ossim_support_data_HDRS "include/ossim/support_data/*.h")
 FILE(GLOB ossim_vec_HDRS "include/ossim/vec/*.h")
 FILE(GLOB ossim_vpfutil_HDRS "include/ossim/vpfutil/*.h")
@@ -203,21 +207,6 @@ INSTALL(FILES ${ossim_plugin_HDRS}
     COMPONENT Development)
 INSTALL(FILES ${ossim_projection_HDRS}
     DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection
-    COMPONENT Development)
-INSTALL(FILES ${ossim_projection_sarmodel_HDRS}
-    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection/SARModel
-    COMPONENT Development)
-INSTALL(FILES ${ossim_projection_sarmodel_DateTime_HDRS}
-    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection/SARModel/DateTime
-    COMPONENT Development)
-INSTALL(FILES ${ossim_projection_sarmodel_Coordinates_HDRS}
-    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection/SARModel/Coordinates
-    COMPONENT Development)
-INSTALL(FILES ${ossim_projection_sarmodel_Ephemeris_HDRS}
-    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection/SARModel/Ephemeris
-    COMPONENT Development)
-INSTALL(FILES ${ossim_projection_sarmodel_Interpolator_HDRS}
-    DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/projection/SARModel/Interpolator
     COMPONENT Development)
 INSTALL(FILES ${ossim_support_data_HDRS}
     DESTINATION ${OTB_INSTALL_INCLUDE_DIR_CM24}/Utilities/otbossim/include/ossim/support_data
