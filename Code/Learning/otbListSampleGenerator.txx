@@ -32,8 +32,7 @@ ListSampleGenerator<TImage, TVectorData>
   m_MaxValidationSize(-1), 
   m_ValidationTrainingProportion(0.0),
   m_NumberOfClasses(0),
-  m_ClassKey("Class"),
-  m_ClassMinSize(-1)
+  m_ClassKey("Class")
 {
   this->SetNumberOfRequiredInputs(2);
   this->SetNumberOfRequiredOutputs(1);
@@ -215,20 +214,8 @@ ListSampleGenerator<TImage,TVectorData>
     ++itVector;
     }
 
-  std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesSize.begin();
-  double minSize = itmap->second;
-  ++itmap;
-  while(itmap != m_ClassesSize.end())
-    {
-    if (minSize > itmap->second)
-      {
-      minSize = itmap->second;
-      }
-    ++itmap;
-    }
-
-  m_ClassMinSize = minSize;
   m_NumberOfClasses = m_ClassesSize.size();
+
 }
 
 template < class TImage, class TVectorData >
@@ -239,9 +226,9 @@ ListSampleGenerator<TImage,TVectorData>
   m_ClassesProbTraining.clear();
   m_ClassesProbValidation.clear();
   
-  //Go through the classes size to find the smallest one
+  //Go throught the classes size to find the smallest one
   double minSizeTraining = -1;
-  for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
+  for (std::map<int, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
     {
     if ((minSizeTraining < 0) || (minSizeTraining > itmap->second))
       {
@@ -267,11 +254,11 @@ ListSampleGenerator<TImage,TVectorData>
     }
   
   //Compute the probability selection for each class
-  for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
+  for (std::map<int, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
     {
     m_ClassesProbTraining[itmap->first] = minSizeTraining / itmap->second;
     }
-  for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
+  for (std::map<int, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
     {
     m_ClassesProbValidation[itmap->first] = minSizeValidation / itmap->second;
     }
@@ -293,8 +280,7 @@ ListSampleGenerator<TImage,TVectorData>
     }
   else
     {
-    for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesSize.begin();
-         itmap != m_ClassesSize.end(); ++itmap)
+    for (std::map<int, double>::const_iterator itmap = m_ClassesSize.begin(); itmap != m_ClassesSize.end(); ++itmap)
       {
       os << indent << itmap->first << ": " << itmap->second << "\n";
       }
@@ -308,13 +294,13 @@ ListSampleGenerator<TImage,TVectorData>
   else
     {
     os << indent << "** Selection probability:\n";
-    for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesProbTraining.begin();
+    for (std::map<int, double>::const_iterator itmap = m_ClassesProbTraining.begin();
         itmap != m_ClassesProbTraining.end(); ++itmap)
       {
       os << indent << itmap->first << ": " << itmap->second << "\n";
       }
     os << indent << "** Number of selected samples:\n";
-    for (std::map<ClassLabelType, int>::const_iterator itmap = m_ClassesSamplesNumberTraining.begin();
+    for (std::map<int, int>::const_iterator itmap = m_ClassesSamplesNumberTraining.begin();
         itmap != m_ClassesSamplesNumberTraining.end(); ++itmap)
       {
       os << indent << itmap->first << ": " << itmap->second << "\n";
@@ -329,13 +315,13 @@ ListSampleGenerator<TImage,TVectorData>
   else
     {
     os << indent << "** Selection probability:\n";
-    for (std::map<ClassLabelType, double>::const_iterator itmap = m_ClassesProbValidation.begin();
+    for (std::map<int, double>::const_iterator itmap = m_ClassesProbValidation.begin();
         itmap != m_ClassesProbValidation.end(); ++itmap)
       {
       os << indent << itmap->first << ": " << itmap->second << "\n";
       }
     os << indent << "** Number of selected samples:\n";
-    for (std::map<ClassLabelType, int>::const_iterator itmap = m_ClassesSamplesNumberValidation.begin();
+    for (std::map<int, int>::const_iterator itmap = m_ClassesSamplesNumberValidation.begin();
         itmap != m_ClassesSamplesNumberValidation.end(); ++itmap)
       {
       os << indent << itmap->first << ": " << itmap->second << "\n";

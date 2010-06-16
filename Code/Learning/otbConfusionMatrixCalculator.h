@@ -56,8 +56,6 @@ public:
   typedef TProdListLabel                          ProdListLabelType;
   typedef typename ProdListLabelType::Pointer     ProdListLabelPointerType;
 
-  typedef int                                     ClassLabelType;
-
   /** Type for the confusion matrix */
   typedef itk::VariableSizeMatrix<double>         ConfusionMatrixType;
   
@@ -75,11 +73,6 @@ public:
   itkGetMacro(NumberOfSamples, unsigned long);
   itkGetMacro(ConfusionMatrix, ConfusionMatrixType);
   
-  std::map<ClassLabelType, int> GetMapOfClasses() const
-  {
-    return m_MapOfClasses;
-  }
-
 protected:
   ConfusionMatrixCalculator();
   virtual ~ConfusionMatrixCalculator() {}
@@ -95,7 +88,7 @@ private:
   double                    m_KappaIndex;
   double                    m_OverallAccuracy;
 
-  std::map<ClassLabelType, int> m_MapOfClasses;
+  std::map<int,int>         m_MapOfClasses;
 
   unsigned short            m_NumberOfClasses;
   unsigned long             m_NumberOfSamples;
