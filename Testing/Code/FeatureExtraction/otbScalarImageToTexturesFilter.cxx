@@ -32,10 +32,10 @@ int otbScalarImageToTexturesFilter(int argc, char * argv[])
     }
   const char *       infname      = argv[1];
   const char *       outprefix    = argv[2];
-  const unsigned int nbBins = atoi(argv[3]);
-  const unsigned int radius = atoi(argv[4]);
-  const int          offsetx         = atoi(argv[5]);
-  const int          offsety         = atoi(argv[6]);
+  const unsigned int nbBins       = atoi(argv[3]);
+  const unsigned int radius       = atoi(argv[4]);
+  const int          offsetx      = atoi(argv[5]);
+  const int          offsety      = atoi(argv[6]);
 
   const unsigned int Dimension = 2;
   typedef float                            PixelType;
