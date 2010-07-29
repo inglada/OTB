@@ -21,16 +21,17 @@
 
 #include "itkExceptionObject.h"
 #include <iostream>
+#include <complex>  //only for the isnan() test line 148
 
 #include "otbMath.h"
 #include "otbImage.h"
-#include "otbBinaryParserImageFilter.h"
+#include "otbNaryParserImageFilter.h"
 
-int otbBinaryParserImageFilter( int argc, char* argv[])
+int otbNaryParserImageFilter( int argc, char* argv[])
 {
   typedef double                                            PixelType;
   typedef otb::Image<PixelType, 2>                          ImageType;
-  typedef otb::BinaryParserImageFilter<ImageType>           FilterType;
+  typedef otb::NaryParserImageFilter<ImageType>             FilterType;
   
   unsigned int i;
   const unsigned int N = 100;
@@ -45,6 +46,7 @@ int otbBinaryParserImageFilter( int argc, char* argv[])
 
   ImageType::Pointer image1 = ImageType::New();
   ImageType::Pointer image2 = ImageType::New();
+  ImageType::Pointer image3 = ImageType::New();
 
   image1->SetLargestPossibleRegion( region );
   image1->SetBufferedRegion( region );
@@ -56,42 +58,55 @@ int otbBinaryParserImageFilter( int argc, char* argv[])
   image2->SetRequestedRegion( region );
   image2->Allocate();
 
+  image3->SetLargestPossibleRegion( region );
+  image3->SetBufferedRegion( region );
+  image3->SetRequestedRegion( region );
+  image3->Allocate();
+
   typedef itk::ImageRegionIteratorWithIndex<ImageType> IteratorType;
   IteratorType it1(image1, region);
   IteratorType it2(image2, region);
+  IteratorType it3(image3, region);
 
-  for (it1.GoToBegin(), it2.GoToBegin(); !it1.IsAtEnd(); ++it1, ++it2)
+  for (it1.GoToBegin(), it2.GoToBegin(), it3.GoToBegin(); !it1.IsAtEnd(); ++it1, ++it2, ++it3)
   {
     ImageType::IndexType i1 = it1.GetIndex();
     ImageType::IndexType i2 = it2.GetIndex();
+    ImageType::IndexType i3 = it3.GetIndex();
 
     it1.Set( i1[0] + i1[1] -50 );
     it2.Set( i2[0] * i2[1] );
+    it3.Set( i3[0] + i3[1] * i3[1] );
   }
 
 
   FilterType::Pointer         filter       = FilterType::New();
   std::cout << "Number Of Threads  :  " << filter->GetNumberOfThreads() << std::endl;
 
-  filter->SetInput1(image1);
-  filter->SetInput2(image2);
 
-  filter->SetExpression("cos(2 * pi * Image1)/(2 * pi * Image2 + 1E-3) + ndvi(Image1,Image2)*sqrt(2)");
+  filter->SetNthInput(0, image1);
+  filter->SetNthInput(1, image2);
+  filter->SetNthInput(2, image3, "canal3");
+
+  filter->SetExpression("cos(2 * pi * band1)/(2 * pi * band2 + 1E-3)*sin(pi * canal3) + ndvi(band1,band2) * sqrt(2) * canal3");
   filter->Update();
 
+  std::cout << std::endl;
   std::cout << "---  Standard Use"                                 << std::endl;
   std::cout << "Parsed Expression :   " << filter->GetExpression() << std::endl;
-  std::cout << "About the Filter  :   " << filter                  << std::endl;
+  //std::cout << "About the Filter  :   " << filter                  << std::endl;
  
   ImageType::Pointer output = filter->GetOutput();
   IteratorType it(output, region);
 
-  for (it1.GoToBegin(), it2.GoToBegin(), it.GoToBegin(); !it1.IsAtEnd(); ++it1, ++it2, ++it)
+  for (it1.GoToBegin(), it2.GoToBegin(), it3.GoToBegin(), it.GoToBegin(); !it1.IsAtEnd(); ++it1, ++it2, ++it3,++it)
     {
     ImageType::IndexType i1 = it1.GetIndex();
     ImageType::IndexType i2 = it2.GetIndex();
+    ImageType::IndexType i3 = it3.GetIndex();
     double px1 = ( i1[0] + i1[1] -50 );
     double px2 = ( i2[0] * i2[1] );
+    double px3 = ( i3[0] + i3[1] * i3[1] );
     double result = it.Get();
     double ndvi_expected;
     
@@ -100,40 +115,44 @@ int otbBinaryParserImageFilter( int argc, char* argv[])
     else 
       ndvi_expected = (px2-px1)/(px2+px1);
     
-    double expected = vcl_cos( 2 * otb::CONST_PI * px1 ) / ( 2 * otb::CONST_PI * px2 + 1E-3 )
-      + ndvi_expected * vcl_sqrt(2);
+    double expected = vcl_cos( 2 * otb::CONST_PI * px1 ) / ( 2 * otb::CONST_PI * px2 + 1E-3 ) * vcl_sin( otb::CONST_PI * px3 )
+      + ndvi_expected * vcl_sqrt(double(2)) * px3;
     
     /*
-    std::cout << "Pixel_1 =  " << it1.Get() << "     Pixel_2 =  " << it2.Get() 
+    std::cout << "Pixel_1 =  " << it1.Get() << "     Pixel_2 =  " << it2.Get() << "     Pixel_3 =  " << it3.Get() 
 	      << "     Result =  " << it.Get() << "     Expected =  " << expected << std::endl;  
     */
     
     if ( vcl_abs( result - expected ) > 1E-10 )
       {
-      itkGenericExceptionMacro(  << "Error > 1E-10 -> Test Failled" << std::endl 
+      itkGenericExceptionMacro(  <<std::endl 
+				 << "Error > 1E-10 -> Test Failled" << std::endl 
 				 << "Pixel_1 =  "     << it1.Get()  << "     Pixel_2 =  "  << it2.Get() 
+				 << "Pixel_3 =  "     << it3.Get()
 				 << "     Result =  " << it.Get()   << "     Expected =  " << expected 
 				 << std::endl );
       }
   }
-  std::cout << "Process Completed" << std::endl;
+
 
   /** Edge Effect Handling */
-  
+  std::cout << std::endl;
   std::cout << "--- Edge Effect Handling" << std::endl;
   std::cout << "- +/-inf section"         << std::endl;
-  filter->SetExpression("Image1 / Image2");
+  filter->SetExpression("band1 / band2");
   filter->Update();
 
   std::cout << "- nan section" << std::endl;
   it1.GoToBegin(); it2.GoToBegin(); it.GoToBegin();
   for(i=1; i<=50; i++ , ++it1, ++it2, ++it){}
-  if(isnan(it.Get()))
+  if(vnl_math_isnan(it.Get()))
     std::cout << "Pixel_1 =  " << it1.Get() << "     Pixel_2 =  " << it2.Get() << "     Result =  " << it.Get() << "     Expected =  nan" << std::endl;
   else
-    itkGenericExceptionMacro(  << "Error > Bad Edge Effect Handling -> Test Failled" << std::endl 
+    itkGenericExceptionMacro(  << std::endl 
+			       << "Error > Bad Edge Effect Handling -> Test Failled" << std::endl 
 			       << "Pixel_1 =  "     << it1.Get()  << "     Pixel_2 =  "  << it2.Get() 
 			       << "     Result =  " << it.Get()   << "     Expected =  nan" << std::endl );
- 
+  std::cout << std::endl;
+
   return EXIT_SUCCESS;
 }

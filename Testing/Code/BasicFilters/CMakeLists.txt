@@ -1631,11 +1631,8 @@ ADD_TEST(bfTvImageAndVectorImageOperationFilterTest ${BASICFILTERS_TESTS12}
 # ----------------------------     otbNaryParserFunctorImageFilter   ----------------------------
 IF(OTB_COMPILE_MUPARSER)
 
-ADD_TEST(bfTuBinaryParserImageFilterNew ${BASICFILTERS_TESTS13}
-  otbBinaryParserImageFilterNew)
-
-ADD_TEST(bfTvBinaryParserImageFilter ${BASICFILTERS_TESTS13}
-  otbBinaryParserImageFilter)
+ADD_TEST(bfTuNaryParserImageFilter ${BASICFILTERS_TESTS13}
+  otbNaryParserImageFilter)
 
 ENDIF(OTB_COMPILE_MUPARSER)
 
@@ -1872,8 +1869,7 @@ IF(OTB_COMPILE_MUPARSER)
 # A enrichir
 SET(BasicFilters_SRCS13
 otbBasicFiltersTests13.cxx
-otbBinaryParserImageFilterNew.cxx
-otbBinaryParserImageFilter.cxx
+otbNaryParserImageFilter.cxx
 )
 ENDIF(OTB_COMPILE_MUPARSER)
 

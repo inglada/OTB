@@ -18,9 +18,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbBinaryParserImageFilter_txx
-#define __otbBinaryParserImageFilter_txx
-#include "otbBinaryParserImageFilter.h"
+#ifndef __otbNaryParserImageFilter_txx
+#define __otbNaryParserImageFilter_txx
+#include "otbNaryParserImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
@@ -28,15 +28,20 @@
 #include "itkProgressReporter.h"
 #include "otbMacro.h"
 
+#include <iostream>
+#include <string>
+
 namespace otb
 {
 
 /** Constructor */
 template <class TImage>
-BinaryParserImageFilter<TImage>
-::BinaryParserImageFilter()
+NaryParserImageFilter<TImage>
+::NaryParserImageFilter()
 {
-  this->SetNumberOfRequiredInputs( 2 );
+  //This number will be incremented each time an image
+  //is added over the one minimumrequired
+  this->SetNumberOfRequiredInputs( 1 );
   this->InPlaceOff();
 
   m_UnderflowCount = 0;
@@ -47,13 +52,13 @@ BinaryParserImageFilter<TImage>
 
 /** Destructor */
 template <class TImage>
-BinaryParserImageFilter<TImage>
-::~BinaryParserImageFilter()
+NaryParserImageFilter<TImage>
+::~NaryParserImageFilter()
 {
 }
 
 template <class TImage>
-void BinaryParserImageFilter<TImage>
+void NaryParserImageFilter<TImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
@@ -69,35 +74,35 @@ void BinaryParserImageFilter<TImage>
 }
 
 template <class TImage>
-void BinaryParserImageFilter<TImage>
-::SetInput1( const ImageType * image1)
+void NaryParserImageFilter<TImage>
+::SetNthInput(unsigned int idx, const ImageType * image)
 {  
-  this->SetNthInput(0, const_cast<TImage *>( image1 ));
-}
-
-template <typename TImage>
-TImage * BinaryParserImageFilter<TImage>
-::GetInput1()
-{
-  return const_cast<TImage *>(this->GetInput(0));
+  this->SetInput(idx, const_cast<TImage *>( image ));
+  unsigned int nbInput = this->GetNumberOfInputs();
+  m_VVarName.resize(nbInput);
+  std::ostringstream varName; 
+  varName << "band" << nbInput;
+  m_VVarName[idx] = varName.str();  
 }
 
 template <class TImage>
-void BinaryParserImageFilter<TImage>
-::SetInput2( const ImageType * image2)
-{
-  this->SetNthInput(1, const_cast<TImage *>( image2 ));
+void NaryParserImageFilter<TImage>
+::SetNthInput(unsigned int idx, const ImageType * image, const std::string& varName)
+{  
+  this->SetInput(idx, const_cast<TImage *>( image ));
+  m_VVarName.resize(this->GetNumberOfInputs());
+  m_VVarName[idx] = varName;
 }
 
 template <typename TImage>
-TImage * BinaryParserImageFilter<TImage>
-::GetInput2()
+TImage * NaryParserImageFilter<TImage>
+::GetNthInput(unsigned int idx)
 {
-  return const_cast<TImage *>(this->GetInput(1));
+  return const_cast<TImage *>(this->GetInput(idx));
 }
 
 template< typename TImage >
-void BinaryParserImageFilter<TImage>
+void NaryParserImageFilter<TImage>
 ::SetExpression(const std::string& expression)
 {
   if (m_Expression != expression)
@@ -106,41 +111,44 @@ void BinaryParserImageFilter<TImage>
 }
 
 template< typename TImage >
-std::string BinaryParserImageFilter<TImage>
+std::string NaryParserImageFilter<TImage>
 ::GetExpression() const
 {
   return m_Expression;
 }
 
 template< typename TImage >
-void BinaryParserImageFilter<TImage>
+void NaryParserImageFilter<TImage>
 ::BeforeThreadedGenerateData()
 {
-  typename std::vector<ParserType::Pointer>::iterator itParser;
+  typename std::vector<ParserType::Pointer>::iterator        itParser;
+  typename std::vector< std::vector<PixelType> >::iterator   itVImage;
   int nbThreads = this->GetNumberOfThreads();
-  unsigned int i;
+  int nbInputImages = this->GetNumberOfInputs();
+  unsigned int i, j;
   
-  //  Allocate and initialize the thread temporaries
+  //Allocate and initialize the thread temporaries
   m_ThreadUnderflow.SetSize(nbThreads);
   m_ThreadUnderflow.Fill(0);
   m_ThreadOverflow.SetSize(nbThreads);
   m_ThreadOverflow.Fill(0);
   m_VParser.resize(nbThreads);
-  m_VImage1.resize(nbThreads);
-  m_VImage2.resize(nbThreads);
+  m_AImage.resize(nbThreads);
+
   for(itParser = m_VParser.begin(); itParser < m_VParser.end(); itParser++)
     *itParser = ParserType::New();
 
   for(i = 0; i < nbThreads; i++)
     {
+    m_AImage.at(i).resize(nbInputImages);
     m_VParser.at(i)->SetExpr(m_Expression);
-    m_VParser.at(i)->DefineVar("Image1", &m_VImage1.at(i));
-    m_VParser.at(i)->DefineVar("Image2", &m_VImage2.at(i));
+    for(j=0; j < nbInputImages; j++)
+      m_VParser.at(i)->DefineVar(m_VVarName.at(j), &(m_AImage.at(i).at(j)));
     }
 }
 
 template< typename TImage >
-void BinaryParserImageFilter<TImage>
+void NaryParserImageFilter<TImage>
 ::AfterThreadedGenerateData()
 {
   int nbThreads = this->GetNumberOfThreads();
@@ -167,23 +175,31 @@ void BinaryParserImageFilter<TImage>
 }
 
 template< typename TImage >
-void BinaryParserImageFilter<TImage>
+void NaryParserImageFilter<TImage>
 ::ThreadedGenerateData(const ImageRegionType& outputRegionForThread,
 		       int threadId)
 {
-  PixelType value;
-  itk::ImageRegionConstIterator<TImage>  it1 (this->GetInput1(), outputRegionForThread);
-  itk::ImageRegionConstIterator<TImage>  it2 (this->GetInput2(), outputRegionForThread);
+  PixelType value; 
+  unsigned int j;
+  int nbInputImages = this->GetNumberOfInputs();
+  
+  typedef itk::ImageRegionConstIterator<TImage> ImageRegionConstIteratorType;
+  
+  std::vector< ImageRegionConstIteratorType > Vit;
+  Vit.resize(nbInputImages);
+  for(j=0; j < nbInputImages; j++)
+    Vit[j] = ImageRegionConstIteratorType (this->GetNthInput(j), outputRegionForThread);
+ 
   itk::ImageRegionIterator<TImage> ot (this->GetOutput(), outputRegionForThread);
   
   // support progress methods/callbacks
   itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
           
-  while (!it1.IsAtEnd())
+  while (!(Vit.at(0).IsAtEnd()))
     {
-    m_VImage1.at(threadId) = it1.Get();
-    m_VImage2.at(threadId) = it2.Get();
-
+    for(j=0; j < nbInputImages; j++)
+      m_AImage.at(threadId).at(j) = Vit.at(j).Get();
+   
     value = static_cast<double>(m_VParser.at(threadId)->Eval());
      
     if (value < itk::NumericTraits<PixelType>::NonpositiveMin())
@@ -200,9 +216,9 @@ void BinaryParserImageFilter<TImage>
       {
       ot.Set(static_cast<PixelType>(value));
       }
-    
-    ++it1;
-    ++it2;
+    for(j=0; j < nbInputImages; j++)
+      ++(Vit.at(j));
+   
     ++ot;
 
     progress.CompletedPixel();

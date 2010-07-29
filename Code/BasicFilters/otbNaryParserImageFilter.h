@@ -19,8 +19,8 @@
 
 =========================================================================*/
 
-#ifndef __otbBinaryParserImageFilter_h
-#define __otbBinaryParserImageFilter_h
+#ifndef __otbNaryParserImageFilter_h
+#define __otbNaryParserImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -32,12 +32,12 @@ namespace otb
 {
 
 template< class TImage >
-class ITK_EXPORT BinaryParserImageFilter 
+class ITK_EXPORT NaryParserImageFilter 
   : public itk::InPlaceImageFilter< TImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef BinaryParserImageFilter< TImage >                                             Self;
+  typedef NaryParserImageFilter< TImage >                                               Self;
   typedef itk::InPlaceImageFilter< TImage >                                             Superclass;
   typedef itk::SmartPointer< Self >                                                     Pointer;
   typedef itk::SmartPointer< const Self >                                               ConstPointer;
@@ -46,7 +46,7 @@ public:
   itkNewMacro(Self);
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(BinaryParserImageFilter, InPlaceImageFilter);
+  itkTypeMacro(NaryParserImageFilter, InPlaceImageFilter);
 
   /** Some convenient typedefs. */
   typedef TImage                                  ImageType;
@@ -55,17 +55,16 @@ public:
   typedef typename ImageType::PixelType           PixelType;
   typedef Parser                                  ParserType;
   
-  void SetInput1( const ImageType * image1);
-  ImageType * GetInput1();
-  void SetInput2( const ImageType * image2);
-  ImageType * GetInput2();
+  void SetNthInput( unsigned int idx, const ImageType * image);
+  void SetNthInput( unsigned int idx, const ImageType * image, const std::string& varName);
+  ImageType * GetNthInput(unsigned int idx);
   void SetExpression(const std::string& expression);
 
   std::string GetExpression() const;
 
 protected :
-  BinaryParserImageFilter();
-  virtual ~BinaryParserImageFilter();
+  NaryParserImageFilter();
+  virtual ~NaryParserImageFilter();
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
  
   void BeforeThreadedGenerateData();
@@ -73,13 +72,13 @@ protected :
   void AfterThreadedGenerateData();
 
 private :
-  BinaryParserImageFilter(const Self&); //purposely not implemented
+  NaryParserImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
   std::string                           m_Expression; 
   std::vector<ParserType::Pointer>      m_VParser;
-  std::vector<PixelType>                m_VImage1;
-  std::vector<PixelType>                m_VImage2;
+  std::vector< std::vector<PixelType> > m_AImage;
+  std::vector< std::string >            m_VVarName;
 
   long                                  m_UnderflowCount;
   long                                  m_OverflowCount;
@@ -90,7 +89,7 @@ private :
 }//end namespace otb
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "otbBinaryParserImageFilter.txx"
+#include "otbNaryParserImageFilter.txx"
 #endif
 
 #endif
