@@ -15,28 +15,36 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbTileMapImageIOHelper_h
-#define __otbTileMapImageIOHelper_h
 
-#include <string>
-#include <iostream>
-#include <sstream>
+#ifdef _MSC_VER
+#pragma warning ( disable : 4786 )
+#endif
+
+#include "otbMacro.h"
+
+#include "otbSarImageMetadataInterface.h"
+
+#include "itkMetaDataObject.h"
+#include "otbVectorDataKeywordlist.h"
+#include "base/ossimKeywordlist.h"
 
 namespace otb
 {
 
-/** \class TileMapImageIOHelper
- *  \brief This class IO TileMapImage
- *
- */
-
-class TileMapImageIOHelper
+SarImageMetadataInterface
+::SarImageMetadataInterface()
 {
-public:
-  /** Correspondance between depth and scale for the quad tree paradigm*/
-  const std::string ConvertDepthToScale(const unsigned int depth) const;
-}; // end class TileMapImageIOHelper
+}
+
+
+void
+SarImageMetadataInterface
+::PrintSelf(std::ostream& os, itk::Indent indent) const
+{
+  Superclass::PrintSelf(os, indent);
+  //os << indent << "GetSunElevation:     " << this->GetSunElevation() << std::endl;
+}
+
+
 
 } // end namespace otb
-
-#endif
