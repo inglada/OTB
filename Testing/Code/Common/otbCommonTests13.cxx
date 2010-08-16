@@ -10,9 +10,9 @@
   See OTBCopyright.txt for details.
 
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -26,9 +26,5 @@
 
 void RegisterTests()
 {
-  REGISTER_TEST(otbImageFileReaderTestSensorPixelValue);
-  REGISTER_TEST(otbDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbOpticalDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbSarDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbSarDefaultImageMetadataInterfaceNew);
+  //  REGISTER_TEST(otbGISTableSourceNew);
 }
