@@ -15,20 +15,23 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#include "itkExceptionObject.h"
+#include "otbMacro.h"
 
-// this file defines the otbCommonTest for the test driver
-// and all it expects is that you have a function called RegisterTests
-#if defined(_MSC_VER)
-#pragma warning ( disable : 4786 )
-#endif
+#include "otbGISTableSource.h"
+#include "otbGISTable.h"
+#include "otbPostGISConnectionImplementation.h"
 
-#include "otbTestMain.h"
-
-void RegisterTests()
+int otbGISTableSourceNew(int argc, char * argv[])
 {
-  REGISTER_TEST(otbImageFileReaderTestSensorPixelValue);
-  REGISTER_TEST(otbDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbOpticalDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbSarDefaultImageMetadataInterfaceFactoryNew);
-  REGISTER_TEST(otbSarDefaultImageMetadataInterfaceNew);
+  
+  typedef otb::PostGISConnectionImplementation        GISConnectionType;
+  typedef otb::GISTable<GISConnectionType, double, 2> GISTableType;
+
+  typedef otb::GISTableSource<GISTableType> GISTableSourceType;
+
+  //Instantiation
+  GISTableSourceType::Pointer object = GISTableSourceType::New();
+
+  return EXIT_SUCCESS;
 }
