@@ -113,7 +113,7 @@ void VectorDataModel::AddPointToGeometry(VertexType& vertex, bool callUpdate)
     }
 }
 
-void VectorDataModel::EndGeometry(void)
+void VectorDataModel::EndGeometry(bool callUpdate)
 {
   // Avoid multiple endings
   if (!m_CurrentGeometry)
@@ -152,7 +152,10 @@ void VectorDataModel::EndGeometry(void)
     itkExceptionMacro(<< "Node type not (yet) supported: " << m_CurrentNodeType);
     }
   this->Modified();
-  this->Update();
+  if(callUpdate == true)
+    {
+      this->Update();
+    }
 }
 
 void VectorDataModel::DeleteGeometry(void)
@@ -241,19 +244,17 @@ void VectorDataModel::SetSelectedGeometry(int n)
 void
 VectorDataModel::AddVectorData( VectorDataPointer vData )
 {
-  this->EndGeometry();
+  this->EndGeometry(false);
   DataTreeType::Pointer tree = vData->GetDataTree();
   TreeNodeType * root = const_cast<TreeNodeType *>(tree->GetRoot());
   this->AddNode( root );
   this->Update();
 }
 
- 
+
 void
 VectorDataModel::AddNode( TreeNodeType * node )
 {
-  // From VEctorDataGlComponent
-  // Render the current node
   switch (node->Get()->GetNodeType())
     {
     case FEATURE_POINT:
@@ -264,7 +265,7 @@ VectorDataModel::AddNode( TreeNodeType * node )
 	vertex[0] = point[0];
 	vertex[1] = point[1];
 	this->AddPointToGeometry(vertex, false);
-	this->EndGeometry();
+	this->EndGeometry(false);
 	break;
       }
     case FEATURE_LINE:
@@ -281,7 +282,7 @@ VectorDataModel::AddNode( TreeNodeType * node )
 	    vertex[1] = point[1];
 	    this->AddPointToGeometry(vertex, false);
 	  }
-	this->EndGeometry();
+	this->EndGeometry(false);
 	break;
       }
     case FEATURE_POLYGON:
@@ -299,7 +300,8 @@ VectorDataModel::AddNode( TreeNodeType * node )
 	    this->AddPointToGeometry(vertex, false);
 	    vIt++;
 	  }
-	this->EndGeometry();
+
+	this->EndGeometry(false);
 	break;
       }
     default:

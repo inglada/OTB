@@ -76,12 +76,14 @@ public:
   void AddVectorData( VectorDataPointer vData );
   void AddNode( TreeNodeType * node );
   
-  /** Load a vector data using image reprojection. */
-  template <typename TImage> void AddVectorData( VectorDataPointer vData, TImage * image );
-  template <typename TImage> void AddNode( TreeNodeType * node, TImage * image );
-
+  /** Add vertex to the vector data representation. 
+   * If callUpdate is set to true il will update the full vector data display.
+   */
   void AddPointToGeometry(VertexType& vertex, bool callUpdate = true);
-  void EndGeometry(void);
+  /** End the current vector data representation. 
+   * If callUpdate is set to true il will update the full vector data display.
+   */
+  void EndGeometry(bool callUpdate = true);
   void DeleteGeometry(void);
 
   /** return the Nth data node without counting the Root/Document/Folder*/
@@ -126,9 +128,5 @@ private:
 
 }; // end class
 } // end namespace otb
-
-#ifndef OTB_MANUAL_INSTANTIATION
-#include "otbVectorDataModel.txx"
-#endif
 
 #endif
