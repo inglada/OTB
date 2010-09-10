@@ -584,7 +584,7 @@ ENDIF(OTB_DATA_USE_LARGEINPUT)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ADD_TEST(prTuOptResampleImageFilterNew ${PROJECTIONS_TESTS4}
-  otbOptResampleImageFilterNew
+  otbOptResampleImageFilter
   )
 
 IF(OTB_DATA_USE_LARGEINPUT)
@@ -598,8 +598,8 @@ ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 
 
-ADD_TEST(prTuPhysicalToRPCSensorModelImageFilter ${PROJECTIONS_TESTS4}
-  otbPhysicalToRPCSensorModelImageFilterNew
+ADD_TEST(prTuPhysicalToRPCSensorModelImageFilterNew ${PROJECTIONS_TESTS4}
+  otbPhysicalToRPCSensorModelImageFilter
   )
 
 ADD_TEST(prTvPhysicalToRPCSensorModelImageFilter ${PROJECTIONS_TESTS4}
@@ -609,8 +609,8 @@ ADD_TEST(prTvPhysicalToRPCSensorModelImageFilter ${PROJECTIONS_TESTS4}
   ${TEMP}/prTvotbPhysicalToRPCSensorModelImageFilter.tif
   )
 
-ADD_TEST(prTuotbGenericRSResampleImageFilter ${PROJECTIONS_TESTS4}
-  otbGenericRSResampleImageFilterNew
+ADD_TEST(prTuotbGenericRSResampleImageFilterNew ${PROJECTIONS_TESTS4}
+  otbGenericRSResampleImageFilter
   )
 IF(OTB_DATA_USE_LARGEINPUT)
 
@@ -620,6 +620,8 @@ ADD_TEST(prTvotbGenericRSResampleImageFilter ${PROJECTIONS_TESTS4}
   ${LARGEINPUT}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
   1000
   15
+  0
+  1
   ${TEMP}/prTvotbGenericRSResampleImageFilterOutput.tif
   )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
@@ -673,11 +675,8 @@ otbVectorDataExtractROIandProjection.cxx
 
 SET(Projections_SRCS4
 otbProjectionsTests4.cxx
-otbOptResampleImageFilterNew.cxx
 otbOptResampleImageFilter.cxx
-otbPhysicalToRPCSensorModelImageFilterNew.cxx
 otbPhysicalToRPCSensorModelImageFilter.cxx
-otbGenericRSResampleImageFilterNew.cxx
 otbGenericRSResampleImageFilter.cxx
 )
 
