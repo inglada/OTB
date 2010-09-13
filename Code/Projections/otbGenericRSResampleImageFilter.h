@@ -19,7 +19,7 @@
 #define __otbGenericRSResampleImageFilter_h
 
 #include "itkImageToImageFilter.h"
-#include "otbOptResampleImageFilter.h"
+#include "otbStreamingResampleImageFilter.h"
 #include "otbPhysicalToRPCSensorModelImageFilter.h"
 #include "otbGenericRSTransform.h"
 
@@ -46,7 +46,7 @@ namespace otb
  *
  **/
 
-template <class TInputImage, class TOutputImage, class TDeormationField>
+template <class TInputImage, class TOutputImage>
 class ITK_EXPORT GenericRSResampleImageFilter :
     public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
@@ -64,21 +64,22 @@ public:
   itkTypeMacro(GenericRSResampleImageFilter,itk::ImageToImageFilter);
 
   /** Typedef parameters*/
-  typedef TInputImage                        InputImageType;
-  typedef TOutputImage                       OutputImageType;
-  typedef TDeormationField                   DeformationFieldType;
+  typedef TInputImage                                     InputImageType;
+  typedef TOutputImage                                    OutputImageType;
+  typedef typename OutputImageType::InternalPixelType     OutputInternalPixelType;
   
   /** Internal filters typedefs*/
-  typedef OptResampleImageFilter<InputImageType,OutputImageType,
-                                 DeformationFieldType >          ResamplerType;
-  typedef typename ResamplerType::Pointer             ResamplerPointerType;
-  typedef typename ResamplerType::TransformType       TransformType;
-  typedef typename ResamplerType::SizeType            SizeType;
-  typedef typename ResamplerType::SpacingType         SpacingType;
-  typedef typename ResamplerType::OriginType          OriginType;
-  typedef typename ResamplerType::IndexType           IndexType;
-  typedef typename ResamplerType::RegionType          RegionType;
-  typedef typename ResamplerType::InterpolatorType    InterpolatorType;
+  typedef StreamingResampleImageFilter<InputImageType,
+                                 OutputImageType,
+                                 OutputInternalPixelType>  ResamplerType;
+  typedef typename ResamplerType::Pointer                  ResamplerPointerType;
+  typedef typename ResamplerType::TransformType            TransformType;
+  typedef typename ResamplerType::SizeType                 SizeType;
+  typedef typename ResamplerType::SpacingType              SpacingType;
+  typedef typename ResamplerType::OriginType               OriginType;
+  typedef typename ResamplerType::IndexType                IndexType;
+  typedef typename ResamplerType::RegionType               RegionType;
+  typedef typename ResamplerType::InterpolatorType         InterpolatorType;
 
   /** Estimate the rpc model */
   typedef PhysicalToRPCSensorModelImageFilter<InputImageType>   RpcModelEstimatorType;
@@ -90,9 +91,6 @@ public:
   typedef GenericRSTransform<>                       GenericRSTransformType;
   typedef typename GenericRSTransformType::Pointer   GenericRSTransformPointerType;
   
-  /** Public Method prototypes */
-  virtual void GenerateData();
-    
   /** The Deformation field spacing & size */
   void SetDeformationFieldSpacing(const SpacingType & spacing)
   {
@@ -187,6 +185,8 @@ public:
     void SetDEMDirectory(const std::string&  dem)
   {
     m_Transform->SetDEMDirectory(dem);
+    m_InputRpcEstimator->SetDEMDirectory(dem);
+    m_OutputRpcEstimator->SetDEMDirectory(dem);
     this->Modified();
   }
   otbGetObjectMemberConstMacro(Transform,DEMDirectory,std::string);
@@ -195,13 +195,19 @@ public:
   void SetOutputParametersFromImage(const InputImageType * image);
   
   /** Set/Get the grid spacing for rpc estimator*/
-  void SetInputGridSpacing(unsigned int gridSize)
+  void SetInputGridSize(SizeType gridSize)
   {
-    m_InputRpcEstimator->SetGridSpacing(gridSize);
+    m_InputRpcEstimator->SetGridSize(gridSize);
+    this->Modified();
+  }
+  /** unsigned int as parmater */
+  void SetInputGridSize(unsigned int gridSize)
+  {
+    m_InputRpcEstimator->SetGridSize(gridSize);
     this->Modified();
   }
 
-  unsigned int GetInputGridSpacing()
+  SizeType GetInputGridSize()
   {
     return m_InputRpcEstimator->GetGridSpacing();
   }
@@ -212,15 +218,21 @@ public:
   itkBooleanMacro(EstimateInputRpcModel);
   
   /** Macro to Set/Get the grid spacing for rpc estimator*/
-  void SetOutputGridSpacing(unsigned int gridSize)
+  void SetOutputGridSize(SizeType gridSize)
   {
-    m_OutputRpcEstimator->SetGridSpacing(gridSize);
+    m_OutputRpcEstimator->SetGridSize(gridSize);
+    this->Modified();
+  }
+  /** unsigned int as parmater*/
+  void SetOutputGridSize(unsigned int gridSize)
+  {
+    m_OutputRpcEstimator->SetGridSize(gridSize);
     this->Modified();
   }
 
-  unsigned int GetOutputGridSpacing()
+  SizeType GetOutputGridSize()
   {
-    return m_OutputRpcEstimator->GetGridSpacing();
+    return m_OutputRpcEstimator->GetGridSize();
   }
 
   // Macro to tune the EstimateOutputRpcModel flag
@@ -232,6 +244,8 @@ protected:
   GenericRSResampleImageFilter();
   /** Destructor */
   virtual ~GenericRSResampleImageFilter() {};
+
+  virtual void GenerateData();
 
   virtual void GenerateOutputInformation();
   
@@ -250,8 +264,7 @@ private:
   // boolean that allow the estimation of the input rpc model
   bool                              m_EstimateInputRpcModel;
   bool                              m_EstimateOutputRpcModel;
-
-  bool                              m_rpcEstimationUpdated;
+  bool                              m_RpcEstimationUpdated;
   
   // Filters pointers
   ResamplerPointerType              m_Resampler;
