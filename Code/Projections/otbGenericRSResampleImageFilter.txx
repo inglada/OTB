@@ -120,7 +120,7 @@ GenericRSResampleImageFilter<TInputImage, TOutputImage>
   
   // Estimate the rpc model from the temp image
   m_OutputRpcEstimator->SetInput(tempPtr);
-  m_OutputRpcEstimator->GenerateOutputInformation();
+  m_OutputRpcEstimator->UpdateOutputInformation();
   
   // Encapsulate the estimated rpc model in the output
   if(m_OutputRpcEstimator->GetOutput()->GetImageKeywordlist().GetSize() > 0)
@@ -139,13 +139,11 @@ GenericRSResampleImageFilter<TInputImage, TOutputImage>
 {
   if(m_EstimateInputRpcModel)
     {
-    //std::cout <<"m_InputRpcEstimator->GetOutput()->GetImageKeywordlist() "<< m_InputRpcEstimator->GetOutput()->GetImageKeywordlist()  << std::endl;
     m_Transform->SetOutputKeywordList( m_InputRpcEstimator->GetOutput()->GetImageKeywordlist());
     }
 
   if(m_EstimateOutputRpcModel)
     {
-    //std::cout <<"m_OutputRpcEstimator->GetOutput()->GetImageKeywordlist() "<< m_OutputRpcEstimator->GetOutput()->GetImageKeywordlist()   << std::endl;
     m_Transform->SetInputKeywordList( m_OutputRpcEstimator->GetOutput()->GetImageKeywordlist());
     }
   
@@ -181,7 +179,7 @@ GenericRSResampleImageFilter<TInputImage, TOutputImage>
   this->UpdateTransform();
   
   // Generate input requested region
-  m_Resampler->SetInput(this->GetInput());
+  m_Resampler->SetInput(inputPtr);
   m_Resampler->SetTransform(m_Transform);
   m_Resampler->SetDeformationFieldSpacing(this->GetDeformationFieldSpacing());
   m_Resampler->GetOutput()->UpdateOutputInformation();
@@ -215,7 +213,7 @@ GenericRSResampleImageFilter<TInputImage, TOutputImage>
   
   // Estimate the rpc model with the temp image
   m_InputRpcEstimator->SetInput(tempPtr);
-  m_InputRpcEstimator->GenerateOutputInformation();
+  m_InputRpcEstimator->UpdateOutputInformation();
   
   // Encapsulate the estimated rpc model in the output
   if(m_InputRpcEstimator->GetInput()->GetImageKeywordlist().GetSize() > 0)
@@ -233,7 +231,7 @@ GenericRSResampleImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 GenericRSResampleImageFilter<TInputImage, TOutputImage>
-::SetOutputParametersFromImage(const InputImageType * image)
+::SetOutputParametersFromImage(const ImageBaseType * image)
 {
   this->SetOutputOrigin ( image->GetOrigin() );
   this->SetOutputSpacing ( image->GetSpacing() );
