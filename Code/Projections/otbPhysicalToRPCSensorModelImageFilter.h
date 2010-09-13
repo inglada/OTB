@@ -85,9 +85,6 @@ public:
   /** Remote Sensing Transform */
   typedef GenericRSTransform<>                                RSTransformType;
   typedef typename RSTransformType::Pointer                   RSTransformPointerType;
-
-  /** launch the process */
-  virtual void GenerateOutputInformation();//GenerateData();
   
   /** Set/Get the grid size*/
   itkSetMacro(GridSize, SizeType);
@@ -97,11 +94,18 @@ public:
   itkSetStringMacro(DEMDirectory);
   itkGetStringMacro(DEMDirectory);
 
+  /** Set/Get the AverageElevation*/
+  itkSetMacro(AverageElevation, double);
+  itkGetMacro(AverageElevation, double);
+  
   /** Set Grid size with an unsigned int parmeter*/
   void SetGridSize(unsigned int inSize)
   {
     m_GridSize.Fill(inSize);
   }
+
+  /** Reimplement the method Modified() */
+  virtual void Modified();
   
 protected:
   /** Constructor */
@@ -112,8 +116,11 @@ protected:
   /** The PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
-  /**  */
+  /** Necessary but empty */
   virtual void ThreadedGenerateData(const typename TImage::RegionType&, int) {}
+
+  /** Generate the Output image information*/
+  virtual void GenerateOutputInformation();
   
 private:
   PhysicalToRPCSensorModelImageFilter(const Self &);   // purposely not implemented
@@ -123,7 +130,10 @@ private:
   GCPsToSensorModelPointerType       m_GCPsToSensorModelFilter;
   
   std::string                        m_DEMDirectory;
+  double                             m_AverageElevation;
   SizeType                           m_GridSize;
+  bool                               m_OutputInformationGenerated;
+
 };
 } // end of namespace otb
 

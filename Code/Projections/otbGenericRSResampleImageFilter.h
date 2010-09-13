@@ -91,6 +91,8 @@ public:
   typedef GenericRSTransform<>                       GenericRSTransformType;
   typedef typename GenericRSTransformType::Pointer   GenericRSTransformPointerType;
   
+  typedef itk::ImageBase<OutputImageType::ImageDimension>      ImageBaseType;
+  
   /** The Deformation field spacing & size */
   void SetDeformationFieldSpacing(const SpacingType & spacing)
   {
@@ -102,7 +104,7 @@ public:
                                         SpacingType);
   
   /** The resampled image parameters */
-  // Output Origin
+  /** Output Origin */
   void SetOutputOrigin(const OriginType & origin)
   {
     m_Resampler->SetOutputOrigin(origin);
@@ -110,15 +112,15 @@ public:
   }
   otbGetObjectMemberConstReferenceMacro(Resampler,OutputOrigin,OriginType);
   
-  // Output Start index
+  /** Output Start index */
   otbSetObjectMemberMacro(Resampler,OutputStartIndex,IndexType);
   otbGetObjectMemberConstReferenceMacro(Resampler,OutputStartIndex,IndexType);
   
-  // Output Size
+  /** Output Size */
   otbSetObjectMemberMacro(Resampler,OutputSize,SizeType);
   otbGetObjectMemberConstReferenceMacro(Resampler,OutputSize,SizeType);
   
-  // Output Spacing
+  /** Output Spacing */
   otbSetObjectMemberMacro(Resampler,OutputSpacing,SpacingType);
   otbGetObjectMemberConstReferenceMacro(Resampler,OutputSpacing,SpacingType);
   
@@ -129,6 +131,14 @@ public:
     this->Modified();
   }
   otbGetObjectMemberConstMacro(Resampler, Interpolator, const InterpolatorType *);
+
+  /** Default Edge padding value */  
+  otbSetObjectMemberMacro(Resampler,
+                          EdgePaddingValue,
+                          typename OutputImageType::PixelType);
+  otbGetObjectMemberMacro(Resampler, 
+                          EdgePaddingValue, 
+                          typename OutputImageType::PixelType);
   
   /** 
    * Set/Get input & output projections. 
@@ -182,7 +192,7 @@ public:
   }
   
   /** Set/Get the DEMDirectory*/
-    void SetDEMDirectory(const std::string&  dem)
+  void SetDEMDirectory(const std::string&  dem)
   {
     m_Transform->SetDEMDirectory(dem);
     m_InputRpcEstimator->SetDEMDirectory(dem);
@@ -191,51 +201,62 @@ public:
   }
   otbGetObjectMemberConstMacro(Transform,DEMDirectory,std::string);
 
-  /** Useful to set the output parameters from an existing image*/
-  void SetOutputParametersFromImage(const InputImageType * image);
+  /** Method to Set the Average Elevation used */
+  void SetAverageElevation(double elevation)
+  {
+    m_Transform->SetAverageElevation(elevation);
+    m_InputRpcEstimator->SetAverageElevation(elevation);
+    m_OutputRpcEstimator->SetAverageElevation(elevation);
+    this->Modified();
+  }
+  otbGetObjectMemberConstMacro(Transform,AverageElevation,double);
   
-  /** Set/Get the grid spacing for rpc estimator*/
-  void SetInputGridSize(SizeType gridSize)
-  {
-    m_InputRpcEstimator->SetGridSize(gridSize);
-    this->Modified();
-  }
-  /** unsigned int as parmater */
-  void SetInputGridSize(unsigned int gridSize)
-  {
-    m_InputRpcEstimator->SetGridSize(gridSize);
-    this->Modified();
-  }
 
-  SizeType GetInputGridSize()
+  /** Useful to set the output parameters from an existing image*/
+  void SetOutputParametersFromImage(const ImageBaseType * image);
+  
+  /** Set/Get the grid size for rpc estimator*/
+  void SetInputRpcGridSize(SizeType gridSize)
   {
-    return m_InputRpcEstimator->GetGridSpacing();
+    m_InputRpcEstimator->SetGridSize(gridSize);
+    this->Modified();
+  }
+  /** unsigned int as paramater */
+  void SetInputRpcGridSize(unsigned int gridSize)
+  {
+    m_InputRpcEstimator->SetGridSize(gridSize);
+    this->Modified();
+  }
+  /** Get the input rpc model estimator  grid size used */
+  SizeType GetInputRpcGridSize()
+  {
+    return m_InputRpcEstimator->GetGridSize();
   }
   
-  // Macro to tune the EstimateInputRpcModel flag
+  /** Macro to tune the EstimateInputRpcModel flag */
   itkSetMacro(EstimateInputRpcModel, bool);
   itkGetMacro(EstimateInputRpcModel, bool);
   itkBooleanMacro(EstimateInputRpcModel);
   
-  /** Macro to Set/Get the grid spacing for rpc estimator*/
-  void SetOutputGridSize(SizeType gridSize)
+  /** Macro to Set/Get the grid size for rpc estimator*/
+  void SetOutputRpcGridSize(SizeType gridSize)
   {
     m_OutputRpcEstimator->SetGridSize(gridSize);
     this->Modified();
   }
-  /** unsigned int as parmater*/
-  void SetOutputGridSize(unsigned int gridSize)
+  /** unsigned int as paramater */
+  void SetOutputRpcGridSize(unsigned int gridSize)
   {
     m_OutputRpcEstimator->SetGridSize(gridSize);
     this->Modified();
   }
-
-  SizeType GetOutputGridSize()
+  /** Get the output rpc model estimator grid size used */
+  SizeType GetOutputRpcGridSize()
   {
     return m_OutputRpcEstimator->GetGridSize();
   }
 
-  // Macro to tune the EstimateOutputRpcModel flag
+  /** Macro to tune the EstimateOutputRpcModel flag */
   itkSetMacro(EstimateOutputRpcModel, bool);
   itkGetMacro(EstimateOutputRpcModel, bool);
   itkBooleanMacro(EstimateOutputRpcModel);

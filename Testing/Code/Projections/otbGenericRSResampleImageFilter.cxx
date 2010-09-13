@@ -26,6 +26,9 @@
 
 #include <ogr_spatialref.h>
 
+// Default value
+#include "itkPixelBuilder.h"
+
 int otbGenericRSResampleImageFilter(int argc, char* argv[])
 {
   // Images definition
@@ -47,7 +50,7 @@ int otbGenericRSResampleImageFilter(int argc, char* argv[])
   ImageResamplerType::Pointer resampler = ImageResamplerType::New();
   
   // Check if it's a unit test.
-  if (argc > 1)
+  if (argc == 7 )
     {
     const char * infname = argv[1];
     const char * outfname = argv[6];
@@ -87,7 +90,12 @@ int otbGenericRSResampleImageFilter(int argc, char* argv[])
     SpacingType  gridSpacing;
     gridSpacing[0] = iGridSpacing;
     gridSpacing[1] = -iGridSpacing;
-  
+
+    // Default value builder
+    ImageType::PixelType defaultValue;
+    itk::PixelBuilder<ImageType::PixelType>::Zero(defaultValue,
+                                                  reader->GetOutput()->GetNumberOfComponentsPerPixel());
+    
     // Set the Resampler Parameters
     resampler->SetInput(reader->GetOutput());
     resampler->SetDeformationFieldSpacing(gridSpacing); 
@@ -95,17 +103,18 @@ int otbGenericRSResampleImageFilter(int argc, char* argv[])
     resampler->SetOutputSize(size);
     resampler->SetOutputSpacing(spacing);
     resampler->SetOutputProjectionRef(utmRef);
-    resampler->SetInputProjectionRef(reader->GetOutput()->GetProjectionRef());
-    resampler->SetInputKeywordList(reader->GetOutput()->GetImageKeywordlist());
+//     resampler->SetInputProjectionRef(reader->GetOutput()->GetProjectionRef());
+//     resampler->SetInputKeywordList(reader->GetOutput()->GetImageKeywordlist());
+    resampler->SetEdgePaddingValue(defaultValue);
     if (useInRpc)
       {
-      resampler->SetInputGridSize(1000);
+      resampler->SetInputRpcGridSize(20);
       resampler->EstimateInputRpcModelOn();
       }
     
     if (useOutRpc)
       {
-      resampler->SetOutputGridSize(50);
+      resampler->SetOutputRpcGridSize(20);
       resampler->EstimateOutputRpcModelOn();
       }
     
