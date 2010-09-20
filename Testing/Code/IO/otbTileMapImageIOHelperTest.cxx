@@ -15,34 +15,31 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#include <cstdlib>
+#include <fstream>
+#include "otbTileMapImageIOHelper.h"
 
-#include "otbFileName.h"
-
-namespace otb
+int otbTileMapImageIOHelperNew(int argc, char * argv[])
 {
 
-FileName::FileName() : ossimFilename()
-{}
-
-FileName::FileName(const FileName& src)
-  : ossimFilename(src)
-{}
-
-FileName::FileName(const ossimFilename& src)
-  : ossimFilename(src)
-{}
-
-FileName::FileName(const ossimString& src)
-  : ossimFilename(src)
-{}
-
-FileName::FileName(const char* src)
-  : ossimFilename(src)
-{}
-
-FileName FileName::ObtainFileNameWithNoExtension() const
-{
-  return this->fileNoExtension();
+  otb::TileMapImageIOHelper myTileMapImageIOHelper;
+  return EXIT_SUCCESS;
 }
 
-} // end namespace otb
+int otbTileMapImageIOHelperTest(int argc, char * argv[])
+{
+
+  otb::TileMapImageIOHelper myTileMapImageIOHelper;
+
+  char * filename = argv[1];
+  std::ofstream file;
+  file.open(filename);
+
+  for (unsigned int i=0; i < 22; ++i)
+    {
+    file << i << ": " << myTileMapImageIOHelper.ConvertDepthToScale(i) << std::endl;
+    }
+
+  file.close();
+  return EXIT_SUCCESS;
+}
