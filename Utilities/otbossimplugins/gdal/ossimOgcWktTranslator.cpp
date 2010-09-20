@@ -568,12 +568,13 @@ bool ossimOgcWktTranslator::toOssimKwl( const ossimString& wktString,
    
    // Translate the WKT into an OGRSpatialReference. 
    hSRS = OSRNewSpatialReference(NULL);
+
    if( OSRImportFromWkt( hSRS, (char **) &wkt ) != OGRERR_NONE )
    {
       OSRDestroySpatialReference( hSRS );
       return false;
    }
-   
+
    // Determine if State Plane Coordinate System
    ossimString ossimProj = "";
    const ossimStatePlaneProjectionInfo* spi = NULL;
@@ -595,7 +596,22 @@ bool ossimOgcWktTranslator::toOssimKwl( const ossimString& wktString,
    // ESH 11/2008: Check for geographic system when setting default units. 
    // If geographic, use degrees.
    //---
-   const char* units = OSRGetAttrValue( hSRS, "UNIT", 0 );
+   
+   // Actually search only the "UNIT" child of the node PROJCS
+   // Several UNIT nodes can be present in the tree, but only the one
+   // necessary for the PROJCS is required.
+   const char* units = NULL;
+   OGR_SRSNode* node = ((OGRSpatialReference *)hSRS)->GetRoot();
+   int nbChild  = node->GetChildCount();
+   for (int i = 0; i < nbChild; i++)
+   {
+       OGR_SRSNode* curChild = node->GetChild(i);
+       if (strcmp(curChild->GetValue(), "UNIT") == 0)
+       {
+          units = curChild->GetChild(0)->GetValue();
+       }
+   }
+   
    ossimString ossim_units;
    bool bGeog = OSRIsGeographic(hSRS);
    if ( bGeog == false )
@@ -889,6 +905,7 @@ bool ossimOgcWktTranslator::toOssimKwl( const ossimString& wktString,
     // extract out the datum
     //
     const char *datum = OSRGetAttrValue( hSRS, "DATUM", 0 );
+
     ossimString oDatum = "WGE";
     
     if( datum )
@@ -933,6 +950,8 @@ void ossimOgcWktTranslator::initializeDatumTable()
                                                   ossimString("WGS_1984")));
    theWktToOssimDatumTranslation.insert(make_pair(ossimString("OSGB_1936"),
                                                   ossimString("OGB-B"))); 
+   theWktToOssimDatumTranslation.insert(make_pair(ossimString("Nouvelle_Triangulation_Francaise"),
+                                                  ossimString("NTF")));
 }
 
 void ossimOgcWktTranslator::initializeProjectionTable()
@@ -993,6 +1012,10 @@ ossimString ossimOgcWktTranslator::wktToOssimDatum(const ossimString& datum)cons
    if(datum.contains("OSGD"))
    {
       return "OGB-D";
+   }
+ if(datum.contains("Nouvelle_Triangulation_Francaise"))
+   {
+      return "NTF";
    }
    
    return "";

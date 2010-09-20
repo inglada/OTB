@@ -36,6 +36,16 @@ LabelMapSVMClassifier<TInputImage>
 template<class TInputImage>
 void
 LabelMapSVMClassifier<TInputImage>
+::ReleaseInputs( )
+{
+  // by pass itk::InPlaceLabelMapFilter::ReleaseInputs() implementation,
+  // which caused memory issue when ran inplace
+  this->itk::LabelMapFilter<TInputImage, TInputImage>::ReleaseInputs();
+}
+
+template<class TInputImage>
+void
+LabelMapSVMClassifier<TInputImage>
 ::ThreadedProcessLabelObject( LabelObjectType * labelObject )
 {
   ClassLabelType classLabel = m_Model->EvaluateLabel(m_MeasurementFunctor(labelObject));

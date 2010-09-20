@@ -220,6 +220,21 @@ ADD_TEST(ioTvImageFileReaderTIF2MW ${IO_TESTS1}
         ${TEMP}/ioImageFileReaderTIF2MW.mw )
 
 
+# We use the original file as a baseline for the comparison        
+ ADD_TEST(ioTvImageFileReaderPCI2TIF ${IO_TESTS1}
+  --compare-image ${EPSILON_9}   ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
+                    ${TEMP}/ioImageFileReaderPCI2TIF.tif
+        otbImageFileReaderTestFloat
+        ${INPUTDATA}/QB_Toulouse_Ortho_PAN.pix
+        ${TEMP}/ioImageFileReaderPCI2TIF.tif )
+        
+ ADD_TEST(ioTvImageFileReaderTIF2PCI ${IO_TESTS1}
+  --compare-image ${EPSILON_9}   ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
+                    ${TEMP}/ioImageFileReaderTIF2PCI.pix
+        otbImageFileReaderTestFloat
+        ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
+        ${TEMP}/ioImageFileReaderTIF2PCI.pix )
+        
 #-------------  otbImageIOFactoryNew
 ADD_TEST(ioTuImageIOFactoryNew ${IO_TESTS1}
         otbImageIOFactoryNew )
@@ -592,7 +607,9 @@ ADD_TEST(ioTuGDALImageIOCanRead_SPOT5TIF ${IO_TESTS5} otbGDALImageIOTestCanRead
 ADD_TEST(ioTuGDALImageIOCanRead_HFA ${IO_TESTS5} otbGDALImageIOTestCanRead
 	${INPUTDATA}/HFAGeoreferenced.img)
 
-
+ADD_TEST(ioTuGDALImageIOCanRead_PCI ${IO_TESTS5} otbGDALImageIOTestCanRead
+    ${INPUTDATA}/QB_Toulouse_Ortho_PAN.pix)
+    
 ADD_TEST(ioTvThreadsTest ${IO_TESTS5} otbThreadsTest)
         
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -676,6 +693,7 @@ ADD_TEST(ioTvImageFileReaderPNG2PNG ${IO_TESTS7}
         otbImageFileReaderTest
         ${INPUTDATA}/cthead1.png
         ${TEMP}/ioImageFileReaderPNG2PNG_cthead1.png )
+               
 # RGB
 ADD_TEST(ioTvImageFileReaderRGB_PNG2PNG ${IO_TESTS7}
   --compare-image ${EPSILON_9}   ${INPUTDATA}/couleurs_extrait.png
@@ -683,12 +701,14 @@ ADD_TEST(ioTvImageFileReaderRGB_PNG2PNG ${IO_TESTS7}
         otbImageFileReaderRGBTest
         ${INPUTDATA}/couleurs_extrait.png
         ${TEMP}/ioImageFileReaderRGB_PNG2PNG.png )
+        
 ADD_TEST(ioTvImageFileReaderRGB_PNG2TIFF ${IO_TESTS7}
   --compare-image ${EPSILON_9}   ${BASELINE}/ioImageFileReaderRGB_PNG2TIFF.tiff
                     ${TEMP}/ioImageFileReaderRGB_PNG2TIFF.tiff
         otbImageFileReaderRGBTest
         ${INPUTDATA}/couleurs_extrait.png
         ${TEMP}/ioImageFileReaderRGB_PNG2TIFF.tiff )
+        
 ADD_TEST(ioTvImageFileReaderRGB_BSQ2PNG ${IO_TESTS7}
   --compare-image ${EPSILON_9}   ${INPUTDATA}/poupees.hdr
                     ${TEMP}/ioImageFileReaderRGB_BSQ2PNG_poupees.png
@@ -2484,34 +2504,6 @@ ADD_TEST(ioTvImageFileReaderServerNameOTBTest ${IO_TESTS19}
 	otbImageFileReaderServerName
 	${OTB_DATA_ROOT}/Examples/osmfile.otb)
 
-ADD_TEST(ioTuTileMapImageSourceNew ${IO_TESTS19}
-        otbTileMapImageSourceNew )
-
-#ADD_TEST(ioTvTileMapImageSource ${IO_TESTS19}
-#        --compare-image ${NOTOL}
-#                ${BASELINE}/ioTileMapImageSourceToulouse.png
-#                ${TEMP}/ioTileMapImageSourceToulouse.png
-#        otbTileMapImageSource
-#                43.6044
-#                1.44295
-#                http://tile.openstreetmap.org
-#		${TEMP}/ioTileMapImageSourceToulouse.png
-#		256)
-
-ADD_TEST(ioTuTileMapFetcherNew ${IO_TESTS19}
-        otbTileMapFetcherNew )
-
-ADD_TEST(ioTvTileMapFetcherTest ${IO_TESTS19}
-	otbTileMapFetcherTest
-		132122
-		95719
-		18
-		http://tile.openstreetmap.org/
-                #http://andy.sandbox.cloudmade.com/tiles/cycle/
-		${TEMP}/
-		2
-		${TEMP}/)
-
 # We do not perform regression testing here because images on server might change
 ADD_TEST(ioTvTileMapImageIOFile ${IO_TESTS19}
   otbTileMapImageIOTest
@@ -2609,6 +2601,17 @@ ADD_TEST(ioTvMapFileProductWriter ${IO_TESTS21}
   ${INPUTDATA}/ExtrZoneNuageuse.tif
   ${TEMP}/mapserver/toulouseExtract.map
   256
+)
+
+ADD_TEST(ioTuTileMapImageIOHelperNew ${IO_TESTS21}
+  otbTileMapImageIOHelperNew
+)
+
+ADD_TEST(ioTvTileMapImageIOHelperTest ${IO_TESTS21}
+         --compare-ascii ${EPSILON_9} ${BASELINE_FILES}/ioTvTileMapImageIOHelperTest.txt
+                         ${TEMP}/ioTvTileMapImageIOHelperTest.txt
+         otbTileMapImageIOHelperTest
+              ${TEMP}/ioTvTileMapImageIOHelperTest.txt
 )
 
 #----------------------------------------------------------------------------------
@@ -2795,10 +2798,6 @@ IF(OTB_USE_CURL)
 SET(BasicIO_SRCS19
 otbIOTests19.cxx
 otbImageFileReaderServerName.cxx
-otbTileMapImageSourceNew.cxx
-otbTileMapImageSource.cxx
-otbTileMapFetcherNew.cxx
-otbTileMapFetcherTest.cxx
 otbTileMapImageIOTest.cxx
 otbTileMapWriter.cxx
 )
@@ -2818,8 +2817,9 @@ otbSarDefaultImageMetadataInterface.cxx
 
 SET(BasicIO_SRCS21
 otbIOTests21.cxx
-otbMapFileProductWriterNew
-otbMapFileProductWriter
+otbMapFileProductWriterNew.cxx
+otbMapFileProductWriter.cxx
+otbTileMapImageIOHelperTest.cxx
 )
 
 

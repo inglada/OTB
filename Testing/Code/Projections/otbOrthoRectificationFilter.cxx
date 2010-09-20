@@ -27,7 +27,7 @@
 #include "otbImage.h"
 #include "otbImageFileReader.h"
 #include "otbStreamingImageFileWriter.h"
-#include "otbInverseSensorModel.h"
+#include "otbMapProjections.h"
 
 #include "otbOrthoRectificationFilter.h"
 #include "otbMapProjections.h"
@@ -91,7 +91,7 @@ int otbOrthoRectificationFilter(int argc, char* argv[])
   utmMapProjection->SetZone(atoi(argv[9]));
   utmMapProjection->SetHemisphere(argv[10][0]);
   orthoRectifFilter->SetMapProjection(utmMapProjection);
-  
+ 
   // Deformation Field spacing
   ImageType::SpacingType  gridSpacing;
   gridSpacing[0] = atof(argv[11]);
