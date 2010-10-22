@@ -16,21 +16,22 @@
 
 =========================================================================*/
 
-// this file defines the otbCommonTest for the test driver
-// and all it expects is that you have a function called RegisterTests
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "otbTestMain.h"
+#include "otbImage.h"
+#include "otbLocalHistogramImageFunction.h"
 
-void RegisterTests()
+int otbLocalHistogramImageFunctionNew(int argc, char * argv[])
 {
-  REGISTER_TEST(otbImageTest);
-  REGISTER_TEST(otbVectorImageTest);
-  REGISTER_TEST(otbVectorImageComplexNew);
-  REGISTER_TEST(otbVectorImageComplexTest);
-  REGISTER_TEST(otbStreamingImageFilterTest);
-  REGISTER_TEST(otbVectorImageFileReaderWriterTest);
-  REGISTER_TEST(otbStreamingShortImageFileWriterTest);
+  typedef unsigned char InputPixelType;
+  const unsigned int Dimension = 2;
+
+  typedef otb::Image<InputPixelType,  Dimension>                  InputImageType;
+  typedef otb::LocalHistogramImageFunction<InputImageType>        FunctionType;
+
+  FunctionType::Pointer function       = FunctionType::New();
+
+  return EXIT_SUCCESS;
 }

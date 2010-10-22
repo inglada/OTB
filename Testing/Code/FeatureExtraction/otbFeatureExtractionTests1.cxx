@@ -29,13 +29,18 @@ void RegisterTests()
   REGISTER_TEST(otbAlignImageToPath);
   REGISTER_TEST(otbDrawPathDessinCarre);
   REGISTER_TEST(otbDrawPathAlign);
+  REGISTER_TEST(otbComplexMomentImageNew);
   REGISTER_TEST(otbComplexMomentImage);
   REGISTER_TEST(otbComplexMomentImageScaleInvariant);
+  REGISTER_TEST(otbRealMomentImageNew);
   REGISTER_TEST(otbRealMomentImage);
+  REGISTER_TEST(otbRadiometricMomentsImageNew);
   REGISTER_TEST(otbRadiometricMomentsImage);
+  REGISTER_TEST(otbHuImageNew);
   REGISTER_TEST(otbHuImage);
   REGISTER_TEST(otbHuImageRotationInvariant);
   REGISTER_TEST(otbHuImageScaleInvariant);
+  REGISTER_TEST(otbFlusserImageNew);
   REGISTER_TEST(otbFlusserImage);
   REGISTER_TEST(otbFlusserImageRotationInvariant);
   REGISTER_TEST(otbFlusserImageScaleInvariant);

@@ -15,83 +15,86 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
-#if defined(_MSC_VER)
-#pragma warning ( disable : 4786 )
-#endif
-
-#include <iostream>
-#include <iomanip>
-#include <fstream>
 #include "itkExceptionObject.h"
+
+#include "otbFourierMellinDescriptorsImageFunction.h"
 #include "otbImage.h"
 
 #include "otbImageFileReader.h"
-#include "otbHuImageFunction.h"
 #include "otbBCOInterpolateImageFunction.h"
 #include "otbStreamingResampleImageFilter.h"
 #include "itkResampleImageFilter.h"
 
-int otbHuImageNew(int argc, char * argv[])
+
+int otbFourierMellinDescriptorsNew(int argc, char * argv[])
 {
-  typedef unsigned char InputPixelType;
   const unsigned int Dimension = 2;
+  typedef double     InputPixelType;
 
-  typedef otb::Image<InputPixelType,  Dimension>                  InputImageType;
-  typedef otb::HuImageFunction<InputImageType>                    FunctionType;
-
+  typedef otb::Image<InputPixelType,  Dimension>                     ImageType;
+  typedef otb::FourierMellinDescriptorsImageFunction<ImageType>      FunctionType;
+  
   // Instantiating object
-  FunctionType::Pointer function       = FunctionType::New();
-
-  std::cout << function << std::endl; 
+  FunctionType::Pointer function = FunctionType::New();
  
+  std::cout << function << std::endl; 
+   
   return EXIT_SUCCESS;
 }
 
-int otbHuImage(int argc, char * argv[])
+int otbFourierMellinDescriptors(int argc, char * argv[])
 {
   const char * inputFilename  = argv[1];
-  const char * outputFilename  = argv[2];
+  unsigned int p((unsigned int) ::atoi(argv[2]));
+  unsigned int q((unsigned int) ::atoi(argv[3]));
+  const char * outputFilename  = argv[4];
 
-  typedef unsigned char InputPixelType;
-  const unsigned int Dimension = 2;
+  typedef double                  PixelType;
+  const   unsigned int            Dimension = 2;
 
-  typedef otb::Image<InputPixelType,  Dimension>             InputImageType;
-  typedef otb::ImageFileReader<InputImageType>               ReaderType;
-  typedef otb::HuImageFunction<InputImageType>               FunctionType;
-  typedef FunctionType::OutputType                           OutputType;
-  
-  ReaderType::Pointer   reader         = ReaderType::New();
-  FunctionType::Pointer function = FunctionType::New();
+  typedef otb::Image<PixelType, Dimension>                       ImageType;
+  typedef otb::ImageFileReader<ImageType>                        ReaderType;
+  typedef otb::FourierMellinDescriptorsImageFunction<ImageType>  FunctionType;
+  typedef FunctionType::OutputType                               OutputType;
+
+  ReaderType::Pointer         reader = ReaderType::New();
+  FunctionType::Pointer     function = FunctionType::New();
 
   reader->SetFileName(inputFilename);
   reader->Update();
-  function->SetInputImage(reader->GetOutput());
- 
-  InputImageType::IndexType index;
-  index[0] = 100;
-  index[1] = 100;
 
+  function->SetInputImage(reader->GetOutput());
+  
+  function->SetQmax(q);
+  function->SetPmax(p);
+  
+  ImageType::IndexType index;
+  index[0] = 256;
+  index[1] = 256;
   function->SetNeighborhoodRadius(3);
-  OutputType Result;
-  Result = function->EvaluateAtIndex(index);
+  
+  OutputType Result = function->EvaluateAtIndex(index);
 
   std::ofstream outputStream(outputFilename);
-  outputStream << std::setprecision(10) << "Hu Image moments: [10]" << std::endl;
-
-  for (unsigned int j = 1; j < 8; j++)
+  outputStream << std::setprecision(10);
+  
+  for (unsigned int k=0; k<=p; k++)
     {
-    outputStream << "Hu(" << j << ") = " << Result[j-1] << std::endl;
+    for (unsigned int l=0; l<=q; l++)
+      {
+      outputStream << "FMDescriptor |M(" << k << l << ")| : " << Result.at(k).at(l) << std::endl;
+      }
     }
-
   outputStream.close();
 
   return EXIT_SUCCESS;
 }
 
-int otbHuImageScaleInvariant(int argc, char * argv[])
+int otbFourierMellinDescriptorsScaleInvariant(int argc, char * argv[])
 {
-  const char * inputFilename   = argv[1];
+  const char * inputFilename  = argv[1];
+  unsigned int p((unsigned int) ::atoi(argv[2]));
+  unsigned int q((unsigned int) ::atoi(argv[3]));
 
   typedef double InputPixelType;
   const unsigned int Dimension = 2;
@@ -102,7 +105,7 @@ int otbHuImageScaleInvariant(int argc, char * argv[])
     double>                                                               StreamingResampleImageFilterType;
   typedef otb::BCOInterpolateImageFunction<InputImageType, 
     double>                                                               InterpolatorType;
-  typedef otb::HuImageFunction<InputImageType>                            FunctionType;
+  typedef otb::FourierMellinDescriptorsImageFunction<InputImageType>      FunctionType;
   typedef FunctionType::OutputType                                        OutputType;
   
   ReaderType::Pointer                         reader = ReaderType::New();
@@ -128,49 +131,58 @@ int otbHuImageScaleInvariant(int argc, char * argv[])
   resampler->Update();
 
   function1->SetInputImage(reader->GetOutput());
+  function1->SetQmax(q);
+  function1->SetPmax(p);
   InputImageType::IndexType index1;
-  index1[0] = 100;
-  index1[1] = 100;
-  function1->SetNeighborhoodRadius(2);  
+  index1[0] = 148;
+  index1[1] = 248;
+  function1->SetNeighborhoodRadius(3);
   OutputType Result1 = function1->EvaluateAtIndex(index1);
 
   function2->SetInputImage(resampler->GetOutput());
+  function2->SetQmax(q);
+  function2->SetPmax(p);
   InputImageType::IndexType index2;
-  index2[0] = 200;
-  index2[1] = 200;
-  function2->SetNeighborhoodRadius(4);  
+  index2[0] = 296;
+  index2[1] = 496;
+  function2->SetNeighborhoodRadius(6);  
   OutputType Result2 = function2->EvaluateAtIndex(index2);
 
   double error = 0.0;
-
-  for (unsigned int j = 1; j < 8; j++)
+  
+  for (unsigned int k=0; k<=p; k++)
     {
-    error += vcl_pow(vcl_abs( Result1[j-1] - Result2[j-1]), 2);
-    
-    std::cout << "Original -H" << j
-              << " : " << Result1[j]
-              << "  /  Scaled - H" << j 
-              << " : " << Result2[j] << std::endl;
-    }
+    for (unsigned int l=0; l<=q; l++)
+      {
+      error += vcl_pow(vcl_abs( Result1.at(k).at(l) - Result2.at(k).at(l) ), 2);
 
-  error = vcl_sqrt(error)/7.0;
+      std::cout << "Original - D" << k << l 
+                << " : " << Result1.at(k).at(l)
+                << "  /  Scaled - D" << k << l
+                << " : " << Result2.at(k).at(l) << std::endl;
+      }
+    }
+  
+  error = vcl_sqrt(error)/(q+p);
   std::cout << "Error : " << error << std::endl
             << std::endl;
-  
-  if (error > 1E-3)
+    
+  if (error > 1E-2)
     {
     itkGenericExceptionMacro( << "Error = " << error
-                              << "  > 1E-3     -> TEST FAILLED" << std::endl );
+                              << "  > 1E-2     -> TEST FAILLED" << std::endl );
     }
   
   return EXIT_SUCCESS;
 }
 
-int otbHuImageRotationInvariant(int argc, char * argv[])
+
+int otbFourierMellinDescriptorsRotationInvariant(int argc, char * argv[])
 {
   const char * inputFilename  = argv[1];
-  const double angleInDegrees = atoi(argv[2]);
-
+  unsigned int p((unsigned int) ::atoi(argv[2]));
+  unsigned int q((unsigned int) ::atoi(argv[3]));
+  const double angleInDegrees = atoi(argv[4]);
 
   typedef double InputPixelType;
   const unsigned int Dimension = 2;
@@ -180,10 +192,9 @@ int otbHuImageRotationInvariant(int argc, char * argv[])
     InputImageType, InputImageType >                                      FilterType;
   typedef otb::BCOInterpolateImageFunction<InputImageType, 
     double>                                                               InterpolatorType;
-  typedef otb::HuImageFunction<InputImageType>                            FunctionType;
+  typedef otb::FourierMellinDescriptorsImageFunction<InputImageType>      FunctionType;
   typedef FunctionType::OutputType                                        OutputType;
-  typedef itk::AffineTransform< double, Dimension >  TransformType;
- 
+  typedef itk::AffineTransform< InputPixelType, Dimension >               TransformType;
 
   ReaderType::Pointer                         reader = ReaderType::New();
   FilterType::Pointer                         filter = FilterType::New();
@@ -191,27 +202,27 @@ int otbHuImageRotationInvariant(int argc, char * argv[])
   InterpolatorType::Pointer                   interpolator = InterpolatorType::New();
   FunctionType::Pointer                       function1 = FunctionType::New();
   FunctionType::Pointer                       function2 = FunctionType::New();
-   
+  
   reader->SetFileName(inputFilename);
   reader->Update();
 
   interpolator->SetInputImage(reader->GetOutput());
   interpolator->SetRadius(2);
   interpolator->SetAlpha(-0.5);
-
+  
   filter->SetInterpolator(interpolator);
   filter->SetDefaultPixelValue( 100 );
 
   const InputImageType::SpacingType & spacing = reader->GetOutput()->GetSpacing();
   const InputImageType::PointType & origin  = reader->GetOutput()->GetOrigin();
   InputImageType::SizeType size = 
-      reader->GetOutput()->GetLargestPossibleRegion().GetSize();
-
+    reader->GetOutput()->GetLargestPossibleRegion().GetSize();
+  
   filter->SetOutputOrigin( origin );
   filter->SetOutputSpacing( spacing );
   filter->SetOutputDirection( reader->GetOutput()->GetDirection() );
   filter->SetSize( size );
-
+  
   filter->SetInput(reader->GetOutput());
 
   TransformType::OutputVectorType translation1;
@@ -237,7 +248,9 @@ int otbHuImageRotationInvariant(int argc, char * argv[])
   InputImageType::IndexType index1;
   index1[0] = 256;
   index1[1] = 256;
-  function1->SetNeighborhoodRadius(4);  
+  function1->SetNeighborhoodRadius(4);
+  function1->SetQmax(q);
+  function1->SetPmax(p);
   OutputType Result1 = function1->EvaluateAtIndex(index1);
 
   function2->SetInputImage(filter->GetOutput());
@@ -245,29 +258,34 @@ int otbHuImageRotationInvariant(int argc, char * argv[])
   index2[0] = 256;
   index2[1] = 256;
   function2->SetNeighborhoodRadius(4);  
+  function2->SetQmax(q);
+  function2->SetPmax(p);
   OutputType Result2 = function2->EvaluateAtIndex(index2);
 
   double error = 0.0;
   
-  for (unsigned int j = 1; j < 8; j++)
+  for (unsigned int k=0; k<=p; k++)
     {
-    error += vcl_pow(vcl_abs( Result1[j-1] - Result2[j-1]), 2);
-
-    std::cout << "Original -H" << j
-              << " : " << Result1[j]
-              << "  /  Rotated - H" << j 
-              << " : " << Result2[j] << std::endl;
+    for (unsigned int l=0; l<=q; l++)
+      {
+      error += vcl_pow(vcl_abs( Result1.at(k).at(l) - Result2.at(k).at(l) ), 2);
+      
+      std::cout << "Original - D" << k << l 
+                << " : " << Result1.at(k).at(l)
+                << "  /  Rotated - D" << k << l
+                << " : " << Result2.at(k).at(l) << std::endl;
+      }
     }
-
-  error = vcl_sqrt(error)/7.0;
+  
+  error = vcl_sqrt(error)/(q+p);
   std::cout << "Error : " << error << std::endl
             << std::endl;
-   
-  if (error > 1E-3)
-      {
-      itkGenericExceptionMacro( << "Error = " << error
-                                << "  > 1E-3     -> TEST FAILLED" << std::endl );
-      }
-    
+  
+ if (error > 1E-3)
+   {
+  itkGenericExceptionMacro( << "Error = " << error
+                            << "  > 1E-3     -> TEST FAILLED" << std::endl );
+   }
+
   return EXIT_SUCCESS;
 }

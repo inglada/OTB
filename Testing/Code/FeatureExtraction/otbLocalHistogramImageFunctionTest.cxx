@@ -20,33 +20,11 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include "itkExceptionObject.h"
 #include "otbImage.h"
-
 #include "otbImageFileReader.h"
-#include "otbRadiometricMomentsImageFunction.h"
+#include "otbLocalHistogramImageFunction.h"
 
-int otbRadiometricMomentsImageNew(int argc, char * argv[])
-{
-  typedef unsigned char InputPixelType;
-  const unsigned int Dimension = 2;
-
-  typedef otb::Image<InputPixelType,  Dimension>                  InputImageType;
-  typedef otb::RadiometricMomentsImageFunction<InputImageType>    FunctionType;
- 
-  // Instantiating object
-  FunctionType::Pointer function       = FunctionType::New();
-
-  std::cout << function << std::endl; 
-  
-  return EXIT_SUCCESS;
-}
-
-
-int otbRadiometricMomentsImage(int argc, char * argv[])
+int otbLocalHistogramImageFunctionTest(int argc, char * argv[])
 {
   const char * inputFilename  = argv[1];
   const char * outputFilename  = argv[2];
@@ -54,10 +32,9 @@ int otbRadiometricMomentsImage(int argc, char * argv[])
   typedef unsigned char InputPixelType;
   const unsigned int Dimension = 2;
 
-  typedef itk::Image<InputPixelType,  Dimension>                  InputImageType;
+  typedef otb::Image<InputPixelType,  Dimension>                  InputImageType;
   typedef otb::ImageFileReader<InputImageType>                    ReaderType;
-  typedef otb::RadiometricMomentsImageFunction<InputImageType>    FunctionType;
-  typedef FunctionType::OutputType                                OutputType;
+  typedef otb::LocalHistogramImageFunction<InputImageType>        FunctionType;
 
   ReaderType::Pointer   reader         = ReaderType::New();
   FunctionType::Pointer function       = FunctionType::New();
@@ -71,15 +48,14 @@ int otbRadiometricMomentsImage(int argc, char * argv[])
   index[1] = 100;
 
   function->SetNeighborhoodRadius(3);  
-  OutputType Result;
+  FunctionType::OutputType Result;
   Result = function->EvaluateAtIndex(index);
 
   std::ofstream outputStream(outputFilename);
-  outputStream << std::setprecision(10) << "Radiometric moments: [10]" << std::endl;
-
-  for (unsigned int j = 1; j < 5; j++)
+  outputStream << std::setprecision(10) << std::endl;
+  for(unsigned int i = 0 ; i < function->GetNumberOfHistogramBins() ; ++i)
     {
-    outputStream << "Radiometric Moment(" << j << ") = " << Result[j-1] << std::endl;
+      outputStream << "Pos[" <<i <<"] = " << Result->GetFrequency(i) << " -> " << Result->GetMeasurement(i,0) << std::endl;
     }
 
   outputStream.close();

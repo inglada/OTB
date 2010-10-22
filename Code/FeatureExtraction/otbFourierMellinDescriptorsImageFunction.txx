@@ -15,13 +15,14 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbComplexMomentImageFunction_txx
-#define __otbComplexMomentImageFunction_txx
+#ifndef __otbFourierMellinDescriptorsImageFunction_txx
+#define __otbFourierMellinDescriptorsImageFunction_txx
 
-#include "otbComplexMomentImageFunction.h"
+#include "otbFourierMellinDescriptorsImageFunction.h"
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMacro.h"
+#include "otbMath.h"
 
 namespace otb
 {
@@ -30,17 +31,18 @@ namespace otb
    * Constructor
    */
 template <class TInputImage, class TCoordRep>
-ComplexMomentImageFunction<TInputImage, TCoordRep>
-::ComplexMomentImageFunction()
+FourierMellinDescriptorsImageFunction<TInputImage, TCoordRep>
+::FourierMellinDescriptorsImageFunction()
 {
   m_NeighborhoodRadius = 1;
-  m_Pmax = 4;
-  m_Qmax = 4;
+  m_Pmax = 3;
+  m_Qmax = 3;
+  m_Sigma = 0.5;
 }
 
 template <class TInputImage, class TCoordRep>
 void
-ComplexMomentImageFunction<TInputImage, TCoordRep>
+FourierMellinDescriptorsImageFunction<TInputImage, TCoordRep>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
@@ -50,34 +52,38 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
 }
 
 template <class TInputImage, class TCoordRep>
-typename ComplexMomentImageFunction<TInputImage, TCoordRep>::OutputType
-ComplexMomentImageFunction<TInputImage, TCoordRep>
+typename FourierMellinDescriptorsImageFunction<TInputImage, TCoordRep>::OutputType
+FourierMellinDescriptorsImageFunction<TInputImage, TCoordRep>
 ::EvaluateAtIndex(const IndexType& index) const
 {
-  // Build moments vector
-  OutputType moments;
-  moments.resize(m_Pmax+1);
-  
+  // Build Fourier-Mellin Harmonics Matrix
+  ComplexType coefs;
+  coefs.resize(m_Pmax+1);
+  OutputType descriptors;
+  descriptors.resize(m_Pmax+1);
+
   // Initialize moments
   for (unsigned int p = 0; p <= m_Pmax; p++)
     {
-    moments.at(p).resize(m_Qmax+1);
+    coefs.at(p).resize(m_Qmax+1);
+    descriptors.at(p).resize(m_Qmax+1);
     for (unsigned int q = 0; q <= m_Qmax; q++)
       {
-      moments.at(p).at(q) =  ScalarComplexType(0.0,0.0);
+      coefs.at(p).at(q) =  itk::NumericTraits<ScalarComplexType>::Zero;
+      descriptors.at(p).at(q) = itk::NumericTraits<ScalarRealType>::Zero;
       }
     }
 
   // Check for input image
   if( !this->GetInputImage() )
     {
-    return moments;
+    return descriptors;
     }
   
   // Check for out of buffer
   if ( !this->IsInsideBuffer( index ) )
     {
-    return moments;
+    return descriptors;
     }
   
   // Create an N-d neighborhood kernel, using a zeroflux boundary condition
@@ -100,29 +106,38 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
     ScalarRealType     y = static_cast<ScalarRealType>(it.GetOffset(i)[1])/(2*m_NeighborhoodRadius+1);
     
     // Build complex value
-    ScalarComplexType xpy(x,y),xqy(x,-y);
+    ScalarComplexType xplusiy(x,y),x2plusy2(x*x+y*y,0.0);
     
     // Update cumulants
     for (unsigned int p = 0; p <= m_Pmax; p++)
       {
       for (unsigned int q= 0; q <= m_Qmax; q++)
         {
-        moments.at(p).at(q) += vcl_pow(xpy,p) * vcl_pow(xqy,q) * value;   
+        ScalarComplexType power(double(p-2.0+m_Sigma)/2.0, -double(q)/2.0);
+        
+        if (x!=0 || y!=0) // vcl_pow limitations
+          {
+          coefs.at(p).at(q) += vcl_pow(xplusiy,-p) * vcl_pow(x2plusy2,power) * value; 
+          }
         }
       }
     }
   
   // Normalisation
+
   for (int p = m_Pmax; p >= 0; p--)
     {
-    for (int q= m_Qmax; q >= 0; q--)
+    for (int q = m_Qmax; q >= 0; q--)
       {
-      moments.at(p).at(q) /= moments.at(0).at(0);
+      coefs.at(p).at(q) /= 2*CONST_PI * coefs.at(0).at(0);
+      
+      descriptors.at(p).at(q) = vcl_sqrt((coefs.at(p).at(q).real() * coefs.at(p).at(q).real()
+                                          + coefs.at(p).at(q).imag() * coefs.at(p).at(q).imag()));
       }
     }
-  
+
   // Return result
-  return moments;
+  return descriptors;
 }
 
 } // namespace otb

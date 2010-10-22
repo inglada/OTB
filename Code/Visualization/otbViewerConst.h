@@ -15,21 +15,25 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#ifndef __otbViewerConst_h
+#define __otbViewerConst_h
 
-// this file defines the otbCommonTest for the test driver
-// and all it expects is that you have a function called RegisterTests
-#if defined(_MSC_VER)
-#pragma warning ( disable : 4786 )
-#endif
-
-#include "otbTestMain.h"
-
-void RegisterTests()
+namespace otb
 {
-  REGISTER_TEST(otbFourierMellinDescriptorsNew);
-  REGISTER_TEST(otbFourierMellinDescriptors);
-  REGISTER_TEST(otbFourierMellinDescriptorsScaleInvariant);
-  REGISTER_TEST(otbFourierMellinDescriptorsRotationInvariant);
-  REGISTER_TEST(otbLocalHistogramImageFunctionNew);
-  REGISTER_TEST(otbLocalHistogramImageFunctionTest);
-}
+  namespace Function
+  {
+    const unsigned int SCREEN_COLOR_MIN_VALUE(0);
+    const unsigned int SCREEN_COLOR_MIDDLE_VALUE(127);
+    const unsigned int SCREEN_COLOR_MAX_VALUE(255);
+
+    /**
+     * Default standard deviation value of the gaussian distribution
+     */
+    const double GAUSSIAN_STANDARD_DEVIATION(1.0);
+    const double GAUSSIAN_MEAN(SCREEN_COLOR_MIDDLE_VALUE);
+
+  } // namespace Function
+
+} // namespace otb
+
+#endif /* __otbViewerConst_h */

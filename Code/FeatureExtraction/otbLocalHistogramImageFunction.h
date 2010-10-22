@@ -15,42 +15,21 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbFlusserImageFunction_h
-#define __otbFlusserImageFunction_h
+#ifndef __otbLocalHistogramImageFunction_h
+#define __otbLocalHistogramImageFunction_h
 
 #include "itkImageFunction.h"
 #include "itkFixedArray.h"
+#include "itkScalarImageToHistogramGenerator.h"
+#include "itkNumericTraits.h"
 
 namespace otb
 {
 
 /**
- * \class FlusserImageFunction
- * \brief Calculate the Flusser's invariant parameters.
+ * \class LocalHistogramImageFunction
+ * \brief Calculate the histogram over a specified neighborhood
  *
- * Calculate the Flusser's invariants over a specified neighborhood
- * defined as :
- *
- * - \f$ \psi_{1} = c_{11} \f$
- * - \f$ \psi_{2} = c_{21} c_{12} \f$
- * - \f$ \psi_{3} = Re (c_{20} c_{12}^{2} )\f$
- * - \f$ \psi_{4} = Im (c_{20} c_{12}^{2} )\f$
- * - \f$ \psi_{5} = Re (c_{30} c_{12}^{3} )\f$
- * - \f$ \psi_{6} = Im (c_{30} c_{12}^{3} )\f$
- * - \f$ \psi_{7} = c_{22} \f$
- * - \f$ \psi_{8} = Re (c_{31} c_{12}^{2} )\f$
- * - \f$ \psi_{9} = Im (c_{31} c_{12}^{2} )\f$
- * - \f$ \psi_{10} = Re (c_{40} c_{12}^{4} )\f$
- * - \f$ \psi_{11} = Im (c_{40} c_{12}^{4} )\f$
- *
- * With :
- *
- *  \f[  c_{p,q}=\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} (x+iy)^{p} \cdot (x-iy)^{q} \cdot f(x,y) \cdot
- dx \cdot dy \f]
- *
- * And:
- *  - \f$(x,y)\f$ pixel localization;
- *  - \f$ f(x,y)\f$ the pixel value over the \f$(x,y)\f$ coordinate.
  *
  * This class is templated over the input image type and the
  * coordinate representation type (e.g. float or double).
@@ -59,27 +38,22 @@ namespace otb
  */
 
 template <class TInputImage, class TCoordRep = float >
-class ITK_EXPORT FlusserImageFunction :
+class ITK_EXPORT LocalHistogramImageFunction :
   public itk::ImageFunction< TInputImage,
-    itk::FixedArray<
-    ITK_TYPENAME itk::NumericTraits<typename TInputImage::PixelType>::RealType,
-    11 >,
-    TCoordRep >
+                typename itk::Statistics::ScalarImageToHistogramGenerator<TInputImage>::HistogramConstPointer,
+                TCoordRep >
 {
 public:
   /** Standard class typedefs. */
-  typedef FlusserImageFunction                                            Self;
+  typedef LocalHistogramImageFunction                                     Self;
   typedef itk::ImageFunction< TInputImage,
-                   itk::FixedArray<
-                   ITK_TYPENAME itk::NumericTraits<
-                   typename TInputImage::PixelType>::RealType,
-                   11 >,
-                   TCoordRep >                                            Superclass;
+                  typename itk::Statistics::ScalarImageToHistogramGenerator<TInputImage>::HistogramConstPointer,
+                  TCoordRep >                                             Superclass;
   typedef itk::SmartPointer<Self>                                         Pointer;
   typedef itk::SmartPointer<const Self>                                   ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FlusserImageFunction, ImageFunction);
+  itkTypeMacro(LocalHistogramImageFunction, ImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -91,14 +65,18 @@ public:
   typedef typename Superclass::PointType           PointType;
 
   typedef typename Superclass::OutputType          OutputType;
-  typedef typename OutputType::ValueType           ScalarRealType;
+  typedef itk::Statistics::ScalarImageToHistogramGenerator<TInputImage> HistogramGeneratorType;
+  typedef typename HistogramGeneratorType::GeneratorType    GeneratorType;
+  typedef typename GeneratorType::HistogramType             HistogramType;
+  typedef typename HistogramType::Pointer                   HistogramPointer;
+  typedef typename GeneratorType::Pointer                   GeneratorPointer;
 
   /** Dimension of the underlying image. */
   itkStaticConstMacro(ImageDimension, unsigned int,
                       InputImageType::ImageDimension);
 
   /** Evalulate the function at specified index */
-  virtual OutputType EvaluateAtIndex(const IndexType& index) const;
+  virtual OutputType  EvaluateAtIndex(const IndexType& index) const;
 
   /** Evaluate the function at non-integer positions */
   virtual OutputType Evaluate(const PointType& point) const
@@ -121,22 +99,28 @@ public:
   itkSetMacro( NeighborhoodRadius, unsigned int );
   itkGetConstReferenceMacro( NeighborhoodRadius, unsigned int );
 
+  /** Set/Get the number of histogram bins. Default is 128. */
+  itkSetClampMacro( NumberOfHistogramBins, unsigned long, 1, itk::NumericTraits<unsigned long>::max() );
+  itkGetConstMacro( NumberOfHistogramBins, unsigned long );
+
 protected:
-  FlusserImageFunction();
-  virtual ~FlusserImageFunction() {}
+  LocalHistogramImageFunction();
+  virtual ~LocalHistogramImageFunction() {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
-  FlusserImageFunction(const Self &);  //purposely not implemented
+  LocalHistogramImageFunction(const Self &);  //purposely not implemented
   void operator =(const Self&);  //purposely not implemented
 
-  unsigned int m_NeighborhoodRadius;
+  unsigned int     m_NeighborhoodRadius;
+  unsigned long    m_NumberOfHistogramBins;
+
 };
 
 } // namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbFlusserImageFunction.txx"
+#include "otbLocalHistogramImageFunction.txx"
 #endif
 
 #endif

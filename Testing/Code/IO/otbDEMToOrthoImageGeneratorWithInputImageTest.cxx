@@ -15,64 +15,63 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#include "vcl_deprecated.h"
 
 #include "itkExceptionObject.h"
-#include "otbDEMToOrthoImageGenerator.h"
+#include "otbDEMToImageGenerator.h"
 #include "otbMapProjections.h"
 #include "otbStreamingImageFileWriter.h"
 #include "otbImage.h"
 #include "otbStandardFilterWatcher.h"
+#include "otbImageFileReader.h"
+#include "otbExtractROI.h"
 
-int otbDEMToOrthoImageGeneratorTest(int argc, char * argv[])
+int otbDEMToOrthoImageGeneratorWithInputImageTest(int argc, char * argv[])
 {
-  if (argc < 9)
+  if (argc < 4)
     {
     std::cout << argv[0] <<
-    " DEM folder path , output filename , Easting Output Orign point , Northing Output Origin point , X Output Size, Y Output size , X Spacing , Y Spacing, Zone, Hemisphere"
+    " DEM folder path , input filename, output filename "
               << std::endl;
     return EXIT_FAILURE;
     }
 
   char * folderPath = argv[1];
-  char * outputName = argv[2];
+  char * inputName  = argv[2];
+  char * outputName = argv[3];
 
   const unsigned int Dimension = 2;
-  typedef otb::Image<double, Dimension>                               ImageType;
-  typedef otb::UtmInverseProjection                                   MapProjectionType;
-  typedef otb::DEMToOrthoImageGenerator<ImageType, MapProjectionType> DEMToImageGeneratorType;
-  typedef DEMToImageGeneratorType::DEMHandlerType                     DEMHandlerType;
-  typedef DEMHandlerType::PointType                                   PointType;
+  typedef double                                                      PixelType;
+  typedef otb::Image<PixelType, Dimension>                            ImageType;
+  typedef otb::DEMToImageGenerator<ImageType>                         DEMToImageGeneratorType;
   typedef DEMToImageGeneratorType::SizeType                           SizeType;
-  typedef DEMToImageGeneratorType::SpacingType                        SpacingType;
   typedef otb::StreamingImageFileWriter<ImageType>                    WriterType;
+  typedef otb::ImageFileReader<ImageType>                             ReaderType;
 
   // Instantiating object
-  MapProjectionType::Pointer       mapProj = MapProjectionType::New();
   DEMToImageGeneratorType::Pointer object = DEMToImageGeneratorType::New();
+  ReaderType::Pointer              reader = ReaderType::New();
   WriterType::Pointer              writer = WriterType::New();
 
-  PointType origin;
-  origin[0] = ::atof(argv[3]);
-  origin[1] = ::atof(argv[4]);
+  reader->SetFileName(inputName);
+  reader->UpdateOutputInformation();
+  unsigned int startX = 10;
+  unsigned int startY = 10;
+  unsigned int sizeX = 500;
+  unsigned int sizeY = 500;
 
-  SizeType size;
-  size[0] = ::atoi(argv[5]);
-  size[1] = ::atoi(argv[6]);
+  typedef otb::ExtractROI<PixelType, PixelType> ExtractROIType;
+  ExtractROIType::Pointer filterRoi = ExtractROIType::New();
 
-  SpacingType spacing;
-  spacing[0] = ::atof(argv[7]);
-  spacing[1] = ::atof(argv[8]);
-  std::cout << atoi(argv[9]) << std::endl;
+  filterRoi->SetStartX(startX);
+  filterRoi->SetStartY(startY);
+  filterRoi->SetSizeX(sizeX);
+  filterRoi->SetSizeY(sizeY);
 
-  mapProj->SetZone(::atoi(argv[9]));
-  mapProj->SetHemisphere(argv[10][0]);
+  filterRoi->SetInput(reader->GetOutput());
+  filterRoi->UpdateOutputInformation();
 
   object->SetDEMDirectoryPath(folderPath);
-  object->SetOutputOrigin(origin);
-  object->SetOutputSize(size);
-  object->SetOutputSpacing(spacing);
-  object->SetMapProjection(mapProj);
+  object->SetOutputParametersFromImage(filterRoi->GetOutput());
 
   std::cout << object << std::endl;
 

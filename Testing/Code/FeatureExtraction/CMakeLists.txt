@@ -64,33 +64,43 @@ ADD_TEST(feTvDrawPathTestAlign ${FEATUREEXTRACTION_TESTS1}
 	${INPUTDATA}/DeuxTraits.png
 	${TEMP}/feDrawPathAlignDeuxTraits.png)
 
+ADD_TEST(feTuComplexMomentImageNew ${FEATUREEXTRACTION_TESTS1}
+  otbComplexMomentImageNew
+  )
+
 ADD_TEST(feTvComplexMomentImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feComplexMomentImage.txt
-                        ${TEMP}/feComplexMomentImage.txt
-        otbComplexMomentImage
-	${INPUTDATA}/poupees.png
+  --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvComplexMomentImage.txt
+                               ${TEMP}/feTvComplexMomentImage.txt
+  otbComplexMomentImage
+  ${INPUTDATA}/poupees.png
   4
   4
-  ${TEMP}/feComplexMomentImage.txt)
+  ${TEMP}/feTvComplexMomentImage.txt
+  )
 
 ADD_TEST(feTvComplexMomentImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
-  --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feComplexMomentImageScaleInvariant.txt
-                        ${TEMP}/feComplexMomentImageScaleInvariant.txt
-        otbComplexMomentImageScaleInvariant
-	${INPUTDATA}/poupees.png
+  otbComplexMomentImageScaleInvariant
+  ${INPUTDATA}/poupees.png
   4
   4
-  ${TEMP}/feComplexMomentImageScaleInvariant.txt
-  ${TEMP}/feComplexImageScaleInvariant.tiff)
+  )
+
+ADD_TEST(feTuRealMomentImageNew ${FEATUREEXTRACTION_TESTS1}
+  otbRealMomentImageNew
+  )
 
 ADD_TEST(feTvRealMomentImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feRealMomentImage.txt
-                        ${TEMP}/feRealMomentImage.txt
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRealMomentImage.txt
+                        ${TEMP}/feTvRealMomentImage.txt
         otbRealMomentImage
 	${INPUTDATA}/poupees.png
-  4
-  4
-  ${TEMP}/feRealMomentImage.txt)
+        4
+        4
+        ${TEMP}/feTvRealMomentImage.txt)
+
+ADD_TEST(feTuRadiometricMomentsImageNew ${FEATUREEXTRACTION_TESTS1}
+  otbRadiometricMomentsImageNew
+  )
 
 ADD_TEST(feTvRadiometricMomentsImage ${FEATUREEXTRACTION_TESTS1}
    --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRadiometricMomentsImage.txt
@@ -99,47 +109,48 @@ ADD_TEST(feTvRadiometricMomentsImage ${FEATUREEXTRACTION_TESTS1}
 	${INPUTDATA}/poupees.png
   ${TEMP}/feTvRadiometricMomentsImage.txt)
 
-ADD_TEST(feTvHuImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feHuImage.txt
-                        ${TEMP}/feHuImage.txt
-        otbHuImage
-	${INPUTDATA}/poupees.png
-  ${TEMP}/feHuImage.txt)
-
-ADD_TEST(feTuHuImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
-        otbHuImageScaleInvariant
-	${INPUTDATA}/poupees.png
-        ${TEMP}/feHuImageScaleInvariant.txt
-        ${TEMP}/feHuImageScaleInvariant.tiff
+ADD_TEST(feTuHuImageNew ${FEATUREEXTRACTION_TESTS1}
+        otbHuImageNew
         )
 
-ADD_TEST(feTuHuImageRotationInvariant ${FEATUREEXTRACTION_TESTS1}
+ADD_TEST(feTvHuImage ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvHuImage.txt
+                        ${TEMP}/feTvHuImage.txt
+        otbHuImage
+	${INPUTDATA}/poupees.png
+        ${TEMP}/feTvHuImage.txt
+        )
+
+ADD_TEST(feTvHuImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbHuImageScaleInvariant
+	${INPUTDATA}/poupees.png
+        )
+
+ADD_TEST(feTvHuImageRotationInvariant ${FEATUREEXTRACTION_TESTS1}
         otbHuImageRotationInvariant
 	${INPUTDATA}/poupees.png
-        ${TEMP}/feHuImageRotationInvariant.txt
-        ${TEMP}/feHuImageRotationInvariant.tiff
         90
         )
 
-ADD_TEST(feTuFlusserImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feFlusserImage.txt
-                        ${TEMP}/feFlusserImage.txt
+ADD_TEST(feTuFlusserImageNew ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserImageNew
+)
+
+ADD_TEST(feTvFlusserImage ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feTvFlusserImage.txt
+                        ${TEMP}/feTvFlusserImage.txt
         otbFlusserImage
 	${INPUTDATA}/poupees.png
-  ${TEMP}/feFlusserImage.txt)
+        ${TEMP}/feTvFlusserImage.txt)
 
 ADD_TEST(feTuFlusserImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
         otbFlusserImageScaleInvariant
 	${INPUTDATA}/poupees.png
-        ${TEMP}/feFlusserImageScaleInvariant.txt
-        ${TEMP}/feFlusserImageScaleInvariant.tiff
         )
 
 ADD_TEST(feTuFlusserImageRotationInvariant ${FEATUREEXTRACTION_TESTS1}
         otbFlusserImageRotationInvariant
 	${INPUTDATA}/poupees.png
-        ${TEMP}/feFlusserImageRotationInvariant.txt
-        ${TEMP}/feFlusserImageRotationInvariant.tiff
         90
         )
 
@@ -1421,7 +1432,49 @@ ADD_TEST(feTvScalarImageToPanTexTextureFilter ${FEATUREEXTRACTION_TESTS15}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbFeatureExtractionTests16 ~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# -------            otb::FourierMellinDescriptorsImageFunction   -------------
 
+ADD_TEST(feTuFourierMellinDescriptorsNew ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsNew
+  )
+
+ADD_TEST(feTvFourierMellinDescriptors ${FEATUREEXTRACTION_TESTS16}
+  --compare-ascii ${NOTOL}     
+  ${BASELINE_FILES}/feTvFourierMellinDescriptors.txt
+  ${TEMP}/feTvFourierMellinDescriptors.txt
+  otbFourierMellinDescriptors
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  ${TEMP}/feTvFourierMellinDescriptors.txt
+  )
+
+ADD_TEST(feTvFourierMellinDescriptorsScaleInvariant ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsScaleInvariant
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  )
+
+ADD_TEST(feTvFourierMellinDescriptorsRotationInvariant ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsRotationInvariant
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  90
+  )
+  
+# -------            otb::LocalHistogramImageFunction   -------------
+
+ADD_TEST(feTuLocalHistogramImageFunctionNew ${FEATUREEXTRACTION_TESTS16}
+        otbLocalHistogramImageFunctionNew
+)
+
+ADD_TEST(feTuLocalHistogramImageFunctionTest ${FEATUREEXTRACTION_TESTS16}
+        otbLocalHistogramImageFunctionTest
+		${INPUTDATA}/poupees_1canal.hd
+  		${TEMP}/feLocalHistogramImage.txt
+                )
 
 
 
@@ -1606,6 +1659,9 @@ otbScalarImageToHigherOrderTexturesFilter.cxx
 
 SET(BasicFeatureExtraction_SRCS16
 otbFeatureExtractionTests16.cxx
+otbFourierMellinDescriptors.cxx
+otbLocalHistogramImageFunctionNew.cxx
+otbLocalHistogramImageFunctionTest.cxx
 )
 
 
