@@ -64,92 +64,92 @@ ADD_TEST(feTvDrawPathTestAlign ${FEATUREEXTRACTION_TESTS1}
 	${INPUTDATA}/DeuxTraits.png
 	${TEMP}/feDrawPathAlignDeuxTraits.png)
 
-ADD_TEST(feTuComplexMomentImageNew ${FEATUREEXTRACTION_TESTS1}
-  otbComplexMomentImageNew
+ADD_TEST(feTuComplexMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbComplexMomentsImageFunctionNew
   )
 
-ADD_TEST(feTvComplexMomentImage ${FEATUREEXTRACTION_TESTS1}
-  --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvComplexMomentImage.txt
-                               ${TEMP}/feTvComplexMomentImage.txt
-  otbComplexMomentImage
+ADD_TEST(feTvComplexMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+  --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvComplexMomentsImageFunction.txt
+                               ${TEMP}/feTvComplexMomentsImageFunction.txt
+  otbComplexMomentsImageFunction
   ${INPUTDATA}/poupees.png
   4
   4
-  ${TEMP}/feTvComplexMomentImage.txt
+  ${TEMP}/feTvComplexMomentsImageFunction.txt
   )
 
-ADD_TEST(feTvComplexMomentImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
-  otbComplexMomentImageScaleInvariant
+ADD_TEST(feTvComplexMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+  otbComplexMomentsImageFunctionScaleInvariant
   ${INPUTDATA}/poupees.png
   4
   4
   )
 
-ADD_TEST(feTuRealMomentImageNew ${FEATUREEXTRACTION_TESTS1}
-  otbRealMomentImageNew
+ADD_TEST(feTuRealMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbRealMomentsImageFunctionNew
   )
 
-ADD_TEST(feTvRealMomentImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRealMomentImage.txt
-                        ${TEMP}/feTvRealMomentImage.txt
-        otbRealMomentImage
+ADD_TEST(feTvRealMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRealMomentsImageFunction.txt
+                        ${TEMP}/feTvRealMomentsImageFunction.txt
+        otbRealMomentsImageFunction
 	${INPUTDATA}/poupees.png
         4
         4
-        ${TEMP}/feTvRealMomentImage.txt)
+        ${TEMP}/feTvRealMomentsImageFunction.txt)
 
-ADD_TEST(feTuRadiometricMomentsImageNew ${FEATUREEXTRACTION_TESTS1}
-  otbRadiometricMomentsImageNew
+ADD_TEST(feTuRadiometricMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbRadiometricMomentsImageFunctionNew
   )
 
-ADD_TEST(feTvRadiometricMomentsImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRadiometricMomentsImage.txt
-                        ${TEMP}/feTvRadiometricMomentsImage.txt
-        otbRadiometricMomentsImage
+ADD_TEST(feTvRadiometricMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRadiometricMomentsImageFunction.txt
+                                ${TEMP}/feTvRadiometricMomentsImageFunction.txt
+        otbRadiometricMomentsImageFunction
 	${INPUTDATA}/poupees.png
-  ${TEMP}/feTvRadiometricMomentsImage.txt)
+        ${TEMP}/feTvRadiometricMomentsImageFunction.txt)
 
-ADD_TEST(feTuHuImageNew ${FEATUREEXTRACTION_TESTS1}
-        otbHuImageNew
+ADD_TEST(feTuHuMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionNew
         )
 
-ADD_TEST(feTvHuImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvHuImage.txt
-                        ${TEMP}/feTvHuImage.txt
-        otbHuImage
+ADD_TEST(feTvHuMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvHuMomentsImageFunction.txt
+                        ${TEMP}/feTvHuMomentsImageFunction.txt
+        otbHuMomentsImageFunction
 	${INPUTDATA}/poupees.png
-        ${TEMP}/feTvHuImage.txt
+        ${TEMP}/feTvHuMomentsImageFunction.txt
         )
 
-ADD_TEST(feTvHuImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
-        otbHuImageScaleInvariant
+ADD_TEST(feTvHuMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionScaleInvariant
 	${INPUTDATA}/poupees.png
         )
 
-ADD_TEST(feTvHuImageRotationInvariant ${FEATUREEXTRACTION_TESTS1}
-        otbHuImageRotationInvariant
+ADD_TEST(feTvHuMomentsImageFunctionRotationInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionRotationInvariant
 	${INPUTDATA}/poupees.png
         90
         )
 
-ADD_TEST(feTuFlusserImageNew ${FEATUREEXTRACTION_TESTS1}
-        otbFlusserImageNew
+ADD_TEST(feTuFlusserMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionNew
 )
 
-ADD_TEST(feTvFlusserImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feTvFlusserImage.txt
-                        ${TEMP}/feTvFlusserImage.txt
-        otbFlusserImage
+ADD_TEST(feTvFlusserMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feTvFlusserMomentsImageFunction.txt
+                        ${TEMP}/feTvFlusserMomentsImageFunction.txt
+        otbFlusserMomentsImageFunction
 	${INPUTDATA}/poupees.png
-        ${TEMP}/feTvFlusserImage.txt)
+        ${TEMP}/feTvFlusserMomentsImageFunction.txt)
 
-ADD_TEST(feTuFlusserImageScaleInvariant ${FEATUREEXTRACTION_TESTS1}
-        otbFlusserImageScaleInvariant
+ADD_TEST(feTuFlusserMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionScaleInvariant
 	${INPUTDATA}/poupees.png
         )
 
-ADD_TEST(feTuFlusserImageRotationInvariant ${FEATUREEXTRACTION_TESTS1}
-        otbFlusserImageRotationInvariant
+ADD_TEST(feTuFlusserMomentsImageFunctionRotationInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionRotationInvariant
 	${INPUTDATA}/poupees.png
         90
         )
@@ -1484,11 +1484,11 @@ otbFeatureExtractionTests1.cxx
 otbAlignImageToPath.cxx
 otbDrawPath.cxx
 otbDrawPathAlign.cxx
-otbComplexMomentImage.cxx
-otbRealMomentImage.cxx
+otbComplexMomentsImageFunction.cxx
+otbRealMomentsImageFunction.cxx
 otbRadiometricMomentsImageFunction.cxx
-otbHuImage.cxx
-otbFlusserImage.cxx
+otbHuMomentsImageFunction.cxx
+otbFlusserMomentsImageFunction.cxx
 otbComplexMomentPathNew.cxx
 otbComplexMomentPath.cxx
 otbComplexMomentPathFloat.cxx
