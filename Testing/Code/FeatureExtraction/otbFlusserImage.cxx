@@ -20,6 +20,8 @@
 #pragma warning ( disable : 4786 )
 #endif
 
+#include "vcl_deprecated_header.h"
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -33,36 +35,56 @@ int otbFlusserImage(int argc, char * argv[])
 {
   const char * inputFilename  = argv[1];
   const char * outputFilename  = argv[2];
+  unsigned int Number = 1;
 
   typedef unsigned char InputPixelType;
   const unsigned int Dimension = 2;
 
   typedef itk::Image<InputPixelType,  Dimension>                  InputImageType;
   typedef otb::ImageFileReader<InputImageType>                    ReaderType;
-  typedef otb::FlusserImageFunction<InputImageType>               FunctionType;
-  typedef FunctionType::RealType                                  RealType;
+  typedef std::complex<float>                                     ComplexType;
+  typedef float                                                   RealType;
+  typedef otb::FlusserImageFunction<InputImageType, float, float> FunctionType;
+
+  InputImageType::RegionType region;
+  InputImageType::SizeType   size;
+  InputImageType::IndexType  start;
+
+  start.Fill(0);
+  size[0] = 50;
+  size[1] = 50;
 
   ReaderType::Pointer   reader         = ReaderType::New();
-  FunctionType::Pointer function       = FunctionType::New();
+  FunctionType::Pointer function = FunctionType::New();
 
   reader->SetFileName(inputFilename);
-  reader->Update();
-  function->SetInputImage(reader->GetOutput());
+
+  InputImageType::Pointer image = reader->GetOutput();
+
+  region.SetIndex(start);
+  region.SetSize(size);
+
+  image->SetRegions(region);
+  image->Update();
+  function->SetInputImage(image);
 
   InputImageType::IndexType index;
-  index[0] = 100;
-  index[1] = 100;
+  index[0] = 10;
+  index[1] = 10;
 
-  function->SetNeighborhoodRadius(3);  
   RealType Result;
-  Result = function->EvaluateAtIndex(index);
 
   std::ofstream outputStream(outputFilename);
-  outputStream << std::setprecision(10) << "Flusser Image moments: [10]" << std::endl;
+  outputStream << std::setprecision(10) << "Flusser Image moments: [12]" << std::endl;
 
-  for (unsigned int j = 1; j < 12; j++)
+  for (Number = 1; Number < 12; Number++)
     {
-    outputStream << "Flusser(" << j << ") = " << Result[j-1] << std::endl;
+    //OTB-FA-00024-CS
+    function->SetMomentNumber(Number);
+    //OTB-FA-00025-CS
+    function->SetNeighborhoodRadius(3);
+    Result = function->EvaluateAtIndex(index);
+    outputStream << "Flusser(" << Number << ") = " << Result << std::endl;
     }
 
   outputStream.close();

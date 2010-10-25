@@ -18,8 +18,9 @@
 #ifndef __otbHuImageFunction_h
 #define __otbHuImageFunction_h
 
-#include "itkImageFunction.h"
-#include "itkFixedArray.h"
+#include "vcl_deprecated_header.h"
+
+#include "otbRealMomentImageFunction.h"
 
 namespace otb
 {
@@ -28,8 +29,11 @@ namespace otb
  * \class HuImageFunction
  * \brief Calculate the Hu's invariant parameter.
  *
- * Calculate the Hu's invariants over a specified neighbohood defined
- * as :
+ * For backward compatibility only
+ * otb::HuImageFunction is deprecated and otb::HuMomentsImageFunction
+ * should be used instead
+ * 
+ * Calculate the Hu's invariant over an image defined as:
  *
  * - \f$ \phi_{1} = c_{11} \f$
  * - \f$ \phi_{2} = c_{20} c_{02} \f$
@@ -53,45 +57,43 @@ namespace otb
  *
  * \ingroup ImageFunctions
  */
+//  public itk::ImageFunction< TInput, TOutput,TCoordRep >
 
-template <class TInputImage, class TCoordRep = float>
+template <class TInput,
+    class TOutput    = double,
+    class TPrecision = double,
+    class TCoordRep  = float>
 class ITK_EXPORT HuImageFunction :
-public itk::ImageFunction< TInputImage,
-    itk::FixedArray<
-    ITK_TYPENAME itk::NumericTraits<typename TInputImage::PixelType>::RealType,
-    7 >,
-    TCoordRep >
+  public RealMomentImageFunction<TInput, TOutput, TPrecision, TCoordRep>
 {
 public:
   /** Standard class typedefs. */
   typedef HuImageFunction                                                 Self;
-  typedef itk::ImageFunction< TInputImage,
-                   itk::FixedArray<
-                   ITK_TYPENAME itk::NumericTraits<
-                   typename TInputImage::PixelType>::RealType,
-                   7 >,
-                   TCoordRep >                                            Superclass;
+  typedef RealMomentImageFunction<TInput, TOutput, TPrecision, TCoordRep> Superclass;
   typedef itk::SmartPointer<Self>                                         Pointer;
   typedef itk::SmartPointer<const Self>                                   ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HuImageFunction, ImageFunction);
+  itkTypeMacro(HuImageFunction, RealMomentImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** InputImageType typedef support. */
-  typedef TInputImage                              InputImageType;
+  typedef TInput                                   InputType;
   typedef typename Superclass::IndexType           IndexType;
   typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
   typedef typename Superclass::PointType           PointType;
 
-  typedef typename Superclass::OutputType          RealType;
-  typedef typename RealType::ValueType             ScalarRealType;
+  typedef typename Superclass::RealType   RealType;
+  typedef typename std::complex<RealType> ComplexType;
+
+  /** Type for calculation precision */
+  typedef typename Superclass::PrecisionType PrecisionType;
 
   /** Dimension of the underlying image. */
   itkStaticConstMacro(ImageDimension, unsigned int,
-                      InputImageType::ImageDimension);
+                      InputType::ImageDimension);
 
   /** Evalulate the function at specified index */
   virtual RealType EvaluateAtIndex(const IndexType& index) const;
@@ -112,11 +114,10 @@ public:
   }
 
   /** Get/Set the radius of the neighborhood over which the
-   *  statistics are evaluated 
-   */
-  itkSetMacro( NeighborhoodRadius, unsigned int );
-  itkGetConstReferenceMacro( NeighborhoodRadius, unsigned int );
-  
+      statistics are evaluated */
+  itkSetClampMacro(MomentNumber, short, 1, 7);
+  itkGetConstReferenceMacro(MomentNumber, short);
+
 protected:
   HuImageFunction();
   virtual ~HuImageFunction() {}
@@ -126,7 +127,7 @@ private:
   HuImageFunction(const Self &);  //purposely not implemented
   void operator =(const Self&);  //purposely not implemented
 
-  unsigned int m_NeighborhoodRadius;
+  short m_MomentNumber;
 };
 
 } // namespace otb

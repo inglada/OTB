@@ -22,6 +22,8 @@
 #pragma warning ( disable : 4786 )
 #endif
 
+#include "otbConfigure.h"
+
 #include "otbTestMain.h"
 
 void RegisterTests()
@@ -29,11 +31,26 @@ void RegisterTests()
   REGISTER_TEST(otbAlignImageToPath);
   REGISTER_TEST(otbDrawPathDessinCarre);
   REGISTER_TEST(otbDrawPathAlign);
-  REGISTER_TEST(otbComplexMomentImage);
-  REGISTER_TEST(otbRealMomentImage);
-  REGISTER_TEST(otbRadiometricMomentsImage);
+  REGISTER_TEST(otbComplexMomentsImageFunctionNew);
+  REGISTER_TEST(otbComplexMomentsImageFunction);
+  REGISTER_TEST(otbComplexMomentsImageFunctionScaleInvariant);
+  REGISTER_TEST(otbRealMomentsImageFunctionNew);
+  REGISTER_TEST(otbRealMomentsImageFunction);
+  REGISTER_TEST(otbRadiometricMomentsImageFunctionNew);
+  REGISTER_TEST(otbRadiometricMomentsImageFunction);
+  REGISTER_TEST(otbHuMomentsImageFunctionNew);
+  REGISTER_TEST(otbHuMomentsImageFunction);
+  REGISTER_TEST(otbHuMomentsImageFunctionRotationInvariant);
+  REGISTER_TEST(otbHuMomentsImageFunctionScaleInvariant);
+  REGISTER_TEST(otbFlusserMomentsImageFunctionNew);
+  REGISTER_TEST(otbFlusserMomentsImageFunction);
+  REGISTER_TEST(otbFlusserMomentsImageFunctionRotationInvariant);
+  REGISTER_TEST(otbFlusserMomentsImageFunctionScaleInvariant);
+#if defined(OTB_USE_DEPRECATED)
   REGISTER_TEST(otbHuImage);
   REGISTER_TEST(otbFlusserImage);
+  REGISTER_TEST(otbComplexMomentImage);
+#endif
   REGISTER_TEST(otbComplexMomentPathNew);
   REGISTER_TEST(otbComplexMomentPath);
   REGISTER_TEST(otbComplexMomentPathFloat);

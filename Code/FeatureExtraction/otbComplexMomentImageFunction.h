@@ -18,7 +18,9 @@
 #ifndef __otbComplexMomentImageFunction_h
 #define __otbComplexMomentImageFunction_h
 
-#include "itkImageFunction.h"
+#include "vcl_deprecated_header.h"
+
+#include "otbGeometricMomentImageFunction.h"
 
 #include <complex>
 
@@ -27,10 +29,12 @@ namespace otb
 
 /**
  * \class ComplexMomentImageFunction
- * \brief Calculate the complex moment value in the specified
- * neighborhood.
- *
- * Calculate the complex moment values over a specified neighborhood.
+ * \brief Calculate the complex moment value in the full image.
+ * For backward compatibility only
+ * otb::ComplexMomentImageFunction is deprecated and
+ * otb::ComplexMomentsImageFunction sould be used instead
+ * 
+ * Calculate the complex moment value over an image.
  * The implemented equation is:
  *
  *  \f[  c_{p,q}=\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} (x+iy)^{p} \cdot (x-iy)^{q} \cdot f(x,y) \cdot
@@ -46,48 +50,43 @@ namespace otb
  *
  * \ingroup ImageFunctions
  */
-
-template <class TInputImage, class TCoordRep = float>
+template <class TInput,
+    class TOutput = std::complex<double>,
+    class TPrecision = double,
+    class TCoordRep = float>
 class ITK_EXPORT ComplexMomentImageFunction :
-    public itk::ImageFunction <TInputImage,
-      std::vector< std::vector< std::complex<double> > >,
-      TCoordRep>
+  public GeometricMomentImageFunction<TInput, TOutput, TPrecision, TCoordRep>
 {
 public:
   /** Standard class typedefs. */
   typedef ComplexMomentImageFunction                                           Self;
-  typedef itk::ImageFunction<TInputImage, 
-                             std::vector<
-                             std::vector<
-                             std::complex<double> > >, 
-                             TCoordRep>                                        Superclass;
+  typedef GeometricMomentImageFunction<TInput, TOutput, TPrecision, TCoordRep> Superclass;
   typedef itk::SmartPointer<Self>                                              Pointer;
   typedef itk::SmartPointer<const Self>                                        ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ComplexMomentImageFunction, ImageFunction);
+  itkTypeMacro(ComplexMomentImageFunction, GeometricMomentImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** InputImageType typedef support. */
-  typedef TInputImage                              InputImageType;
+  typedef typename Superclass::InputType           InputType;
   typedef typename Superclass::IndexType           IndexType;
   typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
   typedef typename Superclass::PointType           PointType;
 
-  typedef float                                    ScalarRealType;
+  typedef typename Superclass::OutputType ComplexType;
 
-  typedef typename Superclass::OutputType          ComplexType;
-  typedef typename std::complex<ScalarRealType>    ScalarComplexType;
+  /** Type for calculation precision */
+  typedef typename Superclass::PrecisionType PrecisionType;
 
-  /** Dimension of the underlying image. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      InputImageType::ImageDimension);
-  
+  /** ComplexType for calculation precision */
+  typedef std::complex<PrecisionType> ComplexPrecisionType;
+
   /** Evalulate the function at specified index */
   virtual ComplexType EvaluateAtIndex(const IndexType& index) const;
-  
+
   /** Evaluate the function at non-integer positions */
   virtual ComplexType Evaluate(const PointType& point) const
   {
@@ -102,17 +101,11 @@ public:
     this->ConvertContinuousIndexToNearestIndex(cindex, index);
     return this->EvaluateAtIndex(index);
   }
-  
-  /** Get/Set the radius of the neighborhood over which the
-   *  statistics are evaluated 
-   */
-  itkSetMacro( NeighborhoodRadius, unsigned int );
-  itkGetConstReferenceMacro( NeighborhoodRadius, unsigned int );
-  
-  itkSetMacro(Pmax, unsigned int);
-  itkGetConstReferenceMacro(Pmax, unsigned int);
-  itkSetMacro(Qmax, unsigned int);
-  itkGetConstReferenceMacro(Qmax, unsigned int);
+
+  itkSetMacro(P, unsigned int);
+  itkGetConstReferenceMacro(P, unsigned int);
+  itkSetMacro(Q, unsigned int);
+  itkGetConstReferenceMacro(Q, unsigned int);
 
 protected:
   ComplexMomentImageFunction();
@@ -123,9 +116,8 @@ private:
   ComplexMomentImageFunction(const Self &);  //purposely not implemented
   void operator =(const Self&);  //purposely not implemented
 
-  unsigned int m_Pmax;
-  unsigned int m_Qmax;
-  unsigned int m_NeighborhoodRadius;
+  unsigned int m_P;
+  unsigned int m_Q;
 
 };
 

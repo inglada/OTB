@@ -20,6 +20,8 @@
 #pragma warning ( disable : 4786 )
 #endif
 
+#include "vcl_deprecated_header.h"
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -42,8 +44,8 @@ int otbComplexMomentImage(int argc, char * argv[])
   typedef itk::Image<InputPixelType,  Dimension> InputImageType;
   typedef otb::ImageFileReader<InputImageType>   ReaderType;
 
-  typedef otb::ComplexMomentImageFunction<InputImageType> CMType;
-  typedef CMType::ComplexType                             ComplexType;
+  typedef std::complex<float>                                          ComplexType;
+  typedef otb::ComplexMomentImageFunction<InputImageType, ComplexType> CMType;
 
   ReaderType::Pointer reader         = ReaderType::New();
   CMType::Pointer     function = CMType::New();
@@ -53,27 +55,26 @@ int otbComplexMomentImage(int argc, char * argv[])
   reader->Update();
   function->SetInputImage(reader->GetOutput());
 
-  function->SetQmax(q);
-  function->SetPmax(p);
+  function->SetQ(q);
+  function->SetP(p);
 
   InputImageType::IndexType index;
-  index[0] = 100;
-  index[1] = 100;
+  index[0] = 10;
+  index[1] = 10;
 
   ComplexType Result;
 
   std::ofstream outputStream(outputFilename);
-  outputStream << std::setprecision(10);
-  
+
+  Result = function->EvaluateAtIndex(index);
+  outputStream << std::setprecision(10) << "function->EvaluateAtIndex( index ): " << Result << std::endl;
+
+  outputStream << " With NeighborhoodRadius(3):" << std::endl;
+
   function->SetNeighborhoodRadius(3);
   Result = function->EvaluateAtIndex(index);
-  for (unsigned int k=0; k<=p; k++)
-    {
-    for (unsigned int l=0; l<=q; l++)
-      {
-      outputStream << "ComplexMoment c(" << k << l << ") : " << Result.at(k).at(l) << std::endl;
-      }
-    }
+  outputStream << "function->EvaluateAtIndex( index ): " << Result << std::endl;
+
   outputStream.close();
 
   return EXIT_SUCCESS;

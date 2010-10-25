@@ -64,44 +64,121 @@ ADD_TEST(feTvDrawPathTestAlign ${FEATUREEXTRACTION_TESTS1}
 	${INPUTDATA}/DeuxTraits.png
 	${TEMP}/feDrawPathAlignDeuxTraits.png)
 
-ADD_TEST(feTvComplexMomentImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feComplexMomentImage.txt
-                        ${TEMP}/feComplexMomentImage.txt
-        otbComplexMomentImage
-	${INPUTDATA}/poupees.png
-  4
-  4
-  ${TEMP}/feComplexMomentImage.txt)
+ADD_TEST(feTuComplexMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbComplexMomentsImageFunctionNew
+  )
 
-ADD_TEST(feTvRealMomentImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feRealMomentImage.txt
-                        ${TEMP}/feRealMomentImage.txt
-        otbRealMomentImage
-	${INPUTDATA}/poupees.png
+ADD_TEST(feTvComplexMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+  --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvComplexMomentsImageFunction.txt
+                               ${TEMP}/feTvComplexMomentsImageFunction.txt
+  otbComplexMomentsImageFunction
+  ${INPUTDATA}/poupees.png
   4
   4
-  ${TEMP}/feRealMomentImage.txt)
+  ${TEMP}/feTvComplexMomentsImageFunction.txt
+  )
 
-ADD_TEST(feTvRadiometricMomentsImage ${FEATUREEXTRACTION_TESTS1}
-   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRadiometricMomentsImage.txt
-                        ${TEMP}/feTvRadiometricMomentsImage.txt
-        otbRadiometricMomentsImage
+ADD_TEST(feTvComplexMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+  otbComplexMomentsImageFunctionScaleInvariant
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  )
+
+ADD_TEST(feTuRealMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbRealMomentsImageFunctionNew
+  )
+
+ADD_TEST(feTvRealMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRealMomentsImageFunction.txt
+                        ${TEMP}/feTvRealMomentsImageFunction.txt
+        otbRealMomentsImageFunction
 	${INPUTDATA}/poupees.png
-  ${TEMP}/feTvRadiometricMomentsImage.txt)
+        4
+        4
+        ${TEMP}/feTvRealMomentsImageFunction.txt)
 
-ADD_TEST(feTvHuImage ${FEATUREEXTRACTION_TESTS1}
+ADD_TEST(feTuRadiometricMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+  otbRadiometricMomentsImageFunctionNew
+  )
+
+ADD_TEST(feTvRadiometricMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvRadiometricMomentsImageFunction.txt
+                                ${TEMP}/feTvRadiometricMomentsImageFunction.txt
+        otbRadiometricMomentsImageFunction
+	${INPUTDATA}/poupees.png
+        ${TEMP}/feTvRadiometricMomentsImageFunction.txt)
+
+ADD_TEST(feTuHuMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionNew
+        )
+
+ADD_TEST(feTvHuMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feTvHuMomentsImageFunction.txt
+                        ${TEMP}/feTvHuMomentsImageFunction.txt
+        otbHuMomentsImageFunction
+	${INPUTDATA}/poupees.png
+        ${TEMP}/feTvHuMomentsImageFunction.txt
+        )
+
+ADD_TEST(feTvHuMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionScaleInvariant
+	${INPUTDATA}/poupees.png
+        )
+
+ADD_TEST(feTvHuMomentsImageFunctionRotationInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbHuMomentsImageFunctionRotationInvariant
+	${INPUTDATA}/poupees.png
+        90
+        )
+
+ADD_TEST(feTuFlusserMomentsImageFunctionNew ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionNew
+)
+
+ADD_TEST(feTvFlusserMomentsImageFunction ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feTvFlusserMomentsImageFunction.txt
+                        ${TEMP}/feTvFlusserMomentsImageFunction.txt
+        otbFlusserMomentsImageFunction
+	${INPUTDATA}/poupees.png
+        ${TEMP}/feTvFlusserMomentsImageFunction.txt)
+
+ADD_TEST(feTuFlusserMomentsImageFunctionScaleInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionScaleInvariant
+	${INPUTDATA}/poupees.png
+        )
+
+ADD_TEST(feTuFlusserMomentsImageFunctionRotationInvariant ${FEATUREEXTRACTION_TESTS1}
+        otbFlusserMomentsImageFunctionRotationInvariant
+	${INPUTDATA}/poupees.png
+        90
+        )
+
+# Deprecated class tests
+IF (OTB_USE_DEPRECATED)
+  ADD_TEST(feTvHuImage ${FEATUREEXTRACTION_TESTS1}
    --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feHuImage.txt
                         ${TEMP}/feHuImage.txt
         otbHuImage
-	${INPUTDATA}/poupees.png
-  ${TEMP}/feHuImage.txt)
+        ${INPUTDATA}/TeteAToto.png
+        ${TEMP}/feHuImage.txt)
 
-ADD_TEST(feTuFlusserImage ${FEATUREEXTRACTION_TESTS1}
+  ADD_TEST(feTvComplexMomentImage ${FEATUREEXTRACTION_TESTS1}
+   --compare-ascii ${NOTOL}     ${BASELINE_FILES}/feComplexMomentImage.txt
+                        ${TEMP}/feComplexMomentImage.txt
+        otbComplexMomentImage
+	${INPUTDATA}/TeteAToto.png
+        1
+        1
+        ${TEMP}/feComplexMomentImage.txt)
+
+  ADD_TEST(feTuFlusserImage ${FEATUREEXTRACTION_TESTS1}
    --compare-ascii ${EPSILON_8}     ${BASELINE_FILES}/feFlusserImage.txt
                         ${TEMP}/feFlusserImage.txt
         otbFlusserImage
-	${INPUTDATA}/poupees.png
-  ${TEMP}/feFlusserImage.txt)
+	${INPUTDATA}/TeteAToto.png
+        ${TEMP}/feFlusserImage.txt)
+ENDIF (OTB_USE_DEPRECATED)
 
 ADD_TEST(feTuComplexMomentPathNew ${FEATUREEXTRACTION_TESTS1}
         otbComplexMomentPathNew)
@@ -1381,7 +1458,49 @@ ADD_TEST(feTvScalarImageToPanTexTextureFilter ${FEATUREEXTRACTION_TESTS15}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbFeatureExtractionTests16 ~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# -------            otb::FourierMellinDescriptorsImageFunction   -------------
 
+ADD_TEST(feTuFourierMellinDescriptorsNew ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsNew
+  )
+
+ADD_TEST(feTvFourierMellinDescriptors ${FEATUREEXTRACTION_TESTS16}
+  --compare-ascii ${NOTOL}     
+  ${BASELINE_FILES}/feTvFourierMellinDescriptors.txt
+  ${TEMP}/feTvFourierMellinDescriptors.txt
+  otbFourierMellinDescriptors
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  ${TEMP}/feTvFourierMellinDescriptors.txt
+  )
+
+ADD_TEST(feTvFourierMellinDescriptorsScaleInvariant ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsScaleInvariant
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  )
+
+ADD_TEST(feTvFourierMellinDescriptorsRotationInvariant ${FEATUREEXTRACTION_TESTS16}
+  otbFourierMellinDescriptorsRotationInvariant
+  ${INPUTDATA}/poupees.png
+  4
+  4
+  90
+  )
+  
+# -------            otb::LocalHistogramImageFunction   -------------
+
+ADD_TEST(feTuLocalHistogramImageFunctionNew ${FEATUREEXTRACTION_TESTS16}
+        otbLocalHistogramImageFunctionNew
+)
+
+ADD_TEST(feTuLocalHistogramImageFunctionTest ${FEATUREEXTRACTION_TESTS16}
+        otbLocalHistogramImageFunctionTest
+		${INPUTDATA}/poupees_1canal.hd
+  		${TEMP}/feLocalHistogramImage.txt
+                )
 
 
 
@@ -1391,17 +1510,27 @@ otbFeatureExtractionTests1.cxx
 otbAlignImageToPath.cxx
 otbDrawPath.cxx
 otbDrawPathAlign.cxx
-otbComplexMomentImage.cxx
-otbRealMomentImage.cxx
+otbComplexMomentsImageFunction.cxx
+otbRealMomentsImageFunction.cxx
 otbRadiometricMomentsImageFunction.cxx
-otbHuImage.cxx
-otbFlusserImage.cxx
+otbHuMomentsImageFunction.cxx
+otbFlusserMomentsImageFunction.cxx
 otbComplexMomentPathNew.cxx
 otbComplexMomentPath.cxx
 otbComplexMomentPathFloat.cxx
 otbHuPathNew.cxx
 otbHuPath.cxx
 )
+
+IF(OTB_USE_DEPRECATED)
+SET(BasicFeatureExtraction_SRCS1
+${BasicFeatureExtraction_SRCS1}
+otbHuImage.cxx
+otbComplexMomentImage.cxx
+otbFlusserImage.cxx
+)
+ENDIF(OTB_USE_DEPRECATED)
+
 SET(BasicFeatureExtraction_SRCS2
 otbFeatureExtractionTests2.cxx
 otbFlusserPathNew.cxx
@@ -1566,6 +1695,9 @@ otbScalarImageToHigherOrderTexturesFilter.cxx
 
 SET(BasicFeatureExtraction_SRCS16
 otbFeatureExtractionTests16.cxx
+otbFourierMellinDescriptors.cxx
+otbLocalHistogramImageFunctionNew.cxx
+otbLocalHistogramImageFunctionTest.cxx
 )
 
 
