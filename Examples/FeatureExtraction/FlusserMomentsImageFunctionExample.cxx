@@ -32,14 +32,14 @@
 
 // Software Guide : BeginLatex
 //
-// This example illustrates the use of the \doxygen{otb}{HuMomentImageFunction}.
+// This example illustrates the use of the \doxygen{otb}{FlusserMomentsImageFunction}.
 //
 // The first step required to use this filter is to include its header file.
 //
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-#include "otbHuImageFunction.h"
+#include "otbFlusserMomentsImageFunction.h"
 // Software Guide : EndCodeSnippet
 
 int main(int argc, char * argv[])
@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
   if (argc != 3)
     {
     std::cerr << "Usage: " << argv[0] << " inputImageFile ";
-    std::cerr << " moment_number" << std::endl;
+    std::cerr << " neighborhood_radius" << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -67,17 +67,17 @@ int main(int argc, char * argv[])
 
   //  Software Guide : BeginLatex
   //
-  //  The \doxygen{otb}{HuImageFunction} is templated over the
+  //  The \doxygen{otb}{FlusserMomentsImageFunction} is templated over the
   //  input image type and the output (real) type value, so we start by
   //  defining:
   //
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  typedef otb::HuImageFunction<InputImageType>   HuType;
-  typedef HuType::OutputType                     MomentType;
+  typedef otb::FlusserMomentsImageFunction<InputImageType>  FlusserType;
+  typedef FlusserType::OutputType                           MomentType;
 
-  HuType::Pointer hmFunction = HuType::New();
+  FlusserType::Pointer fmFunction = FlusserType::New();
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -119,8 +119,8 @@ int main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  hmFunction->SetInputImage(image);
-  hmFunction->SetNeighborhoodRadius(radius);
+  fmFunction->SetInputImage(image);
+  fmFunction->SetNeighborhoodRadius(radius);
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -130,9 +130,9 @@ int main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  MomentType Result = hmFunction->EvaluateAtIndex(center);
- 
-  for (unsigned int j=0; j<7; j++)
+  MomentType Result = fmFunction->EvaluateAtIndex(center);
+
+  for (unsigned int j=0; j<11; j++)
     {
     std::cout << "The moment of order " << j+1 <<
       " is equal to " << Result[j] << std::endl;
@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
   //
   //  \relatedClasses
   //  \begin{itemize}
-  //  \item \doxygen{otb}{HuPathFunction}
+  //  \item \doxygen{otb}{FlusserPathFunction}
   //  \end{itemize}
   //
   //  Software Guide : EndLatex

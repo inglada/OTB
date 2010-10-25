@@ -15,67 +15,45 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbHuImageFunction_h
-#define __otbHuImageFunction_h
+#ifndef __otbRealMomentsImageFunction_h
+#define __otbRealMomentsImageFunction_h
 
 #include "itkImageFunction.h"
-#include "itkFixedArray.h"
 
 namespace otb
 {
 
 /**
- * \class HuImageFunction
- * \brief Calculate the Hu's invariant parameter.
- *
- * Calculate the Hu's invariants over a specified neighbohood defined
- * as :
- *
- * - \f$ \phi_{1} = c_{11} \f$
- * - \f$ \phi_{2} = c_{20} c_{02} \f$
- * - \f$ \phi_{3} = c_{30} c_{03} \f$
- * - \f$ \phi_{4} = c_{21} c_{12} \f$
- * - \f$ \phi_{5} = Re (c_{30} c_{12}^{3}) \f$
- * - \f$ \phi_{6} = Re (c_{20} c_{12}^{2}) \f$
- * - \f$ \phi_{7} = Im (c_{30} c_{12}^{3}) \f$
- *
- * With :
- *
- *  \f[  c_{p,q}=\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} (x+iy)^{p} \cdot (x-iy)^{q} \cdot f(x,y) \cdot
- dx \cdot dy \f]
- *
- * And:
- *  - \f$(x,y)\f$ pixel localization;
- *  - \f$ f(x,y)\f$  the pixel value over the \f$(x,y)\f$ coordinate.
- *
- * This class is templated over the input image type and the
- * coordinate representation type (e.g. float or double).
+ * \class RealMomentsImageFunction
+ * \brief Calculate the moment values in the specified
+ * neighborhood.
+ * 
+ * Calculate the real moment values over a specified neighborhood.
  *
  * \ingroup ImageFunctions
  */
 
 template <class TInputImage, class TCoordRep = float>
-class ITK_EXPORT HuImageFunction :
-public itk::ImageFunction< TInputImage,
-    itk::FixedArray<
-    ITK_TYPENAME itk::NumericTraits<typename TInputImage::PixelType>::RealType,
-    7 >,
-    TCoordRep >
+class ITK_EXPORT RealMomentsImageFunction :
+    public itk::ImageFunction<TInputImage,
+                              std::vector< std::vector< 
+                              ITK_TYPENAME itk::NumericTraits<
+                              typename TInputImage::PixelType>::RealType > >,
+                              TCoordRep>
 {
 public:
   /** Standard class typedefs. */
-  typedef HuImageFunction                                                 Self;
-  typedef itk::ImageFunction< TInputImage,
-                   itk::FixedArray<
-                   ITK_TYPENAME itk::NumericTraits<
-                   typename TInputImage::PixelType>::RealType,
-                   7 >,
-                   TCoordRep >                                            Superclass;
-  typedef itk::SmartPointer<Self>                                         Pointer;
-  typedef itk::SmartPointer<const Self>                                   ConstPointer;
+  typedef RealMomentsImageFunction                                             Self;
+  typedef itk::ImageFunction<TInputImage, 
+                             std::vector< std::vector< 
+                             ITK_TYPENAME itk::NumericTraits<
+                             typename TInputImage::PixelType>::RealType > >, 
+                             TCoordRep>                                        Superclass;
+  typedef itk::SmartPointer<Self>                                              Pointer;
+  typedef itk::SmartPointer<const Self>                                        ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HuImageFunction, ImageFunction);
+  itkTypeMacro(RealMomentsImageFunction, ImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,7 +65,7 @@ public:
   typedef typename Superclass::PointType           PointType;
 
   typedef typename Superclass::OutputType          OutputType;
-  typedef typename OutputType::ValueType           ScalarRealType;
+  typedef float                                    ScalarRealType;
 
   /** Dimension of the underlying image. */
   itkStaticConstMacro(ImageDimension, unsigned int,
@@ -116,23 +94,30 @@ public:
    */
   itkSetMacro( NeighborhoodRadius, unsigned int );
   itkGetConstReferenceMacro( NeighborhoodRadius, unsigned int );
-  
+
+  itkSetMacro(Pmax, unsigned int);
+  itkGetConstReferenceMacro(Pmax, unsigned int);
+  itkSetMacro(Qmax, unsigned int);
+  itkGetConstReferenceMacro(Qmax, unsigned int);
+
 protected:
-  HuImageFunction();
-  virtual ~HuImageFunction() {}
+  RealMomentsImageFunction();
+  virtual ~RealMomentsImageFunction() {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
-  HuImageFunction(const Self &);  //purposely not implemented
-  void operator =(const Self&);  //purposely not implemented
+  RealMomentsImageFunction(const Self &);  //purposely not implemented
+  void operator =(const Self&);           //purposely not implemented
 
+  unsigned int m_Pmax;
+  unsigned int m_Qmax;
   unsigned int m_NeighborhoodRadius;
 };
 
 } // namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbHuImageFunction.txx"
+#include "otbRealMomentsImageFunction.txx"
 #endif
 
 #endif

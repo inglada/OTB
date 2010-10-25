@@ -15,10 +15,10 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbComplexMomentImageFunction_txx
-#define __otbComplexMomentImageFunction_txx
+#ifndef __otbRealMomentsImageFunction_txx
+#define __otbRealMomentsImageFunction_txx
 
-#include "otbComplexMomentImageFunction.h"
+#include "otbRealMomentsImageFunction.h"
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMacro.h"
@@ -30,8 +30,8 @@ namespace otb
    * Constructor
    */
 template <class TInputImage, class TCoordRep>
-ComplexMomentImageFunction<TInputImage, TCoordRep>
-::ComplexMomentImageFunction()
+RealMomentsImageFunction<TInputImage, TCoordRep>
+::RealMomentsImageFunction()
 {
   m_NeighborhoodRadius = 1;
   m_Pmax = 4;
@@ -40,7 +40,7 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
 
 template <class TInputImage, class TCoordRep>
 void
-ComplexMomentImageFunction<TInputImage, TCoordRep>
+RealMomentsImageFunction<TInputImage, TCoordRep>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
@@ -50,21 +50,27 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
 }
 
 template <class TInputImage, class TCoordRep>
-typename ComplexMomentImageFunction<TInputImage, TCoordRep>::OutputType
-ComplexMomentImageFunction<TInputImage, TCoordRep>
+typename RealMomentsImageFunction<TInputImage, TCoordRep>::OutputType
+RealMomentsImageFunction<TInputImage, TCoordRep>
 ::EvaluateAtIndex(const IndexType& index) const
 {
   // Build moments vector
   OutputType moments;
   moments.resize(m_Pmax+1);
   
+  std::vector<ScalarRealType> valXpY, valXqY;
+  valXpY.resize(m_Pmax+1);
+  valXqY.resize(m_Qmax+1);
+    
   // Initialize moments
   for (unsigned int p = 0; p <= m_Pmax; p++)
     {
     moments.at(p).resize(m_Qmax+1);
+    valXpY.at(p) = 1.0;
     for (unsigned int q = 0; q <= m_Qmax; q++)
       {
-      moments.at(p).at(q) =  ScalarComplexType(0.0,0.0);
+      moments.at(p).at(q) =  0.0;
+      valXqY.at(q)        =  1.0;
       }
     }
 
@@ -99,15 +105,27 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
     ScalarRealType     x = static_cast<ScalarRealType>(it.GetOffset(i)[0])/(2*m_NeighborhoodRadius+1);
     ScalarRealType     y = static_cast<ScalarRealType>(it.GetOffset(i)[1])/(2*m_NeighborhoodRadius+1);
     
-    // Build complex value
-    ScalarComplexType xpy(x,y),xqy(x,-y);
+    unsigned int pTmp = 1;
+    unsigned int qTmp = 1;
     
+    while (pTmp <= m_Pmax)
+      {
+      valXpY.at(pTmp) = valXpY.at(pTmp-1) * x;
+      pTmp ++;
+      }
+    while (qTmp <= m_Qmax)
+      {
+      valXqY.at(qTmp) = valXqY.at(qTmp-1) * y;
+      qTmp ++;
+      }
+    
+
     // Update cumulants
     for (unsigned int p = 0; p <= m_Pmax; p++)
       {
       for (unsigned int q= 0; q <= m_Qmax; q++)
         {
-        moments.at(p).at(q) += vcl_pow(xpy,p) * vcl_pow(xqy,q) * value;   
+        moments.at(p).at(q) += valXpY.at(p) * valXqY.at(q) * value;   
         }
       }
     }
@@ -117,10 +135,10 @@ ComplexMomentImageFunction<TInputImage, TCoordRep>
     {
     for (int q= m_Qmax; q >= 0; q--)
       {
-      moments.at(p).at(q) /= moments.at(0).at(0);
+      moments.at(p).at(q) /= moments.at(0).at(0);   
       }
     }
-  
+
   // Return result
   return moments;
 }
