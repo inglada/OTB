@@ -9,8 +9,6 @@
   Copyright (c) Centre National d'Etudes Spatiales. All rights reserved.
   See OTBCopyright.txt for details.
 
-  Copyright (c) CS Systemes d'information. All rights reserved.
-  See CSCopyright.txt for details.
 
      This software is distributed WITHOUT ANY WARRANTY; without even
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
@@ -33,8 +31,8 @@ namespace otb
  * \class SarRadiometricCalibrationFunction
  * \brief Calculate the density pixel of  in the neighborhood of a pixel
  *
- * Calculate the backscatter for the given pixel 
- * 
+ * Calculate the backscatter for the given pixel
+ *
  * If called with a ContinuousIndex or Point, the calculation is performed
  * at the nearest neighbor.
  *
@@ -43,7 +41,7 @@ namespace otb
  *
  * \ingroup ImageFunctions
  */
- 
+
 template <class TInputImage, class TCoordRep = float>
 class ITK_EXPORT SarRadiometricCalibrationFunction :
   public itk::ImageFunction<TInputImage, typename itk::NumericTraits<typename TInputImage::PixelType>::AbsType,
@@ -53,7 +51,7 @@ public:
   /** Standard class typedefs. */
   typedef SarRadiometricCalibrationFunction Self;
   typedef itk::ImageFunction<TInputImage, typename itk::NumericTraits<typename TInputImage::PixelType>::AbsType,
-      TCoordRep>                                          Superclass;
+      TCoordRep>                        Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -80,7 +78,7 @@ public:
   typedef typename FunctorType::RealType                        FunctorRealType;
 
   typedef otb::SarParametricMapFunction<InputImageType>               ParametricFunctionType;
-  typedef typename ParametricFunctionType::Pointer                    ParametricFunctionPointer;  
+  typedef typename ParametricFunctionType::Pointer                    ParametricFunctionPointer;
   typedef typename ParametricFunctionType::ConstPointer               ParametricFunctionConstPointer;
 
   /** Evalulate the function at specified index */
@@ -147,7 +145,7 @@ private:
   SarRadiometricCalibrationFunction(const Self &);  //purposely not implemented
   void operator =(const Self&);  //purposely not implemented
 
-  FunctorRealType   m_Scale;
+  FunctorRealType             m_Scale;
   ParametricFunctionPointer   m_Noise;
   ParametricFunctionPointer   m_AntennaPatternNewGain;
   ParametricFunctionPointer   m_AntennaPatternOldGain;
@@ -162,5 +160,3 @@ private:
 #endif
 
 #endif
-
-
