@@ -15,42 +15,43 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbShiftScaleSampleListFilter_h
-#define __otbShiftScaleSampleListFilter_h
+#ifndef __otbGaussianAdditiveNoiseSampleListFilter_h
+#define __otbGaussianAdditiveNoiseSampleListFilter_h
 
 #include "otbListSampleToListSampleFilter.h"
-
+#include "itkDataObject.h"
+#include "itkDataObjectDecorator.h"
 
 namespace otb {
 namespace Statistics {
 
-/** \class ShiftScaleSampleListFilter
- *  \brief This class generate a shifted and scaled version of the input sample list
+/** \class GaussianAdditiveNoiseSampleListFilter
+ *  \brief This class generate a noised version of the input sample list
  *
- *  For each component of the sample, the following formula is applied :
- *
- *  \f[ output = \frac{input - shift}{scale} \f]
- *
- * Standard casting is applied between input and output type.
- *
- * Shifts and scales can be set via the SetShift() and SetScales() methods.
+ * For each component of the samples, a random value of the sequence
+ * value is added.
+ * 
+ * It use the MersenneTwisterRandomVariateGenerator to generate a
+ * sequence of numbers following the normal law considered as White
+ * Gaussian Noise.
+ * Mean and Variance are set via the methods SetMean() and SetVariance().
  *
  * \sa ListSampleToListSampleFilter
  */
 template < class TInputSampleList, class TOutputSampleList = TInputSampleList >
-class ITK_EXPORT ShiftScaleSampleListFilter :
-  public otb::Statistics::ListSampleToListSampleFilter<TInputSampleList,TOutputSampleList>
+class ITK_EXPORT GaussianAdditiveNoiseSampleListFilter :
+    public otb::Statistics::ListSampleToListSampleFilter<TInputSampleList,TOutputSampleList>
 {
 public:
   /** Standard class typedefs */
-  typedef ShiftScaleSampleListFilter                 Self;
+  typedef GaussianAdditiveNoiseSampleListFilter      Self;
   typedef otb::Statistics::ListSampleToListSampleFilter
   <TInputSampleList,TOutputSampleList>               Superclass;
   typedef itk::SmartPointer< Self >                  Pointer;
   typedef itk::SmartPointer<const Self>              ConstPointer;
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ShiftScaleSampleListFilter,otb::Statistics::ListSampleToListSampleFilter);
+  itkTypeMacro(GaussianAdditiveNoiseSampleListFilter,otb::Statistics::ListSampleToListSampleFilter);
   
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,43 +69,48 @@ public:
   typedef typename OutputSampleListType::ConstPointer          OutputSampleListConstPointer;
   typedef typename OutputSampleListType::MeasurementVectorType OutputMeasurementVectorType;
   typedef typename OutputMeasurementVectorType::ValueType      OutputValueType;
-
-  typedef typename Superclass::InputSampleListObjectType     InputSampleListObjectType;
-  typedef typename Superclass::OutputSampleListObjectType     OutputSampleListObjectType;
+  
+  typedef typename Superclass::DataObjectPointer               DataObjectPointer;
+  typedef typename Superclass::InputSampleListObjectType       InputSampleListObjectType;  
+  typedef typename Superclass::OutputSampleListObjectType      OutputSampleListObjectType;
 
   /** Set/Get the Shifts for this sample list */
-  itkSetMacro(Shifts,InputMeasurementVectorType);
-  itkGetMacro(Shifts,InputMeasurementVectorType);
-
+  itkSetMacro(Mean,double);
+  itkGetMacro(Mean,double);
+  
   /** Set/Get the Scales for this sample list */
-  itkSetMacro(Scales,InputMeasurementVectorType);
-  itkGetMacro(Scales,InputMeasurementVectorType);
-
+  itkSetMacro(Variance,double);
+  itkGetMacro(Variance,double);
+  
 protected:
   /** This method causes the filter to generate its output. */
    virtual void GenerateData();
 
-  ShiftScaleSampleListFilter();
-  virtual ~ShiftScaleSampleListFilter() {}
+  /** Generate a white gaussian noise with mean m_Mean and variance
+    * m_Variance 
+    */
+  void GenerateRandomSequence();
+
+  GaussianAdditiveNoiseSampleListFilter();
+  virtual ~GaussianAdditiveNoiseSampleListFilter() {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
 private:
-  ShiftScaleSampleListFilter(const Self&); //purposely not implemented
+  GaussianAdditiveNoiseSampleListFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
+  
+  // Mean and variance for the white gaussian noise to generate 
+  double              m_Mean;
+  double              m_Variance;
+  std::vector<double> m_WhiteGaussianNoiseCoefficients;
 
-  /** The vector of Shifts */
-  InputMeasurementVectorType m_Shifts;
-
-  /** The vector of Scales */
-  InputMeasurementVectorType m_Scales;
-
-}; // end of class ShiftScaleSampleListFilter
+}; // end of class ImageToListGenerator
 
 } // end of namespace Statistics
 } // end of namespace otb
 
 #ifndef OTB_MANUAL_INSTANTIATION
-#include "otbShiftScaleSampleListFilter.txx"
+#include "otbGaussianAdditiveNoiseSampleListFilter.txx"
 #endif
 
 #endif

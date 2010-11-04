@@ -39,6 +39,8 @@ void RegisterTests()
   REGISTER_TEST(otbSVMValidation);
   REGISTER_TEST(otbShiftScaleSampleListFilterNew);
   REGISTER_TEST(otbShiftScaleSampleListFilter);
+  REGISTER_TEST(otbGaussianAdditiveNoiseSampleListFilterNew);
+  REGISTER_TEST(otbGaussianAdditiveNoiseSampleListFilter);
   REGISTER_TEST(otbConcatenateSampleListFilterNew);
   REGISTER_TEST(otbConcatenateSampleListFilter);
 }

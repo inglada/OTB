@@ -15,39 +15,63 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __otbShiftScaleSampleListFilter_txx
-#define __otbShiftScaleSampleListFilter_txx
+#ifndef __otbGaussianAdditiveNoiseSampleListFilter_txx
+#define __otbGaussianAdditiveNoiseSampleListFilter_txx
 
-#include "otbShiftScaleSampleListFilter.h"
+#include "otbGaussianAdditiveNoiseSampleListFilter.h"
+#include "itkMersenneTwisterRandomVariateGenerator.h"
 #include "itkProgressReporter.h"
 
 namespace otb {
 namespace Statistics {
 
 template < class TInputSampleList, class TOutputSampleList >
-ShiftScaleSampleListFilter<TInputSampleList,TOutputSampleList>
-::ShiftScaleSampleListFilter(){}
+GaussianAdditiveNoiseSampleListFilter<TInputSampleList,TOutputSampleList>
+::GaussianAdditiveNoiseSampleListFilter()
+{
+  m_Mean = 0.;
+  m_Variance = 1.;
+}
 
 template < class TInputSampleList, class TOutputSampleList >
 void
-ShiftScaleSampleListFilter<TInputSampleList,TOutputSampleList>
+GaussianAdditiveNoiseSampleListFilter<TInputSampleList,TOutputSampleList>
+::GenerateRandomSequence()
+{
+  typedef itk::Statistics::MersenneTwisterRandomVariateGenerator GeneratorType;
+  GeneratorType::Pointer   generator   = GeneratorType::New();
+
+  unsigned int size = this->GetInput()->Get()->GetMeasurementVectorSize();
+  std::cout << "size " << size<< std::endl;
+  if(size == 0)
+    {
+    itkExceptionMacro(<< "MeasurementVector size is  "<<size << " , excpect non null size " );
+    }
+  else
+    for(unsigned int i = 0; i <size  ; i++)
+      {
+      double ran = generator->GetNormalVariate(m_Mean,m_Variance);
+      m_WhiteGaussianNoiseCoefficients.push_back(ran);
+      }
+}
+
+template < class TInputSampleList, class TOutputSampleList >
+void
+GaussianAdditiveNoiseSampleListFilter<TInputSampleList,TOutputSampleList>
 ::GenerateData()
 {
- // Retrieve input and output pointers
- typename InputSampleListObjectType::ConstPointer inputPtr = this->GetInput();
- typename OutputSampleListObjectType::Pointer     outputPtr = this->GetOutput();
+
+  // Generate Random sequence 
+  this->GenerateRandomSequence();
+
+  // Retrieve input and output pointers
+  typename InputSampleListObjectType::ConstPointer inputPtr = this->GetInput();
+  typename OutputSampleListObjectType::Pointer     outputPtr = this->GetOutput();
 
   // Retrieve the ListSample
   InputSampleListConstPointer inputSampleListPtr = inputPtr->Get();
   OutputSampleListPointer outputSampleListPtr    = const_cast<OutputSampleListType *>(outputPtr->Get());
-
- // Compute the 1/(sigma) vector
- InputMeasurementVectorType invertedScales = m_Scales;
- for(unsigned int idx = 0;idx < invertedScales.Size();++idx)
- {
-  invertedScales[idx] = 1 / m_Scales[idx];
- }
-
+  
   // Clear any previous output
   outputSampleListPtr->Clear();
 
@@ -67,11 +91,12 @@ ShiftScaleSampleListFilter<TInputSampleList,TOutputSampleList>
     currentOutputMeasurement.SetSize(currentInputMeasurement.GetSize());
 
     // Center and reduce each component
-    for(unsigned int idx = 0;idx < invertedScales.Size();++idx)
+    for(unsigned int idx = 0;idx < inputSampleListPtr->GetMeasurementVectorSize();++idx)
       {
       currentOutputMeasurement[idx] = static_cast<OutputValueType>(
-        (currentInputMeasurement[idx]-m_Shifts[idx])*invertedScales[idx]);
+        (static_cast<double>(currentInputMeasurement[idx])+m_WhiteGaussianNoiseCoefficients[idx]));
       }
+    std::cout <<"input sample "<<currentInputMeasurement << " output sample "<<  currentOutputMeasurement  << std::endl;
 
     // Add the current output sample to the output SampleList
     outputSampleListPtr->PushBack(currentOutputMeasurement);
@@ -85,7 +110,7 @@ ShiftScaleSampleListFilter<TInputSampleList,TOutputSampleList>
 
 template < class TInputSampleList, class TOutputSampleList >
 void
-ShiftScaleSampleListFilter<TInputSampleList,TOutputSampleList>
+GaussianAdditiveNoiseSampleListFilter<TInputSampleList,TOutputSampleList>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   // Call superclass implementation
