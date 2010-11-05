@@ -34,4 +34,6 @@ void RegisterTests()
   REGISTER_TEST(otbLocalHistogramImageFunctionTest);
   REGISTER_TEST(otbImageFunctionAdapterNew);
   REGISTER_TEST(otbImageFunctionAdapter);
+  REGISTER_TEST(otbMetaImageFunctionNew);
+  REGISTER_TEST(otbMetaImageFunction);
 }
