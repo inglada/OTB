@@ -96,7 +96,6 @@ void DEMToImageGenerator<TDEMImage>
   DEMImage->SetBufferedRegion(DEMImage->GetRequestedRegion());
   DEMImage->Allocate();
   DEMImage->FillBuffer(0);
-  std::cout << "m_Transform :" << m_Transform << std::endl;
 }
 
 
@@ -117,7 +116,6 @@ DEMToImageGenerator<TDEMImage>
   // Walk the output image, evaluating the height at each pixel
   IndexType currentindex;
   PointType phyPoint;
-  double    height;
   PointType geoPoint;
 
   for (outIt.GoToBegin(); !outIt.IsAtEnd(); ++outIt)

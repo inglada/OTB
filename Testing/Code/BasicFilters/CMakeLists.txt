@@ -509,12 +509,8 @@ ADD_TEST(bfTvStreamingResampleImageFilterCompareWithITK ${BASICFILTERS_TESTS5}
 
 
 ADD_TEST(bfTvResampleSLCImage ${BASICFILTERS_TESTS5}
-            --compare-image ${NOTOL}
-                ${BASELINE}/bfTvResampleSLCImage.tif
-                ${TEMP}/bfTvResampleSLCImage.tif
             otbResampleSLCImage
                 ${INPUTDATA}/RSAT_imagery_HH.tif
-                ${TEMP}/bfTvResampleSLCImage.tif
 )
 
 # -------            otb::StreamingMinMaxImageFilter   ----------------------------
@@ -1804,6 +1800,20 @@ ADD_TEST(bfTvImaginaryImageToComplexImageFilterTest ${BASICFILTERS_TESTS13}
   ${INPUTDATA}/GomaAvant.png
 )
 
+ADD_TEST(bfTuComplexToVectorImageCastFilterNew ${BASICFILTERS_TESTS13}
+  otbComplexToVectorImageCastFilterNew
+)
+
+ADD_TEST(bfTuComplexToVectorImageCastFilterTest ${BASICFILTERS_TESTS13}
+  --compare-image ${NOTOL}
+  ${TEMP}/bfTvComplexToVectorImageCastFilterTest.tif
+  ${BASELINE}/bfTvComplexToVectorImageCastFilterTest.tif
+  otbComplexToVectorImageCastFilterTest
+    ${INPUTDATA}/RSAT_imagery_HH.tif
+    ${TEMP}/bfTvComplexToVectorImageCastFilterTest.tif
+)
+
+
 
 # A enrichir
 SET(BasicFilters_SRCS1
@@ -2056,6 +2066,7 @@ otbComplexToIntensityFilterTest.cxx
 otbRealAndImaginaryImageToComplexImageFilterTest.cxx
 otbRealImageToComplexImageFilterTest.cxx
 otbImaginaryImageToComplexImageFilterTest.cxx
+otbComplexToVectorImageCastFilter.cxx
 )
 
 

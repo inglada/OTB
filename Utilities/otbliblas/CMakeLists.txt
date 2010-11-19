@@ -26,7 +26,6 @@ SET(liblas_SRCS
   "${liblas_SOURCES_DIR}/utility.cpp"
   "${liblas_SOURCES_DIR}/lasvariablerecord.cpp"
   "${liblas_SOURCES_DIR}/laswriter.cpp"
-  "${liblas_SOURCES_DIR}/tifvsi.cpp"
   #index
   "${liblas_SOURCES_DIR}/detail/index/indexcell.cpp"
   "${liblas_SOURCES_DIR}/detail/index/indexoutput.cpp"
@@ -45,28 +44,29 @@ SET(liblas_SRCS
   )
 
 #include Gdal and GeoTiff support only if version >= 1.6
-COMPARE_VERSION_STRINGS(GDAL_VERSION VERSION_LESS 1.6 result)
-IF(result LESS 0)
-#IF(GDAL_VERSION VERSION_LESS 1.6)
-  MESSAGE(STATUS "Disabling GDAL/GeoTIFF support for LibLAS (requires GDAL version >= 1.6)")
-ELSE()
-  MESSAGE(STATUS "Enabling GDAL/GeoTIFF support for LibLAS")
-  INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR} ${GEOTIFF_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS})
-
-  LIST(APPEND liblas_SRCS
-       "${liblas_SOURCES_DIR}/gt_citation.cpp"
-       "${liblas_SOURCES_DIR}/gt_wkt_srs.cpp")
-
-  ADD_DEFINITIONS(-DHAVE_GDAL -DHAVE_LIBGEOTIFF)
-ENDIF()
+#COMPARE_VERSION_STRINGS(GDAL_VERSION VERSION_LESS 1.6 result)
+#IF(result LESS 0)
+##IF(GDAL_VERSION VERSION_LESS 1.6)
+#  MESSAGE(STATUS "Disabling GDAL/GeoTIFF support for LibLAS (requires GDAL version >= 1.6)")
+#ELSE()
+#  MESSAGE(STATUS "Enabling GDAL/GeoTIFF support for LibLAS")
+#  INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR} ${GEOTIFF_INCLUDE_DIRS} ${TIFF_INCLUDE_DIRS})
+#
+#  LIST(APPEND liblas_SRCS
+#       "${liblas_SOURCES_DIR}/gt_citation.cpp"
+#       "${liblas_SOURCES_DIR}/gt_wkt_srs.cpp"
+#       "${liblas_SOURCES_DIR}/tifvsi.cpp")
+#
+#  ADD_DEFINITIONS(-DHAVE_GDAL -DHAVE_LIBGEOTIFF)
+#ENDIF()
 
 IF(NOT OTB_DISABLE_UTILITIES_COMPILATION)
-
+ADD_DEFINITIONS(-DLAS_DISABLE_DLL)
 ADD_LIBRARY(otbliblas ${liblas_SRCS} )
 
-IF(NOT GDAL_VERSION VERSION_LESS 1.6)
-  TARGET_LINK_LIBRARIES(otbliblas ${GDAL_LIBRARY} ${GEOTIFF_LIBRARY} ${TIFF_LIBRARY})
-ENDIF(NOT GDAL_VERSION VERSION_LESS 1.6)
+#IF(NOT GDAL_VERSION VERSION_LESS 1.6)
+#  TARGET_LINK_LIBRARIES(otbliblas ${GDAL_LIBRARY} ${GEOTIFF_LIBRARY} ${TIFF_LIBRARY})
+#ENDIF(NOT GDAL_VERSION VERSION_LESS 1.6)
 
 IF(OTB_LIBRARY_PROPERTIES)
   SET_TARGET_PROPERTIES(otbliblas PROPERTIES ${OTB_LIBRARY_PROPERTIES})
