@@ -52,7 +52,7 @@ SarRadiometricCalibrationToImageFilter<TInputImage, TOutputImage>
   FunctionPointer function = this->GetFunction();
 
   function->SetScale(imageMetadataInterface->GetRadiometricCalibrationScale());
-  
+
   ParametricFunctionPointer   noise;
   ParametricFunctionPointer   antennaPatternNewGain;
   ParametricFunctionPointer   antennaPatternOldGain;
@@ -63,7 +63,7 @@ SarRadiometricCalibrationToImageFilter<TInputImage, TOutputImage>
   noise->SetPointSet(imageMetadataInterface->GetRadiometricCalibrationNoise());
   noise->SetPolynomalSize(imageMetadataInterface->GetRadiometricCalibrationNoisePolynomialDegree());
   noise->EvaluateParametricCoefficient();
-  
+
   antennaPatternNewGain = function->GetAntennaPatternNewGain();
   antennaPatternNewGain->SetPointSet(imageMetadataInterface->GetRadiometricCalibrationAntennaPatternNewGain());
   antennaPatternNewGain->SetPolynomalSize(imageMetadataInterface->GetRadiometricCalibrationAntennaPatternNewGainPolynomialDegree());
@@ -73,16 +73,25 @@ SarRadiometricCalibrationToImageFilter<TInputImage, TOutputImage>
   antennaPatternOldGain->SetPointSet(imageMetadataInterface->GetRadiometricCalibrationAntennaPatternOldGain());
   antennaPatternOldGain->SetPolynomalSize(imageMetadataInterface->GetRadiometricCalibrationAntennaPatternOldGainPolynomialDegree());
   antennaPatternOldGain->EvaluateParametricCoefficient();
-  
+
+  std::cout<<"SarRadiometricCalibrationToImageFilter starts trouble"<<std::endl;
   incidenceAngle = function->GetIncidenceAngle();
+  std::cout<<"function->GetIncidenceAngle():"<<std::endl;
+  std::cout<<function->GetIncidenceAngle()<<std::endl;
   incidenceAngle->SetPointSet(imageMetadataInterface->GetRadiometricCalibrationIncidenceAngle());
+  std::cout<<"imageMetadataInterface->GetRadiometricCalibrationIncidenceAngle():"<<std::endl;
+  std::cout<<imageMetadataInterface->GetRadiometricCalibrationIncidenceAngle()<<std::endl;
   incidenceAngle->SetPolynomalSize(imageMetadataInterface->GetRadiometricCalibrationIncidenceAnglePolynomialDegree());
+  std::cout<<"imageMetadataInterface->GetRadiometricCalibrationIncidenceAnglePolynomialDegree():"<<std::endl;
+  std::cout<<imageMetadataInterface->GetRadiometricCalibrationIncidenceAnglePolynomialDegree()<<std::endl;
+  std::cout<<"SarRadiometricCalibrationToImageFilter trouble passed !!!"<<std::endl;
+
   incidenceAngle->EvaluateParametricCoefficient();
-  
   rangeSpreadLoss = function->GetRangeSpreadLoss();
   rangeSpreadLoss->SetPointSet(imageMetadataInterface->GetRadiometricCalibrationRangeSpreadLoss());
   rangeSpreadLoss->SetPolynomalSize(imageMetadataInterface->GetRadiometricCalibrationRangeSpreadLossPolynomialDegree());
   rangeSpreadLoss->EvaluateParametricCoefficient();
+
 }
 
 

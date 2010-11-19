@@ -57,6 +57,8 @@ SarParametricMapFunction<TInputImage, TCoordRep>
 {
   PointType  p0;
   p0.Fill(0);
+  m_ProductWidth = 1;
+  m_ProductHeight = 1;
   m_IsInitialize = false;
   m_PointSet->Initialize();
   m_PointSet->SetPoint(0, p0);
@@ -131,58 +133,68 @@ SarParametricMapFunction<TInputImage, TCoordRep>
     if (dict.HasKey(MetaDataKey::OSSIMKeywordlistKey))
       {
       itk::ExposeMetaData<ImageKeywordlist>(dict, MetaDataKey::OSSIMKeywordlistKey, imageKeywordlist);
+      ossimKeywordlist kwl;
+      imageKeywordlist.convertToOSSIMKeywordlist(kwl);
+      ossimString nbLinesValue = kwl.find("number_lines");
+      ossimString nbSamplesValue = kwl.find("number_samples");
+      m_ProductWidth = nbSamplesValue.toDouble();
+      m_ProductHeight = nbLinesValue.toDouble();
+      }
+    else
+      {
+      m_ProductHeight = this->GetInputImage()->GetLargestPossibleRegion().GetSize()[0] ;
+      m_ProductWidth  = this->GetInputImage()->GetLargestPossibleRegion().GetSize()[1];
       }
 
-    ossimKeywordlist kwl;
-    imageKeywordlist.convertToOSSIMKeywordlist(kwl);
-    ossimString nbLinesValue = kwl.find("number_lines");
-    ossimString nbSamplesValue = kwl.find("number_samples");
-    m_ProductWidth = nbSamplesValue.toDouble();
-    m_ProductHeight = nbLinesValue.toDouble();
-
-    // Perform the plane least square estimation
+	// Perform the plane least square estimation
     unsigned int nbRecords = pointSet->GetNumberOfPoints();
-    unsigned int nbCoef = m_Coeff.Rows() * m_Coeff.Cols();
+	const unsigned int coeffRows = m_Coeff.Rows();
+	const unsigned int coeffCols = m_Coeff.Cols();	
+    unsigned int nbCoef = coeffRows * coeffCols;
+	const double invProductHeight = 1. / m_ProductHeight;
+	const double invProductWidth = 1. / m_ProductWidth;
 
     vnl_sparse_matrix<double> a(nbRecords, nbCoef);
     vnl_vector<double> b(nbRecords), bestParams(nbCoef);
     b.fill(0);
     bestParams.fill(0);
 
-    // Fill the linear system
+	// Fill the linear system
     for (unsigned int i = 0; i < nbRecords; ++i)
       {
       this->GetPointSet()->GetPoint(i, &point);
       this->GetPointSet()->GetPointData(i, &pointValue);
-      b(i) = pointValue;
+	  b(i) = pointValue;
       //std::cout << "point = " << point << std::endl;
-      //std::cout << "b(" << i << ") = " << pointValue << std::endl;
+      std::cout << "b(" << i << ") = " << pointValue << " / "<<point<<std::endl;
 
-      for (unsigned int xcoeff = 0; xcoeff < m_Coeff.Cols(); ++xcoeff)
+      for (unsigned int xcoeff = 0; xcoeff < coeffCols; ++xcoeff)
         {
-        double xpart = vcl_pow( static_cast<double>(point[0]) / m_ProductWidth, static_cast<double>(xcoeff));
-        for (unsigned int ycoeff = 0; ycoeff < m_Coeff.Rows(); ++ycoeff)
+        double xpart = vcl_pow( static_cast<double>(point[0]) + invProductWidth, static_cast<double>(xcoeff));
+        for (unsigned int ycoeff = 0; ycoeff < coeffRows; ++ycoeff)
           {
-          double ypart = vcl_pow( static_cast<double>(point[1]) / m_ProductHeight, static_cast<double>(ycoeff));
-          a(i, xcoeff * m_Coeff.Rows() + ycoeff) = xpart * ypart;
-          //std::cout << "a(" << i << "," << xcoeff * m_Coeff.Rows() + ycoeff << ") = " <<  xpart * ypart << std::endl;
+          double ypart = vcl_pow( static_cast<double>(point[1]) * invProductHeight, static_cast<double>(ycoeff));
+          a(i, xcoeff * coeffRows + ycoeff) = xpart * ypart;
+          std::cout << "a(" << i << "," << xcoeff * coeffRows + ycoeff << ") = " <<  xpart * ypart << std::endl;
           }
         }
       }
 
-    // Create the linear system
+	// Create the linear system
+	std::cout<<a.cols()<<","<<a.rows()<<" === "<<b.size()<<" === "<<bestParams.size()<<std::endl;
     vnl_sparse_matrix_linear_system<double> linearSystem(a, b);
 
-    // And solve it
+	// And solve it
     vnl_lsqr linearSystemSolver(linearSystem);
+	std::cout << "EvaluateParam bestParams: " <<bestParams<< std::endl;
     linearSystemSolver.minimize(bestParams);
-
-    for (unsigned int xcoeff = 0; xcoeff < m_Coeff.Cols(); ++xcoeff)
+	
+    for (unsigned int xcoeff = 0; xcoeff < coeffCols; ++xcoeff)
       {
-      for (unsigned int ycoeff = 0; ycoeff < m_Coeff.Rows(); ++ycoeff)
+      for (unsigned int ycoeff = 0; ycoeff < coeffRows; ++ycoeff)
         {
-        m_Coeff(ycoeff, xcoeff) = bestParams(xcoeff * m_Coeff.Rows() + ycoeff);
-        //std::cout << "m_Coeff(" << ycoeff << "," << xcoeff << ") = " << m_Coeff(ycoeff, xcoeff) << std::endl;
+	    m_Coeff(ycoeff, xcoeff) = bestParams(xcoeff * coeffRows + ycoeff);
+	    //std::cout << "m_Coeff(" << ycoeff << "," << xcoeff << ") = " << m_Coeff(ycoeff, xcoeff) << std::endl;
         }
       }
     }
