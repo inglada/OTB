@@ -135,7 +135,6 @@ DecisionTree<AttributeValueType, LabelType>
     
     // if we get here it means that a verified test was  not found
     itkGenericExceptionMacro(<< "Example could not be handled by decision tree.");
-
     }
   else
     {
@@ -192,21 +191,27 @@ DecisionTree<AttributeValueType, LabelType>
       }
     
     if( ! found )                                         // attribute
-                           // not found
-                           // in the map
-      itkGenericExceptionMacro(<< "Example could not be handled by decision tree.");
-
-    // If we found one or several matching tests
-    typename std::vector< KeyType >::const_iterator ckIt = candidateKeys.begin();
-    while ( ckIt != candidateKeys.end() )
+      // not found
+      // in the map
       {
-      std::cout << (*ckIt).first << " " << (*ckIt).second << std::endl;
-      Pointer child = (*m_TreeMap)[(*ckIt)];
-      return child->Decide(example);
+      itkGenericExceptionMacro(<< "Example could not be handled by decision tree.");
+      }
+    else
+      {
+      // If we found one or several matching tests
+      typename std::vector< KeyType >::const_iterator ckIt = candidateKeys.begin();
+      while ( ckIt != candidateKeys.end() )
+  {
+  std::cout << (*ckIt).first << " " << (*ckIt).second << std::endl;
+  Pointer child = (*m_TreeMap)[(*ckIt)];
+  return child->Decide(example);
+  }
       }
 
     }
-
+  //added return statement to suppress warning, but if/then/else
+  //conditions make sure it is never reached 
+    return static_cast<LabelType>(0);
 }
 
 

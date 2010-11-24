@@ -929,7 +929,7 @@ void GDALImageIO::Write(const void* buffer)
     // If JPEG, set the image quality
     if( gdalDriverShortName.compare("JPEG") == 0 )
       {
-  option[0] = const_cast<char *>("QUALITY=95");
+      option[0] = const_cast<char *>("QUALITY=95");
  
       }
     
@@ -1056,9 +1056,13 @@ void GDALImageIO::InternalWriteImageInformation(const void* buffer)
     }
   else
     {
+    // buffer casted in unsigned long cause under Win32 the adress
+    // don't begin with 0x, the adress in not interpreted as
+    // hexadecimal but alpha numeric value, then the conversion to
+    // integer make us pointing to an non allowed memory block => Crash.
     std::ostringstream stream;
     stream << "MEM:::"
-           <<  "DATAPOINTER=" << buffer << ","
+           <<  "DATAPOINTER=" << (unsigned long)(buffer) << ","
            <<  "PIXELS=" << m_Dimensions[0] << ","
            <<  "LINES=" << m_Dimensions[1] << ","
            <<  "BANDS=" << m_NbBands << ","
