@@ -572,6 +572,7 @@ ConvertPixelBuffer<InputPixelType, OutputPixelType, OutputConvertTraits>
 
 // Convert Grayscale to Complex
 
+// Le bug double -> std::complex<double> vient certainement d'ici
 template < typename InputPixelType,
            typename OutputPixelType,
            class OutputConvertTraits
@@ -581,6 +582,7 @@ ConvertPixelBuffer<InputPixelType, OutputPixelType, OutputConvertTraits>
 ::ConvertGrayToComplex(InputPixelType* inputData, 
                    OutputPixelType* outputData , size_t size)
 {
+  std::cout<<"Convert gray to complex "<<std::endl;
   InputPixelType* endInput = inputData + size;
   while(inputData != endInput)
     {
@@ -589,7 +591,7 @@ ConvertPixelBuffer<InputPixelType, OutputPixelType, OutputConvertTraits>
       (*inputData));
     OutputConvertTraits::SetNthComponent(1, *outputData, 
       static_cast<OutputComponentType>
-      (*inputData));
+      (0.));
     inputData++;
     outputData++;
     }
@@ -605,12 +607,13 @@ ConvertPixelBuffer<InputPixelType, OutputPixelType, OutputConvertTraits>
                       int itkNotUsed(inputNumberOfComponents),
                       OutputPixelType* outputData , size_t size)
 {
+  OutputPixelType dummy;
   std::complex<InputPixelType>* endInput = inputData + size;
   while(inputData != endInput)
     {
     OutputConvertTraits::SetNthComponent(0, *outputData, 
-      static_cast<OutputComponentType>
-                                         (std::norm(*inputData)));
+      static_cast<OutputPixelType>
+                                         (SpecialCast(*inputData,dummy)));
     inputData++;
     outputData++;
     }
@@ -724,7 +727,7 @@ template<typename InputType, typename OutputType>
 OutputType
 SpecialCast(const std::complex<InputType>& in, const OutputType& itkNotUsed(dummy))
 {
-  return static_cast < OutputType >( in.real() );
+  return static_cast < OutputType >( std::abs(in) );
 }
 
 template<typename InputType, typename OutputType>
