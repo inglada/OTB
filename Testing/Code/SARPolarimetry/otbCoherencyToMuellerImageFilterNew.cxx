@@ -15,18 +15,28 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
-// this file defines the otbCommonTest for the test driver
-// and all it expects is that you have a function called RegisterTests
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "otbTestMain.h"
+#include "itkExceptionObject.h"
+#include <iostream>
 
-void RegisterTests()
+#include "otbVectorImage.h"
+#include "otbCoherencyToMuellerImageFilter.h"
+
+int otbCoherencyToMuellerImageFilterNew(int argc, char * argv[])
 {
-  //  REGISTER_TEST(otbGISTableSourceNew);
-  REGISTER_TEST(otbPipelineMemoryPrintCalculatorNew);
-  REGISTER_TEST(otbPipelineMemoryPrintCalculatorTest);
+  const unsigned int Dimension = 2;
+
+  typedef std::complex<double>   PixelType;
+  typedef otb::VectorImage<PixelType, Dimension> ImageType;
+
+  typedef otb::CoherencyToMuellerImageFilter<ImageType, ImageType> FilterType;
+
+  FilterType::Pointer filter = FilterType::New();
+
+  std::cout << filter << std::endl;
+
+  return EXIT_SUCCESS;
 }
