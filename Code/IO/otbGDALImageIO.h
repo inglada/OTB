@@ -137,7 +137,7 @@ protected:
   /** Determines the level of compression for written files.
    *  Range 0-9; 0 = none, 9 = maximum , default = 4 */
   int         m_CompressionLevel;
-  const char* m_currentfile;
+
   bool        m_IsIndexed;
 
   /** Dataset index to extract (starting at 0)*/
@@ -163,8 +163,6 @@ private:
 
   bool GDALInfoReportCorner(const char * corner_name, double x, double y,
                             double& dfGeoX, double& dfGeoY);
-
-  bool ParseHdfSubsetName(const std::string& id, std::string& key, std::string& name) const;
 
   bool m_FlagWriteImageInformation;
   bool m_CanStreamWrite;

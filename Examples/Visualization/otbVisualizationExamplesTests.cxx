@@ -15,17 +15,20 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#include "itkExceptionObject.h"
-#include "otbPrepareSRTMDirectory.h"
 
-int otbPrepareSRTMDirectoryNew(int argc, char * argv[])
+// this file defines the otbVisualizationExamplesTest for the test driver
+// and all it expects is that you have a function called RegisterTests
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
+#include <iostream>
+#include "otbTestMain.h"
+
+void RegisterTests()
 {
-
-  typedef otb::PrepareSRTMDirectory PrepareSRTMDirectoryType;
-
-  PrepareSRTMDirectoryType::Pointer prepareSRTM = PrepareSRTMDirectoryType::New();
-
-  std::cout << prepareSRTM << std::endl;
-
-  return EXIT_SUCCESS;
+  REGISTER_TEST(VectorDataRenderingTest);
 }
+
+#undef main
+#define main VectorDataRenderingTest
+#include "VectorDataRendering.cxx"
