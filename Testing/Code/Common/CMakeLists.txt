@@ -46,6 +46,12 @@ ADD_TEST(coTuSystemTests_IsA_Methods ${COMMON_TESTS1}
         ${OTB_DATA_ROOT}
         )
 
+ADD_TEST(coTvParseHdfSubsetName ${COMMON_TESTS1}
+        otbParseHdfSubsetName)
+
+ADD_TEST(coTvParseHdfFileName ${COMMON_TESTS1}
+        otbParseHdfFileName)
+
 # -------            otb::Configuration  -------------
 ADD_TEST(coTuConfigurationTest ${COMMON_TESTS1}
         otbConfigurationTest
@@ -788,8 +794,30 @@ ADD_TEST(coTvVectorDataToImageFilter ${COMMON_TESTS9}
    otbVectorDataToImageFilter
         ${LARGEINPUT}/VECTOR/MidiPyrenees/roads.shp
 	${TEMP}/coTvVectorDataToImageFilter.png
+        ${BASELINE_FILES}/DejaVuSans.ttf # font
 )
+
+ADD_TEST(coTvVectorDataToImageFilterBinary ${COMMON_TESTS9}
+     --compare-image ${NOTOL}
+	   	     ${BASELINE}/coTvVectorDataToImageFilterBinary.png
+                     ${TEMP}/coTvVectorDataToImageFilterBinary.png
+   otbVectorDataToImageFilterBinary
+        ${LARGEINPUT}/VECTOR/MidiPyrenees/roads.shp
+	${TEMP}/coTvVectorDataToImageFilterBinary.png
+)
+
+ADD_TEST(coTvVectorDataToImageFilterNoFonts ${COMMON_TESTS9}
+     --compare-image ${NOTOL}
+	   	     ${BASELINE}/coTvVectorDataToImageFilterNoFonts.png
+                     ${TEMP}/coTvVectorDataToImageFilterNoFonts.png
+   otbVectorDataToImageFilterNoFonts
+        ${LARGEINPUT}/VECTOR/MidiPyrenees/roads.shp
+	${TEMP}/coTvVectorDataToImageFilterNoFonts.png
+)
+
 ENDIF(OTB_DATA_USE_LARGEINPUT)
+
+
 
 
 IF(OTB_DATA_USE_LARGEINPUT)
@@ -801,6 +829,7 @@ ADD_TEST(coTvVectorDataToImageFilterSensorModel ${COMMON_TESTS9}
         ${LARGEINPUT}/VECTOR/MidiPyrenees/roads.shp
         ${LARGEINPUT}/QUICKBIRD/TOULOUSE/000000128955_01_P001_PAN/02APR01105228-P1BS-000000128955_01_P001.TIF
 	${TEMP}/coTvVectorDataToImageFilterSensorModel.png
+        ${BASELINE_FILES}/DejaVuSans.ttf # font
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
@@ -815,6 +844,7 @@ ADD_TEST(coTvVectorDataToImageFilterWorld ${COMMON_TESTS9}
         500 500 #Size
         -20 60 #lon/lat
         0.1 -0.1 #spacing lon/lat
+        ${BASELINE_FILES}/DejaVuSans.ttf # font
 )
 
 
@@ -941,6 +971,14 @@ ADD_TEST(coTuVariableLengthVectorConverter ${COMMON_TESTS12}
 #ADD_TEST(coTvVariableLengthVectorConverter ${COMMON_TESTS12}
 #    otbVariableLengthVectorConverter
 #    )
+
+ADD_TEST(coTuRGBAPixelConverter ${COMMON_TESTS12}
+    otbRGBAPixelConverterNew
+    )
+
+ADD_TEST(coTvRGBAPixelConverter ${COMMON_TESTS12}
+    otbRGBAPixelConverter
+    )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbCommonTests13 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1079,6 +1117,8 @@ otbVectorDataToImageFilterNew.cxx
 otbVectorDataToImageFilter.cxx
 otbVectorDataToImageFilterSensorModel.cxx
 otbVectorDataToImageFilterWorld.cxx
+otbVectorDataToImageFilterNoFonts.cxx
+
 )
 ENDIF(OTB_USE_MAPNIK)
 
@@ -1110,6 +1150,7 @@ SET(BasicCommon_SRCS12
 otbCommonTests12.cxx
 otbParserTest.cxx
 otbVariableLengthVectorConverter.cxx
+otbRGBAPixelConverter.cxx
 )
 
 
