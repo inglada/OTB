@@ -48,4 +48,6 @@ void RegisterTests()
   REGISTER_TEST(otbCoherencyToMuellerImageFilter);
   REGISTER_TEST(otbMuellerToCircularPolarisationImageFilterNew);
   REGISTER_TEST(otbMuellerToCircularPolarisationImageFilter);
+  REGISTER_TEST(otbMuellerToPolarisationDegreeAndPowerImageFilterNew);
+  REGISTER_TEST(otbMuellerToPolarisationDegreeAndPowerImageFilter);
 }

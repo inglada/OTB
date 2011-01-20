@@ -259,6 +259,22 @@ ADD_TEST(sarTvMuellerToCircularPolarisationImageFilter ${SARPOLARIMETRY_TESTS1}
         ${TEMP}/sarTvMuellerToCircularPolarisationImageFilter.tif
 	)
 
+# Mueller To polarisation degree and power Image Filter
+ADD_TEST(sarTuMuellerToPolarisationDegreeAndPowerImageFilterNew ${SARPOLARIMETRY_TESTS1}
+		otbMuellerToPolarisationDegreeAndPowerImageFilterNew
+)
+
+ADD_TEST(sarTvMuellerToPolarisationDegreeAndPowerImageFilter ${SARPOLARIMETRY_TESTS1}
+  --compare-image ${EPSILON_12}   ${BASELINE}/sarTvMuellerToPolarisationDegreeAndPowerImageFilter.tif
+                    ${TEMP}/sarTvMuellerToPolarisationDegreeAndPowerImageFilter.tif
+        otbMuellerToPolarisationDegreeAndPowerImageFilter
+        ${INPUTDATA}/RSAT_imagery_HH.tif
+        ${INPUTDATA}/RSAT_imagery_HV.tif
+        ${INPUTDATA}/RSAT_imagery_HV.tif
+        ${INPUTDATA}/RSAT_imagery_VV.tif
+        ${TEMP}/sarTvMuellerToPolarisationDegreeAndPowerImageFilter.tif
+	)
+
 # A enrichir
 SET(SARPOLARIMETRY_SRCS1
 otbSARPolarimetryTests1.cxx
@@ -284,6 +300,8 @@ otbCoherencyToMuellerImageFilterNew.cxx
 otbCoherencyToMuellerImageFilter.cxx
 otbMuellerToCircularPolarisationImageFilterNew.cxx
 otbMuellerToCircularPolarisationImageFilter.cxx
+otbMuellerToPolarisationDegreeAndPowerImageFilterNew.cxx
+otbMuellerToPolarisationDegreeAndPowerImageFilter.cxx
 )
 
 OTB_ADD_EXECUTABLE(otbSARPolarimetryTests1 "${SARPOLARIMETRY_SRCS1}" "OTBSARPolarimetry;OTBIO;OTBTesting")
