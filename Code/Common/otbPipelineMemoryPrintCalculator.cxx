@@ -19,9 +19,10 @@
 #include "otbPipelineMemoryPrintCalculator.h"
 
 #include "otbMath.h"
-#include "itkImage.h"
-#include "itkVectorImage.h"
+#include "otbImage.h"
+#include "otbVectorImage.h"
 #include "itkFixedArray.h"
+#include "otbImageList.h"
 
 namespace otb
 {
@@ -30,10 +31,15 @@ const double PipelineMemoryPrintCalculator::ByteToMegabyte = 1./vcl_pow(2.0, 20)
 PipelineMemoryPrintCalculator
 ::PipelineMemoryPrintCalculator()
   : m_MemoryPrint(0),
-    m_AvailableMemory(256),
+    m_AvailableMemory(256000000),
     m_OptimalNumberOfStreamDivisions(1),
     m_DataToWrite(NULL),
-    m_BiasCorrectionFactor(1.)
+    m_BiasCorrectionFactor(1.),
+    m_VisitedProcessObjects()
+{}
+
+PipelineMemoryPrintCalculator
+::~PipelineMemoryPrintCalculator()
 {}
 
 void
@@ -55,6 +61,9 @@ void
 PipelineMemoryPrintCalculator
 ::Compute()
 {
+  // Clear the visisted process objects set
+  m_VisitedProcessObjects.clear();
+
   // Dry run of pipeline synchronisation
   m_DataToWrite->UpdateOutputInformation();
   m_DataToWrite->SetRequestedRegionToLargestPossibleRegion();
@@ -89,6 +98,17 @@ PipelineMemoryPrintCalculator
 {
   // This variable will store the final print
   MemoryPrintType print = 0;
+
+  // Check if this process object has already been visited
+  if(m_VisitedProcessObjects.count(process))
+    {
+    return print;
+    }
+  // Else register it as a visited process object
+  else
+    {
+    m_VisitedProcessObjects.insert(process);
+    }
 
   // Retrieve the array of inputs
   ProcessObjectType::DataObjectPointerArray inputs = process->GetInputs();
@@ -144,6 +164,31 @@ PipelineMemoryPrintCalculator
     return image->GetRequestedRegion().GetNumberOfPixels()              \
       * image->GetNumberOfComponentsPerPixel() * sizeof(type); \
     }                                                                   \
+  if(dynamic_cast<ImageList<Image<type,2> > *>(data) != NULL)   \
+    {                                                                   \
+    ImageList<Image<type,2> > * imageList = dynamic_cast<otb::ImageList<otb::Image<type,2> > *>(data); \
+    MemoryPrintType print(0);                                         \
+    for(ImageList<Image<type,2> >::ConstIterator it = imageList->Begin(); \
+       it != imageList->End();++it)                                    \
+       {                                                             \
+       print += it.Get()->GetRequestedRegion().GetNumberOfPixels()   \
+       * it.Get()->GetNumberOfComponentsPerPixel() * sizeof(type); \
+       }                                                           \
+    return print;                                                  \
+    }                                                              \
+  if(dynamic_cast<ImageList<VectorImage<type,2> > *>(data) != NULL)   \
+    {                                                                   \
+    ImageList<VectorImage<type,2> > * imageList = dynamic_cast<otb::ImageList<otb::VectorImage<type,2> > *>(data); \
+    MemoryPrintType print(0);                                         \
+    for(ImageList<VectorImage<type,2> >::ConstIterator it = imageList->Begin(); \
+       it != imageList->End();++it)                                    \
+       {                                                             \
+       print += it.Get()->GetRequestedRegion().GetNumberOfPixels()   \
+       * it.Get()->GetNumberOfComponentsPerPixel() * sizeof(type); \
+       }                                                           \
+    return print;                                                  \
+    }                                                              \
+    
 
   // Call the macro for each pixel type
   OTB_IMAGE_SIZE_BLOCK(unsigned char)
