@@ -9,15 +9,14 @@
 //----------------------------------------------------------------------------
 // $Id$
 
-#ifndef Leader_h
-#define Leader_h
+#ifndef Trailer_h
+#define Trailer_h
 
 #include <iostream>
 #include <RadarSat/CommonRecord/FileDescriptor.h>
 #include <RadarSat/CommonRecord/DataSetSummary.h>
 #include <RadarSat/CommonRecord/DataQuality.h>
 #include <RadarSat/CommonRecord/DataHistogramSignalData.h>
-#include "DataHistogramProcessedData.h"
 #include <map>
 
 namespace ossimplugins
@@ -25,65 +24,62 @@ namespace ossimplugins
 class RadiometricData;
 class RadiometricCompensationData;
 class AttitudeData;
-class PlatformPositionData;
 class ProcessingParameters;
-class DataHistogramProcessedData;
 class DataHistogramSignalData;
 class DataQuality;
 class DataSetSummary;
 class FileDescriptor;
 
 /**
- * @ingroup LeaderFile
- * @brief This class is able to read the leader file of the RadarSat file structure
- * @author Magellium, Pacome Dentraygues
+ * @ingroup TrailerFile
+ * @brief This class is able to read the trailer file of the RadarSat file structure
+ * @author CS, Mickaël Savinaud
  * @version 1.0
- * @date 23-11-07
+ * @date 25-02-2011
  */
-class Leader
+class Trailer
 {
 public:
   /**
    * @brief Constructor
    */
-  Leader();
+  Trailer();
 
   /**
    * @brief Destructor
    */
-  ~Leader();
+  ~Trailer();
 
   /**
-   * @brief This function writes the Leader in a stream
+   * @brief This function writes the Trailer in a stream
    */
-  friend std::ostream& operator<<(std::ostream& os, const Leader& data);
+  friend std::ostream& operator<<(std::ostream& os, const Trailer& data);
 
   /**
-   * @brief This function reads a Leader from a stream
+   * @brief This function reads a Trailer from a stream
    */
-  friend std::istream& operator>>(std::istream& is, Leader& data);
+  friend std::istream& operator>>(std::istream& is, Trailer& data);
 
   /**
    * @brief Copy constructor
    */
-  Leader(const Leader& rhs);
+  Trailer(const Trailer& rhs);
 
   /**
    * @brief Copy operator
    */
-  Leader& operator=(const Leader& rhs);
+  Trailer& operator=(const Trailer& rhs);
 
   /**
-   * @brief Removes all the previous records from the Leader
+   * @brief Removes all the previous records from the Trailer
    */
   void ClearRecords();
 
   RadiometricData * get_RadiometricData();
   RadiometricCompensationData * get_RadiometricCompensationData();
   AttitudeData * get_AttitudeData();
-  PlatformPositionData * get_PlatformPositionData();
   ProcessingParameters * get_ProcessingParameters();
-  DataHistogramProcessedData * get_DataHistogramProcessedData();
+  DataHistogramProcessedData8 * get_DataHistogramProcessedData8();
   DataHistogramSignalData * get_DataHistogramSignalData();
   DataQuality * get_DataQuality();
   DataSetSummary * get_DataSetSummary();
@@ -94,9 +90,8 @@ protected:
   static const int RadiometricDataID;
   static const int RadiometricCompensationDataID;
   static const int AttitudeDataID;
-  static const int PlatformPositionDataID;
   static const int ProcessingParametersID;
-  static const int DataHistogramProcessedDataID;
+  static const int DataHistogramProcessedData8ID;
   static const int DataHistogramSignalDataID;
   static const int DataQualityID;
   static const int DataSetSummaryID;

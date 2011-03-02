@@ -16,7 +16,7 @@
 
 #include <RadarSat/RadarSatRecord.h>
 #include <RadarSat/RadarSatRecordHeader.h>
-#include <RadarSat/Leader/DataHistogramRecord.h>
+#include "DataHistogramRecord.h"
 
 namespace ossimplugins
 {
@@ -154,5 +154,7 @@ private:
 
 
 };
+
+typedef DataHistogramSignalData DataHistogramProcessedData8;
 }
 #endif
