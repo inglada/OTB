@@ -293,7 +293,7 @@ void GDALImageIO::Read(void* buffer)
   // This special case is due to the fact the CINT/CLONG types
   // do not exists in ITK. In this case we only report the first band
   // TODO This should be fixed
-  if (GDALDataTypeIsComplex(m_PxType)
+  /*if (GDALDataTypeIsComplex(m_PxType)
       && (m_PxType != GDT_CFloat32)
       && (m_PxType != GDT_CFloat64))
     {
@@ -381,7 +381,7 @@ void GDALImageIO::Read(void* buffer)
 
   // In the indexed case, one has to retrieve the index image and the
   // color table, and translate p to a 4 components color values buffer
-  else if (m_IsIndexed)
+  else*/ if (m_IsIndexed)
     {
     // TODO: This is a very special case and seems to be working only
     // for unsigned char pixels. There might be a gdal method to do
@@ -626,7 +626,15 @@ void GDALImageIO::InternalReadImageInformation()
     {
     SetComponentType(DOUBLE);
     }
-  else if ( (m_PxType == GDT_CFloat32) || (m_PxType == GDT_CInt32) || (m_PxType == GDT_CInt16) )
+  else if (m_PxType == GDT_CInt16)
+    {
+    SetComponentType(CSHORT);
+    }
+  else if (m_PxType == GDT_CInt32)
+    {
+    SetComponentType(CINT);
+    }
+  else if (m_PxType == GDT_CFloat32)
     {
     SetComponentType(CFLOAT);
     }
@@ -671,13 +679,21 @@ void GDALImageIO::InternalReadImageInformation()
     {
     m_BytePerPixel = 8;
     }
+  else if (this->GetComponentType() == CSHORT)
+    {
+    m_BytePerPixel = sizeof(std::complex<short>);
+    }
+  else if (this->GetComponentType() == CINT)
+    {
+    m_BytePerPixel = sizeof(std::complex<int>);
+    }
   else if (this->GetComponentType() == CFLOAT)
     {
-    if (m_PxType == GDT_CInt16)
+    /*if (m_PxType == GDT_CInt16)
       m_BytePerPixel = sizeof(std::complex<short>);
     else if (m_PxType == GDT_CInt32)
       m_BytePerPixel = sizeof(std::complex<int>);
-    else
+    else*/
       m_BytePerPixel = sizeof(std::complex<float>);
     }
   else if (this->GetComponentType() == CDOUBLE)
@@ -1075,12 +1091,26 @@ void GDALImageIO::Write(const void* buffer)
     lFirstColumn = 0;
     }
 
+  // Convert buffer from void * to unsigned char *
+  //unsigned char *p = static_cast<unsigned char*>( const_cast<void *>(buffer));
+  //printDataBuffer(p,  m_PxType, m_NbBands, 10*2); // Buffer incorrect
+
   // If driver supports streaming
   if (m_CanStreamWrite)
     {
     otbMsgDevMacro(<< "RasterIO Write requested region : " << this->GetIORegion())
     itk::TimeProbe chrono;
     chrono.Start();
+                 "\n, lNbColumns =" << lNbColumns <<
+                 "\n, lNbLines =" << lNbLines <<
+                 "\n, m_PxType =" << GDALGetDataTypeName(m_PxType) <<
+                 "\n, m_NbBands =" << m_NbBands <<
+                 "\n, m_BytePerPixel ="<< m_BytePerPixel <<
+                 "\n, Pixel offset =" << m_BytePerPixel * m_NbBands <<  // is nbComp * BytePerPixel
+                 "\n, Line offset =" << m_BytePerPixel * m_NbBands * lNbColumns << // is pixelOffset * nbColumns
+                 "\n, Band offset =" <<  m_BytePerPixel << //  is BytePerPixel
+                 std::endl;*/
+
     CPLErr lCrGdal = m_Dataset->GetDataSet()->RasterIO(GF_Write,
                                                        lFirstColumn,
                                                        lFirstLine,
@@ -1158,35 +1188,33 @@ void GDALImageIO::InternalWriteImageInformation(const void* buffer)
     itkExceptionMacro(<< "Dimensions are not defined.");
     }
 
-  if ((this->GetPixelType() == COMPLEX) && (m_NbBands / 2 > 0))
+  if ((this->GetPixelType() == COMPLEX) /*&& (m_NbBands / 2 > 0)*/)
     {
-    m_NbBands /= 2;
+    //m_NbBands /= 2;
 
-    if (this->GetComponentType() == SHORT)
+    if (this->GetComponentType() == CSHORT)
       {
       m_BytePerPixel = 4;
       m_PxType = GDT_CInt16;
       }
-    else if (this->GetComponentType() == INT)
+    else if (this->GetComponentType() == CINT)
       {
       m_BytePerPixel = 8;
       m_PxType = GDT_CInt32;
       }
-    else if (this->GetComponentType() == DOUBLE)
+    else if (this->GetComponentType() == CFLOAT)
+      {
+      m_BytePerPixel = 8;
+      m_PxType = GDT_CFloat32;
+      }
+    else if (this->GetComponentType() == CDOUBLE)
       {
       m_BytePerPixel = 16;
       m_PxType = GDT_CFloat64;
       }
-    else if (this->GetComponentType() == FLOAT)
-      {
-      m_BytePerPixel = 8;
-      m_PxType = GDT_CFloat32;
-      }
     else
       {
-      this->SetComponentType(FLOAT);
-      m_BytePerPixel = 8;
-      m_PxType = GDT_CFloat32;
+      itkExceptionMacro(<< "This complex type is not defined :" << this->GetPixelTypeAsString(this->GetPixelType()) );
       }
     }
   else

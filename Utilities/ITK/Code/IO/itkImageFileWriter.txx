@@ -228,7 +228,8 @@ ImageFileWriter<TInputImage>
   else
     {
       // Set the pixel and component type; the number of components.
-      m_ImageIO->SetPixelTypeInfo(typeid(InputImagePixelType));  
+    std::cout << "typeid(InputImagePixelType) = " << typeid(InputImagePixelType).name() <<std::endl;
+    m_ImageIO->SetPixelTypeInfo(typeid(InputImagePixelType));
     }
 
   // Setup the image IO for writing.
@@ -347,6 +348,7 @@ ImageFileWriter<TInputImage>
 
   // Release upstream data if requested
   this->ReleaseInputs();
+
 }
 
 
@@ -417,7 +419,6 @@ ImageFileWriter<TInputImage>
 
 
   m_ImageIO->Write(dataPtr);
-
 }
 
 
