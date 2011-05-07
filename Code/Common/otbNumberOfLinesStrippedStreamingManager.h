@@ -23,7 +23,7 @@
 namespace otb
 {
 
-/** \class NumberOfLinesStrippedStrippedStreamingManager
+/** \class NumberOfLinesStrippedStreamingManager
  *  \brief This class computes the divisions needed to stream an image by strips,
  *  driven by a user-defined desired number of lines per strips.
  *

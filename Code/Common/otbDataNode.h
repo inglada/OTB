@@ -102,7 +102,7 @@ public:
 //   typedef std::pair<std::string, std::string>         FieldType;
 
   /** Accessors */
-  itkGetMacro(NodeType, NodeType);
+  itkGetConstMacro(NodeType, NodeType);
   itkGetStringMacro(NodeId);
   itkSetStringMacro(NodeId);
 
@@ -222,6 +222,19 @@ public:
    * \return The value of the field. A default value is returned if the key was not found.
    */
   int GetFieldAsInt(std::string key) const;
+
+  /**
+   * Add a field to the node.
+   * \param key The name of the field.
+   * \param value The value of the field.
+   */
+  void SetFieldAsDouble(std::string key, double value);
+  /**
+   * Returns the value associated with a field name.
+   * \param key The name of the field.
+   * \return The value of the field. A default value is returned if the key was not found.
+   */
+  double GetFieldAsDouble(std::string key) const;
 
   /**
    * Remove the field associated with the given key, if possible.

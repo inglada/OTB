@@ -56,7 +56,7 @@ int otbStreamingImageFileWriterTestCalculateNumberOfDivisions(int argc, char* ar
     }
   else if (MethodCalculateNumberOfStreamDivision == "NUMBER_OF_STREAM_DIVISIONS")
     {
-    writer->SetNumberOfStreamDivisions(::atoi(argv[4]));
+    writer->SetNumberOfDivisionsStrippedStreaming(::atoi(argv[4]));
     }
   else if (MethodCalculateNumberOfStreamDivision == "BUFFER_MEMORY_SIZE")
     {
@@ -68,12 +68,12 @@ int otbStreamingImageFileWriterTestCalculateNumberOfDivisions(int argc, char* ar
     }
   else if (MethodCalculateNumberOfStreamDivision == "TILING_STREAM_DIVISIONS")
     {
-    writer->SetTilingStreamDivisions();
+    writer->SetAutomaticTiledStreaming();
     }
   else if (MethodCalculateNumberOfStreamDivision == "TILING_NUMBER_OF_STREAM_DIVISIONS")
     {
     std::cout << "Number : " << ::atoi(argv[4]) << std::endl;
-    writer->SetTilingStreamDivisions(::atoi(argv[4]));
+    writer->SetNumberOfDivisionsTiledStreaming(::atoi(argv[4]));
     }
   else if (MethodCalculateNumberOfStreamDivision == "DEFAULT")
     {

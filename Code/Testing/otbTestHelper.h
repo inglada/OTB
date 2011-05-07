@@ -24,10 +24,12 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "itkObject.h"
 #include "otbMetaDataKey.h"
 
-// OGR Headers files
-#include "ogrsf_frmts.h"
+class OGRFeature;
+class OGRGeometry;
+class OGRLayer;
 
 namespace otb
 {
@@ -35,10 +37,16 @@ namespace otb
  * \class TestHelper
  * \brief Helper class to perform the baseline comparisons during the tests
  */
-class /*ITK_EXPORT*/ TestHelper
+class /*ITK_EXPORT*/ TestHelper : itk::Object
 {
 public:
+
+  typedef std::vector<std::string> StringList;
+  typedef StringList::const_iterator StringListIt;
+
   TestHelper() :
+    m_ToleranceDiffValue(0),
+    m_Epsilon(0),
     m_EpsilonBoundaryChecking(1.0e-30),
     m_ReportErrors(false),
     m_IgnoreLineOrder(false)
@@ -46,7 +54,23 @@ public:
 
   ~TestHelper(){}
 
-  std::map<std::string, int> RegressionTestbaselines(char *baselineFilename) const;
+  int RegressionTestAllImages(const StringList& baselineFilenamesImage, 
+                              const StringList& testFilenamesImage);
+
+  int RegressionTestAllMetaData(const StringList& baselineFilenamesMetaData,
+                                const StringList& testFilenamesMetaData);
+
+  int RegressionTestAllAscii(const StringList& baselineFilenamesAscii,
+                             const StringList& testFilenamesAscii,
+                             const StringList& ignoredLines);
+
+  int RegressionTestAllBinary(const StringList& baselineFilenamesBinary,
+                              const StringList& testFilenamesBinary);
+
+  int RegressionTestAllOgr(const StringList& baselineFilenamesOgr,
+                           const StringList& testFilenamesOgr);
+
+  std::map<std::string, int> RegressionTestBaselines(char *baselineFilename) const;
 
   int RegressionTestImage(int cpt, const char *testImageFilename, const char *baselineImageFilename,
                           const double toleranceDiffPixelImage) const;
@@ -62,28 +86,14 @@ public:
   int RegressionTestMetaData(const char *testImageFilename, const char *baselineImageFilename,
                              const double toleranceDiffPixelImage) const;
 
-  void ReportErrorsOn()
-  {
-    m_ReportErrors = true;
-  }
-  void ReportErrorsOff()
-  {
-    m_ReportErrors = false;
-  }
+  itkSetMacro(ReportErrors, bool);
+  itkBooleanMacro(ReportErrors);
+  itkSetMacro(IgnoreLineOrder, bool);
+  itkBooleanMacro(IgnoreLineOrder);
 
-  void IgnoreLineOrderOn()
-  {
-    m_IgnoreLineOrder = true;
-  }
-  void IgnoreLineOrderOff()
-  {
-    m_IgnoreLineOrder = false;
-  }
-
-  void SetEpsilonBoundaryChecking(double epsilonBoundary)
-  {
-    m_EpsilonBoundaryChecking = epsilonBoundary;
-  }
+  itkSetMacro(ToleranceDiffValue, double);
+  itkSetMacro(Epsilon, double);
+  itkSetMacro(EpsilonBoundaryChecking, double);
 
 private:
   bool isNumber(int i) const;
@@ -113,6 +123,8 @@ private:
   static void DumpOGRFeature(FILE* fileid, OGRFeature* feature, char** papszOptions = NULL);
   static void DumpOGRGeometry(FILE* fileid, OGRGeometry* geometry, const char * pszPrefix, char** papszOptions = NULL);
 
+  double m_ToleranceDiffValue;
+  double m_Epsilon;
   double m_EpsilonBoundaryChecking;
   bool   m_ReportErrors;
   bool   m_IgnoreLineOrder;

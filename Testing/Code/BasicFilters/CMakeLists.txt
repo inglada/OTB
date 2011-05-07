@@ -30,6 +30,8 @@ SET(BASICFILTERS_TESTS11 ${CXX_TEST_PATH}/otbBasicFiltersTests11)
 SET(BASICFILTERS_TESTS12 ${CXX_TEST_PATH}/otbBasicFiltersTests12)
 SET(BASICFILTERS_TESTS13 ${CXX_TEST_PATH}/otbBasicFiltersTests13)
 SET(BASICFILTERS_TESTS14 ${CXX_TEST_PATH}/otbBasicFiltersTests14)
+SET(BASICFILTERS_TESTS15 ${CXX_TEST_PATH}/otbBasicFiltersTests15)
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbBasicFiltersTests1 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1112,7 +1114,7 @@ ADD_TEST(bfTvContinuousMinimumMaximumImageCalculatorTest ${BASICFILTERS_TESTS9}
 
 ADD_TEST(bfTuMeanShiftImageFilterNew ${BASICFILTERS_TESTS9}
         otbMeanShiftImageFilterNew )
-
+# Nb Stream = not defined and Nb Thread = not defined 
 ADD_TEST(bfTvMeanShiftImageFilter ${BASICFILTERS_TESTS9}
 --compare-n-images ${EPSILON_7} 4
 		${BASELINE}/bfMeanShiftImageFilterOutput.tif
@@ -1129,9 +1131,9 @@ ADD_TEST(bfTvMeanShiftImageFilter ${BASICFILTERS_TESTS9}
 	${TEMP}/bfMeanShiftImageFilterClusteredOutput.tif
 	${TEMP}/bfMeanShiftImageFilterLabeledClusteredOutput.tif
 	${TEMP}/bfMeanShiftImageFilterClusterBoundariesOutput.tif
-	16 16 10 1.0 1 1
+	16 16 10 1.0 0 0
 	)
-
+# Nb Stream = 1 and Nb Thread = 1
 ADD_TEST(bfTvMeanShiftImageFilterNotStreamedNotThreaded ${BASICFILTERS_TESTS9}
 --compare-n-images ${EPSILON_7} 4
 		${BASELINE}/bfMeanShiftImageFilterOutput.tif
@@ -1148,7 +1150,84 @@ ADD_TEST(bfTvMeanShiftImageFilterNotStreamedNotThreaded ${BASICFILTERS_TESTS9}
 	${TEMP}/bfMeanShiftImageFilterNotStreamedNotThreadedClusteredOutput.tif
 	${TEMP}/bfMeanShiftImageFilterNotStreamedNotThreadedLabeledClusteredOutput.tif
 	${TEMP}/bfMeanShiftImageFilterNotStreamedNotThreadedClusterBoundariesOutput.tif
-	16 16 10 1.0 0 0
+	16 16 10 1.0 1 1
+	)
+# Nb Stream = 4 and Nb Thread = 1
+ADD_TEST(bfTvMeanShiftImageFilterStreamed4_Threaded1 ${BASICFILTERS_TESTS9}
+--compare-n-images ${EPSILON_7} 4
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded1Output.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1Output.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded1ClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1ClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded1LabeledClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1LabeledClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded1ClusterBoundariesOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1ClusterBoundariesOutput.tif
+        otbMeanShiftImageFilter
+	${INPUTDATA}/QB_Suburb.png
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1Output.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1ClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1LabeledClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded1ClusterBoundariesOutput.tif
+	16 16 10 1.0 4 1
+	)
+# Nb Stream = 1 and Nb Thread = 4
+ADD_TEST(bfTvMeanShiftImageFilterStreamed1_Threaded4 ${BASICFILTERS_TESTS9}
+--compare-n-images ${EPSILON_7} 4
+		${BASELINE}/bfMeanShiftImageFilterStreamed1Threaded4Output.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4Output.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed1Threaded4ClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4ClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed1Threaded4LabeledClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4LabeledClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed1Threaded4ClusterBoundariesOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4ClusterBoundariesOutput.tif
+        otbMeanShiftImageFilter
+	${INPUTDATA}/QB_Suburb.png
+	${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4Output.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4ClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4LabeledClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed1Threaded4ClusterBoundariesOutput.tif
+	16 16 10 1.0 1 4
+	)
+# Nb Stream = 2 and Nb Thread = 2	
+ADD_TEST(bfTvMeanShiftImageFilterStreamed2_Threaded2 ${BASICFILTERS_TESTS9}
+--compare-n-images ${EPSILON_7} 4
+		${BASELINE}/bfMeanShiftImageFilterStreamed2Threaded2Output.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2Output.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed2Threaded2ClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2ClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed2Threaded2LabeledClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2LabeledClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed2Threaded2ClusterBoundariesOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2ClusterBoundariesOutput.tif
+        otbMeanShiftImageFilter
+	${INPUTDATA}/QB_Suburb.png
+	${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2Output.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2ClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2LabeledClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed2Threaded2ClusterBoundariesOutput.tif
+	16 16 10 1.0 2 2
+	)
+
+# Nb Stream = 4 and Nb Thread = 4
+ADD_TEST(bfTvMeanShiftImageFilterStreamed4_Threaded4 ${BASICFILTERS_TESTS9}
+--compare-n-images ${EPSILON_7} 4
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded4Output.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4Output.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded4ClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4ClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded4LabeledClusteredOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4LabeledClusteredOutput.tif
+		${BASELINE}/bfMeanShiftImageFilterStreamed4Threaded4ClusterBoundariesOutput.tif
+		${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4ClusterBoundariesOutput.tif
+        otbMeanShiftImageFilter
+	${INPUTDATA}/QB_Suburb.png
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4Output.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4ClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4LabeledClusteredOutput.tif
+	${TEMP}/bfMeanShiftImageFilterStreamed4Threaded4ClusterBoundariesOutput.tif
+	16 16 10 1.0 4 4
 	)
 
 ADD_TEST(bfTuMeanShiftVectorImageFilterNew ${BASICFILTERS_TESTS9}
@@ -1912,6 +1991,85 @@ ADD_TEST(bfTvLabelObjectOpeningMuParserFilterTest ${BASICFILTERS_TESTS14}
     "SHAPE_Elongation>8"
 )
 
+# -----------------------  otbVectorDataToRandomLineGenerator  -----------------------
+
+ADD_TEST(bfTuVectorDataToRandomLineGeneratorNew ${BASICFILTERS_TESTS14}
+  otbVectorDataToRandomLineGeneratorNew
+)
+
+ADD_TEST(bfTuVectorDataToRandomLineGenerator ${BASICFILTERS_TESTS14}
+  --compare-ogr ${NOTOL}
+  ${BASELINE_FILES}/bfTvVectorDataToRandomLineGeneratorOutput.shp
+  ${TEMP}/bfTvVectorDataToRandomLineGeneratorOutput.shp
+  otbVectorDataToRandomLineGenerator
+  ${INPUTDATA}/ObjectReco/Boats/maur_B010202_01Polygons.shp
+  ${TEMP}/bfTvVectorDataToRandomLineGeneratorOutput.shp
+)
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbBasicFiltersTests15 ~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# -----------------------  otbNDVIDataNodeFeatureFunction  -----------------------
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST(bfTuNDVIDataNodeFeatureFunctionNew ${BASICFILTERS_TESTS15}
+  otbNDVIDataNodeFeatureFunctionNew
+)
+
+ADD_TEST(bfTvNDVIDataNodeFeatureFunction_Line ${BASICFILTERS_TESTS15}
+ --compare-ogr ${NOTOL}
+  ${BASELINE_FILES}/bfTvNDVIDataNodeFeatureFunctionOutput_Line.shp
+  ${TEMP}/bfTvNDVIDataNodeFeatureFunctionOutput_Line.shp
+  otbNDVIDataNodeFeatureFunction
+  	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL_ROADS.shp
+	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL.TIF
+	${INPUTDATA}/DEM/srtm_directory
+	${TEMP}/bfTvNDVIDataNodeFeatureFunctionOutput_Line.shp
+	0
+)
+
+ADD_TEST(bfTvNDVIDataNodeFeatureFunction_Polygon ${BASICFILTERS_TESTS15}
+ --compare-ogr ${NOTOL}
+  ${BASELINE_FILES}/bfTvNDVIDataNodeFeatureFunctionOutput_Polygon.shp
+  ${TEMP}/bfTvNDVIDataNodeFeatureFunctionOutput_Polygon.shp
+  otbNDVIDataNodeFeatureFunction
+  	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL_BUILDINGS.shp
+	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL.TIF
+	${INPUTDATA}/DEM/srtm_directory
+	${TEMP}/bfTvNDVIDataNodeFeatureFunctionOutput_Polygon.shp
+	0
+)
+
+ADD_TEST(bfTuSpectralAngleDataNodeFeatureFunctionNew ${BASICFILTERS_TESTS15}
+  otbSpectralAngleDataNodeFeatureFunctionNew
+)
+
+ADD_TEST(bfTvSpectralAngleDataNodeFeatureFunction_Line ${BASICFILTERS_TESTS15}
+  --compare-ogr ${NOTOL}
+  ${BASELINE_FILES}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Line.shp
+  ${TEMP}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Line.shp
+ 	otbSpectralAngleDataNodeFeatureFunction
+  	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL_ROADS.shp
+	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL.TIF
+	${INPUTDATA}/DEM/srtm_directory
+	${TEMP}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Line.shp
+	0
+)
+
+ADD_TEST(bfTvSpectralAngleDataNodeFeatureFunction_Polygon ${BASICFILTERS_TESTS15}
+  --compare-ogr ${NOTOL}
+  ${BASELINE_FILES}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Polygon.shp
+  ${TEMP}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Polygon.shp
+ 	otbSpectralAngleDataNodeFeatureFunction
+  	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL_BUILDINGS.shp
+	${OTB_DATA_LARGEINPUT_ROOT}/DEMPSTER-SHAFER/ROI_QB_RANGUEUIL.TIF
+	${INPUTDATA}/DEM/srtm_directory
+	${TEMP}/bfTvSpectralAngleDataNodeFeatureFunctionOutput_Polygon.shp
+	0
+)
+
+ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 
 # A enrichir
@@ -2168,8 +2326,15 @@ otbBasicFiltersTests14.cxx
 otbConnectedComponentMuParserFunctorTest.cxx
 otbLabelObjectOpeningMuParserFilterNew.cxx
 otbLabelObjectOpeningMuParserFilterTest.cxx
+otbVectorDataToRandomLineGenerator.cxx
 )
-
+IF(OTB_DATA_USE_LARGEINPUT)
+SET(BasicFilters_SRCS15
+otbBasicFiltersTests15.cxx
+otbNDVIDataNodeFeatureFunction.cxx
+otbSpectralAngleDataNodeFeatureFunction.cxx
+)
+ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 OTB_ADD_EXECUTABLE(otbBasicFiltersTests1 "${BasicFilters_SRCS1}" "OTBBasicFilters;OTBIO;OTBTesting")
 OTB_ADD_EXECUTABLE(otbBasicFiltersTests2 "${BasicFilters_SRCS2}" "OTBBasicFilters;OTBIO;OTBTesting")
@@ -2185,5 +2350,9 @@ OTB_ADD_EXECUTABLE(otbBasicFiltersTests11 "${BasicFilters_SRCS11}" "OTBBasicFilt
 OTB_ADD_EXECUTABLE(otbBasicFiltersTests12 "${BasicFilters_SRCS12}" "OTBBasicFilters;ITKAlgorithms;OTBIO;OTBTesting")
 OTB_ADD_EXECUTABLE(otbBasicFiltersTests13 "${BasicFilters_SRCS13}" "OTBBasicFilters;OTBIO;OTBTesting")
 OTB_ADD_EXECUTABLE(otbBasicFiltersTests14 "${BasicFilters_SRCS14}" "OTBBasicFilters;OTBIO;OTBTesting")
+
+IF(OTB_DATA_USE_LARGEINPUT)
+OTB_ADD_EXECUTABLE(otbBasicFiltersTests15 "${BasicFilters_SRCS15}" "OTBBasicFilters;OTBIO;OTBTesting")
+ENDIF(OTB_DATA_USE_LARGEINPUT)
 
 ENDIF( NOT OTB_DISABLE_CXX_TESTING AND BUILD_TESTING )

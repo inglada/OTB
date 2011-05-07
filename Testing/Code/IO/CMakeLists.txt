@@ -1618,13 +1618,13 @@ ADD_TEST(ioTvossimElevManagerTest2 ${IO_TESTS12}
 	500
          )
 
-# otb::MapProjectionWrapper (TODO: remove from IO)
-ADD_TEST(ioTvMapProjectionWrapperTest ${IO_TESTS12}
+# otb::MapProjectionAdapter (TODO: remove from IO)
+ADD_TEST(ioTvMapProjectionAdapterTest ${IO_TESTS12}
         --compare-ascii ${EPSILON_9}
-            ${BASELINE_FILES}/ioTvMapProjectionWrapperTest.txt
-            ${TEMP}/ioTvMapProjectionWrapperTest.txt
-        otbMapProjectionWrapperTest
-            ${TEMP}/ioTvMapProjectionWrapperTest.txt
+            ${BASELINE_FILES}/ioTvMapProjectionAdapterTest.txt
+            ${TEMP}/ioTvMapProjectionAdapterTest.txt
+        otbMapProjectionAdapterTest
+            ${TEMP}/ioTvMapProjectionAdapterTest.txt
 )
 
 
@@ -2600,6 +2600,48 @@ ADD_TEST(ioTvTileMapWriter ${IO_TESTS19}
 )
 ENDIF(OTB_DATA_USE_LARGEINPUT)
 
+
+
+# OSM Data To VectorData Generator
+
+ADD_TEST(ioTuOSMToVectorDataGenerator ${IO_TESTS19}
+  otbOSMToVectorDataGeneratorNew
+)
+
+ADD_TEST(ioTvOSMToVectorDataGeneratorTest ${IO_TESTS19}
+  --compare-ogr ${EPSILON_9}
+  ${BASELINE_FILES}/ioTvOSMToVectorDataFilterTest_highway.shp
+  ${TEMP}/ioTvOSMToVectorDataFilterTest_highway.shp
+  otbOSMToVectorDataGeneratorTest
+  ${INPUTDATA}/qb_road.osm
+  ${TEMP}/ioTvOSMToVectorDataFilterTest_highway.shp
+)
+
+ADD_TEST(ioTvOSMToVectorDataGeneratorByName ${IO_TESTS19}
+  --compare-ogr ${EPSILON_9}
+  ${BASELINE_FILES}/ioTvOSMToVectorDataFilterByName_highway.shp
+  ${TEMP}/ioTvOSMToVectorDataFilterByName_highway.shp
+  otbOSMToVectorDataGeneratorByName
+  -osm ${INPUTDATA}/qb_road.osm
+  -vd ${TEMP}/ioTvOSMToVectorDataFilterByName_highway.shp
+)
+
+# ImageToOSMVectorData
+ADD_TEST(ioTuImageToOSMVectorDataGeneratorNew ${IO_TESTS19}
+  otbImageToOSMVectorDataGeneratorNew
+)
+
+ADD_TEST(ioTvImageToOSMVectorDataGenerator ${IO_TESTS19}
+  --compare-ogr ${EPSILON_9}
+    ${BASELINE_FILES}/ioTvImageToOSMVectorDataGenerator_highway_motorway.shp
+    ${TEMP}/ioTvImageToOSMVectorDataGenerator_highway_motorway.shp
+  otbImageToOSMVectorDataGenerator
+  -in  ${EXAMPLEDATA}/qb_RoadExtract.tif
+  -osm ${INPUTDATA}/qb_road.osm
+  -out ${TEMP}/ioTvImageToOSMVectorDataGenerator_highway_motorway.shp
+  -key highvay,motorway
+)
+
 ENDIF(OTB_USE_CURL)
 
 #----------------------------------------------------------------------------------
@@ -2770,6 +2812,8 @@ ADD_TEST(ioTvTileMapImageIOHelperTest ${IO_TESTS21}
               ${TEMP}/ioTvTileMapImageIOHelperTest.txt
 )
 
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ otbIOTESTS22 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2777,6 +2821,7 @@ ADD_TEST(ioTvTileMapImageIOHelperTest ${IO_TESTS21}
 
 IF(CHECK_GDAL_BUILDED_WITH_HDF)
 
+IF(CHECK_HDF4OPEN_SYMBOL)
 # Tests to check if we can open hdf files using a otb::VectorImage and IFReader->SetDatasetNumber() function.
 # no access to data only PrintSelf() method.
 ADD_TEST(ioTvMultiDatasetReading1 ${IO_TESTS22}
@@ -2822,8 +2867,7 @@ ADD_TEST(ioTvMultiDatasetReadingInfo ${IO_TESTS22}
       ${TEMP}/ioTvMultiDatasetReadingInfoOut.txt
       )
    
-# Tests which read data in HDF files.  
-IF(CHECK_HDF4OPEN_SYMBOL)          
+# Tests which read data in HDF files.            
 ADD_TEST(ioTvMultiChannelROI_HDF4_2_TIF ${COMMON_TESTS2}
    --compare-image ${EPSILON_9}   ${BASELINE}/ioExtractROI_HDF2TIF_MOD09Q1G_20_25_100_150_channel_1.tif
                      ${TEMP}/ioExtractROI_HDF2TIF_MOD09Q1G_20_25_100_150_channel_1_OUT.tif
@@ -3261,7 +3305,7 @@ otbDEMToImageGeneratorTest.cxx
 otbOssimElevManagerTest.cxx
 otbOssimElevManagerTest2.cxx
 otbOssimElevManagerTest4.cxx
-otbMapProjectionWrapperTest.cxx
+otbMapProjectionAdapterTest.cxx
 )
 
 
@@ -3348,6 +3392,8 @@ otbIOTests19.cxx
 otbImageFileReaderServerName.cxx
 otbTileMapImageIOTest.cxx
 otbTileMapWriter.cxx
+otbOSMDataToVectorDataTests.cxx
+otbImageToOSMVectorDataGenerator.cxx
 )
 ENDIF(OTB_USE_CURL)
 
