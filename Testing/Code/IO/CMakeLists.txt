@@ -1586,6 +1586,45 @@ ADD_TEST(ioTvDEMToImageGeneratorTest2 ${IO_TESTS12}
 # 3.765220920574784 44.224685913433
 )
 
+IF(OTB_DATA_USE_LARGEINPUT)
+ADD_TEST(ioTvDEMToImageGeneratorFromImageTest_SensorModel ${IO_TESTS12}
+    --compare-n-images ${EPSILON_5} 2    
+        ${BASELINE}/ioTvDEMToImageGeneratorFromImageTest_SM.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_Extract_DEM.tif
+        ${BASELINE}/ioTvDEMToImageGeneratorFromImageTest_SM.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_DEM_Extract.tif
+      otbDEMToImageGeneratorFromImageTest
+        ${LARGEDATA}/QUICKBIRD/TOULOUSE/000000128955_01_P001_MUL/02APR01105228-M1BS-000000128955_01_P001.TIF
+        ${INPUTDATA}/DEM/srtm_directory
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_Extract_DEM.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_DEM_Extract.tif
+        2600 4300 512 128 
+)
+ENDIF(OTB_DATA_USE_LARGEINPUT)
+
+ADD_TEST(ioTvDEMToImageGeneratorFromImageTest ${IO_TESTS12}
+    --compare-image ${EPSILON_5}    
+        ${BASELINE}/ioTvDEMToImageGeneratorFromImageTest.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage.tif
+      otbDEMToImageGeneratorFromImageTest
+        ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
+        ${INPUTDATA}/DEM/srtm_directory
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage.tif
+)
+
+ADD_TEST(ioTvDEMToImageGeneratorFromImageTest2 ${IO_TESTS12}
+    --compare-n-images ${EPSILON_5} 2    
+        ${BASELINE}/ioTvDEMToImageGeneratorFromImageTest_Ortho.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_Extract_DEM2.tif
+        ${BASELINE}/ioTvDEMToImageGeneratorFromImageTest_Ortho.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_DEM_Extract2.tif
+      otbDEMToImageGeneratorFromImageTest
+        ${INPUTDATA}/QB_Toulouse_Ortho_PAN.tif
+        ${INPUTDATA}/DEM/srtm_directory
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_Extract_DEM2.tif
+        ${TEMP}/ioTvDEMToImageGeneratorFromImage_DEM_Extract2.tif
+        10 15 16 64 
+)
 
 ADD_TEST(ioTvossimElevManagerTest ${IO_TESTS12}
 --compare-image ${EPSILON_9}  ${BASELINE}/ioTvossimElevManagerTest.tif
@@ -3322,6 +3361,7 @@ otbDEMHandlerNew.cxx
 otbDEMHandlerTest.cxx
 otbDEMToImageGeneratorNew.cxx
 otbDEMToImageGeneratorTest.cxx
+otbDEMToImageGeneratorFromImageTest.cxx
 otbOssimElevManagerTest.cxx
 otbOssimElevManagerTest2.cxx
 otbOssimElevManagerTest4.cxx
